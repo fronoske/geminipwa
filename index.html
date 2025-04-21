@@ -1798,6 +1798,11 @@
                        <input type="checkbox" id="dark-mode-toggle">
                        ダークモードを使用する
                    </label>
+                   <!-- 自動スクロールを抑止する -->
+                   <label class="checkbox-label">
+                       <input type="checkbox" id="disable-auto-scroll-toggle">
+                       チャット中の自動スクロールを抑止する
+                   </label>
                    <p style="height:10px"></p>
                    <!-- システムプロンプト非表示設定 -->
                    <label class="checkbox-label">
@@ -2011,6 +2016,7 @@
             historySortOrderSelect: document.getElementById('history-sort-order'),
             darkModeToggle: document.getElementById('dark-mode-toggle'),
             fontFamilyInput: document.getElementById('font-family-input'), // フォント指定入力
+            disableAutoScrollToggle: document.getElementById('disable-auto-scroll-toggle'), // 自動スクロール抑止トグル
             hideSystemPromptToggle: document.getElementById('hide-system-prompt-toggle'), // SP非表示トグル
             enableGroundingToggle: document.getElementById('enable-grounding-toggle'), // ネット検索トグル
             appVersionSpan: document.getElementById('app-version'),
@@ -2082,6 +2088,7 @@
                 darkMode: false, // デフォルトはダークモードOFF
                 backgroundImageBlob: null, // デフォルト背景はnull
                 fontFamily: '', // デフォルトフォントは空 (CSS変数で定義)
+                disableAutoScroll: false, // 自動スクロール抑止 (デフォルトfalse)
                 hideSystemPromptInChat: false, // SP非表示設定 (デフォルトfalse)
                 enableGrounding: false, //ネット検索設定 (デフォルトfalse)
                 enableSwipeNavigation: true,
@@ -2305,6 +2312,8 @@
                                          if (loadedValue !== null) console.warn(`読み込んだ 'backgroundImageBlob' がBlobではありません。nullに設定します。型: ${typeof loadedValue}`);
                                          state.settings[key] = null; // Blobでないか明示的にnullならnullを使用
                                     }
+                                } else if (key === 'disableAutoScroll') { // 自動スクロール抑止
+                                    state.settings[key] = loadedValue === true;
                                 } else if (key === 'hideSystemPromptInChat') { // SP非表示設定
                                     state.settings[key] = loadedValue === true;
                                 } else if (key === 'enableGrounding') { // ネット検索設定
@@ -2986,7 +2995,8 @@
             },
 
             // チャットコンテナの最下部へスクロール
-            scrollToBottom() {
+            scrollToBottom(force = false) {
+                if (!force && state.settings.disableAutoScroll) return;
                 requestAnimationFrame(() => { // 次の描画タイミングで実行
                     const mainContent = elements.chatScreen.querySelector('.main-content');
                     if (mainContent) {
@@ -3157,6 +3167,7 @@
                 elements.historySortOrderSelect.value = state.settings.historySortOrder || 'updatedAt';
                 elements.darkModeToggle.checked = state.settings.darkMode; // ダークモードチェックボックスに状態を適用
                 elements.fontFamilyInput.value = state.settings.fontFamily || ''; // フォント設定を適用
+                elements.disableAutoScrollToggle.checked = state.settings.disableAutoScroll; // 自動スクロール抑止
                 elements.hideSystemPromptToggle.checked = state.settings.hideSystemPromptInChat; // SP非表示設定
                 elements.enableGroundingToggle.checked = state.settings.enableGrounding; // ネット検索設定を適用
                 elements.swipeNavigationToggle.checked = state.settings.enableSwipeNavigation;
@@ -3292,7 +3303,7 @@
                     requestAnimationFrame(() => {
                         this.updateSystemPromptUI();
                         this.adjustTextareaHeight();
-                        this.scrollToBottom();
+                        this.scrollToBottom(true);
                     });
                 } else if (screenName === 'history') {
                     activeScreen = elements.historyScreen;
@@ -3588,7 +3599,6 @@
                 if (tools.length > 0) {
                     requestBody.tools = tools;
                 }
-
                 console.log("Geminiへの送信データ:", JSON.stringify(requestBody, (key, value) => {
                     // Base64データはログで見やすく省略
                     if (key === 'data' && typeof value === 'string' && value.length > 100) {
@@ -3596,6 +3606,7 @@
                     }
                     return value;
                 }, 2));
+
                 console.log("ターゲットエンドポイント:", endpoint);
 
                 try {
@@ -3889,7 +3900,7 @@
                     // UI調整
                     uiUtils.adjustTextareaHeight();
                     uiUtils.setSendingState(false); // 送信状態をリセット
-                    uiUtils.scrollToBottom();
+                    uiUtils.scrollToBottom(true);
                 }
             },
 
@@ -3967,6 +3978,13 @@
                     event.target.value = null; // 同じファイルを選択できるようにリセット
                 });
                 elements.deleteBackgroundBtn.addEventListener('click', () => this.confirmDeleteBackgroundImage());
+
+                // 自動スクロール抑止トグルリスナー
+                elements.disableAutoScrollToggle.addEventListener('change', () => {
+                    state.settings.disableAutoScroll = elements.disableAutoScrollToggle.checked;
+                    uiUtils.toggleSystemPromptVisibility(); // UIを即時更新
+                    // 注意: DBへの保存は「設定を保存」ボタンで行われる
+                });
 
                 // SP非表示トグルリスナー
                 elements.hideSystemPromptToggle.addEventListener('change', () => {
@@ -4645,7 +4663,7 @@
                     elements.userInput.value = '';
                     state.pendingAttachments = []; // 保留中の添付ファイルをクリア
                     uiUtils.adjustTextareaHeight();
-                    uiUtils.scrollToBottom();
+                    uiUtils.scrollToBottom(true);
                 } else {
                     // リトライの場合の siblingGroupId 決定ロジック (変更なし、userMessageIndex を使用)
                     console.log("リトライ処理開始 (handleSend内):", state.currentMessages[userMessageIndex]);
@@ -5131,6 +5149,7 @@
                      historySortOrder: elements.historySortOrderSelect.value,
                      darkMode: elements.darkModeToggle.checked,
                      fontFamily: elements.fontFamilyInput.value.trim(), // フォント設定を取得
+                     disableAutoScroll: elements.disableAutoScrollToggle.checked, // 自動スクロール抑止
                      hideSystemPromptInChat: elements.hideSystemPromptToggle.checked, // SP非表示設定
                      enableGrounding: elements.enableGroundingToggle.checked, // ネット検索設定を取得
                      enableSwipeNavigation: elements.swipeNavigationToggle.checked,//スワイプナビゲーション設定を取得
@@ -5252,6 +5271,7 @@
                             darkMode: window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false,
                             backgroundImageBlob: null,
                             fontFamily: '', // フォントもリセット
+                            disableAutoScroll: false, // 自動スクロール抑止設定もリセット
                             hideSystemPromptInChat: false, // SP非表示もリセット
                             enableSwipeNavigation: true, // スワイプナビゲーションのデフォルト値
                         };
@@ -5662,7 +5682,7 @@
 
                     // UIを更新 (削除された状態を表示)
                     uiUtils.renderChatMessages();
-                    uiUtils.scrollToBottom(); // 削除後の表示位置にスクロール
+                    uiUtils.scrollToBottom(true); // 削除後の表示位置にスクロール
                     
                     // --- 既存の応答を一時的に非表示にする処理 ---
                     const elementsToHide = []; // 非表示にしたDOM要素を保持する配列
