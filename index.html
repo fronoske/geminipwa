@@ -1278,7 +1278,17 @@
         body.dark-mode .message-content hr {
             border-top-color: var(--border-primary);
         }
-
+        
+        /* メッセージアクション領域のトークン数表示 */
+        .message-actions .token-count-display {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            /*margin-left: 4px;*/
+            vertical-align: middle;
+            line-height: 1.5;
+            white-space: nowrap;
+        }
+        
         /* --- カスタムダイアログスタイル --- */
         .custom-dialog {
             border: 1px solid var(--border-secondary);
@@ -1836,12 +1846,19 @@
                      <p style="text-align: center; color: var(--text-secondary); font-size: 12px; margin-bottom: 10px;">
                          バージョン: <span id="app-version"></span>
                      </p>
-                     <button id="clear-data-btn">全データクリア (履歴と設定)</button>
                      <button id="update-app-btn">アプリを更新 (キャッシュクリア)</button>
-                     <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
+                     <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px; text-align:center;">
                          ※ サーバー側のhtmlファイルなどはブラウザにキャッシュされるため、<BR>
                          このボタンで明示的にサーバーがから再取得しない限り更新されない。
                      </p>
+                     <details style="text-align:center;">
+                         <summary style="cursor: pointer; font-weight: normal; font-size: 14px; color: var(--text-link); margin-bottom: 10px;">※取り扱い注意項目※</summary>
+                         <button id="clear-data-btn">全データクリア (履歴と設定)</button>
+                         <p style="font-size: 11px; color: var(--text-secondary); margin-top:5px; margin-bottom: 10px;">
+                             ※ ブラウザに保存されている設定や履歴を全て削除。<BR>
+                             ！！間違えて押そうとしていないか注意！！
+                         </p>
+                     </details>
                 </div>
             </main>
         </div>
@@ -1921,7 +1938,7 @@
         const IMPORT_PREFIX = '(取込) ';
         const LIGHT_THEME_COLOR = '#4a90e2';
         const DARK_THEME_COLOR = '#007aff';
-        const APP_VERSION = "0.24"; // 厳密なmimeファイルタイプの指定
+        const APP_VERSION = "0.25"; // トークン数表示
         const SWIPE_THRESHOLD = 50; // スワイプ判定の閾値 (px)
         const ZOOM_THRESHOLD = 1.01; // ズーム状態と判定するスケールの閾値 (誤差考慮)
         const MAX_FILE_SIZE = 10 * 1024 * 1024; // 最大ファイルサイズ (例: 10MB)
@@ -2413,6 +2430,8 @@
                         ...(msg.groundingMetadata && { groundingMetadata: msg.groundingMetadata }),
                         // 添付ファイル情報を追加 (存在すれば)
                         ...(msg.attachments && msg.attachments.length > 0 && { attachments: msg.attachments }),
+                        // usageMetadata を追加 (存在すれば)
+                        ...(msg.usageMetadata && { usageMetadata: msg.usageMetadata }),
                     }));
 
                     // タイトルを決定して保存を実行する内部関数
@@ -2902,7 +2921,7 @@
                 if (role !== 'error') {
                     const actionsDiv = document.createElement('div');
                     actionsDiv.classList.add('message-actions');
-
+                    
                     // 編集ボタン
                     const editButton = document.createElement('button');
                     editButton.textContent = '編集'; editButton.title = 'メッセージを編集'; editButton.classList.add('js-edit-btn');
@@ -2922,6 +2941,29 @@
                         retryButton.onclick = () => appLogic.retryFromMessage(index);
                         actionsDiv.appendChild(retryButton);
                     }
+                    
+                    // const messageData = state.currentMessages[index]; // 上で取得済みなので再利用
+                    // モデル応答で、usageMetadata があり、必要なトークン数が数値として存在する場合
+                    if (role === 'model' && messageData?.usageMetadata &&
+                        typeof messageData.usageMetadata.candidatesTokenCount === 'number' &&
+                        typeof messageData.usageMetadata.totalTokenCount === 'number')
+                    {
+                        const usage = messageData.usageMetadata;
+                        const tokenSpan = document.createElement('span');
+                        tokenSpan.classList.add('token-count-display'); // スタイル適用用のクラス
+                        let finalTotalTokenCount = usage.totalTokenCount;
+                        if (typeof messageData.usageMetadata.thoughtsTokenCount === 'number') {
+                            finalTotalTokenCount -= messageData.usageMetadata.thoughtsTokenCount;
+                        }
+                        const formattedCandidates = usage.candidatesTokenCount.toLocaleString('en-US');
+                        const formattedTotal = finalTotalTokenCount.toLocaleString('en-US');
+                        tokenSpan.textContent = `${formattedCandidates} / ${formattedTotal}`;
+                        tokenSpan.title = `Candidate Tokens / Total Tokens`; // ホバー時のツールチップ
+
+                        // アクションボタン群の前 (左端) に追加
+                        actionsDiv.appendChild(tokenSpan);
+                    }
+
                     messageDiv.appendChild(actionsDiv);
                 }
 
@@ -3658,6 +3700,7 @@
                  let isCancelled = false; // キャンセルされたかどうかのフラグ
                  let groundingMetadata = null; // groundingMetadata を保持する変数を追加
                  let currentPartIndex = -1; // 現在処理中の part のインデックスを追跡
+                 let finalUsageMetadata = null; // usageMetadata を保持する変数を追加
 
                  try {
                      while (true) {
@@ -3718,7 +3761,8 @@
                          processedChunks: processedChunks,
                          finishReason: isCancelled ? 'ABORTED' : finishReason, // キャンセルされた場合は理由をABORTEDに
                          safetyRatings,
-                         groundingMetadata: finalGroundingMetadata
+                         groundingMetadata: finalGroundingMetadata,
+                         usageMetadata: finalUsageMetadata // usageMetadata を追加して返す
                      };
                  } catch (error) {
                      // ストリーム処理中のエラー
@@ -3806,6 +3850,12 @@
                              lastCandidateInfo = { finishReason: 'SAFETY', safetyRatings: chunkData.promptFeedback.safetyRatings };
                          } else { // その他の予期しないデータ
                              console.log("候補/エラー以外のストリームチャンク:", chunkData);
+                         }
+
+                         // usageMetadata をチェックして保持
+                         if (chunkData.usageMetadata) {
+                             finalUsageMetadata = chunkData.usageMetadata; // 最新のもので上書き or 結合が必要か確認
+                             console.log("Stream chunk contains usageMetadata:", finalUsageMetadata);
                          }
                      } catch (parseError) {
                          // JSONパースエラーは警告表示してスキップ
@@ -4758,18 +4808,21 @@
                 let modelResponseRawContent = '';
                 let modelResponseMetadata = {};
                 let groundingMetadata = null;
+                let usageMetadata = null; // usageMetadata を保持する変数を追加
                 // modelMessageIndex の決定は不要になった (応答は常に末尾に追加される)
 
                 try {
                     // (既存のAPI呼び出し、ストリーミング/非ストリーミング処理は省略)
                     const response = await apiUtils.callGeminiApi(apiMessages, generationConfig, systemInstruction);
                     const dummyModelPrefix = (state.settings.concatDummyModel && state.settings.dummyModel) ? state.settings.dummyModel : '';
+                    
                     if (state.settings.streamingOutput) {
                         const tempPlaceholderIndex = state.currentMessages.length;
                         uiUtils.appendMessage('model', '', tempPlaceholderIndex, true);
                         const streamResult = await apiUtils.handleStreamingResponse(response);
                         modelResponseMetadata = { finishReason: streamResult.finishReason, safetyRatings: streamResult.safetyRatings };
                         groundingMetadata = streamResult.groundingMetadata;
+                        usageMetadata = streamResult.usageMetadata; // ストリーミング結果から取得
                         modelResponseRawContent = await this.typeCharacterByCharacter(streamResult.processedChunks, tempPlaceholderIndex, state.abortController.signal, dummyModelPrefix);
                         if (modelResponseMetadata.finishReason === 'ABORTED' || state.abortController?.signal.aborted) {
                             throw new Error("リクエストがキャンセルされました。");
@@ -4785,6 +4838,7 @@
                             modelResponseMetadata = { finishReason: candidate.finishReason, safetyRatings: candidate.safetyRatings };
                             rawContentFromApi = candidate.content?.parts?.map(p => p.text || "").join('\n\n') || "";
                             groundingMetadata = candidate.groundingMetadata || null;
+                            usageMetadata = data.usageMetadata || null; // 非ストリーミング結果から取得
                             if (candidate.finishReason && candidate.finishReason !== "STOP" && candidate.finishReason !== "MAX_TOKENS") {
                                 rawContentFromApi += `\n\n(理由: ${candidate.finishReason})`;
                             }
@@ -4800,6 +4854,7 @@
                             } else {
                                 modelResponseMetadata.finishReason = 'ERROR';
                             }
+                            usageMetadata = data.usageMetadata || null; // エラー時も取得試行
                         }
                         modelResponseRawContent = dummyModelPrefix + rawContentFromApi;
                     }
@@ -4811,7 +4866,8 @@
                              content: modelResponseRawContent,
                              timestamp: Date.now(),
                              ...modelResponseMetadata,
-                             groundingMetadata: groundingMetadata
+                             groundingMetadata: groundingMetadata,
+                             usageMetadata: usageMetadata // usageMetadata を追加
                          };
 
                          // カスケード関連フラグの設定 (userMessageIndex を使用)
