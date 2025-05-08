@@ -2988,7 +2988,9 @@
                             contentDiv.textContent = state.partialStreamContent; // エラー時はテキストとして表示
                         }
                     }
-                    this.scrollToBottom(); // 更新のたびにスクロール
+                    // 応答の最初だけは必ずスクロールする
+                    const forceScroll = contentDiv && contentDiv.textContent.length < 400;
+                    this.scrollToBottom(forceScroll); // 更新のたびにスクロール
                 }
             },
 
