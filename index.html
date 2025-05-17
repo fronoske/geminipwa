@@ -4448,7 +4448,10 @@
                         }
                     }
                 }
-                if (state.settings.autoScrollOnNewMessage) {
+                // 応答の最初だけは必ずスクロールする
+                const contentDiv = messageDiv.querySelector('.message-content');
+                const isMessageHead = contentDiv && contentDiv.textContent.length < 200;
+                if (state.settings.autoScrollOnNewMessage || isMessageHead) {
                     this.scrollToBottom();
                 }
             },
