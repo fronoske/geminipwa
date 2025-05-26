@@ -4739,7 +4739,7 @@
                 }
                 // 応答の最初だけは必ずスクロールする
                 const contentDiv = messageDiv.querySelector('.message-content');
-                const isMessageHead = contentDiv && contentDiv.textContent.length < 200;
+                const isMessageHead = contentDiv && contentDiv.textContent.length < 100;
                 if (state.settings.autoScrollOnNewMessage || isMessageHead) {
                     this.scrollToBottom();
                 }
