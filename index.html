@@ -7135,7 +7135,7 @@
                     elements.userInput.value = '';
                     state.pendingAttachments = [];
                     uiUtils.adjustTextareaHeight();
-                    if (state.settings.autoScrollOnNewMessage) uiUtils.scrollToBottom();
+                    if (state.settings.autoScrollOnNewMessage || true) uiUtils.scrollToBottom();
                     currentContextMessages = [...state.currentMessages];
                 } else if (isBackgroundProcess && !isRetry) {
                     const userMessage = {
