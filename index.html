@@ -3023,6 +3023,11 @@
                     <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
                         ※ 有効にすると、履歴画面で2つのセッションをリンクし、AI同士の会話をステップ実行できます。（👥ボタンを用いた入出力のみ。）
                     </p>
+                           <p style="height:10px"></p>
+                           <label class="checkbox-label">
+                               <input type="checkbox" id="disable-load-chat-confirmation-while-sending-toggle">
+                               メッセージ送信中に別チャットを読み込む際の確認ダイアログを表示しない (非推奨)
+                           </label>
                 </div>
                 <div class="settings-group">
                     <h3>イメージ画像</h3>
@@ -3167,7 +3172,6 @@
                                <input type="checkbox" id="enter-to-send">
                                Enterキーで送信する
                            </label>
-
                            <label class="checkbox-label">
                                <input type="checkbox" id="auto-scroll-on-new-message">
                                メッセージ送受信時に自動スクロールする
@@ -3193,6 +3197,11 @@
                                 <input type="checkbox" id="disable-retry-confirmation-toggle">
                                 リトライ時の確認ダイアログを無効にする
                             </label>
+                           <p style="height:10px"></p>
+                           <label class="checkbox-label">
+                               <input type="checkbox" id="disable-delete-message-confirmation-toggle">
+                               メッセージ削除時の確認ダイアログを無効にする
+                           </label>
                            <p style="height:10px"></p>
                            <label for="theme-select">表示テーマ:</label>
                            <select id="theme-select" aria-label="表示テーマ">
@@ -3669,6 +3678,8 @@
             showMemoButtonToggle: document.getElementById('show-memo-button-toggle'),
             memoHeightInput: document.getElementById('memo-height'),
             disableRetryConfirmationToggle: document.getElementById('disable-retry-confirmation-toggle'),
+            disableLoadChatConfirmationWhileSendingToggle: document.getElementById('disable-load-chat-confirmation-while-sending-toggle'),
+            disableDeleteMessageConfirmationToggle: document.getElementById('disable-delete-message-confirmation-toggle'),
             showTopCollapseButtonToggle: document.getElementById('show-top-collapse-button-toggle'),
             showBottomCollapseButtonToggle: document.getElementById('show-bottom-collapse-button-toggle'),
             persistMessageCollapseStateCheckbox: document.getElementById('persist-message-collapse-state'),
@@ -3793,6 +3804,8 @@
                 aiNameBubbleColor: DEFAULT_AI_NAME_BUBBLE_COLOR,
                 aiNameBubbleOpacity: DEFAULT_AI_NAME_BUBBLE_OPACITY,
                 disableRetryConfirmation: false,
+                disableLoadChatConfirmationWhileSending: false,
+                disableDeleteMessageConfirmation: false,
                 showTopCollapseButton: true,
                 showBottomCollapseButton: true,
                 persistMessageCollapseState: DEFAULT_PERSIST_MESSAGE_COLLAPSE_STATE,
@@ -3993,7 +4006,10 @@
                                            key === 'enableSystemPromptDefault' || key === 'enableDummyUser' || key === 'enableDummyModel' ||
                                            key === 'showMemoButton' || key === 'showClipboardStackButton' || key === 'showUserIcon' || key === 'showAiIcon' ||
                                            key === 'showUserName' || key === 'showAiName' ||
-                                           key === 'disableRetryConfirmation' || key === 'showTopCollapseButton' || key === 'showBottomCollapseButton' ||
+                                           key === 'disableRetryConfirmation' ||
+                                           key === 'disableLoadChatConfirmationWhileSending' ||
+                                           key === 'disableDeleteMessageConfirmation' ||
+                                           key === 'showTopCollapseButton' || key === 'showBottomCollapseButton' ||
                                            key === 'persistMessageCollapseState' ||
                                            key === 'streamingOutput' || key === 'pseudoStreaming' || key === 'enterToSend' ||
                                            key === 'concatDummyModel' || key === 'autoScrollOnNewMessage' ||
@@ -5282,6 +5298,8 @@
                 elements.aiNameBubbleOpacityInput.value = state.settings.aiNameBubbleOpacity ?? DEFAULT_AI_NAME_BUBBLE_OPACITY;
 
                 elements.disableRetryConfirmationToggle.checked = state.settings.disableRetryConfirmation;
+                elements.disableLoadChatConfirmationWhileSendingToggle.checked = state.settings.disableLoadChatConfirmationWhileSending;
+                elements.disableDeleteMessageConfirmationToggle.checked = state.settings.disableDeleteMessageConfirmation;
                 elements.showTopCollapseButtonToggle.checked = state.settings.showTopCollapseButton;
                 elements.showBottomCollapseButtonToggle.checked = state.settings.showBottomCollapseButton;
                 elements.persistMessageCollapseStateCheckbox.checked = state.settings.persistMessageCollapseState;
@@ -6669,14 +6687,17 @@
                 }
             },
             async loadChat(id) {
+                let confirmedLoad = true;
                 if (state.isSending) {
-                    const confirmed = await uiUtils.showCustomConfirm("送信中です。中断して別のチャットを読み込みますか？");
-                    if (!confirmed) return;
+                    if (!state.settings.disableLoadChatConfirmationWhileSending) {
+                        confirmedLoad = await uiUtils.showCustomConfirm("送信中です。中断して別のチャットを読み込みますか？");
+                    }
+                    if (!confirmedLoad) return;
                     this.abortRequest();
                 }
                 if (state.editingMessageIndex !== null) {
-                    const confirmed = await uiUtils.showCustomConfirm("編集中です。変更を破棄して別のチャットを読み込みますか？");
-                    if (!confirmed) return;
+                    const confirmedEdit = await uiUtils.showCustomConfirm("編集中です。変更を破棄して別のチャットを読み込みますか？");
+                    if (!confirmedEdit) return;
                     const msgEl = elements.messageContainer.querySelector(`.message[data-index="${state.editingMessageIndex}"]`);
                     this.cancelEditMessage(state.editingMessageIndex, msgEl);
                 }
@@ -7968,6 +7989,8 @@
                      aiNameBubbleColor: elements.aiNameBubbleColorInput.value.trim() || DEFAULT_AI_NAME_BUBBLE_COLOR,
                      aiNameBubbleOpacity: elements.aiNameBubbleOpacityInput.value === '' ? DEFAULT_AI_NAME_BUBBLE_OPACITY : parseFloat(elements.aiNameBubbleOpacityInput.value),
                      disableRetryConfirmation: elements.disableRetryConfirmationToggle.checked,
+                     disableLoadChatConfirmationWhileSending: elements.disableLoadChatConfirmationWhileSendingToggle.checked,
+                     disableDeleteMessageConfirmation: elements.disableDeleteMessageConfirmationToggle.checked,
                      showTopCollapseButton: elements.showTopCollapseButtonToggle.checked,
                      showBottomCollapseButton: elements.showBottomCollapseButtonToggle.checked,
                      persistMessageCollapseState: elements.persistMessageCollapseStateCheckbox.checked,
@@ -8221,6 +8244,8 @@
                             aiNameBubbleColor: DEFAULT_AI_NAME_BUBBLE_COLOR,
                             aiNameBubbleOpacity: DEFAULT_AI_NAME_BUBBLE_OPACITY,
                             disableRetryConfirmation: false,
+                            disableLoadChatConfirmationWhileSending: false,
+                            disableDeleteMessageConfirmation: false,
                             showTopCollapseButton: true,
                             showBottomCollapseButton: true,
                             persistMessageCollapseState: DEFAULT_PERSIST_MESSAGE_COLLAPSE_STATE,
@@ -8615,8 +8640,12 @@
                     confirmMessage = `メッセージ「${messageContentPreview}」(${messageToDelete.role}) を削除しますか？`;
                 }
 
-                const confirmed = await uiUtils.showCustomConfirm(confirmMessage);
-                if (confirmed) {
+                let confirmedDelete = true;
+                if (!state.settings.disableDeleteMessageConfirmation) {
+                    confirmedDelete = await uiUtils.showCustomConfirm(confirmMessage);
+                }
+
+                if (confirmedDelete) {
                     const originalFirstUserMsgIndex = state.currentMessages.findIndex(m => m.role === 'user');
 
                     indicesToDelete.sort((a, b) => b - a).forEach(idx => {
