@@ -5243,7 +5243,7 @@
                     ? state.settings.autoScrollOnThought
                     : state.settings.autoScrollOnNewMessage;
 
-                if (autoScrollEnabledForThisContentType) {
+                if (autoScrollEnabledForThisContentType || state.currentMessages[index]?.content?.length < 100) {
                     this.scrollToBottom();
                 }
             },
