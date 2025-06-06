@@ -5243,7 +5243,7 @@
                     ? state.settings.autoScrollOnThought
                     : state.settings.autoScrollOnNewMessage;
 
-                if (autoScrollEnabledForThisContentType || state.currentMessages[index]?.content?.length < 100) {
+                if (autoScrollEnabledForThisContentType || targetContentDiv?.textContent?.length < 100) {
                     this.scrollToBottom();
                 }
             },
@@ -8191,7 +8191,7 @@
                     elements.userInput.value = '';
                     state.pendingAttachments = [];
                     uiUtils.adjustTextareaHeight();
-                    if (state.settings.autoScrollOnNewMessage) uiUtils.scrollToBottom();
+                    if (state.settings.autoScrollOnNewMessage || true) uiUtils.scrollToBottom();
                     currentContextMessages = [...state.currentMessages];
                 } else if (isBackgroundProcess && !isRetry) {
                     const userMessage = {
