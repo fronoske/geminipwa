@@ -8,6 +8,24 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" id="theme-color-meta" content="#4a90e2">
     <style>
+      .message-content img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 12px auto;
+            border-radius: 8px;
+            border: 1px solid var(--border-secondary);
+            background-color: var(--bg-tertiary);
+            box-shadow: 0 1px 3px var(--shadow-primary);
+            cursor: pointer;
+            transition: opacity 0.3s ease, transform 0.2s ease;
+        }
+
+        .message-content img:hover {
+            opacity: 0.9;
+            transform: scale(1.01);
+        }
+
         :root {
             --bg-primary: #ffffff;
             --bg-secondary: #f0f2f5;
