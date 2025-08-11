@@ -7536,7 +7536,7 @@ if (loadedSettings.webhookUrl && !loadedSettings.webhooks) {
                     ? state.settings.autoScrollOnThought
                     : state.settings.autoScrollOnNewMessage;
 
-                if (autoScrollEnabledForThisContentType && targetContentDiv?.textContent?.length < 100) {
+                if (autoScrollEnabledForThisContentType && targetContentDiv?.textContent?.length < 200) {
                     this.scrollToBottom();
                 }
             },
