@@ -7602,7 +7602,7 @@ if (loadedSettings.webhookUrl && !loadedSettings.webhooks) {
                         }
                     }
                 }
-                if (state.settings.autoScrollOnNewMessage && contentDiv?.textContent?.length < 200) {
+                if (state.settings.autoScrollOnNewMessage && messageDiv.textContent?.length < 200) {
                     this.scrollToBottom();
                 }
             },
