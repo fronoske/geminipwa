@@ -17068,7 +17068,7 @@ thinkingBudgetDiv.appendChild(buttonContainer);
 
   // 6. イベント紐付け
   textarea.addEventListener('focus', () => {
-    showPopup();
+    if (textarea.value.trim() === '') showPopup();
   });
   textarea.addEventListener('blur', () => {
     setTimeout(hidePopup, 160); // ボタン押下を拾うため少し遅らせる
