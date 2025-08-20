@@ -17007,7 +17007,7 @@ thinkingBudgetDiv.appendChild(buttonContainer);
   // 1. ボタン内容設定
   const presetList = [
     {label: '続', value: '（続けて）', autoSend: true},
-    {label: '展', value: '（【今後の展開】）', autoSend: false},
+    {label: '展', value: '（【今後の展開】）', autoSend: false, moveCursorLeft: 1},
   ];
 
   // 2. DOM取得
@@ -17026,7 +17026,7 @@ thinkingBudgetDiv.appendChild(buttonContainer);
     btn.tabIndex = -1;
     btn.onclick = function(e) {
       e.preventDefault();
-      insertAtCursor(textarea, preset.value);
+      insertAtCursor(textarea, preset.value, preset.moveCursorLeft || 0);
       hidePopup();
       textarea.focus();
       if (preset.autoSend) {
@@ -17052,15 +17052,15 @@ thinkingBudgetDiv.appendChild(buttonContainer);
     popup.style.opacity = 0;
   }
 
-  // 5. 挿入処理
-  function insertAtCursor(textarea, text) {
+  function insertAtCursor(textarea, text, moveLeft = 0) {
     // textarea.selectionStart/Endでカーソル位置取得
     const start = textarea.selectionStart, end = textarea.selectionEnd;
     const before = textarea.value.substring(0, start);
     const after = textarea.value.substring(end);
     textarea.value = before + text + after;
-    // 挿入した直後のカーソル位置へ
-    const newPos = before.length + text.length;
+    // 挿入した直後（moveLeft分だけ左）のカーソル位置へ
+    let newPos = before.length + text.length - moveLeft;
+    newPos = Math.max(newPos, 0);
     textarea.setSelectionRange(newPos, newPos);
     // イベント（input）発火
     textarea.dispatchEvent(new Event('input', { bubbles: true }));
