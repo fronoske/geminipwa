@@ -5066,6 +5066,9 @@ font-size: 1.142em !important;
                 <button id="settings-scroll-to-top-btn" class="header-button scroll-jump-button" aria-label="最上部へスクロール" title="最上部へ">🔼</button>
                 <button id="settings-scroll-to-bottom-btn" class="header-button scroll-jump-button" aria-label="最下部へスクロール" title="最下部へ">🔽</button>
                 <span id="settings-save-notice" class="header-notice">※反映には保存が必要</span>
+                <button id="export-settings-btn" class="header-save-button history-action-button gold" title="APIキーを含むテキスト設定をJSON形式で出力">設定出力</button>
+                <button id="import-settings-btn" class="header-save-button history-action-button purple" title="APIキーを含むテキスト設定をJSON形式で取込">設定取込</button>
+                <input type="file" id="import-settings-input" accept=".json,application/json" class="hidden">
                 <button class="js-save-settings-btn header-save-button" title="設定を保存">設定を保存</button>
             </header>
             <main class="main-content">
@@ -8158,6 +8161,9 @@ elevationHoverOption: document.getElementById('elevation-hover-option'),
             scrollToBottomBtn: document.getElementById('scroll-to-bottom-btn'),
             toggleAllContentBtn: document.getElementById('toggle-all-content-btn'),
             saveSettingsBtns: document.querySelectorAll('.js-save-settings-btn'),
+            exportSettingsBtn: document.getElementById('export-settings-btn'),
+            importSettingsBtn: document.getElementById('import-settings-btn'),
+            importSettingsInput: document.getElementById('import-settings-input'),
             updateAppBtn: document.getElementById('update-app-btn'),
             clearDataBtn: document.getElementById('clear-data-btn'),
             clearHistoryBtn: document.getElementById('clear-history-btn'),
@@ -13251,6 +13257,13 @@ _setupParamSlider(paramId, defaultValue, storageKey) {
                 elements.saveSettingsBtns.forEach(button => {
                     button.addEventListener('click', () => this.saveSettings(true));
                 });
+                elements.exportSettingsBtn.addEventListener('click', () => this.exportSettings());
+                elements.importSettingsBtn.addEventListener('click', () => elements.importSettingsInput.click());
+                elements.importSettingsInput.addEventListener('change', (event) => {
+                    const file = event.target.files[0];
+                    if (file) this.handleSettingsImport(file);
+                    event.target.value = null;
+                });
                 elements.updateAppBtn.addEventListener('click', () => this.updateApp());
                 elements.clearDataBtn.addEventListener('click', () => this.confirmClearAllData());
                 elements.clearHistoryBtn.addEventListener('click', () => this.confirmClearAllHistory());
@@ -16868,6 +16881,177 @@ uiUtils.renderChatMessages(shouldMaintainScroll);
 
                     } catch (error) {
                         await uiUtils.showCustomAlert(`全セッションのインポート中にエラーが発生しました: ${error.message || error}`);
+                    }
+                };
+                reader.onerror = async () => {
+                    await uiUtils.showCustomAlert("ファイルの読み込みに失敗しました。");
+                };
+                reader.readAsText(file);
+            },
+            getTextSettingsForExport() {
+                const excludedKeys = new Set([
+                    'backgroundImageBlob',
+                    'historyBackgroundImageBlob',
+                    'settingsBackgroundImageBlob',
+                    'userIconBlob',
+                    'aiIconBlob'
+                ]);
+
+                const cloneTextValue = (value) => {
+                    if (value === null) return null;
+                    if (['string', 'number', 'boolean'].includes(typeof value)) return value;
+                    if (typeof value === 'undefined' || typeof value === 'function' || typeof value === 'symbol') return undefined;
+                    if ((typeof Blob !== 'undefined' && value instanceof Blob) || (typeof File !== 'undefined' && value instanceof File)) return undefined;
+                    if (Array.isArray(value)) {
+                        return value
+                            .map(item => cloneTextValue(item))
+                            .filter(item => typeof item !== 'undefined');
+                    }
+                    if (typeof value === 'object') {
+                        const result = {};
+                        Object.entries(value).forEach(([key, childValue]) => {
+                            const cloned = cloneTextValue(childValue);
+                            if (typeof cloned !== 'undefined') {
+                                result[key] = cloned;
+                            }
+                        });
+                        return result;
+                    }
+                    return undefined;
+                };
+
+                const exportSettings = {};
+                Object.entries(state.settings).forEach(([key, value]) => {
+                    if (excludedKeys.has(key)) return;
+                    const cloned = cloneTextValue(value);
+                    if (typeof cloned !== 'undefined') {
+                        exportSettings[key] = cloned;
+                    }
+                });
+                return exportSettings;
+            },
+            async exportSettings() {
+                const confirmed = await uiUtils.showCustomConfirm("APIキーを含むテキスト設定をJSONファイルとしてエクスポートしますか？\n背景画像やアイコン画像は含まれません。");
+                if (!confirmed) return;
+
+                try {
+                    await this.saveSettings(false);
+                    const exportData = {
+                        app: 'GeminiPWA',
+                        type: 'settings',
+                        formatVersion: 1,
+                        appVersion: APP_VERSION,
+                        exportedAt: new Date().toISOString(),
+                        includesApiKeys: true,
+                        excluded: ['backgroundImageBlob', 'historyBackgroundImageBlob', 'settingsBackgroundImageBlob', 'userIconBlob', 'aiIconBlob'],
+                        settings: this.getTextSettingsForExport()
+                    };
+                    const jsonString = JSON.stringify(exportData, null, 2);
+                    const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+                    a.href = url;
+                    a.download = `gemini_pwa_settings_${timestamp}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    await uiUtils.showCustomAlert("設定をエクスポートしました。");
+                } catch (error) {
+                    await uiUtils.showCustomAlert(`設定のエクスポート中にエラーが発生しました: ${error.message || error}`);
+                }
+            },
+            async handleSettingsImport(file) {
+                if (!file || (file.type && file.type !== 'application/json') && !file.name.toLowerCase().endsWith('.json')) {
+                    await uiUtils.showCustomAlert("JSONファイル (.json) を選択してください。");
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = async (event) => {
+                    try {
+                        const textContent = event.target.result;
+                        if (!textContent) {
+                            await uiUtils.showCustomAlert("ファイルの内容が空です。");
+                            return;
+                        }
+
+                        const importedData = JSON.parse(textContent);
+                        const importedSettings = importedData?.type === 'settings' && importedData.settings
+                            ? importedData.settings
+                            : importedData;
+
+                        if (!importedSettings || typeof importedSettings !== 'object' || Array.isArray(importedSettings)) {
+                            await uiUtils.showCustomAlert("無効な設定ファイルです。");
+                            return;
+                        }
+
+                        const confirmed = await uiUtils.showCustomConfirm("APIキーを含む設定を現在の設定へ上書きインポートしますか？\n背景画像やアイコン画像は変更されません。");
+                        if (!confirmed) return;
+
+                        const excludedKeys = new Set([
+                            'backgroundImageBlob',
+                            'historyBackgroundImageBlob',
+                            'settingsBackgroundImageBlob',
+                            'userIconBlob',
+                            'aiIconBlob'
+                        ]);
+                        const allowedKeys = new Set(Object.keys(state.settings).filter(key => !excludedKeys.has(key)));
+                        const isPlainObject = (value) => value && typeof value === 'object' && !Array.isArray(value);
+                        const sanitizeImportedValue = (value) => {
+                            if (value === null) return null;
+                            if (['string', 'number', 'boolean'].includes(typeof value)) return value;
+                            if (Array.isArray(value)) {
+                                return value
+                                    .map(item => sanitizeImportedValue(item))
+                                    .filter(item => typeof item !== 'undefined');
+                            }
+                            if (isPlainObject(value)) {
+                                const result = {};
+                                Object.entries(value).forEach(([key, childValue]) => {
+                                    const sanitized = sanitizeImportedValue(childValue);
+                                    if (typeof sanitized !== 'undefined') {
+                                        result[key] = sanitized;
+                                    }
+                                });
+                                return result;
+                            }
+                            return undefined;
+                        };
+
+                        const settingsToImport = {};
+                        Object.entries(importedSettings).forEach(([key, value]) => {
+                            if (!allowedKeys.has(key)) return;
+                            const sanitized = sanitizeImportedValue(value);
+                            if (typeof sanitized === 'undefined') return;
+                            const currentValue = state.settings[key];
+                            settingsToImport[key] = isPlainObject(currentValue) && isPlainObject(sanitized)
+                                ? { ...currentValue, ...sanitized }
+                                : sanitized;
+                        });
+
+                        if (Object.keys(settingsToImport).length === 0) {
+                            await uiUtils.showCustomAlert("インポート可能な設定項目がありません。");
+                            return;
+                        }
+
+                        await Promise.all(Object.entries(settingsToImport).map(([key, value]) =>
+                            dbUtils.saveSetting(key, value)
+                        ));
+                        await dbUtils.loadSettings();
+                        uiUtils.applyTheme();
+                        uiUtils.applyFontFamily();
+                        uiUtils.applySidePanelSettingsToUI();
+                        uiUtils.applyMinimizeUI();
+                        uiUtils.applyAiBubbleWidthSetting();
+                        uiUtils.applyUserBubbleWidthSetting();
+                        uiUtils.applyMessageSpacingSetting();
+                        uiUtils.applyCompactSettingsSpacing();
+                        uiUtils.applySettingsToUI();
+                        await uiUtils.showCustomAlert(`${Object.keys(settingsToImport).length}件の設定をインポートしました。`);
+                    } catch (error) {
+                        await uiUtils.showCustomAlert(`設定のインポート中にエラーが発生しました: ${error.message || error}`);
                     }
                 };
                 reader.onerror = async () => {
