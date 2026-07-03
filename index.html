@@ -17905,11 +17905,12 @@ newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.che
 
                 const isFirstUserMessage = (index === state.currentMessages.findIndex(m => m.role === 'user'));
                 let titleForSave = null;
-                if (isFirstUserMessage) {
-                    titleForSave = newRawContent.substring(0, 50) || "無題のチャット";
-                }
 
                 try {
+                    if (isFirstUserMessage) {
+                        const existingChat = state.currentChatId ? await dbUtils.getChat(state.currentChatId) : null;
+                        titleForSave = existingChat?.title || newRawContent.substring(0, 50) || "無題のチャット";
+                    }
                     await dbUtils.saveChat(titleForSave);
                     if (isFirstUserMessage) {
                         uiUtils.updateChatTitle(titleForSave);
@@ -22002,7 +22003,7 @@ if (state.settings.disableDeleteApiKeyConfirmation) {
         if (popup.style.display === 'flex') showPopup();
       });
     })();
-    document.getElementById('app-version').textContent = '2026.07.03-fronoske-2';
+    document.getElementById('app-version').textContent = '2026.07.04-fronoske';
     </script>
 </body>
 
