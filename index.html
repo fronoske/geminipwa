@@ -2756,6 +2756,11 @@ body.turf-mode {
             background-color: var(--bg-button-action-hover);
         }
 
+        .settings-import-export-button {
+            width: 45%;
+            padding: 8px 12px;
+        }
+
         .settings-delete-button {
             background-color: var(--bg-button-delete);
             padding: 8px 15px;
@@ -5064,9 +5069,6 @@ font-size: 1.142em !important;
                 <h1>設定</h1>
                 <button id="settings-scroll-to-top-btn" class="header-button scroll-jump-button" aria-label="最上部へスクロール" title="最上部へ">🔼</button>
                 <button id="settings-scroll-to-bottom-btn" class="header-button scroll-jump-button" aria-label="最下部へスクロール" title="最下部へ">🔽</button>
-                <button id="export-settings-btn" class="header-save-button history-action-button gold" title="APIキーを含むテキスト設定をJSON形式で出力">設定出力</button>
-                <button id="import-settings-btn" class="header-save-button history-action-button purple" title="APIキーを含むテキスト設定をJSON形式で取込">設定取込</button>
-                <input type="file" id="import-settings-input" accept=".json,application/json" class="hidden">
                 <button class="js-save-settings-btn header-save-button" title="設定を保存">設定を保存</button>
             </header>
             <main class="main-content">
@@ -7594,7 +7596,13 @@ font-size: 1.142em !important;
                     </div>
                 </details>
 
-                <div class="danger-zone">
+                <div style="display: flex; justify-content: center; flex-wrap: nowrap; gap: 10px; margin: 14px 0 18px;">
+                    <button id="export-settings-btn" class="settings-import-export-button history-action-button gold" title="APIキーを含むテキスト設定をJSON形式で出力">設定出力</button>
+                    <button id="import-settings-btn" class="settings-import-export-button history-action-button purple" title="APIキーを含むテキスト設定をJSON形式で取込">設定取込</button>
+                    <input type="file" id="import-settings-input" accept=".json,application/json" class="hidden">
+                </div>
+
+                <div class="danger-zone" style="margin-top: 0;">
 
                     <p style="text-align: center; color: var(--text-secondary); font-size: 12px; margin-bottom: 10px;">
                         バージョン: <span id="app-version"></span>
