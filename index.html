@@ -2733,7 +2733,12 @@ body.turf-mode {
 
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
+    min-width: 0;
 }
+
+        .param-grid > * {
+            min-width: 0;
+        }
 
         .image-upload-controls {
             display: flex;
@@ -4482,6 +4487,8 @@ body.pastel-yellow-mode .api-key-help-icon {
         }
         #settings-screen .main-content {
             font-size: calc(14px * var(--settings-ui-scale));
+            overflow-x: hidden;
+            overscroll-behavior-x: none;
         }
         #settings-screen .main-content .settings-group,
 #settings-screen .main-content .settings-group details,
@@ -4511,6 +4518,50 @@ font-size: 1.142em !important;
         }
         #settings-screen .api-key-help-icon {
             width: 1.5em; height: 1.5em; min-width: 1.5em; font-size: 0.85em;
+        }
+
+        #settings-screen {
+            overflow-x: hidden;
+        }
+
+        #settings-screen * {
+            min-width: 0;
+        }
+
+        #settings-screen .settings-group,
+        #settings-screen .settings-group details,
+        #settings-screen .danger-zone {
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        #settings-screen .param-slider-container,
+        #settings-screen .param-slider-wrapper {
+            min-width: 0;
+            max-width: 100%;
+        }
+
+        #settings-screen .param-slider-wrapper input[type="range"] {
+            min-width: 0;
+        }
+
+        @media (max-width: 700px) {
+            #settings-screen .param-grid {
+                grid-template-columns: 1fr !important;
+                padding-left: 0 !important;
+            }
+
+            #settings-screen .param-slider-wrapper {
+                gap: 8px;
+            }
+
+            #settings-screen .param-slider-wrapper input[type="number"] {
+                width: min(34vw, 96px);
+            }
+
+            #settings-screen .param-slider-max-input {
+                width: min(30vw, 86px) !important;
+            }
         }
 
         /* --- 履歴パネル文字サイズ調整用CSS --- */
@@ -4758,10 +4809,16 @@ font-size: 1.142em !important;
         body.settings-cryscroller-scroll-enabled #settings-screen .main-content {
             scrollbar-width: none;
             -ms-overflow-style: none;
-            padding-right: var(--cryscroller-scroll-width) !important;
+            padding-right: 18px !important;
         }
         body.settings-cryscroller-scroll-enabled #settings-screen .main-content::-webkit-scrollbar {
             display: none;
+        }
+        body.settings-cryscroller-scroll-enabled #settings-cryscroller-scroll-zone {
+            width: 18px;
+        }
+        body.settings-cryscroller-scroll-enabled #settings-cryscroller-scroll-handle {
+            width: 14px;
         }
         body.immersive-mode #settings-cryscroller-scroll-zone {
             top: var(--header-height, 50px) !important;
