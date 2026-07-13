@@ -1994,14 +1994,6 @@
                                                 ※ 複数のAPIキーを使い分けたい場合に使用。
                                             </p>
 
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="show-proofreading-settings-toggle">
-                                                校正機能を使用する
-                                            </label>
-                                            <p
-                                                style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 15px;">
-                                                ※ 応答生成後に別のモデルで文章を校正する機能に関する設定項目を表示します。
-                                            </p>
                                         </div>
                                     </details>
                                 </div>
@@ -2389,40 +2381,6 @@
                         </div>
                     </details>
                 </div>
-                <details class="settings-group" id="settings-group-proofreading">
-                    <summary
-                        style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
-                        校正機能</summary>
-                    <div style="margin-top:10px;">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="enable-proofreading">
-                            生成後に別のモデルで文章を校正する
-                        </label>
-                        <p
-                            style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                            ※チェック時、最初の応答生成に成功した後、下記で選択された設定で校正処理が実行されます。<br>
-                            ※校正処理にもAPIコストが発生します。
-                        </p>
-                        <div id="proofreading-options" class="hidden" style="margin-top: 15px;">
-                            <details open>
-                                <summary
-                                    style="font-size: 14px; color: var(--text-link); padding-bottom: 5px; margin-bottom: 10px; display: list-item; list-style: revert; cursor:pointer; font-weight: normal;">
-                                    校正用 API設定</summary>
-                                <div style="padding-left: 15px; margin-top: 10px;">
-                                    <div id="proofreading-api-configs-list" class="api-keys-list"
-                                        style="margin-top:10px; margin-bottom: 15px;">
-                                    </div>
-                                    <button type="button" id="add-proofreading-api-config-btn"
-                                        class="add-api-key-btn">新しい校正設定を追加</button>
-                                    <p style="font-size: 11px; color: var(--text-secondary); margin-top: 15px;">
-                                        ※ 応答生成後に、ここで「使用中」となっている設定を用いて文章の校正を行います。<br>
-                                        ※ 各設定の詳細パラメータ（温度設定など）も校正時に適用されます。
-                                    </p>
-                                </div>
-                            </details>
-                        </div>
-                    </div>
-                </details>
                 <details class="settings-group" id="settings-group-sending-operation">
                     <summary
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">

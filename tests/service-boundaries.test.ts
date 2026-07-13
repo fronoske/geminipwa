@@ -11,7 +11,6 @@ const readRuntime = (name: string): string => readFile(`.build/runtime/${name}.j
 const serviceBoundaries = [
   ['webhook-manager', 'webhookUtils'],
   ['api-clients', 'apiUtils'],
-  ['proofreading-config', 'proofreadingApiConfigUtils'],
   ['backend-manager', 'multiBackendUtils'],
   ['error-recovery', 'errorRecovery'],
   ['api-key-manager', 'multiApiKeyUtils'],
@@ -80,7 +79,7 @@ describe('application service boundaries', () => {
     ],
     [
       'appLogic',
-      82,
+      81,
       [
         'app-initialization',
         'event-wiring',

@@ -591,10 +591,6 @@ Object.assign(appLogic, {
                     state.settings.showMultiApiKeys = e.target.checked;
                     uiUtils.toggleMultiApiKeysVisibility(e.target.checked);
                 });
-                elements.showProofreadingSettingsToggle.addEventListener('change', (e) => {
-                    state.settings.showProofreadingSettings = e.target.checked;
-                    elements.proofreadingSettingsGroup.classList.toggle('hidden', !e.target.checked);
-                });
                 elements.unmaskApiKeysToggle.addEventListener('change', () => {
                     state.settings.unmaskApiKeys = elements.unmaskApiKeysToggle.checked;
                     uiUtils.updateApiKeyInputType();
@@ -897,9 +893,6 @@ Object.assign(appLogic, {
                 });
                 elements.enableWebhookNotificationToggle.addEventListener('change', (e) => {
                     elements.webhookSettingsContainer.classList.toggle('hidden', !e.target.checked);
-                });
-                elements.enableProofreadingCheckbox.addEventListener('change', () => {
-                    elements.proofreadingOptionsDiv.classList.toggle('hidden', !elements.enableProofreadingCheckbox.checked);
                 });
                 elements.enableFuzzySearchNormalizationCheckbox.addEventListener('change', () => {
                     elements.fuzzySearchOptionsDiv.classList.toggle('hidden', !elements.enableFuzzySearchNormalizationCheckbox.checked);

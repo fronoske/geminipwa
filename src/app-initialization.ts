@@ -382,7 +382,6 @@ _setupParamSlider(paramId, defaultValue, storageKey) {
 
                     updateMessageMaxWidthVar();
                     webhookUtils.initialize();
-                    proofreadingApiConfigUtils.initialize();
                     const deleteConfirmCheckboxes = document.querySelectorAll('.js-disable-delete-api-key-confirmation-toggle');
             deleteConfirmCheckboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', (event) => {

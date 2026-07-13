@@ -94,14 +94,13 @@ Object.assign(uiUtils, {
             },
 
             updateLoadingIndicator() {
-                const isProcessing = state.isProofreading || state.isSending;
+                const isProcessing = state.isSending;
 
                 if (isProcessing) {
                     elements.loadingIndicator.classList.remove('hidden');
                     elements.loadingIndicator.setAttribute('aria-live', 'polite');
 
-                    let baseText = '応答中';
-                    if (state.isProofreading) baseText = '校正中...';
+                    const baseText = '応答中';
 
                     if (state.settings.showResponseTimer) {
                         if (!state.responseTimerId) {
@@ -109,13 +108,13 @@ Object.assign(uiUtils, {
                             state.responseTimerId = setInterval(() => {
                                 const now = Date.now();
                                 const elapsed = ((now - state.responseStartTime) / 1000).toFixed(1);
-                                if (state.isSending && !state.isProofreading) {
+                                if (state.isSending) {
                                     elements.loadingIndicator.textContent = `${elapsed}s`;
                                 } else {
                                     elements.loadingIndicator.textContent = `${baseText} (${elapsed}s)`;
                                 }
                             }, 100);
-                            elements.loadingIndicator.textContent = (state.isSending && !state.isProofreading) ? "0.0s" : `${baseText} (0.0s)`;
+                            elements.loadingIndicator.textContent = state.isSending ? "0.0s" : `${baseText} (0.0s)`;
                         }
                     } else {
                         if (state.responseTimerId) {

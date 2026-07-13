@@ -13,7 +13,6 @@
     "interruptible-sleep",
     "webhook-manager",
     "api-clients",
-    "proofreading-config",
     "backend-manager",
     "error-recovery",
     "api-key-manager",

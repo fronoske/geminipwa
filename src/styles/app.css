@@ -3947,54 +3947,6 @@ body.turf-mode {
             min-width: 120px;
         }
 
-        .proofreading-api-config-item {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .proofreading-api-config-item>div {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .proofreading-api-config-item .api-key-item-label,
-        .proofreading-api-config-item .api-key-item-input,
-        .proofreading-api-config-item .api-config-provider,
-        .proofreading-api-config-item .api-config-model {
-            flex: 1 1 auto;
-            min-width: 0;
-            margin-bottom: 0;
-        }
-
-        .proofreading-api-config-item .api-key-item-label {
-            flex-grow: 2;
-        }
-
-        .proofreading-api-config-item .api-key-item-input {
-            flex-grow: 3;
-        }
-
-        .proofreading-api-config-item .api-config-provider {
-            flex: 1 1 120px;
-        }
-
-        .proofreading-api-config-item .api-config-model {
-            flex: 2 1 150px;
-        }
-
-        .proofreading-api-config-item .api-key-item-actions {
-            flex-shrink: 0;
-            margin-left: auto;
-        }
-
-        .proofreading-api-config-item textarea.api-key-item-input {
-            width: 100%;
-            flex-basis: 100%;
-        }
-
 
 body.turf-mode .app-header,
 body.turf-mode button {

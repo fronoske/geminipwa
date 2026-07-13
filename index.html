@@ -3957,54 +3957,6 @@ body.turf-mode {
             min-width: 120px;
         }
 
-        .proofreading-api-config-item {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .proofreading-api-config-item>div {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .proofreading-api-config-item .api-key-item-label,
-        .proofreading-api-config-item .api-key-item-input,
-        .proofreading-api-config-item .api-config-provider,
-        .proofreading-api-config-item .api-config-model {
-            flex: 1 1 auto;
-            min-width: 0;
-            margin-bottom: 0;
-        }
-
-        .proofreading-api-config-item .api-key-item-label {
-            flex-grow: 2;
-        }
-
-        .proofreading-api-config-item .api-key-item-input {
-            flex-grow: 3;
-        }
-
-        .proofreading-api-config-item .api-config-provider {
-            flex: 1 1 120px;
-        }
-
-        .proofreading-api-config-item .api-config-model {
-            flex: 2 1 150px;
-        }
-
-        .proofreading-api-config-item .api-key-item-actions {
-            flex-shrink: 0;
-            margin-left: auto;
-        }
-
-        .proofreading-api-config-item textarea.api-key-item-input {
-            width: 100%;
-            flex-basis: 100%;
-        }
-
 
 body.turf-mode .app-header,
 body.turf-mode button {
@@ -6543,14 +6495,6 @@ font-size: 1.142em !important;
                                                 ※ 複数のAPIキーを使い分けたい場合に使用。
                                             </p>
 
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="show-proofreading-settings-toggle">
-                                                校正機能を使用する
-                                            </label>
-                                            <p
-                                                style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 15px;">
-                                                ※ 応答生成後に別のモデルで文章を校正する機能に関する設定項目を表示します。
-                                            </p>
                                         </div>
                                     </details>
                                 </div>
@@ -6938,40 +6882,6 @@ font-size: 1.142em !important;
                         </div>
                     </details>
                 </div>
-                <details class="settings-group" id="settings-group-proofreading">
-                    <summary
-                        style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
-                        校正機能</summary>
-                    <div style="margin-top:10px;">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="enable-proofreading">
-                            生成後に別のモデルで文章を校正する
-                        </label>
-                        <p
-                            style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                            ※チェック時、最初の応答生成に成功した後、下記で選択された設定で校正処理が実行されます。<br>
-                            ※校正処理にもAPIコストが発生します。
-                        </p>
-                        <div id="proofreading-options" class="hidden" style="margin-top: 15px;">
-                            <details open>
-                                <summary
-                                    style="font-size: 14px; color: var(--text-link); padding-bottom: 5px; margin-bottom: 10px; display: list-item; list-style: revert; cursor:pointer; font-weight: normal;">
-                                    校正用 API設定</summary>
-                                <div style="padding-left: 15px; margin-top: 10px;">
-                                    <div id="proofreading-api-configs-list" class="api-keys-list"
-                                        style="margin-top:10px; margin-bottom: 15px;">
-                                    </div>
-                                    <button type="button" id="add-proofreading-api-config-btn"
-                                        class="add-api-key-btn">新しい校正設定を追加</button>
-                                    <p style="font-size: 11px; color: var(--text-secondary); margin-top: 15px;">
-                                        ※ 応答生成後に、ここで「使用中」となっている設定を用いて文章の校正を行います。<br>
-                                        ※ 各設定の詳細パラメータ（温度設定など）も校正時に適用されます。
-                                    </p>
-                                </div>
-                            </details>
-                        </div>
-                    </div>
-                </details>
                 <details class="settings-group" id="settings-group-sending-operation">
                     <summary
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
@@ -7551,10 +7461,6 @@ const elements = {
     promptInput: getRequiredDomElement('promptDialog').querySelector('.dialog-input'),
     promptOkBtn: getRequiredDomElement('promptDialog').querySelector('.dialog-ok-btn'),
     promptCancelBtn: getRequiredDomElement('promptDialog').querySelector('.dialog-cancel-btn'),
-    enableProofreadingCheckbox: document.getElementById('enable-proofreading'),
-    proofreadingOptionsDiv: document.getElementById('proofreading-options'),
-    proofreadingApiConfigsList: document.getElementById('proofreading-api-configs-list'),
-    addProofreadingApiConfigBtn: document.getElementById('add-proofreading-api-config-btn'),
     rollDiceBtn: document.getElementById('roll-dice-btn'),
     attachFileBtn: document.getElementById('attach-file-btn'),
     pasteToInputBtn: document.getElementById('paste-to-input-btn'),
@@ -7579,8 +7485,6 @@ const elements = {
     disableAttachmentConfirmationToggle: document.getElementById('disable-attachment-confirmation-toggle'),
     addPrefixOnImportToggle: document.getElementById('add-prefix-on-import-toggle'),
     showMultiApiKeysToggle: document.getElementById('show-multi-api-keys-toggle'),
-    showProofreadingSettingsToggle: document.getElementById('show-proofreading-settings-toggle'),
-    proofreadingSettingsGroup: document.getElementById('settings-group-proofreading'),
     showTopCollapseButtonToggle: document.getElementById('show-top-collapse-button-toggle'),
     showBottomCollapseButtonToggle: document.getElementById('show-bottom-collapse-button-toggle'),
     persistMessageCollapseStateCheckbox: document.getElementById('persist-message-collapse-state'),
@@ -7858,9 +7762,6 @@ const state = {
         codeBlockFontSize: DEFAULT_CODE_BLOCK_FONT_SIZE,
         thoughtSummaryFontSize: DEFAULT_THOUGHT_SUMMARY_FONT_SIZE,
         enableSwipeNavigation: true,
-        enableProofreading: false,
-        proofreadingApiConfigs: [],
-        activeProofreadingConfigId: null,
         preventZoom: true,
         minimizeHeaderFooter: false,
         extendAiBubbleWidth: false,
@@ -7914,7 +7815,6 @@ const state = {
         showMultiApiKeys: false,
         unmaskApiKeys: false,
         disableLlmUrlWhitelist: false,
-        showProofreadingSettings: false,
         disableSaveSettingsConfirmation: false,
         autoSaveSettings: false,
         showTopCollapseButton: true,
@@ -8010,7 +7910,6 @@ const state = {
     areAllMessagesHidden: false,
     messageCollapsedStates: new Map(),
     thoughtSummaryOpenStates: new Map(),
-    isProofreading: false,
 };
 
 /* source: aggregator-security.ts */
@@ -8447,22 +8346,9 @@ const dbUtils = {
                             }
                         }
                     }
-                    if (loadedSettings.hasOwnProperty('proofreadingModelName') && (!state.settings.proofreadingApiConfigs || state.settings.proofreadingApiConfigs.length === 0)) {
-                        const oldConfig = {
-                            id: `migrated-proofreading-${Date.now()}`,
-                            label: '（移行された設定）',
-                            provider: 'gemini',
-                            apiKey: state.settings.apiKey || '',
-                            modelName: loadedSettings.proofreadingModelName,
-                            systemPrompt: loadedSettings.proofreadingSystemInstruction || '',
-                            temperature: null, maxTokens: null, topK: null, topP: null
-                        };
-                        state.settings.proofreadingApiConfigs = [oldConfig];
-                        state.settings.activeProofreadingConfigId = oldConfig.id;
-                    }
                     const removedSettingKeys = settingsArray
                         .map((item) => item.key)
-                        .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine|enableSessionLinking|showSessionLinkingSettings|enableCryscroller|cryscroller|enableSettingsCryscroller|enableHistoryCryscroller|enableImmersiveScrolling|enableDynamicScrollMarkerColor)/.test(key));
+                        .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine|enableSessionLinking|showSessionLinkingSettings|enableCryscroller|cryscroller|enableSettingsCryscroller|enableHistoryCryscroller|enableImmersiveScrolling|enableDynamicScrollMarkerColor|enableProofreading|showProofreadingSettings|proofreading|activeProofreadingConfigId)/.test(key));
                     if (removedSettingKeys.length > 0) {
                         try {
                             const cleanupStore = this._getStore(SETTINGS_STORE, 'readwrite');
@@ -9652,201 +9538,6 @@ const apiUtils = {
             response.json = async () => ({ ...data, xaiThoughtSummary: reasoningContent });
         }
         return response;
-    },
-};
-
-/* source: proofreading-config.ts */
-// @ts-nocheck -- Enable after shared application service types are defined.
-// Bundled into the generated index.html from this TypeScript source.
-const proofreadingApiConfigUtils = {
-    MAX_CONFIGS: 10,
-    initialize() {
-        elements.addProofreadingApiConfigBtn.addEventListener('click', () => this.addConfig());
-        this.renderList();
-    },
-    generateNextConfigLabel() {
-        const index = state.settings.proofreadingApiConfigs.length;
-        return `校正設定 ${index + 1}`;
-    },
-    addConfig() {
-        const configs = state.settings.proofreadingApiConfigs;
-        if (configs.length >= this.MAX_CONFIGS) {
-            uiUtils.showCustomAlert(`最大${this.MAX_CONFIGS}個までの校正設定を作成できます。`);
-            return;
-        }
-        const newConfig = {
-            id: Date.now().toString(),
-            label: this.generateNextConfigLabel(),
-            provider: 'gemini',
-            apiKey: '',
-            modelName: DEFAULT_MODEL,
-            systemPrompt: 'あなたはプロの編集者です。受け取った文章をより自然で分かりやすく校正してください。元の文章の意図やニュアンスは変えないでください。校正後の文章のみを出力してください。',
-            temperature: 0.2,
-            maxTokens: null,
-            topK: null,
-            topP: null,
-            presencePenalty: null,
-            frequencyPenalty: null,
-            thinkingBudget: null
-        };
-        configs.push(newConfig);
-        if (configs.length === 1) {
-            state.settings.activeProofreadingConfigId = newConfig.id;
-        }
-        this.renderList();
-    },
-    deleteConfig(configId) {
-        const configs = state.settings.proofreadingApiConfigs;
-        const index = configs.findIndex(c => c.id === configId);
-        if (index === -1)
-            return;
-        configs.splice(index, 1);
-        if (state.settings.activeProofreadingConfigId === configId) {
-            state.settings.activeProofreadingConfigId = configs.length > 0 ? configs[0].id : null;
-        }
-        this.renderList();
-    },
-    selectConfig(configId) {
-        state.settings.activeProofreadingConfigId = configId;
-        this.renderList();
-        elements.proofreadingApiConfigsList.dispatchEvent(new Event('change', { bubbles: true }));
-    },
-    updateConfigValue(configId, key, value) {
-        const config = state.settings.proofreadingApiConfigs.find(c => c.id === configId);
-        if (config) {
-            config[key] = value;
-            if (key === 'provider') {
-                config.modelName = this.getDefaultModelForProvider(value);
-                this.renderList();
-            }
-        }
-    },
-    renderList() {
-        const configs = state.settings.proofreadingApiConfigs;
-        const container = elements.proofreadingApiConfigsList;
-        container.innerHTML = '';
-        if (configs.length === 0) {
-            const emptyMsg = document.createElement('p');
-            emptyMsg.textContent = '校正用のAPI設定がありません。';
-            emptyMsg.style.cssText = 'color: var(--text-secondary); font-size: 13px; text-align: center; margin: 10px 0;';
-            container.appendChild(emptyMsg);
-        }
-        else {
-            configs.forEach(config => {
-                const item = this.createConfigItem(config);
-                container.appendChild(item);
-            });
-        }
-        elements.addProofreadingApiConfigBtn.disabled = configs.length >= this.MAX_CONFIGS;
-    },
-    createConfigItem(config) {
-        const item = document.createElement('div');
-        item.className = 'api-key-item proofreading-api-config-item';
-        item.dataset.configId = config.id;
-        const isActive = state.settings.activeProofreadingConfigId === config.id;
-        if (isActive)
-            item.classList.add('active');
-        const labelInput = document.createElement('input');
-        labelInput.type = 'text';
-        labelInput.className = 'api-key-item-label';
-        labelInput.value = config.label;
-        labelInput.addEventListener('change', (e) => this.updateConfigValue(config.id, 'label', e.target.value));
-        const keyInput = document.createElement('input');
-        keyInput.type = 'password';
-        keyInput.className = 'api-key-item-input';
-        keyInput.value = config.apiKey;
-        keyInput.placeholder = 'APIキー...';
-        keyInput.addEventListener('input', (e) => this.updateConfigValue(config.id, 'apiKey', e.target.value));
-        const providerSelect = document.createElement('select');
-        providerSelect.className = 'api-config-provider';
-        API_PROVIDERS.forEach(providerInfo => {
-            if (providerInfo.value !== 'dummy') {
-                const option = document.createElement('option');
-                option.value = providerInfo.value;
-                option.textContent = providerInfo.text.split(' ')[0];
-                providerSelect.add(option);
-            }
-        });
-        providerSelect.value = config.provider;
-        providerSelect.addEventListener('change', (e) => this.updateConfigValue(config.id, 'provider', e.target.value));
-        const modelSelect = document.createElement('select');
-        modelSelect.className = 'api-config-model';
-        this.populateModelOptions(modelSelect, config.provider);
-        modelSelect.value = config.modelName;
-        modelSelect.addEventListener('change', (e) => this.updateConfigValue(config.id, 'modelName', e.target.value));
-        const systemPromptTextarea = document.createElement('textarea');
-        systemPromptTextarea.className = 'api-key-item-input';
-        systemPromptTextarea.value = config.systemPrompt || '';
-        systemPromptTextarea.placeholder = '校正用のシステムプロンプト...';
-        systemPromptTextarea.rows = 2;
-        systemPromptTextarea.addEventListener('change', (e) => this.updateConfigValue(config.id, 'systemPrompt', e.target.value));
-        const actions = document.createElement('div');
-        actions.className = 'api-key-item-actions';
-        const selectBtn = document.createElement('button');
-        selectBtn.className = `api-key-select-btn ${isActive ? 'active' : ''}`;
-        selectBtn.textContent = isActive ? '使用中' : '未選択';
-        selectBtn.disabled = isActive;
-        selectBtn.addEventListener('click', () => this.selectConfig(config.id));
-        const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'api-key-delete-btn';
-        deleteBtn.textContent = '削';
-        deleteBtn.addEventListener('click', () => this.deleteConfig(config.id));
-        actions.appendChild(selectBtn);
-        actions.appendChild(deleteBtn);
-        const row1 = document.createElement('div');
-        row1.style.cssText = 'display: flex; gap: 5px; margin-bottom: 5px;';
-        row1.appendChild(labelInput);
-        row1.appendChild(keyInput);
-        row1.appendChild(actions);
-        const row2 = document.createElement('div');
-        row2.style.cssText = 'display: flex; gap: 5px;';
-        row2.appendChild(providerSelect);
-        row2.appendChild(modelSelect);
-        item.appendChild(row1);
-        item.appendChild(row2);
-        item.appendChild(systemPromptTextarea);
-        return item;
-    },
-    populateModelOptions(selectElement, provider) {
-        selectElement.innerHTML = '';
-        let sourceSelect;
-        switch (provider) {
-            case 'gemini':
-                sourceSelect = elements.geminiModelNameSelect;
-                break;
-            case 'deepseek':
-                sourceSelect = elements.deepSeekModelNameSelect;
-                break;
-            case 'claude':
-                sourceSelect = elements.claudeModelNameSelect;
-                break;
-            case 'openai':
-                sourceSelect = elements.openaiModelNameSelect;
-                break;
-            case 'xai':
-                sourceSelect = elements.xaiModelNameSelect;
-                break;
-            case 'llmaggregator':
-                sourceSelect = elements.llmAggregatorModelNameSelect;
-                break;
-            default: return;
-        }
-        if (sourceSelect) {
-            sourceSelect.querySelectorAll('optgroup, option').forEach(el => {
-                selectElement.add(el.cloneNode(true));
-            });
-        }
-    },
-    getDefaultModelForProvider(provider) {
-        switch (provider) {
-            case 'gemini': return DEFAULT_MODEL;
-            case 'deepseek': return DEFAULT_DEEPSEEK_MODEL;
-            case 'claude': return DEFAULT_CLAUDE_MODEL;
-            case 'openai': return DEFAULT_OPENAI_MODEL;
-            case 'xai': return DEFAULT_XAI_MODEL;
-            case 'llmaggregator': return DEFAULT_LLMAGGREGATOR_MODEL;
-            default: return '';
-        }
     },
 };
 
@@ -12646,9 +12337,6 @@ Object.assign(uiUtils, {
         elements.apiProviderCycleDummyCheckbox.checked = state.settings.apiProviderCycle.dummy;
         elements.dummyDummyModelInput.value = state.settings.dummyDummyModel || '';
         elements.dummyEnableDummyModelCheckbox.checked = state.settings.dummyEnableDummyModel;
-        elements.enableProofreadingCheckbox.checked = state.settings.enableProofreading;
-        elements.proofreadingOptionsDiv.classList.toggle('hidden', !elements.enableProofreadingCheckbox.checked);
-        proofreadingApiConfigUtils.renderList();
         elements.showMemoButtonToggle.checked = state.settings.showMemoButton;
         elements.memoHeightInput.value = state.settings.memoHeight || '';
         elements.showClipboardStackButtonToggle.checked = state.settings.showClipboardStackButton;
@@ -12676,8 +12364,6 @@ Object.assign(uiUtils, {
         elements.disableAttachmentConfirmationToggle.checked = state.settings.disableAttachmentConfirmation;
         elements.addPrefixOnImportToggle.checked = state.settings.addPrefixOnImport;
         elements.showMultiApiKeysToggle.checked = state.settings.showMultiApiKeys;
-        elements.showProofreadingSettingsToggle.checked = state.settings.showProofreadingSettings;
-        elements.proofreadingSettingsGroup.classList.toggle('hidden', !state.settings.showProofreadingSettings);
         elements.disableSaveSettingsConfirmationToggle.checked = state.settings.disableSaveSettingsConfirmation;
         elements.autoSaveSettingsToggle.checked = state.settings.autoSaveSettings;
         elements.unmaskApiKeysToggle.checked = state.settings.unmaskApiKeys || false;
@@ -13217,27 +12903,25 @@ Object.assign(uiUtils, {
         this.updateLoadingIndicator();
     },
     updateLoadingIndicator() {
-        const isProcessing = state.isProofreading || state.isSending;
+        const isProcessing = state.isSending;
         if (isProcessing) {
             elements.loadingIndicator.classList.remove('hidden');
             elements.loadingIndicator.setAttribute('aria-live', 'polite');
-            let baseText = '応答中';
-            if (state.isProofreading)
-                baseText = '校正中...';
+            const baseText = '応答中';
             if (state.settings.showResponseTimer) {
                 if (!state.responseTimerId) {
                     state.responseStartTime = Date.now();
                     state.responseTimerId = setInterval(() => {
                         const now = Date.now();
                         const elapsed = ((now - state.responseStartTime) / 1000).toFixed(1);
-                        if (state.isSending && !state.isProofreading) {
+                        if (state.isSending) {
                             elements.loadingIndicator.textContent = `${elapsed}s`;
                         }
                         else {
                             elements.loadingIndicator.textContent = `${baseText} (${elapsed}s)`;
                         }
                     }, 100);
-                    elements.loadingIndicator.textContent = (state.isSending && !state.isProofreading) ? "0.0s" : `${baseText} (0.0s)`;
+                    elements.loadingIndicator.textContent = state.isSending ? "0.0s" : `${baseText} (0.0s)`;
                 }
             }
             else {
@@ -14064,7 +13748,6 @@ Object.assign(appLogic, {
             state.currentScreen = 'chat';
             updateMessageMaxWidthVar();
             webhookUtils.initialize();
-            proofreadingApiConfigUtils.initialize();
             const deleteConfirmCheckboxes = document.querySelectorAll('.js-disable-delete-api-key-confirmation-toggle');
             deleteConfirmCheckboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', (event) => {
@@ -14782,10 +14465,6 @@ Object.assign(appLogic, {
             state.settings.showMultiApiKeys = e.target.checked;
             uiUtils.toggleMultiApiKeysVisibility(e.target.checked);
         });
-        elements.showProofreadingSettingsToggle.addEventListener('change', (e) => {
-            state.settings.showProofreadingSettings = e.target.checked;
-            elements.proofreadingSettingsGroup.classList.toggle('hidden', !e.target.checked);
-        });
         elements.unmaskApiKeysToggle.addEventListener('change', () => {
             state.settings.unmaskApiKeys = elements.unmaskApiKeysToggle.checked;
             uiUtils.updateApiKeyInputType();
@@ -15084,9 +14763,6 @@ Object.assign(appLogic, {
         });
         elements.enableWebhookNotificationToggle.addEventListener('change', (e) => {
             elements.webhookSettingsContainer.classList.toggle('hidden', !e.target.checked);
-        });
-        elements.enableProofreadingCheckbox.addEventListener('change', () => {
-            elements.proofreadingOptionsDiv.classList.toggle('hidden', !elements.enableProofreadingCheckbox.checked);
         });
         elements.enableFuzzySearchNormalizationCheckbox.addEventListener('change', () => {
             elements.fuzzySearchOptionsDiv.classList.toggle('hidden', !elements.enableFuzzySearchNormalizationCheckbox.checked);
@@ -15936,44 +15612,6 @@ Object.assign(appLogic, {
 // @ts-nocheck -- Enable after shared application types are defined.
 // Bundled into the generated index.html from this TypeScript source.
 Object.assign(appLogic, {
-    async proofreadText(textToProofread) {
-        console.log("--- 校正処理開始 ---");
-        const activeConfigId = state.settings.activeProofreadingConfigId;
-        const activeConfig = state.settings.proofreadingApiConfigs.find(c => c.id === activeConfigId);
-        if (!activeConfig) {
-            throw new Error("アクティブな校正設定が見つかりません。");
-        }
-        const { provider, apiKey: apiKeyForProofreading, modelName, systemPrompt, temperature, maxTokens, topK, topP, presencePenalty, frequencyPenalty, thinkingBudget } = activeConfig;
-        if (provider !== 'dummy' && !apiKeyForProofreading) {
-            throw new Error(`校正用の${provider} APIキーが設定されていません。`);
-        }
-        const contextForProofreading = {
-            sessionId: null,
-            messages: [],
-            systemPrompt: systemPrompt || '校正してください。',
-            inputText: textToProofread,
-            attachments: [],
-            apiProvider: provider,
-            _apiKeyOverride: apiKeyForProofreading,
-            _modelNameOverride: modelName,
-            temperature, maxTokens, topK, topP,
-            presencePenalty, frequencyPenalty, thinkingBudget,
-        };
-        try {
-            const response = await this.handleSend(false, -1, contextForProofreading, false);
-            if (response && response.content) {
-                console.log("--- 校正処理成功 ---");
-                return response.content;
-            }
-            else {
-                throw new Error("校正APIから有効なコンテンツが返されませんでした。");
-            }
-        }
-        catch (error) {
-            console.error("校正処理中にエラーが発生:", error);
-            throw error;
-        }
-    },
     async handleSend(isRetry = false, retryUserMessageIndex = -1, sourceSessionContext = null, isTopLevelCall = true, retryCount = 0) {
         if (!sourceSessionContext && isTopLevelCall) {
             await this.commitAllOpenEdits();
@@ -16785,52 +16423,6 @@ Object.assign(appLogic, {
                 let finalContent = modelResponseRawContent;
                 const finishReason = modelResponseMetadata.finishReason;
                 const isRetryableFinishReason = ['SAFETY', 'RECITATION', 'PROHIBITED_CONTENT', 'OTHER'].includes(finishReason);
-                if (!isBackgroundProcess && state.settings.showProofreadingSettings && state.settings.enableProofreading && finalContent && !isRetryableFinishReason && finishReason !== 'ERROR' && finishReason !== 'ABORTED') {
-                    if (useStreamingForThisCall && modelMessageObjectForStream) {
-                        const tempMessageIndex = state.currentMessages.indexOf(modelMessageObjectForStream);
-                        if (tempMessageIndex !== -1) {
-                            const msgToUpdate = state.currentMessages[tempMessageIndex];
-                            msgToUpdate.content = finalContent;
-                            msgToUpdate.timestamp = Date.now();
-                            msgToUpdate.finishReason = modelResponseMetadata.finishReason;
-                            msgToUpdate.safetyRatings = modelResponseMetadata.safetyRatings;
-                            msgToUpdate.usageMetadata = finalUsageMetadataFromStream;
-                            uiUtils.finalizeStreamingMessage(tempMessageIndex);
-                            await dbUtils.saveChat();
-                        }
-                    }
-                    try {
-                        state.isProofreading = true;
-                        uiUtils.updateLoadingIndicator();
-                        const proofreadContent = await this.proofreadText(finalContent);
-                        finalContent = proofreadContent; // finalContentを校正済みのものに更新
-                        if (modelMessageObjectForStream) {
-                            const finalModelMessageIndex = state.currentMessages.indexOf(modelMessageObjectForStream);
-                            if (finalModelMessageIndex !== -1) {
-                                state.currentMessages[finalModelMessageIndex].content = finalContent;
-                                uiUtils.updateFinalizedMessageContent(finalModelMessageIndex, finalContent);
-                                await dbUtils.saveChat(); // DBも更新
-                            }
-                        }
-                    }
-                    catch (proofreadError) {
-                        console.error("校正処理中にエラーが発生しました:", proofreadError);
-                        const errorMessage = `\n\n[校正処理に失敗しました: ${proofreadError.message}]`;
-                        finalContent += errorMessage;
-                        if (modelMessageObjectForStream) {
-                            const finalModelMessageIndex = state.currentMessages.indexOf(modelMessageObjectForStream);
-                            if (finalModelMessageIndex !== -1) {
-                                state.currentMessages[finalModelMessageIndex].content = finalContent;
-                                uiUtils.updateFinalizedMessageContent(finalModelMessageIndex, finalContent);
-                                await dbUtils.saveChat();
-                            }
-                        }
-                    }
-                    finally {
-                        state.isProofreading = false;
-                        uiUtils.updateLoadingIndicator();
-                    }
-                }
                 if (finalContent || modelThoughtSummaryContent || modelResponseMetadata.finishReason) {
                     if (useStreamingForThisCall && modelMessageObjectForStream) {
                         const finalModelMessageIndex = state.currentMessages.indexOf(modelMessageObjectForStream);
@@ -17008,23 +16600,6 @@ Object.assign(appLogic, {
                         rawContentFromApi = "(応答が空です)";
                 }
                 finalContent = dummyModelPrefix + rawContentFromApi;
-            }
-            const finishReasonForProofreading = finalMetadata.finishReason;
-            const isRetryableForProofreading = ['SAFETY', 'RECITATION', 'PROHIBITED_CONTENT', 'OTHER'].includes(finishReasonForProofreading);
-            if (!isBackgroundProcess && state.settings.showProofreadingSettings && state.settings.enableProofreading && finalContent && !isRetryableForProofreading && finishReasonForProofreading !== 'ERROR' && finishReasonForProofreading !== 'ABORTED') {
-                try {
-                    state.isProofreading = true;
-                    uiUtils.updateLoadingIndicator();
-                    const proofreadContent = await this.proofreadText(finalContent);
-                    finalContent = proofreadContent;
-                }
-                catch (proofreadError) {
-                    finalContent += `\n\n[校正処理に失敗しました: ${proofreadError.message}]`;
-                }
-                finally {
-                    state.isProofreading = false;
-                    uiUtils.updateLoadingIndicator();
-                }
             }
             if (isBackgroundProcess) {
                 if (finalContent || finalThoughtSummary || finalMetadata.finishReason) {
@@ -17873,7 +17448,6 @@ Object.assign(appLogic, {
             return undefined;
         };
         newSettings.showMultiApiKeys = elements.showMultiApiKeysToggle.checked;
-        newSettings.showProofreadingSettings = elements.showProofreadingSettingsToggle.checked;
         newSettings.disableSaveSettingsConfirmation = elements.disableSaveSettingsConfirmationToggle.checked;
         newSettings.autoSaveSettings = elements.autoSaveSettingsToggle.checked;
         newSettings.unmaskApiKeys = elements.unmaskApiKeysToggle.checked;
@@ -18115,7 +17689,6 @@ Object.assign(appLogic, {
         newSettings.dummyErrorDebugMode = elements.dummyErrorDebugModeCheckbox.checked;
         newSettings.dummyDummyModel = elements.dummyDummyModelInput.value.trim();
         newSettings.dummyEnableDummyModel = elements.dummyEnableDummyModelCheckbox.checked;
-        newSettings.enableProofreading = elements.enableProofreadingCheckbox.checked;
         newSettings.enableWebhookNotification = elements.enableWebhookNotificationToggle.checked;
         const firstDeleteConfirmCheckbox = document.querySelector('.js-disable-delete-api-key-confirmation-toggle');
         if (firstDeleteConfirmCheckbox) {
@@ -18142,8 +17715,6 @@ Object.assign(appLogic, {
         newSettings.enableFuzzySearchNormalization = elements.enableFuzzySearchNormalizationCheckbox.checked;
         const threshold = parseInt(elements.fuzzySearchThresholdInput.value, 10);
         newSettings.fuzzySearchThreshold = isNaN(threshold) || threshold < 0 ? 1 : threshold;
-        newSettings.proofreadingApiConfigs = state.settings.proofreadingApiConfigs;
-        newSettings.activeProofreadingConfigId = state.settings.activeProofreadingConfigId;
         newSettings.webhooks = state.settings.webhooks.map(webhook => {
             const itemElement = elements.webhooksList.querySelector(`[data-webhook-id="${webhook.id}"]`);
             if (itemElement) {

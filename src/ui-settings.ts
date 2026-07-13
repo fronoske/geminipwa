@@ -659,10 +659,6 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 elements.dummyDummyModelInput.value = state.settings.dummyDummyModel || '';
                 elements.dummyEnableDummyModelCheckbox.checked = state.settings.dummyEnableDummyModel;
 
-                elements.enableProofreadingCheckbox.checked = state.settings.enableProofreading;
-                elements.proofreadingOptionsDiv.classList.toggle('hidden', !elements.enableProofreadingCheckbox.checked);
-                proofreadingApiConfigUtils.renderList();
-
                 elements.showMemoButtonToggle.checked = state.settings.showMemoButton;
                 elements.memoHeightInput.value = state.settings.memoHeight || '';
                 elements.showClipboardStackButtonToggle.checked = state.settings.showClipboardStackButton;
@@ -692,8 +688,6 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 elements.disableAttachmentConfirmationToggle.checked = state.settings.disableAttachmentConfirmation;
                 elements.addPrefixOnImportToggle.checked = state.settings.addPrefixOnImport;
                 elements.showMultiApiKeysToggle.checked = state.settings.showMultiApiKeys;
-                elements.showProofreadingSettingsToggle.checked = state.settings.showProofreadingSettings;
-                elements.proofreadingSettingsGroup.classList.toggle('hidden', !state.settings.showProofreadingSettings);
                 elements.disableSaveSettingsConfirmationToggle.checked = state.settings.disableSaveSettingsConfirmation;
                 elements.autoSaveSettingsToggle.checked = state.settings.autoSaveSettings;
                 elements.unmaskApiKeysToggle.checked = state.settings.unmaskApiKeys || false;

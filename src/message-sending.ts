@@ -1,61 +1,6 @@
 // @ts-nocheck -- Enable after shared application types are defined.
 // Bundled into the generated index.html from this TypeScript source.
 Object.assign(appLogic, {
-            async proofreadText(textToProofread) {
-                console.log("--- 校正処理開始 ---");
-
-                const activeConfigId = state.settings.activeProofreadingConfigId;
-                const activeConfig = state.settings.proofreadingApiConfigs.find(c => c.id === activeConfigId);
-
-                if (!activeConfig) {
-                    throw new Error("アクティブな校正設定が見つかりません。");
-                }
-
-                const {
-                    provider,
-                    apiKey: apiKeyForProofreading,
-                    modelName,
-                    systemPrompt,
-                    temperature,
-                    maxTokens,
-                    topK,
-                    topP,
-                    presencePenalty,
-                    frequencyPenalty,
-                    thinkingBudget
-                } = activeConfig;
-
-                if (provider !== 'dummy' && !apiKeyForProofreading) {
-                    throw new Error(`校正用の${provider} APIキーが設定されていません。`);
-                }
-
-                const contextForProofreading = {
-                    sessionId: null,
-                    messages: [],
-                    systemPrompt: systemPrompt || '校正してください。',
-                    inputText: textToProofread,
-                    attachments: [],
-                    apiProvider: provider,
-                    _apiKeyOverride: apiKeyForProofreading,
-                    _modelNameOverride: modelName,
-                    temperature, maxTokens, topK, topP,
-                    presencePenalty, frequencyPenalty, thinkingBudget,
-                };
-
-                try {
-                    const response = await this.handleSend(false, -1, contextForProofreading, false);
-
-                    if (response && response.content) {
-                        console.log("--- 校正処理成功 ---");
-                        return response.content;
-                    } else {
-                        throw new Error("校正APIから有効なコンテンツが返されませんでした。");
-                    }
-                } catch (error) {
-                    console.error("校正処理中にエラーが発生:", error);
-                    throw error;
-                }
-            },
             async handleSend(isRetry = false, retryUserMessageIndex = -1, sourceSessionContext = null, isTopLevelCall = true, retryCount = 0) {
                 if (!sourceSessionContext && isTopLevelCall) {
                     await this.commitAllOpenEdits();
@@ -837,55 +782,6 @@ Object.assign(appLogic, {
                         let finalContent = modelResponseRawContent;
                         const finishReason = modelResponseMetadata.finishReason;
                         const isRetryableFinishReason = ['SAFETY', 'RECITATION', 'PROHIBITED_CONTENT', 'OTHER'].includes(finishReason);
-                        if (!isBackgroundProcess && state.settings.showProofreadingSettings && state.settings.enableProofreading && finalContent && !isRetryableFinishReason && finishReason !== 'ERROR' && finishReason !== 'ABORTED') {
-                            if (useStreamingForThisCall && modelMessageObjectForStream) {
-                                const tempMessageIndex = state.currentMessages.indexOf(modelMessageObjectForStream);
-                                if (tempMessageIndex !== -1) {
-
-                                    const msgToUpdate = state.currentMessages[tempMessageIndex];
-                                    msgToUpdate.content = finalContent;
-                                    msgToUpdate.timestamp = Date.now();
-                                    msgToUpdate.finishReason = modelResponseMetadata.finishReason;
-                                    msgToUpdate.safetyRatings = modelResponseMetadata.safetyRatings;
-                                    msgToUpdate.usageMetadata = finalUsageMetadataFromStream;
-                                    uiUtils.finalizeStreamingMessage(tempMessageIndex);
-                                    await dbUtils.saveChat();
-                                }
-                            }
-
-                            try {
-                                state.isProofreading = true;
-                                uiUtils.updateLoadingIndicator();
-                                const proofreadContent = await this.proofreadText(finalContent);
-                                finalContent = proofreadContent; // finalContentを校正済みのものに更新
-
-
-                                if (modelMessageObjectForStream) {
-                                    const finalModelMessageIndex = state.currentMessages.indexOf(modelMessageObjectForStream);
-                                    if (finalModelMessageIndex !== -1) {
-                                        state.currentMessages[finalModelMessageIndex].content = finalContent;
-                                        uiUtils.updateFinalizedMessageContent(finalModelMessageIndex, finalContent);
-                                        await dbUtils.saveChat(); // DBも更新
-                                    }
-                                }
-                            } catch (proofreadError) {
-                                console.error("校正処理中にエラーが発生しました:", proofreadError);
-                                const errorMessage = `\n\n[校正処理に失敗しました: ${proofreadError.message}]`;
-                                finalContent += errorMessage;
-
-                                if (modelMessageObjectForStream) {
-                                    const finalModelMessageIndex = state.currentMessages.indexOf(modelMessageObjectForStream);
-                                    if (finalModelMessageIndex !== -1) {
-                                        state.currentMessages[finalModelMessageIndex].content = finalContent;
-                                        uiUtils.updateFinalizedMessageContent(finalModelMessageIndex, finalContent);
-                                        await dbUtils.saveChat();
-                                    }
-                                }
-                            } finally {
-                                state.isProofreading = false;
-                                uiUtils.updateLoadingIndicator();
-                            }
-                        }
 
                         if (finalContent || modelThoughtSummaryContent || modelResponseMetadata.finishReason) {
                             if (useStreamingForThisCall && modelMessageObjectForStream) {
@@ -1044,21 +940,6 @@ Object.assign(appLogic, {
                         finalContent = dummyModelPrefix + rawContentFromApi;
                     }
 
-                    const finishReasonForProofreading = finalMetadata.finishReason;
-                    const isRetryableForProofreading = ['SAFETY', 'RECITATION', 'PROHIBITED_CONTENT', 'OTHER'].includes(finishReasonForProofreading);
-                    if (!isBackgroundProcess && state.settings.showProofreadingSettings && state.settings.enableProofreading && finalContent && !isRetryableForProofreading && finishReasonForProofreading !== 'ERROR' && finishReasonForProofreading !== 'ABORTED') {
-                        try {
-                            state.isProofreading = true;
-                            uiUtils.updateLoadingIndicator();
-                            const proofreadContent = await this.proofreadText(finalContent);
-                            finalContent = proofreadContent;
-                        } catch (proofreadError) {
-                            finalContent += `\n\n[校正処理に失敗しました: ${proofreadError.message}]`;
-                        } finally {
-                            state.isProofreading = false;
-                            uiUtils.updateLoadingIndicator();
-                        }
-                    }
 
                     if (isBackgroundProcess) {
                         if (finalContent || finalThoughtSummary || finalMetadata.finishReason) {

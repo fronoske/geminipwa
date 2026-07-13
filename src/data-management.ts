@@ -639,7 +639,6 @@ Object.assign(appLogic, {
                 };
 
                 newSettings.showMultiApiKeys = elements.showMultiApiKeysToggle.checked;
-                newSettings.showProofreadingSettings = elements.showProofreadingSettingsToggle.checked;
                 newSettings.disableSaveSettingsConfirmation = elements.disableSaveSettingsConfirmationToggle.checked;
                 newSettings.autoSaveSettings = elements.autoSaveSettingsToggle.checked;
                 newSettings.unmaskApiKeys = elements.unmaskApiKeysToggle.checked;
@@ -894,7 +893,6 @@ newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.che
                 newSettings.dummyErrorDebugMode = elements.dummyErrorDebugModeCheckbox.checked;
                 newSettings.dummyDummyModel = elements.dummyDummyModelInput.value.trim();
                 newSettings.dummyEnableDummyModel = elements.dummyEnableDummyModelCheckbox.checked;
-                newSettings.enableProofreading = elements.enableProofreadingCheckbox.checked;
                 newSettings.enableWebhookNotification = elements.enableWebhookNotificationToggle.checked;
                 const firstDeleteConfirmCheckbox = document.querySelector('.js-disable-delete-api-key-confirmation-toggle');
                 if (firstDeleteConfirmCheckbox) {
@@ -923,8 +921,6 @@ newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.che
                 const threshold = parseInt(elements.fuzzySearchThresholdInput.value, 10);
                 newSettings.fuzzySearchThreshold = isNaN(threshold) || threshold < 0 ? 1 : threshold;
 
-                newSettings.proofreadingApiConfigs = state.settings.proofreadingApiConfigs;
-                newSettings.activeProofreadingConfigId = state.settings.activeProofreadingConfigId;
                 newSettings.webhooks = state.settings.webhooks.map(webhook => {
                     const itemElement = elements.webhooksList.querySelector(`[data-webhook-id="${webhook.id}"]`);
                     if (itemElement) {

@@ -199,23 +199,9 @@ const dbUtils = {
                                 }
                             }
 
-                            if (loadedSettings.hasOwnProperty('proofreadingModelName') && (!state.settings.proofreadingApiConfigs || state.settings.proofreadingApiConfigs.length === 0)) {
-                                const oldConfig = {
-                                    id: `migrated-proofreading-${Date.now()}`,
-                                    label: '（移行された設定）',
-                                    provider: 'gemini',
-                                    apiKey: state.settings.apiKey || '',
-                                    modelName: loadedSettings.proofreadingModelName,
-                                    systemPrompt: loadedSettings.proofreadingSystemInstruction || '',
-                                    temperature: null, maxTokens: null, topK: null, topP: null
-                                };
-                                state.settings.proofreadingApiConfigs = [oldConfig];
-                                state.settings.activeProofreadingConfigId = oldConfig.id;
-                            }
-
                             const removedSettingKeys = settingsArray
                                 .map((item) => item.key)
-                                .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine|enableSessionLinking|showSessionLinkingSettings|enableCryscroller|cryscroller|enableSettingsCryscroller|enableHistoryCryscroller|enableImmersiveScrolling|enableDynamicScrollMarkerColor)/.test(key));
+                                .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine|enableSessionLinking|showSessionLinkingSettings|enableCryscroller|cryscroller|enableSettingsCryscroller|enableHistoryCryscroller|enableImmersiveScrolling|enableDynamicScrollMarkerColor|enableProofreading|showProofreadingSettings|proofreading|activeProofreadingConfigId)/.test(key));
                             if (removedSettingKeys.length > 0) {
                                 try {
                                     const cleanupStore = this._getStore(SETTINGS_STORE, 'readwrite');

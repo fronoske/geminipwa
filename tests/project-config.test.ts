@@ -38,6 +38,13 @@ describe('project configuration', () => {
     expect(fs.readdirSync(path.join(projectRoot, 'src')).join('\n')).not.toMatch(retiredFeaturePattern);
   });
 
+  it('does not ship proofreading', () => {
+    expect(readFile('src/index.html')).not.toMatch(/proofread|校正/i);
+    expect(readFile('src/app-state.ts')).not.toMatch(/proofread/i);
+    expect(readFile('scripts/runtime-scripts.json')).not.toMatch(/proofread/i);
+    expect(fs.readdirSync(path.join(projectRoot, 'src')).join('\n')).not.toMatch(/proofread/i);
+  });
+
   it('uses a relative manifest start URL suitable for GitHub Pages', () => {
     expect(JSON.parse(readFile('manifest.json')).start_url).toBe('./index.html');
   });
