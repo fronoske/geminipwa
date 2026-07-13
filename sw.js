@@ -31,6 +31,7 @@ const urlsToCache = [
   './src/ui-interactions.js',
   './src/app-controller.js',
   './src/app-initialization.js',
+  './src/event-wiring.js',
   './src/app-navigation-panels.js',
   './src/chat-sessions.js',
   './src/message-sending.js',

@@ -31,6 +31,7 @@ const scripts = [
   'ui-interactions.js',
   'app-controller.js',
   'app-initialization.js',
+  'event-wiring.js',
   'app-navigation-panels.js',
   'chat-sessions.js',
   'message-sending.js',

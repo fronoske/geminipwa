@@ -24,6 +24,7 @@ const controllerFeatures = [
   ['ui-header-controls', 'uiUtils'],
   ['ui-interactions', 'uiUtils'],
   ['app-initialization', 'appLogic'],
+  ['event-wiring', 'appLogic'],
   ['app-navigation-panels', 'appLogic'],
   ['chat-sessions', 'appLogic'],
   ['message-sending', 'appLogic'],
@@ -84,6 +85,7 @@ describe('application service boundaries', () => {
       100,
       [
         'app-initialization',
+        'event-wiring',
         'app-navigation-panels',
         'chat-sessions',
         'message-sending',
