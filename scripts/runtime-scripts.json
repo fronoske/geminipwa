@@ -31,8 +31,6 @@
     "message-sending",
     "data-management",
     "message-actions",
-    "session-linking-runtime",
-    "scrolling-runtime",
     "main",
     "input-preset"
   ]

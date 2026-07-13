@@ -16,11 +16,6 @@ Object.assign(uiUtils, {
                     return;
                 }
 
-                // チャット画面へ戻る際、現在最下部にいるかを判定しておく
-                const chatMain = elements.chatScreen.querySelector('.main-content');
-                // 判定を少し緩くして(100px)、キーボード開閉等のズレも許容する
-                const isChatAtBottom = screenName === 'chat' && (chatMain.scrollHeight - chatMain.scrollTop - chatMain.clientHeight < 100);
-
                                                 const allScreens = [elements.chatScreen, elements.historyScreen, elements.settingsScreen];
                 let activeScreen = null;
 
@@ -69,22 +64,6 @@ Object.assign(uiUtils, {
                     if (activeScreen) {
                         activeScreen.inert = false;
                         activeScreen.classList.add('active');
-
-                        if (state.settings.enableImmersiveScrolling) {
-                            appLogic.updateImmersiveLayout();
-
-                            if (screenName === 'chat' && isChatAtBottom) {
-                                chatMain.scrollTop = chatMain.scrollHeight;
-                            }
-
-                            setTimeout(() => {
-                                appLogic.updateImmersiveLayout();
-
-                                if (screenName === 'chat' && isChatAtBottom) {
-                                    chatMain.scrollTop = chatMain.scrollHeight;
-                                }
-                            }, 305);
-                        }
                     }
                     setTimeout(() => {
                         allScreens.forEach(screen => {
@@ -105,32 +84,24 @@ Object.assign(uiUtils, {
                     elements.sendButton.classList.add('sending');
                     elements.sendButton.title = "停止";
                     elements.sendButton.disabled = false;
-                    if (elements.aiToAiChatBtn) elements.aiToAiChatBtn.disabled = true;
                 } else {
                     elements.sendButton.textContent = '送';
                     elements.sendButton.classList.remove('sending');
                     elements.sendButton.title = "送信";
-                    if (elements.aiToAiChatBtn) {
-                        const showAiToAiBtn = state.settings.enableSessionLinking &&
-                            state.linkedSessionIds.length === 2 &&
-                            state.currentChatId && state.linkedSessionIds.includes(state.currentChatId);
-                        elements.aiToAiChatBtn.disabled = !showAiToAiBtn;
-                    }
                     this.adjustTextareaHeight();
                 }
                 this.updateLoadingIndicator();
             },
 
             updateLoadingIndicator() {
-                const isProcessing = state.isAiToAiChatProcessing || state.isProofreading || state.isSending;
+                const isProcessing = state.isProofreading || state.isSending;
 
                 if (isProcessing) {
                     elements.loadingIndicator.classList.remove('hidden');
-                    elements.loadingIndicator.setAttribute('aria-live', state.isAiToAiChatProcessing ? 'assertive' : 'polite');
+                    elements.loadingIndicator.setAttribute('aria-live', 'polite');
 
                     let baseText = '応答中';
-                    if (state.isAiToAiChatProcessing) baseText = state.aiToAiProcessingMessage;
-                    else if (state.isProofreading) baseText = '校正中...';
+                    if (state.isProofreading) baseText = '校正中...';
 
                     if (state.settings.showResponseTimer) {
                         if (!state.responseTimerId) {
@@ -138,7 +109,7 @@ Object.assign(uiUtils, {
                             state.responseTimerId = setInterval(() => {
                                 const now = Date.now();
                                 const elapsed = ((now - state.responseStartTime) / 1000).toFixed(1);
-                                if (state.isSending && !state.isProofreading && !state.isAiToAiChatProcessing) {
+                                if (state.isSending && !state.isProofreading) {
                                     elements.loadingIndicator.textContent = `${elapsed}s`;
                                 } else {
                                     elements.loadingIndicator.textContent = `${baseText} (${elapsed}s)`;
@@ -514,36 +485,6 @@ Object.assign(uiUtils, {
                         textNode.parentNode.replaceChild(fragment, textNode);
                     }
                 }
-            },
-            setAiToAiProcessingState(processing, message = "AI間会話処理中...") {
-                state.isAiToAiChatProcessing = processing;
-                state.aiToAiProcessingMessage = message;
-
-                if (processing) {
-                    elements.sendButton.disabled = true;
-                    elements.userInput.disabled = true;
-                    elements.attachFileBtn.disabled = true;
-                    elements.pasteToInputBtn.disabled = true;
-                    elements.rollDiceBtn.disabled = true;
-                    if (elements.aiToAiChatBtn) elements.aiToAiChatBtn.disabled = true;
-                } else {
-                    elements.sendButton.disabled = elements.userInput.value.trim() === '' && state.pendingAttachments.length === 0;
-                    elements.userInput.disabled = false;
-                    elements.attachFileBtn.disabled = false;
-                    elements.pasteToInputBtn.disabled = false;
-                    elements.rollDiceBtn.disabled = false;
-                    if (elements.aiToAiChatBtn) {
-                        const showAiToAiBtn = state.settings.enableSessionLinking &&
-                            state.linkedSessionIds.length === 2 &&
-                            state.currentChatId && state.linkedSessionIds.includes(state.currentChatId);
-                        elements.aiToAiChatBtn.disabled = !showAiToAiBtn;
-                    }
-                }
-                this.updateLoadingIndicator();
-            },
-            updateSessionLinkingUI() {
-                this.renderHistoryList();
-                this.updateChatScreenElementVisibility();
             },
             updateApiProviderSelectOptions() {
                 const apiProviderSelect = elements.apiProviderSelect;

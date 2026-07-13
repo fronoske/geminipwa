@@ -795,7 +795,6 @@ newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.che
                 newSettings.autoScrollOnThought = elements.autoScrollOnThoughtCheckbox.checked;
                 newSettings.historySortOrder = elements.historySortOrderSelect.value;
                 newSettings.theme = elements.themeSelect.value;
-                newSettings.enableSessionLinking = elements.enableSessionLinkingCheckbox.checked;
                 newSettings.fontFamily = elements.fontFamilyInput.value.trim();
                 newSettings.messageBodyFontSize = elements.messageBodyFontSizeInput.value === '' ? null : parseInt(elements.messageBodyFontSizeInput.value, 10);
                 newSettings.codeBlockFontSize = elements.codeBlockFontSizeInput.value === '' ? null : parseInt(elements.codeBlockFontSizeInput.value, 10);
@@ -806,18 +805,12 @@ newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.che
                 newSettings.enableSwipeNavigation = elements.swipeNavigationToggle.checked;
                 newSettings.preventZoom = elements.preventZoomToggle.checked;
                 newSettings.minimizeHeaderFooter = document.getElementById('minimize-header-footer-toggle').checked;
-                newSettings.enableCryscrollerScroll = elements.enableCryscrollerScrollToggle.checked;
-                newSettings.enableImmersiveScrolling = elements.enableImmersiveScrollingToggle.checked;
-                newSettings.enableDynamicScrollMarkerColor = elements.enableDynamicScrollMarkerColorToggle.checked;
-                const scrollWidth = parseInt(elements.cryscrollerScrollWidthInput.value, 10);
-                newSettings.cryscrollerScrollWidth = (isNaN(scrollWidth) || scrollWidth < 10) ? DEFAULT_CRYSCROLLER_SCROLL_WIDTH : scrollWidth;
                 newSettings.extendAiBubbleWidth = elements.extendAiBubbleWidthToggle.checked;
                                 newSettings.extendUserBubbleWidth = elements.extendUserBubbleWidthToggle.checked;
                                 newSettings.reduceMessageSpacing = elements.reduceMessageSpacingToggle.checked;
                 newSettings.compactSettingsSpacing = elements.compactSettingsSpacingToggle.checked;
                 newSettings.slimSettingsHeaders = elements.slimSettingsHeadersToggle.checked;
                 newSettings.flatSettingsDesign = elements.flatSettingsDesignToggle.checked;
-                newSettings.showSessionLinkingSettings = elements.showSessionLinkingSettingsToggle.checked;
 
 
                 newSettings.showChatTitle = elements.showChatTitleToggle.checked;
@@ -830,7 +823,6 @@ newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.che
                 newSettings.showBulkHistoryActions = elements.showBulkHistoryActionsToggle.checked;
                 newSettings.showHistoryPreviewBubble = elements.showHistoryPreviewBubbleToggle.checked;
                 newSettings.stripedHistoryList = elements.stripedHistoryListToggle.checked;
-                newSettings.cryscrollerObserverDelay = parseInt(elements.cryscrollerObserverDelayInput.value, 10) || 500;
                 newSettings.showPasteButtonInFooter = elements.showPasteButtonInFooterToggle.checked;
                 newSettings.showPasteButtonInEdit = elements.showPasteButtonInEditToggle.checked;
                 newSettings.showDiceButton = elements.showDiceButtonToggle.checked;
@@ -881,16 +873,6 @@ newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.che
                 newSettings.toggleButtonBottomTextExpand = elements.toggleButtonBottomTextExpandInput.value.trim() || DEFAULT_TOGGLE_BUTTON_BOTTOM_TEXT_EXPAND;
                 newSettings.thoughtSummaryOpacity = elements.thoughtSummaryOpacityInput.value === '' ? DEFAULT_THOUGHT_SUMMARY_OPACITY : parseFloat(elements.thoughtSummaryOpacityInput.value);
 
-                const cryscrollerScrollOpacityInput = document.getElementById('cryscroller-scroll-opacity');
-                newSettings.cryscrollerScrollOpacity = cryscrollerScrollOpacityInput.value === '' ? DEFAULT_CRYSCROLLER_SCROLL_OPACITY : parseFloat(cryscrollerScrollOpacityInput.value);
-                newSettings.enableCryscrollerScrollOpacity = document.querySelector('.opacity-disable-checkbox[data-target-id="cryscroller-scroll-opacity"]').checked;
-
-                const cryscrollerScrollActiveOpacityInput = document.getElementById('cryscroller-scroll-active-opacity');
-                newSettings.cryscrollerScrollActiveOpacity = cryscrollerScrollActiveOpacityInput.value === '' ? DEFAULT_CRYSCROLLER_SCROLL_ACTIVE_OPACITY : parseFloat(cryscrollerScrollActiveOpacityInput.value);
-                newSettings.enableCryscrollerScrollActiveOpacity = document.querySelector('.opacity-disable-checkbox[data-target-id="cryscroller-scroll-active-opacity"]').checked;
-
-                newSettings.enableSettingsCryscrollerScroll = elements.enableSettingsCryscrollerScrollToggle.checked;
-                newSettings.enableHistoryCryscrollerScroll = elements.enableHistoryCryscrollerScrollToggle.checked;
                 newSettings.enableElevation = elements.enableElevationToggle.checked;
                 newSettings.enableElevationHover = elements.enableElevationHoverToggle.checked;
                 newSettings.autoCloseOtherSettings = elements.autoCloseOtherSettingsToggle.checked;

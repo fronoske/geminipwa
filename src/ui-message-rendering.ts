@@ -301,7 +301,7 @@ appendMessage(role, content, index, isStreamingPlaceholder = false, cascadeInfo 
                         const msgIndex = parseInt(thoughtDetails.dataset.messageIndex, 10);
                         if (state.currentMessages[msgIndex]) {
                             state.currentMessages[msgIndex].thoughtSummaryOpen = event.target.open;
-                            if (!state.isSending && !state.isAiToAiChatProcessing && !isStreamingPlaceholder) {
+                            if (!state.isSending && !isStreamingPlaceholder) {
                                 dbUtils.saveChat();
                             }
                         }

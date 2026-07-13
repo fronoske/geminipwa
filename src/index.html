@@ -68,15 +68,11 @@
                 </div>
                 <div id="loading-indicator" class="loading-indicator hidden" aria-live="polite">応答中</div>
             </main>
-            <div id="cryscroller-scroll-zone">
-                <div id="cryscroller-scroll-handle"></div>
-            </div>
             <footer class="chat-input-area">
                 <button id="footer-api-provider-toggle-btn" class="footer-action-button api-provider-toggle-btn"
                     title="APIプロバイダー切替"></button>
                 <button id="footer-cycle-api-key-btn" class="footer-action-button api-provider-toggle-btn" title="APIキー切替" style="font-weight: bold;"></button>
                 <button id="roll-dice-btn" title="ランダム数値を入力" class="footer-action-button hidden">🎲</button>
-                <button id="ai-to-ai-chat-btn" title="AI間会話ステップ実行" class="footer-action-button hidden">👥</button>
                 <button id="paste-to-input-btn" title="入力欄に貼り付け" class="footer-action-button">貼</button>
                 <textarea id="user-input" placeholder="メッセージを入力..." rows="1" aria-label="メッセージ入力"></textarea>
                 <button id="attach-file-btn" title="ファイルを添付" class="footer-action-button">+<span
@@ -86,9 +82,6 @@
         </div>
 
         <div id="history-screen" class="screen">
-            <div id="history-cryscroller-scroll-zone">
-                <div id="history-cryscroller-scroll-handle"></div>
-            </div>
             <header class="app-header">
                 <button id="back-to-chat-from-history" class="header-button" aria-label="チャットへ戻る">＞</button>
                 <h1 id="history-title">履歴一覧</h1>
@@ -116,8 +109,6 @@
                                 <span class="updated-date"></span>
                             </div>
                             <div class="history-item-actions">
-                                <button class="js-link-session-btn" title="セッションをリンク/解除"
-                                    style="font-size: 16px; padding: 6px 8px; background-color: var(--bg-button-action);">🔗</button>
                                 <button class="js-edit-title-btn" title="タイトル編集">✎</button>
                                 <button class="js-export-btn" title="出力">出力</button>
                                 <button class="js-duplicate-btn" title="複製">複製</button>
@@ -132,9 +123,6 @@
         </div>
 
         <div id="settings-screen" class="screen">
-            <div id="settings-cryscroller-scroll-zone">
-                <div id="settings-cryscroller-scroll-handle"></div>
-            </div>
             <header class="app-header">
                 <button id="back-to-chat-from-settings" class="header-button" aria-label="チャットへ戻る">＜</button>
                 <h1>設定</h1>
@@ -1886,36 +1874,6 @@
                                                 ※ 表示領域を最大化します。画面が小型の端末向け。
                                             </p>
                                             <label class="checkbox-label">
-                                                <input type="checkbox" id="enable-cryscroller-scroll-toggle">
-                                                画面右側にスクロールバーを表示する
-                                            </label>
-                                            <label class="checkbox-label" style="margin-left: 20px; font-size: 12px;">
-                                                <input type="checkbox" id="enable-settings-cryscroller-scroll-toggle">
-                                                設定パネルにも表示する
-                                            </label>
-                                            <label class="checkbox-label" style="margin-left: 20px; font-size: 12px;">
-                                                <input type="checkbox" id="enable-history-cryscroller-scroll-toggle">
-                                                履歴パネルにも表示する
-                                            </label>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="enable-immersive-scrolling-toggle">
-                                                メッセージをヘッダー/フッターの裏まで表示する
-                                            </label>
-                                            <label class="checkbox-label" style="margin-left: 20px; font-size: 12px;">
-                                                <input type="checkbox" id="enable-dynamic-scroll-marker-color-toggle">
-                                                マーカーの色を文章量に応じて変化させる
-                                            </label>
-                                            <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 5px;">
-                                                ※ 右端をドラッグして高速スクロールできるゾーンを追加します。
-                                            </p>
-                                            <div class="font-slider-container" style="margin-left: 20px; margin-bottom: 15px;">
-                                                <label for="cryscroller-scroll-width-input">スクロールバーの幅 (px):</label>
-                                                <div class="input-slider-wrapper">
-                                                    <input type="number" id="cryscroller-scroll-width-input" min="10" max="150" step="1" placeholder="例: 30" aria-label="スクロールバーの幅">
-                                                    <input type="range" id="cryscroller-scroll-width-input-slider" min="10" max="150" step="1">
-                                                </div>
-                                            </div>
-                                            <label class="checkbox-label">
                                                 <input type="checkbox" id="extend-ai-bubble-width-toggle">
                                                 AI応答バブルの横幅を拡張する
                                             </label>
@@ -2043,14 +2001,6 @@
                                             <p
                                                 style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 15px;">
                                                 ※ 応答生成後に別のモデルで文章を校正する機能に関する設定項目を表示します。
-                                            </p>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="show-session-linking-settings-toggle">
-                                                AI間会話モード（セッション間リンク）設定を表示する
-                                            </label>
-                                            <p
-                                                style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 15px;">
-                                                ※ 履歴画面から2つのチャットを連携させ、AI同士を会話させることができます。
                                             </p>
                                         </div>
                                     </details>
@@ -2416,22 +2366,6 @@
                         </div>
 
                         <div class="opacity-slider-container">
-                            <label for="cryscroller-scroll-opacity">スクロールバーの透明度 (待機時) (0.0-1.0):</label>
-                            <div class="input-slider-wrapper">
-                                <input type="number" id="cryscroller-scroll-opacity" min="0" max="1" step="0.05" placeholder="例: 0.3" aria-label="スクロールバーの透明度">
-                                <input type="range" id="cryscroller-scroll-opacity-slider" min="0" max="1" step="0.05">
-                                <label class="opacity-disable-label"><input type="checkbox" class="opacity-disable-checkbox" data-target-id="cryscroller-scroll-opacity"> ON</label>
-                            </div>
-                        </div>
-                        <div class="opacity-slider-container">
-                            <label for="cryscroller-scroll-active-opacity">スクロールバーの透明度 (操作時) (0.0-1.0):</label>
-                            <div class="input-slider-wrapper">
-                                <input type="number" id="cryscroller-scroll-active-opacity" min="0" max="1" step="0.05" placeholder="例: 1.0" aria-label="スクロールバーの操作時透明度">
-                                <input type="range" id="cryscroller-scroll-active-opacity-slider" min="0" max="1" step="0.05">
-                                <label class="opacity-disable-label"><input type="checkbox" class="opacity-disable-checkbox" data-target-id="cryscroller-scroll-active-opacity"> ON</label>
-                            </div>
-                        </div>
-                        <div class="opacity-slider-container">
                             <label for="thought-summary-opacity" style="margin-top:10px;">思考プロセス背景の透明度 (0.0-1.0):</label>
                             <div class="input-slider-wrapper">
                                 <input type="number" id="thought-summary-opacity" min="0" max="1" step="0.05" placeholder="例: 0.85" aria-label="思考プロセス背景の透明度">
@@ -2489,21 +2423,11 @@
                         </div>
                     </div>
                 </details>
-                <details class="settings-group" id="settings-group-session-linking">
+                <details class="settings-group" id="settings-group-sending-operation">
                     <summary
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
-                        AI間会話モード（セッション間リンク）</summary>
+                        送信中の操作</summary>
                     <div style="margin-top:10px;">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="enable-session-linking">
-                            セッション間リンク機能を有効にする
-                        </label>
-                        <p
-                            style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                            ※ 有効にすると、履歴画面で2つのセッションをリンクし、AI同士の会話をステップ実行できます。（👥ボタンを用いた入出力のみ。）<br>
-                            ※ Max Tokensが足りないと失敗します。
-                        </p>
-                        <p style="height:10px"></p>
                         <label class="checkbox-label">
                             <input type="checkbox" id="disable-load-chat-confirmation-while-sending-toggle">
                             メッセージ送信中に別チャットを読み込む際の確認ダイアログを表示しない (非推奨)
@@ -2598,14 +2522,6 @@
                                 <button id="debug-uncheck-all-btn" class="settings-action-button" style="font-size: 12px; flex-grow: 1;">全ての項目のチェックボックスをオフにする</button>
                                 <button id="debug-expand-all-btn" class="settings-action-button" style="font-size: 12px; flex-grow: 1;">項目を全展開</button>
                                 <button id="debug-collapse-all-btn" class="settings-action-button" style="font-size: 12px; flex-grow: 1;">項目を全閉じる</button>
-                            </div>
-                            <div class="font-slider-container" style="margin-top: 15px; border-top: 1px dashed var(--border-secondary); padding-top: 10px;">
-                                <label for="cryscroller-observer-delay">スクロールバー描画遅延 (ms):</label>
-                                <div class="input-slider-wrapper">
-                                    <input type="number" id="cryscroller-observer-delay" min="50" max="2000" step="50" placeholder="500">
-                                    <input type="range" id="cryscroller-observer-delay-slider" min="50" max="2000" step="50">
-                                </div>
-                                <p style="font-size: 11px; color: var(--text-secondary);">※ ストリーミング中の描画更新頻度。値が大きいほど軽量ですが、マーカーの追従がカクつきます。</p>
                             </div>
                         </details>
                     </details>

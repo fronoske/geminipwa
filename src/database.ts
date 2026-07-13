@@ -215,7 +215,7 @@ const dbUtils = {
 
                             const removedSettingKeys = settingsArray
                                 .map((item) => item.key)
-                                .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine)/.test(key));
+                                .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine|enableSessionLinking|showSessionLinkingSettings|enableCryscroller|cryscroller|enableSettingsCryscroller|enableHistoryCryscroller|enableImmersiveScrolling|enableDynamicScrollMarkerColor)/.test(key));
                             if (removedSettingKeys.length > 0) {
                                 try {
                                     const cleanupStore = this._getStore(SETTINGS_STORE, 'readwrite');

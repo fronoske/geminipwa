@@ -30,6 +30,14 @@ describe('project configuration', () => {
     expect(readFile('src/database.ts')).toContain('removedSettingKeys');
   });
 
+  it('does not ship session linking or custom scrolling', () => {
+    const retiredFeaturePattern = /session[-_ ]?link|ai[-_ ]?to[-_ ]?ai|cryscroller|immersive[-_ ]?scroll/i;
+    expect(readFile('src/index.html')).not.toMatch(retiredFeaturePattern);
+    expect(readFile('src/app-state.ts')).not.toMatch(retiredFeaturePattern);
+    expect(readFile('scripts/runtime-scripts.json')).not.toMatch(retiredFeaturePattern);
+    expect(fs.readdirSync(path.join(projectRoot, 'src')).join('\n')).not.toMatch(retiredFeaturePattern);
+  });
+
   it('uses a relative manifest start URL suitable for GitHub Pages', () => {
     expect(JSON.parse(readFile('manifest.json')).start_url).toBe('./index.html');
   });

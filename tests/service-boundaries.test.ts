@@ -30,8 +30,6 @@ const controllerFeatures = [
   ['message-sending', 'appLogic'],
   ['data-management', 'appLogic'],
   ['message-actions', 'appLogic'],
-  ['session-linking-runtime', 'appLogic'],
-  ['scrolling-runtime', 'appLogic'],
 ] as const;
 
 describe('application service boundaries', () => {
@@ -71,7 +69,7 @@ describe('application service boundaries', () => {
   it.each([
     [
       'uiUtils',
-      70,
+      68,
       [
         'ui-message-rendering',
         'ui-message-tools',
@@ -82,7 +80,7 @@ describe('application service boundaries', () => {
     ],
     [
       'appLogic',
-      92,
+      82,
       [
         'app-initialization',
         'event-wiring',
@@ -91,8 +89,6 @@ describe('application service boundaries', () => {
         'message-sending',
         'data-management',
         'message-actions',
-        'session-linking-runtime',
-        'scrolling-runtime',
       ],
     ],
   ] as const)('preserves all %s controller methods', (globalName, expectedCount, filenames) => {

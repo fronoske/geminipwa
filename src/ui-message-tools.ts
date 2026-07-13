@@ -597,8 +597,6 @@ const getCurrentMermaidTheme = () => {
                     const chats = await dbUtils.getAllChats(state.settings.historySortOrder);
                     elements.historyList.querySelectorAll('.history-item:not(.js-history-item-template)').forEach(item => item.remove());
                     this.updateHistoryHeaderButtonVisibility();
-                    const sessionLinkingEnabled = state.settings.enableSessionLinking;
-
                     if (chats && chats.length > 0) {
                         elements.noHistoryMessage.classList.add('hidden');
                         const sortOrderText = state.settings.historySortOrder === 'createdAt' ? '作成順' : '更新順';
@@ -647,24 +645,6 @@ const getCurrentMermaidTheme = () => {
                             li.querySelector('.js-export-btn').onclick = (e) => { e.stopPropagation(); appLogic.exportChat(chat.id, titleText); };
                             li.querySelector('.js-duplicate-btn').onclick = (e) => { e.stopPropagation(); appLogic.duplicateChat(chat.id); };
                             li.querySelector('.js-delete-btn').onclick = (e) => { e.stopPropagation(); appLogic.confirmDeleteChat(chat.id, titleText); };
-
-                            const linkButton = li.querySelector('.js-link-session-btn');
-                            if (linkButton) {
-                                if (sessionLinkingEnabled) {
-                                    linkButton.classList.remove('hidden');
-                                    linkButton.classList.remove('linked-a', 'linked-b');
-                                    if (state.linkedSessionIds.includes(chat.id)) {
-                                        if (state.linkedSessionIds[0] === chat.id) {
-                                            linkButton.classList.add('linked-a');
-                                        } else if (state.linkedSessionIds[1] === chat.id) {
-                                            linkButton.classList.add('linked-b');
-                                        }
-                                    }
-                                    linkButton.onclick = (e) => { e.stopPropagation(); appLogic.toggleSessionLink(chat.id); };
-                                } else {
-                                    linkButton.classList.add('hidden');
-                                }
-                            }
 
                             elements.historyList.appendChild(li);
                         });

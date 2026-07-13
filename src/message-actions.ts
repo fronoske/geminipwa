@@ -868,18 +868,4 @@ Object.assign(appLogic, {
                     uiUtils.scrollToBottom();
                 });
             },
-            toggleSessionLink(sessionId) {
-                if (!state.settings.enableSessionLinking) return;
-
-                const index = state.linkedSessionIds.indexOf(sessionId);
-                if (index > -1) {
-                    state.linkedSessionIds.splice(index, 1);
-                } else {
-                    if (state.linkedSessionIds.length >= 2) {
-                        state.linkedSessionIds.shift();
-                    }
-                    state.linkedSessionIds.push(sessionId);
-                }
-                uiUtils.updateSessionLinkingUI();
-            },
 });

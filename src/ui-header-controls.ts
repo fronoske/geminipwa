@@ -34,13 +34,6 @@ Object.assign(uiUtils, {
                     if (elements.rollDiceBtn) {
                         elements.rollDiceBtn.classList.toggle('hidden', !state.settings.showDiceButton);
                     }
-                    if (elements.aiToAiChatBtn) {
-                        const showAiToAiBtn = state.settings.enableSessionLinking &&
-                            state.linkedSessionIds.length === 2 &&
-                            state.currentChatId && state.linkedSessionIds.includes(state.currentChatId);
-                        elements.aiToAiChatBtn.classList.toggle('hidden', !showAiToAiBtn);
-                    }
-
                     if (elements.footerApiProviderToggleBtn) {
                         elements.footerApiProviderToggleBtn.classList.toggle('hidden', !state.settings.showApiProviderToggleFooter);
                     }

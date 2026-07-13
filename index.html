@@ -18,7 +18,6 @@
             --bg-model-message: #e5e5ea;
             --bg-system-message: #f0f8ff;
             --bg-error-message: #ffebee;
-            --cryscroller-scroll-width: 30px;
             --bg-button: #4a90e2;
             --bg-button-rgb: 74, 144, 226;
             --bg-button-hover: #357abd;
@@ -2475,7 +2474,6 @@ body.turf-mode {
             background-color: var(--bg-button-export-hover);
         }
 
-        .history-item-actions .js-link-session-btn,
         .history-item-actions .js-export-btn,
         .history-item-actions .js-duplicate-btn,
         .history-item-actions .js-delete-btn {
@@ -3566,32 +3564,6 @@ body.turf-mode {
             color: var(--text-secondary);
         }
 
-        .history-item-actions .js-link-session-btn {}
-
-        .history-item-actions .js-link-session-btn:hover:not(:disabled) {
-            background-color: var(--bg-button-action-hover) !important;
-        }
-
-        .history-item-actions .js-link-session-btn.linked-a {
-            background-color: var(--bg-button-save) !important;
-            color: var(--text-light) !important;
-        }
-
-        .history-item-actions .js-link-session-btn.linked-a:hover:not(:disabled) {
-            background-color: var(--bg-button-save-hover) !important;
-        }
-
-        .history-item-actions .js-link-session-btn.linked-b {
-            background-color: var(--bg-button-copy) !important;
-            color: var(--text-light) !important;
-        }
-
-        .history-item-actions .js-link-session-btn.linked-b:hover:not(:disabled) {
-            background-color: var(--bg-button-copy-hover) !important;
-        }
-
-        #ai-to-ai-chat-btn {}
-
         .set-thinking-budget-btn,
         .set-claude-param-btn {
             flex-grow: 1;
@@ -4466,106 +4438,6 @@ font-size: 1.142em !important;
             font-size: calc(var(--thought-summary-font-size) * var(--chat-ui-scale)) !important;
         }
 
-        #cryscroller-scroll-zone {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: var(--cryscroller-scroll-width);
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.02);
-            z-index: 90;
-            touch-action: none;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease, background-color 0.2s ease;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
-        body.cryscroller-scroll-enabled #cryscroller-scroll-zone {
-            opacity: var(--cryscroller-scroll-opacity, 0.3);
-            pointer-events: auto;
-            transition: opacity 0.3s ease;
-        }
-
-        body.cryscroller-scroll-enabled #cryscroller-scroll-zone.is-dragging,
-        body.cryscroller-scroll-enabled #cryscroller-scroll-zone.is-scrolling {
-            opacity: var(--cryscroller-scroll-active-opacity, 1);
-        }
-        @media (hover: hover) {
-            body.cryscroller-scroll-enabled #cryscroller-scroll-zone:hover {
-                opacity: var(--cryscroller-scroll-active-opacity, 1);
-            }
-        }
-
-        body.cryscroller-scroll-enabled #chat-screen .main-content {
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            padding-right: var(--cryscroller-scroll-width) !important;
-        }
-        body.cryscroller-scroll-enabled #chat-screen .main-content::-webkit-scrollbar {
-            display: none;
-        }
-
-        #cryscroller-scroll-handle {
-            position: absolute;
-            right: 2px;
-            width: calc(var(--cryscroller-scroll-width) - 4px);
-            min-height: 40px;
-            background-color: rgba(100, 100, 100, 0.5);
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.2s ease, height 0.1s ease;
-        }
-
-        #cryscroller-scroll-zone:active #cryscroller-scroll-handle,
-        #cryscroller-scroll-zone:hover #cryscroller-scroll-handle {
-            background-color: rgba(100, 100, 100, 0.7);
-        }
-
-        body.dark-mode #cryscroller-scroll-zone {
-            background-color: rgba(255, 255, 255, 0.02);
-        }
-        body.dark-mode #cryscroller-scroll-handle {
-            background-color: rgba(200, 200, 200, 0.4);
-        }
-        body.dark-mode #cryscroller-scroll-zone:active #cryscroller-scroll-handle {
-            background-color: rgba(200, 200, 200, 0.6);
-        }
-
-        .scroll-marker {
-            position: absolute;
-            right: 0;
-            width: 75%;
-            height: 4px;
-            z-index: 89;
-            cursor: pointer;
-            pointer-events: auto;
-            border-radius: 10px 0 0 10px;
-        }
-        .scroll-marker:hover {
-            height: 6px;
-            transform: scaleX(1.2);
-            z-index: 91;
-        }
-        .scroll-marker.user {
-            background-color: rgba(200, 200, 200, 0.6);
-        }
-        .scroll-marker.model {
-            background-color: rgba(50, 50, 50, 0.6);
-        }
-        body.dark-mode .scroll-marker.user {
-            background-color: rgba(255, 255, 255, 0.6);
-        }
-        body.dark-mode .scroll-marker.model {
-            background-color: rgba(0, 0, 0, 0.8);
-        }
-
-        #cryscroller-scroll-zone.is-dragging .scroll-marker {
-            pointer-events: none;
-        }
-
-
                .history-item { position: relative; z-index: 1; overflow: hidden; }
         .history-item-details, .history-item-bottom-row { position: relative; z-index: 2; text-shadow: 0 1px 3px var(--bg-primary), 0 0 5px var(--bg-primary), 0 0 10px var(--bg-primary); }
         .history-item-preview-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; padding: 0; }
@@ -4573,185 +4445,6 @@ font-size: 1.142em !important;
         .history-item-preview-layer.align-right .history-preview-bubble { justify-content: flex-end; text-align: right; background: linear-gradient(to left, var(--bg-user-message), transparent 90%); }
         .history-item-preview-layer.align-left .history-preview-bubble { justify-content: flex-start; text-align: left; background: linear-gradient(to right, var(--bg-model-message), transparent 90%); }
         body.dark-mode .history-preview-bubble { opacity: 0.25; }
-
-        body.immersive-mode .app-container {
-            display: block;
-            position: relative;
-        }
-
-        body.immersive-mode .app-header,
-        body.immersive-mode #history-screen .app-header,
-        body.immersive-mode #settings-screen .app-header {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 10;
-            border-bottom: none;
-        }
-        body.immersive-mode .chat-input-area {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            z-index: 10;
-            border-top: none;
-        }
-        body.immersive-mode #chat-screen .main-content {
-            height: 100%;
-
-            padding-top: calc(var(--header-height, 50px) + 15px);
-            padding-bottom: calc(var(--footer-height, 60px) + 16px);
-            box-sizing: border-box;
-        }
-        body.immersive-mode #history-screen .main-content,
-        body.immersive-mode #settings-screen .main-content {
-            height: 100%;
-            /* ヘッダー高さ + 影被り防止の余白(15px) */
-            padding-top: calc(var(--header-height, 50px) + 15px);
-            padding-bottom: 20px;
-            box-sizing: border-box;
-        }
-        body.immersive-mode #cryscroller-scroll-zone {
-            top: var(--header-height, 50px) !important;
-            height: calc(100% - var(--header-height, 50px) - var(--footer-height, 60px)) !important;
-        }
-
-        #settings-cryscroller-scroll-zone {
-            position: absolute;
-            top: 50px;
-            right: 0;
-            width: var(--cryscroller-scroll-width);
-            height: calc(100% - 50px);
-            background-color: rgba(0, 0, 0, 0.02);
-            z-index: 90;
-            touch-action: none;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease, background-color 0.2s ease;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-        body.settings-cryscroller-scroll-enabled #settings-cryscroller-scroll-zone {
-            opacity: var(--cryscroller-scroll-opacity, 0.3);
-            pointer-events: auto;
-            transition: opacity 0.3s ease;
-        }
-        body.settings-cryscroller-scroll-enabled #settings-cryscroller-scroll-zone.is-dragging,
-        body.settings-cryscroller-scroll-enabled #settings-cryscroller-scroll-zone.is-scrolling {
-            opacity: var(--cryscroller-scroll-active-opacity, 1);
-        }
-        @media (hover: hover) {
-            body.settings-cryscroller-scroll-enabled #settings-cryscroller-scroll-zone:hover {
-                opacity: var(--cryscroller-scroll-active-opacity, 1);
-            }
-        }
-        #settings-cryscroller-scroll-handle {
-            position: absolute;
-            right: 2px;
-            width: calc(var(--cryscroller-scroll-width) - 4px);
-            min-height: 40px;
-            background-color: rgba(100, 100, 100, 0.5);
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.2s ease, height 0.1s ease;
-        }
-        #settings-cryscroller-scroll-zone:active #settings-cryscroller-scroll-handle,
-        #settings-cryscroller-scroll-zone:hover #settings-cryscroller-scroll-handle {
-            background-color: rgba(100, 100, 100, 0.7);
-        }
-        body.dark-mode #settings-cryscroller-scroll-zone {
-            background-color: rgba(255, 255, 255, 0.02);
-        }
-        body.dark-mode #settings-cryscroller-scroll-handle {
-            background-color: rgba(200, 200, 200, 0.4);
-        }
-        body.dark-mode #settings-cryscroller-scroll-zone:active #settings-cryscroller-scroll-handle {
-            background-color: rgba(200, 200, 200, 0.6);
-        }
-        body.settings-cryscroller-scroll-enabled #settings-screen .main-content {
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            padding-right: 18px !important;
-        }
-        body.settings-cryscroller-scroll-enabled #settings-screen .main-content::-webkit-scrollbar {
-            display: none;
-        }
-        body.settings-cryscroller-scroll-enabled #settings-cryscroller-scroll-zone {
-            width: 18px;
-        }
-        body.settings-cryscroller-scroll-enabled #settings-cryscroller-scroll-handle {
-            width: 14px;
-        }
-        body.immersive-mode #settings-cryscroller-scroll-zone {
-            top: var(--header-height, 50px) !important;
-            height: calc(100% - var(--header-height, 50px)) !important;
-        }
-
-        #history-cryscroller-scroll-zone {
-            position: absolute;
-            top: 50px;
-            right: 0;
-            width: var(--cryscroller-scroll-width);
-            height: calc(100% - 50px);
-            background-color: rgba(0, 0, 0, 0.02);
-            z-index: 90;
-            touch-action: none;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease, background-color 0.2s ease;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-        body.history-cryscroller-scroll-enabled #history-cryscroller-scroll-zone {
-            opacity: var(--cryscroller-scroll-opacity, 0.3);
-            pointer-events: auto;
-            transition: opacity 0.3s ease;
-        }
-        body.history-cryscroller-scroll-enabled #history-cryscroller-scroll-zone.is-dragging,
-        body.history-cryscroller-scroll-enabled #history-cryscroller-scroll-zone.is-scrolling {
-            opacity: var(--cryscroller-scroll-active-opacity, 1);
-        }
-        @media (hover: hover) {
-            body.history-cryscroller-scroll-enabled #history-cryscroller-scroll-zone:hover {
-                opacity: var(--cryscroller-scroll-active-opacity, 1);
-            }
-        }
-        #history-cryscroller-scroll-handle {
-            position: absolute;
-            right: 2px;
-            width: calc(var(--cryscroller-scroll-width) - 4px);
-            min-height: 40px;
-            background-color: rgba(100, 100, 100, 0.5);
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.2s ease, height 0.1s ease;
-        }
-        #history-cryscroller-scroll-zone:active #history-cryscroller-scroll-handle,
-        #history-cryscroller-scroll-zone:hover #history-cryscroller-scroll-handle {
-            background-color: rgba(100, 100, 100, 0.7);
-        }
-        body.dark-mode #history-cryscroller-scroll-zone {
-            background-color: rgba(255, 255, 255, 0.02);
-        }
-        body.dark-mode #history-cryscroller-scroll-handle {
-            background-color: rgba(200, 200, 200, 0.4);
-        }
-        body.dark-mode #history-cryscroller-scroll-zone:active #history-cryscroller-scroll-handle {
-            background-color: rgba(200, 200, 200, 0.6);
-        }
-        body.history-cryscroller-scroll-enabled #history-screen .main-content {
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            padding-right: var(--cryscroller-scroll-width) !important;
-        }
-        body.history-cryscroller-scroll-enabled #history-screen .main-content::-webkit-scrollbar {
-            display: none;
-        }
-        body.immersive-mode #history-cryscroller-scroll-zone {
-            top: var(--header-height, 50px) !important;
-            height: calc(100% - var(--header-height, 50px)) !important;
-        }
 
       #input-preset-popup {
         display: none;
@@ -4924,15 +4617,11 @@ font-size: 1.142em !important;
                 </div>
                 <div id="loading-indicator" class="loading-indicator hidden" aria-live="polite">応答中</div>
             </main>
-            <div id="cryscroller-scroll-zone">
-                <div id="cryscroller-scroll-handle"></div>
-            </div>
             <footer class="chat-input-area">
                 <button id="footer-api-provider-toggle-btn" class="footer-action-button api-provider-toggle-btn"
                     title="APIプロバイダー切替"></button>
                 <button id="footer-cycle-api-key-btn" class="footer-action-button api-provider-toggle-btn" title="APIキー切替" style="font-weight: bold;"></button>
                 <button id="roll-dice-btn" title="ランダム数値を入力" class="footer-action-button hidden">🎲</button>
-                <button id="ai-to-ai-chat-btn" title="AI間会話ステップ実行" class="footer-action-button hidden">👥</button>
                 <button id="paste-to-input-btn" title="入力欄に貼り付け" class="footer-action-button">貼</button>
                 <textarea id="user-input" placeholder="メッセージを入力..." rows="1" aria-label="メッセージ入力"></textarea>
                 <button id="attach-file-btn" title="ファイルを添付" class="footer-action-button">+<span
@@ -4942,9 +4631,6 @@ font-size: 1.142em !important;
         </div>
 
         <div id="history-screen" class="screen">
-            <div id="history-cryscroller-scroll-zone">
-                <div id="history-cryscroller-scroll-handle"></div>
-            </div>
             <header class="app-header">
                 <button id="back-to-chat-from-history" class="header-button" aria-label="チャットへ戻る">＞</button>
                 <h1 id="history-title">履歴一覧</h1>
@@ -4972,8 +4658,6 @@ font-size: 1.142em !important;
                                 <span class="updated-date"></span>
                             </div>
                             <div class="history-item-actions">
-                                <button class="js-link-session-btn" title="セッションをリンク/解除"
-                                    style="font-size: 16px; padding: 6px 8px; background-color: var(--bg-button-action);">🔗</button>
                                 <button class="js-edit-title-btn" title="タイトル編集">✎</button>
                                 <button class="js-export-btn" title="出力">出力</button>
                                 <button class="js-duplicate-btn" title="複製">複製</button>
@@ -4988,9 +4672,6 @@ font-size: 1.142em !important;
         </div>
 
         <div id="settings-screen" class="screen">
-            <div id="settings-cryscroller-scroll-zone">
-                <div id="settings-cryscroller-scroll-handle"></div>
-            </div>
             <header class="app-header">
                 <button id="back-to-chat-from-settings" class="header-button" aria-label="チャットへ戻る">＜</button>
                 <h1>設定</h1>
@@ -6742,36 +6423,6 @@ font-size: 1.142em !important;
                                                 ※ 表示領域を最大化します。画面が小型の端末向け。
                                             </p>
                                             <label class="checkbox-label">
-                                                <input type="checkbox" id="enable-cryscroller-scroll-toggle">
-                                                画面右側にスクロールバーを表示する
-                                            </label>
-                                            <label class="checkbox-label" style="margin-left: 20px; font-size: 12px;">
-                                                <input type="checkbox" id="enable-settings-cryscroller-scroll-toggle">
-                                                設定パネルにも表示する
-                                            </label>
-                                            <label class="checkbox-label" style="margin-left: 20px; font-size: 12px;">
-                                                <input type="checkbox" id="enable-history-cryscroller-scroll-toggle">
-                                                履歴パネルにも表示する
-                                            </label>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="enable-immersive-scrolling-toggle">
-                                                メッセージをヘッダー/フッターの裏まで表示する
-                                            </label>
-                                            <label class="checkbox-label" style="margin-left: 20px; font-size: 12px;">
-                                                <input type="checkbox" id="enable-dynamic-scroll-marker-color-toggle">
-                                                マーカーの色を文章量に応じて変化させる
-                                            </label>
-                                            <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 5px;">
-                                                ※ 右端をドラッグして高速スクロールできるゾーンを追加します。
-                                            </p>
-                                            <div class="font-slider-container" style="margin-left: 20px; margin-bottom: 15px;">
-                                                <label for="cryscroller-scroll-width-input">スクロールバーの幅 (px):</label>
-                                                <div class="input-slider-wrapper">
-                                                    <input type="number" id="cryscroller-scroll-width-input" min="10" max="150" step="1" placeholder="例: 30" aria-label="スクロールバーの幅">
-                                                    <input type="range" id="cryscroller-scroll-width-input-slider" min="10" max="150" step="1">
-                                                </div>
-                                            </div>
-                                            <label class="checkbox-label">
                                                 <input type="checkbox" id="extend-ai-bubble-width-toggle">
                                                 AI応答バブルの横幅を拡張する
                                             </label>
@@ -6899,14 +6550,6 @@ font-size: 1.142em !important;
                                             <p
                                                 style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 15px;">
                                                 ※ 応答生成後に別のモデルで文章を校正する機能に関する設定項目を表示します。
-                                            </p>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="show-session-linking-settings-toggle">
-                                                AI間会話モード（セッション間リンク）設定を表示する
-                                            </label>
-                                            <p
-                                                style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 15px;">
-                                                ※ 履歴画面から2つのチャットを連携させ、AI同士を会話させることができます。
                                             </p>
                                         </div>
                                     </details>
@@ -7272,22 +6915,6 @@ font-size: 1.142em !important;
                         </div>
 
                         <div class="opacity-slider-container">
-                            <label for="cryscroller-scroll-opacity">スクロールバーの透明度 (待機時) (0.0-1.0):</label>
-                            <div class="input-slider-wrapper">
-                                <input type="number" id="cryscroller-scroll-opacity" min="0" max="1" step="0.05" placeholder="例: 0.3" aria-label="スクロールバーの透明度">
-                                <input type="range" id="cryscroller-scroll-opacity-slider" min="0" max="1" step="0.05">
-                                <label class="opacity-disable-label"><input type="checkbox" class="opacity-disable-checkbox" data-target-id="cryscroller-scroll-opacity"> ON</label>
-                            </div>
-                        </div>
-                        <div class="opacity-slider-container">
-                            <label for="cryscroller-scroll-active-opacity">スクロールバーの透明度 (操作時) (0.0-1.0):</label>
-                            <div class="input-slider-wrapper">
-                                <input type="number" id="cryscroller-scroll-active-opacity" min="0" max="1" step="0.05" placeholder="例: 1.0" aria-label="スクロールバーの操作時透明度">
-                                <input type="range" id="cryscroller-scroll-active-opacity-slider" min="0" max="1" step="0.05">
-                                <label class="opacity-disable-label"><input type="checkbox" class="opacity-disable-checkbox" data-target-id="cryscroller-scroll-active-opacity"> ON</label>
-                            </div>
-                        </div>
-                        <div class="opacity-slider-container">
                             <label for="thought-summary-opacity" style="margin-top:10px;">思考プロセス背景の透明度 (0.0-1.0):</label>
                             <div class="input-slider-wrapper">
                                 <input type="number" id="thought-summary-opacity" min="0" max="1" step="0.05" placeholder="例: 0.85" aria-label="思考プロセス背景の透明度">
@@ -7345,21 +6972,11 @@ font-size: 1.142em !important;
                         </div>
                     </div>
                 </details>
-                <details class="settings-group" id="settings-group-session-linking">
+                <details class="settings-group" id="settings-group-sending-operation">
                     <summary
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
-                        AI間会話モード（セッション間リンク）</summary>
+                        送信中の操作</summary>
                     <div style="margin-top:10px;">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="enable-session-linking">
-                            セッション間リンク機能を有効にする
-                        </label>
-                        <p
-                            style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                            ※ 有効にすると、履歴画面で2つのセッションをリンクし、AI同士の会話をステップ実行できます。（👥ボタンを用いた入出力のみ。）<br>
-                            ※ Max Tokensが足りないと失敗します。
-                        </p>
-                        <p style="height:10px"></p>
                         <label class="checkbox-label">
                             <input type="checkbox" id="disable-load-chat-confirmation-while-sending-toggle">
                             メッセージ送信中に別チャットを読み込む際の確認ダイアログを表示しない (非推奨)
@@ -7454,14 +7071,6 @@ font-size: 1.142em !important;
                                 <button id="debug-uncheck-all-btn" class="settings-action-button" style="font-size: 12px; flex-grow: 1;">全ての項目のチェックボックスをオフにする</button>
                                 <button id="debug-expand-all-btn" class="settings-action-button" style="font-size: 12px; flex-grow: 1;">項目を全展開</button>
                                 <button id="debug-collapse-all-btn" class="settings-action-button" style="font-size: 12px; flex-grow: 1;">項目を全閉じる</button>
-                            </div>
-                            <div class="font-slider-container" style="margin-top: 15px; border-top: 1px dashed var(--border-secondary); padding-top: 10px;">
-                                <label for="cryscroller-observer-delay">スクロールバー描画遅延 (ms):</label>
-                                <div class="input-slider-wrapper">
-                                    <input type="number" id="cryscroller-observer-delay" min="50" max="2000" step="50" placeholder="500">
-                                    <input type="range" id="cryscroller-observer-delay-slider" min="50" max="2000" step="50">
-                                </div>
-                                <p style="font-size: 11px; color: var(--text-secondary);">※ ストリーミング中の描画更新頻度。値が大きいほど軽量ですが、マーカーの追従がカクつきます。</p>
                             </div>
                         </details>
                     </details>
@@ -7644,9 +7253,6 @@ const DEFAULT_MESSAGE_BUBBLE_OPACITY = 0.9;
 const DEFAULT_MESSAGE_ACTIONS_BACKGROUND_OPACITY = 0.9;
 const DEFAULT_HEADER_FOOTER_OPACITY = 0.35;
 const DEFAULT_CHAT_OVERLAY_OPACITY = 0.7;
-const DEFAULT_CRYSCROLLER_SCROLL_OPACITY = 0.3;
-const DEFAULT_CRYSCROLLER_SCROLL_ACTIVE_OPACITY = 0.7;
-const DEFAULT_CRYSCROLLER_SCROLL_WIDTH = 35;
 const DEFAULT_TOGGLE_BUTTON_TOP_WIDTH = 6;
 const DEFAULT_TOGGLE_BUTTON_TOP_HEIGHT = 40;
 const DEFAULT_TOGGLE_BUTTON_TOP_FONT_SIZE = 12;
@@ -7871,7 +7477,6 @@ const elements = {
     messageBodyFontSizeInput: document.getElementById('message-body-font-size-input'),
     codeBlockFontSizeInput: document.getElementById('code-block-font-size-input'),
     thoughtSummaryFontSizeInput: document.getElementById('thought-summary-font-size'),
-    enableSessionLinkingCheckbox: document.getElementById('enable-session-linking'),
     swipeNavigationToggle: document.getElementById('swipe-navigation-toggle'),
     preventZoomToggle: document.getElementById('prevent-zoom-toggle'),
     minimizeHeaderFooterToggle: document.getElementById('minimize-header-footer-toggle'),
@@ -7881,8 +7486,6 @@ const elements = {
     compactSettingsSpacingToggle: document.getElementById('compact-settings-spacing-toggle'),
     slimSettingsHeadersToggle: document.getElementById('slim-settings-headers-toggle'),
     flatSettingsDesignToggle: document.getElementById('flat-settings-design-toggle'),
-    showSessionLinkingSettingsToggle: document.getElementById('show-session-linking-settings-toggle'),
-    sessionLinkingSettingsGroup: document.getElementById('settings-group-session-linking'),
     showChatTitleToggle: document.getElementById('show-chat-title-toggle'),
     showNewChatButtonToggle: document.getElementById('show-new-chat-button-toggle'),
     showDeleteSessionButtonToggle: document.getElementById('show-delete-session-button-toggle'),
@@ -7954,7 +7557,6 @@ const elements = {
     addProofreadingApiConfigBtn: document.getElementById('add-proofreading-api-config-btn'),
     rollDiceBtn: document.getElementById('roll-dice-btn'),
     attachFileBtn: document.getElementById('attach-file-btn'),
-    aiToAiChatBtn: document.getElementById('ai-to-ai-chat-btn'),
     pasteToInputBtn: document.getElementById('paste-to-input-btn'),
     fileUploadDialog: document.getElementById('fileUploadDialog'),
     fileInput: document.getElementById('file-input'),
@@ -8084,21 +7686,8 @@ const elements = {
     debugUncheckAllBtn: document.getElementById('debug-uncheck-all-btn'),
     debugExpandAllBtn: document.getElementById('debug-expand-all-btn'),
     debugCollapseAllBtn: document.getElementById('debug-collapse-all-btn'),
-    cryscrollerScrollZone: document.getElementById('cryscroller-scroll-zone'),
-    cryscrollerScrollHandle: document.getElementById('cryscroller-scroll-handle'),
-    enableCryscrollerScrollToggle: document.getElementById('enable-cryscroller-scroll-toggle'),
-    enableImmersiveScrollingToggle: document.getElementById('enable-immersive-scrolling-toggle'),
-    enableDynamicScrollMarkerColorToggle: document.getElementById('enable-dynamic-scroll-marker-color-toggle'),
-    cryscrollerScrollWidthInput: document.getElementById('cryscroller-scroll-width-input'),
     showHistoryPreviewBubbleToggle: document.getElementById('show-history-preview-bubble-toggle'),
     stripedHistoryListToggle: document.getElementById('striped-history-list-toggle'),
-    cryscrollerObserverDelayInput: document.getElementById('cryscroller-observer-delay'),
-    settingsCryscrollerScrollZone: document.getElementById('settings-cryscroller-scroll-zone'),
-    settingsCryscrollerScrollHandle: document.getElementById('settings-cryscroller-scroll-handle'),
-    enableSettingsCryscrollerScrollToggle: document.getElementById('enable-settings-cryscroller-scroll-toggle'),
-    historyCryscrollerScrollZone: document.getElementById('history-cryscroller-scroll-zone'),
-    historyCryscrollerScrollHandle: document.getElementById('history-cryscroller-scroll-handle'),
-    enableHistoryCryscrollerScrollToggle: document.getElementById('enable-history-cryscroller-scroll-toggle'),
     historyBgInput: document.getElementById('history-bg-input'),
     uploadHistoryBgBtn: document.getElementById('upload-history-bg-btn'),
     historyBgThumbnail: document.getElementById('history-bg-thumbnail'),
@@ -8268,7 +7857,6 @@ const state = {
         messageBodyFontSize: DEFAULT_MESSAGE_BODY_FONT_SIZE,
         codeBlockFontSize: DEFAULT_CODE_BLOCK_FONT_SIZE,
         thoughtSummaryFontSize: DEFAULT_THOUGHT_SUMMARY_FONT_SIZE,
-        enableSessionLinking: false,
         enableSwipeNavigation: true,
         enableProofreading: false,
         proofreadingApiConfigs: [],
@@ -8281,7 +7869,6 @@ const state = {
         compactSettingsSpacing: false,
         slimSettingsHeaders: true,
         flatSettingsDesign: false,
-        showSessionLinkingSettings: false,
         showChatTitle: true,
         showNewChatButton: true,
         showDeleteSessionButton: false,
@@ -8359,8 +7946,6 @@ const state = {
         enableToggleButtonTopOpacity: true,
         enableThoughtSummaryOpacity: true,
         enableElevation: true,
-        enableCryscrollerScrollOpacity: true,
-        enableCryscrollerScrollActiveOpacity: true,
         enableElevationHover: false,
         showSettingsScrollToTopButton: false,
         showSettingsScrollToBottomButton: true,
@@ -8395,15 +7980,8 @@ const state = {
         webhooks: [],
         disableDeleteApiKeyConfirmation: true,
         removeDuplicateApiKeys: true,
-        enableCryscrollerScroll: false,
-        enableImmersiveScrolling: true,
-        enableDynamicScrollMarkerColor: true,
-        cryscrollerScrollWidth: 30,
         showHistoryPreviewBubble: false,
         stripedHistoryList: true,
-        cryscrollerObserverDelay: 500,
-        enableSettingsCryscrollerScroll: true,
-        enableHistoryCryscrollerScroll: true,
     },
     backgroundImageUrl: null,
     historyBackgroundImageUrl: null,
@@ -8432,9 +8010,6 @@ const state = {
     areAllMessagesHidden: false,
     messageCollapsedStates: new Map(),
     thoughtSummaryOpenStates: new Map(),
-    linkedSessionIds: [],
-    isAiToAiChatProcessing: false,
-    aiToAiProcessingMessage: "AI間会話処理中...",
     isProofreading: false,
 };
 
@@ -8887,7 +8462,7 @@ const dbUtils = {
                     }
                     const removedSettingKeys = settingsArray
                         .map((item) => item.key)
-                        .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine)/.test(key));
+                        .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine|enableSessionLinking|showSessionLinkingSettings|enableCryscroller|cryscroller|enableSettingsCryscroller|enableHistoryCryscroller|enableImmersiveScrolling|enableDynamicScrollMarkerColor)/.test(key));
                     if (removedSettingKeys.length > 0) {
                         try {
                             const cleanupStore = this._getStore(SETTINGS_STORE, 'readwrite');
@@ -11491,7 +11066,7 @@ Object.assign(uiUtils, {
                 const msgIndex = parseInt(thoughtDetails.dataset.messageIndex, 10);
                 if (state.currentMessages[msgIndex]) {
                     state.currentMessages[msgIndex].thoughtSummaryOpen = event.target.open;
-                    if (!state.isSending && !state.isAiToAiChatProcessing && !isStreamingPlaceholder) {
+                    if (!state.isSending && !isStreamingPlaceholder) {
                         dbUtils.saveChat();
                     }
                 }
@@ -12360,7 +11935,6 @@ Object.assign(uiUtils, {
             const chats = await dbUtils.getAllChats(state.settings.historySortOrder);
             elements.historyList.querySelectorAll('.history-item:not(.js-history-item-template)').forEach(item => item.remove());
             this.updateHistoryHeaderButtonVisibility();
-            const sessionLinkingEnabled = state.settings.enableSessionLinking;
             if (chats && chats.length > 0) {
                 elements.noHistoryMessage.classList.add('hidden');
                 const sortOrderText = state.settings.historySortOrder === 'createdAt' ? '作成順' : '更新順';
@@ -12406,25 +11980,6 @@ Object.assign(uiUtils, {
                     li.querySelector('.js-export-btn').onclick = (e) => { e.stopPropagation(); appLogic.exportChat(chat.id, titleText); };
                     li.querySelector('.js-duplicate-btn').onclick = (e) => { e.stopPropagation(); appLogic.duplicateChat(chat.id); };
                     li.querySelector('.js-delete-btn').onclick = (e) => { e.stopPropagation(); appLogic.confirmDeleteChat(chat.id, titleText); };
-                    const linkButton = li.querySelector('.js-link-session-btn');
-                    if (linkButton) {
-                        if (sessionLinkingEnabled) {
-                            linkButton.classList.remove('hidden');
-                            linkButton.classList.remove('linked-a', 'linked-b');
-                            if (state.linkedSessionIds.includes(chat.id)) {
-                                if (state.linkedSessionIds[0] === chat.id) {
-                                    linkButton.classList.add('linked-a');
-                                }
-                                else if (state.linkedSessionIds[1] === chat.id) {
-                                    linkButton.classList.add('linked-b');
-                                }
-                            }
-                            linkButton.onclick = (e) => { e.stopPropagation(); appLogic.toggleSessionLink(chat.id); };
-                        }
-                        else {
-                            linkButton.classList.add('hidden');
-                        }
-                    }
                     elements.historyList.appendChild(li);
                 });
             }
@@ -12634,7 +12189,6 @@ Object.assign(uiUtils, {
         document.documentElement.style.setProperty('--chat-overlay-alpha', state.settings.enableChatOverlayOpacity ? state.settings.chatOverlayOpacity : 1);
         document.documentElement.style.setProperty('--message-actions-bg-opacity', state.settings.enableMessageActionsBackgroundOpacity ? state.settings.messageActionsBackgroundOpacity : 1);
         document.documentElement.style.setProperty('--thought-summary-opacity', state.settings.enableThoughtSummaryOpacity ? state.settings.thoughtSummaryOpacity : 1);
-        document.documentElement.style.setProperty('--cryscroller-scroll-active-opacity', state.settings.enableCryscrollerScrollActiveOpacity ? state.settings.cryscrollerScrollActiveOpacity : DEFAULT_CRYSCROLLER_SCROLL_ACTIVE_OPACITY);
         let headerColor, secondaryColor, userMessageColor, modelMessageColor, overlayBaseColor, tertiaryColorRgbStr;
         switch (state.settings.theme) {
             case 'dark':
@@ -13022,7 +12576,6 @@ Object.assign(uiUtils, {
         elements.historySortOrderSelect.value = state.settings.historySortOrder || 'updatedAt';
         if (elements.themeSelect)
             elements.themeSelect.value = state.settings.theme || 'light';
-        elements.enableSessionLinkingCheckbox.checked = state.settings.enableSessionLinking;
         elements.fontFamilyInput.value = state.settings.fontFamily || '';
         elements.messageBodyFontSizeInput.value = state.settings.messageBodyFontSize ?? '';
         elements.codeBlockFontSizeInput.value = state.settings.codeBlockFontSize ?? '';
@@ -13039,28 +12592,6 @@ Object.assign(uiUtils, {
         elements.swipeNavigationToggle.checked = state.settings.enableSwipeNavigation;
         elements.preventZoomToggle.checked = state.settings.preventZoom;
         elements.minimizeHeaderFooterToggle.checked = state.settings.minimizeHeaderFooter;
-        if (state.settings.enableCryscrollerScroll === undefined) {
-            state.settings.enableCryscrollerScroll = false;
-        }
-        elements.enableCryscrollerScrollToggle.checked = state.settings.enableCryscrollerScroll;
-        document.body.classList.toggle('cryscroller-scroll-enabled', state.settings.enableCryscrollerScroll);
-        elements.enableSettingsCryscrollerScrollToggle.checked = state.settings.enableSettingsCryscrollerScroll;
-        document.body.classList.toggle('settings-cryscroller-scroll-enabled', state.settings.enableSettingsCryscrollerScroll);
-        if (state.settings.enableSettingsCryscrollerScroll) {
-            window.dispatchEvent(new Event('resize'));
-        }
-        elements.enableHistoryCryscrollerScrollToggle.checked = state.settings.enableHistoryCryscrollerScroll;
-        document.body.classList.toggle('history-cryscroller-scroll-enabled', state.settings.enableHistoryCryscrollerScroll);
-        if (state.settings.enableHistoryCryscrollerScroll) {
-            window.dispatchEvent(new Event('resize'));
-        }
-        elements.enableImmersiveScrollingToggle.checked = state.settings.enableImmersiveScrolling;
-        appLogic.updateImmersiveLayout();
-        elements.enableDynamicScrollMarkerColorToggle.checked = state.settings.enableDynamicScrollMarkerColor;
-        const currentScrollWidth = state.settings.cryscrollerScrollWidth || DEFAULT_CRYSCROLLER_SCROLL_WIDTH;
-        elements.cryscrollerScrollWidthInput.value = currentScrollWidth;
-        document.getElementById('cryscroller-scroll-width-input-slider').value = currentScrollWidth;
-        document.documentElement.style.setProperty('--cryscroller-scroll-width', `${currentScrollWidth}px`);
         elements.extendAiBubbleWidthToggle.checked = state.settings.extendAiBubbleWidth;
         elements.extendUserBubbleWidthToggle.checked = state.settings.extendUserBubbleWidth;
         elements.reduceMessageSpacingToggle.checked = state.settings.reduceMessageSpacing;
@@ -13071,10 +12602,6 @@ Object.assign(uiUtils, {
         document.body.classList.toggle('slim-settings-headers', state.settings.slimSettingsHeaders);
         elements.flatSettingsDesignToggle.checked = state.settings.flatSettingsDesign;
         document.body.classList.toggle('flat-settings-mode', state.settings.flatSettingsDesign);
-        elements.showSessionLinkingSettingsToggle.checked = state.settings.showSessionLinkingSettings;
-        if (elements.sessionLinkingSettingsGroup) {
-            elements.sessionLinkingSettingsGroup.classList.toggle('hidden', !state.settings.showSessionLinkingSettings);
-        }
         elements.showChatTitleToggle.checked = state.settings.showChatTitle;
         elements.showNewChatButtonToggle.checked = state.settings.showNewChatButton;
         elements.showDeleteSessionButtonToggle.checked = state.settings.showDeleteSessionButton;
@@ -13095,8 +12622,6 @@ Object.assign(uiUtils, {
         elements.messageActionsBackgroundOpacityInput.value = state.settings.messageActionsBackgroundOpacity ?? DEFAULT_MESSAGE_ACTIONS_BACKGROUND_OPACITY;
         elements.toggleButtonTopOpacityInput.value = state.settings.toggleButtonTopOpacity ?? DEFAULT_TOGGLE_BUTTON_TOP_OPACITY;
         elements.thoughtSummaryOpacityInput.value = state.settings.thoughtSummaryOpacity ?? DEFAULT_THOUGHT_SUMMARY_OPACITY;
-        document.getElementById('cryscroller-scroll-opacity').value = state.settings.cryscrollerScrollOpacity ?? DEFAULT_CRYSCROLLER_SCROLL_OPACITY;
-        document.getElementById('cryscroller-scroll-active-opacity').value = state.settings.cryscrollerScrollActiveOpacity ?? DEFAULT_CRYSCROLLER_SCROLL_ACTIVE_OPACITY;
         elements.enableElevationToggle.checked = state.settings.enableElevation;
         elements.enableElevationHoverToggle.checked = state.settings.enableElevationHover;
         elements.elevationHoverOption.classList.toggle('hidden', !state.settings.enableElevation);
@@ -13170,7 +12695,6 @@ Object.assign(uiUtils, {
         elements.toggleButtonBottomFontSizeInput.value = state.settings.toggleButtonBottomFontSize ?? DEFAULT_TOGGLE_BUTTON_BOTTOM_FONT_SIZE;
         elements.toggleButtonBottomTextCollapseInput.value = state.settings.toggleButtonBottomTextCollapse || DEFAULT_TOGGLE_BUTTON_BOTTOM_TEXT_COLLAPSE;
         elements.toggleButtonBottomTextExpandInput.value = state.settings.toggleButtonBottomTextExpand || DEFAULT_TOGGLE_BUTTON_BOTTOM_TEXT_EXPAND;
-        document.getElementById('cryscroller-scroll-opacity').value = state.settings.cryscrollerScrollOpacity ?? DEFAULT_CRYSCROLLER_SCROLL_OPACITY;
         document.documentElement.style.setProperty('--message-body-font-size', `${state.settings.messageBodyFontSize || DEFAULT_MESSAGE_BODY_FONT_SIZE}px`);
         document.documentElement.style.setProperty('--code-block-font-size', `${state.settings.codeBlockFontSize || DEFAULT_CODE_BLOCK_FONT_SIZE}px`);
         document.documentElement.style.setProperty('--thought-summary-font-size', `${state.settings.thoughtSummaryFontSize || DEFAULT_THOUGHT_SUMMARY_FONT_SIZE}px`);
@@ -13201,7 +12725,6 @@ Object.assign(uiUtils, {
         this.applySidePanelSettingsToUI();
         this.applyMinimizeUI();
         this.applyAiBubbleWidthSetting();
-        uiUtils.updateSessionLinkingUI();
         uiUtils.updateApiProviderSelectOptions();
         uiUtils.updateApiKeyCycleButtons();
         uiUtils.toggleMultiApiKeysVisibility(state.settings.showMultiApiKeys);
@@ -13328,12 +12851,6 @@ Object.assign(uiUtils, {
             }
             if (elements.rollDiceBtn) {
                 elements.rollDiceBtn.classList.toggle('hidden', !state.settings.showDiceButton);
-            }
-            if (elements.aiToAiChatBtn) {
-                const showAiToAiBtn = state.settings.enableSessionLinking &&
-                    state.linkedSessionIds.length === 2 &&
-                    state.currentChatId && state.linkedSessionIds.includes(state.currentChatId);
-                elements.aiToAiChatBtn.classList.toggle('hidden', !showAiToAiBtn);
             }
             if (elements.footerApiProviderToggleBtn) {
                 elements.footerApiProviderToggleBtn.classList.toggle('hidden', !state.settings.showApiProviderToggleFooter);
@@ -13625,10 +13142,6 @@ Object.assign(uiUtils, {
                 this.applySettingsUIDetailsOpenStates();
             return;
         }
-        // チャット画面へ戻る際、現在最下部にいるかを判定しておく
-        const chatMain = elements.chatScreen.querySelector('.main-content');
-        // 判定を少し緩くして(100px)、キーボード開閉等のズレも許容する
-        const isChatAtBottom = screenName === 'chat' && (chatMain.scrollHeight - chatMain.scrollTop - chatMain.clientHeight < 100);
         const allScreens = [elements.chatScreen, elements.historyScreen, elements.settingsScreen];
         let activeScreen = null;
         if (!fromPopState) {
@@ -13676,18 +13189,6 @@ Object.assign(uiUtils, {
             if (activeScreen) {
                 activeScreen.inert = false;
                 activeScreen.classList.add('active');
-                if (state.settings.enableImmersiveScrolling) {
-                    appLogic.updateImmersiveLayout();
-                    if (screenName === 'chat' && isChatAtBottom) {
-                        chatMain.scrollTop = chatMain.scrollHeight;
-                    }
-                    setTimeout(() => {
-                        appLogic.updateImmersiveLayout();
-                        if (screenName === 'chat' && isChatAtBottom) {
-                            chatMain.scrollTop = chatMain.scrollHeight;
-                        }
-                    }, 305);
-                }
             }
             setTimeout(() => {
                 allScreens.forEach(screen => {
@@ -13706,32 +13207,22 @@ Object.assign(uiUtils, {
             elements.sendButton.classList.add('sending');
             elements.sendButton.title = "停止";
             elements.sendButton.disabled = false;
-            if (elements.aiToAiChatBtn)
-                elements.aiToAiChatBtn.disabled = true;
         }
         else {
             elements.sendButton.textContent = '送';
             elements.sendButton.classList.remove('sending');
             elements.sendButton.title = "送信";
-            if (elements.aiToAiChatBtn) {
-                const showAiToAiBtn = state.settings.enableSessionLinking &&
-                    state.linkedSessionIds.length === 2 &&
-                    state.currentChatId && state.linkedSessionIds.includes(state.currentChatId);
-                elements.aiToAiChatBtn.disabled = !showAiToAiBtn;
-            }
             this.adjustTextareaHeight();
         }
         this.updateLoadingIndicator();
     },
     updateLoadingIndicator() {
-        const isProcessing = state.isAiToAiChatProcessing || state.isProofreading || state.isSending;
+        const isProcessing = state.isProofreading || state.isSending;
         if (isProcessing) {
             elements.loadingIndicator.classList.remove('hidden');
-            elements.loadingIndicator.setAttribute('aria-live', state.isAiToAiChatProcessing ? 'assertive' : 'polite');
+            elements.loadingIndicator.setAttribute('aria-live', 'polite');
             let baseText = '応答中';
-            if (state.isAiToAiChatProcessing)
-                baseText = state.aiToAiProcessingMessage;
-            else if (state.isProofreading)
+            if (state.isProofreading)
                 baseText = '校正中...';
             if (state.settings.showResponseTimer) {
                 if (!state.responseTimerId) {
@@ -13739,7 +13230,7 @@ Object.assign(uiUtils, {
                     state.responseTimerId = setInterval(() => {
                         const now = Date.now();
                         const elapsed = ((now - state.responseStartTime) / 1000).toFixed(1);
-                        if (state.isSending && !state.isProofreading && !state.isAiToAiChatProcessing) {
+                        if (state.isSending && !state.isProofreading) {
                             elements.loadingIndicator.textContent = `${elapsed}s`;
                         }
                         else {
@@ -14090,37 +13581,6 @@ Object.assign(uiUtils, {
                 textNode.parentNode.replaceChild(fragment, textNode);
             }
         }
-    },
-    setAiToAiProcessingState(processing, message = "AI間会話処理中...") {
-        state.isAiToAiChatProcessing = processing;
-        state.aiToAiProcessingMessage = message;
-        if (processing) {
-            elements.sendButton.disabled = true;
-            elements.userInput.disabled = true;
-            elements.attachFileBtn.disabled = true;
-            elements.pasteToInputBtn.disabled = true;
-            elements.rollDiceBtn.disabled = true;
-            if (elements.aiToAiChatBtn)
-                elements.aiToAiChatBtn.disabled = true;
-        }
-        else {
-            elements.sendButton.disabled = elements.userInput.value.trim() === '' && state.pendingAttachments.length === 0;
-            elements.userInput.disabled = false;
-            elements.attachFileBtn.disabled = false;
-            elements.pasteToInputBtn.disabled = false;
-            elements.rollDiceBtn.disabled = false;
-            if (elements.aiToAiChatBtn) {
-                const showAiToAiBtn = state.settings.enableSessionLinking &&
-                    state.linkedSessionIds.length === 2 &&
-                    state.currentChatId && state.linkedSessionIds.includes(state.currentChatId);
-                elements.aiToAiChatBtn.disabled = !showAiToAiBtn;
-            }
-        }
-        this.updateLoadingIndicator();
-    },
-    updateSessionLinkingUI() {
-        this.renderHistoryList();
-        this.updateChatScreenElementVisibility();
     },
     updateApiProviderSelectOptions() {
         const apiProviderSelect = elements.apiProviderSelect;
@@ -14739,7 +14199,6 @@ Object.assign(appLogic, {
         elements.pasteClipboardStackBtn.addEventListener('click', () => this.pasteIntoClipboardStack());
         elements.scrollToTopBtn.addEventListener('click', () => this.scrollToTop());
         elements.scrollToBottomBtn.addEventListener('click', () => this.scrollToBottom());
-        elements.aiToAiChatBtn.addEventListener('click', () => this.initiateAiToAiStep());
         elements.pasteToInputBtn.addEventListener('click', () => this.pasteToUserInput());
         elements.rollDiceBtn.addEventListener('click', () => this.rollDiceAndInput());
         elements.newChatBtn.addEventListener('click', () => {
@@ -14856,15 +14315,6 @@ Object.assign(appLogic, {
                 const selectedProvider = event.target.value;
                 state.settings.apiProvider = selectedProvider;
                 uiUtils.toggleApiSettingsVisibility(selectedProvider);
-            });
-        }
-        if (elements.enableSessionLinkingCheckbox) {
-            elements.enableSessionLinkingCheckbox.addEventListener('change', () => {
-                state.settings.enableSessionLinking = elements.enableSessionLinkingCheckbox.checked;
-                if (!state.settings.enableSessionLinking) {
-                    state.linkedSessionIds = [];
-                }
-                uiUtils.updateSessionLinkingUI();
             });
         }
         elements.setThinkingBudgetBtns.forEach(button => {
@@ -15091,17 +14541,9 @@ Object.assign(appLogic, {
         this._setupOpacitySlider('header-footer-opacity', '--header-footer-opacity', DEFAULT_HEADER_FOOTER_OPACITY);
         this._setupOpacitySlider('toggle-button-top-opacity', '--message-toggle-button-top-opacity', DEFAULT_TOGGLE_BUTTON_TOP_OPACITY);
         this._setupOpacitySlider('thought-summary-opacity', '--thought-summary-opacity', DEFAULT_THOUGHT_SUMMARY_OPACITY);
-        this._setupOpacitySlider('cryscroller-scroll-opacity', '--cryscroller-scroll-opacity', DEFAULT_CRYSCROLLER_SCROLL_OPACITY);
-        this._setupOpacitySlider('cryscroller-scroll-active-opacity', '--cryscroller-scroll-active-opacity', DEFAULT_CRYSCROLLER_SCROLL_ACTIVE_OPACITY);
         this._setupFontSizeSlider('message-body-font-size-input', '--message-body-font-size', DEFAULT_MESSAGE_BODY_FONT_SIZE);
         this._setupFontSizeSlider('code-block-font-size-input', '--code-block-font-size', DEFAULT_CODE_BLOCK_FONT_SIZE);
         this._setupFontSizeSlider('thought-summary-font-size', '--thought-summary-font-size', DEFAULT_THOUGHT_SUMMARY_FONT_SIZE);
-        this._setupFontSizeSlider('cryscroller-scroll-width-input', '--cryscroller-scroll-width', DEFAULT_CRYSCROLLER_SCROLL_WIDTH);
-        const delayVal = state.settings.cryscrollerObserverDelay || 500;
-        elements.cryscrollerObserverDelayInput.value = delayVal;
-        document.getElementById('cryscroller-observer-delay-slider').value = delayVal;
-        elements.cryscrollerObserverDelayInput.oninput = (e) => document.getElementById('cryscroller-observer-delay-slider').value = e.target.value;
-        document.getElementById('cryscroller-observer-delay-slider').oninput = (e) => elements.cryscrollerObserverDelayInput.value = e.target.value;
         this._setupUiScaleSlider('chat-ui-scale-input', '--chat-ui-scale', 1.0);
         this._setupUiScaleSlider('settings-ui-scale-input', '--settings-ui-scale', 1.0);
         this._setupUiScaleSlider('history-ui-scale-input', '--history-ui-scale', 1.0);
@@ -15205,31 +14647,6 @@ Object.assign(appLogic, {
             state.settings.minimizeHeaderFooter = e.target.checked;
             uiUtils.applyMinimizeUI();
         });
-        elements.enableCryscrollerScrollToggle.addEventListener('change', (e) => {
-            state.settings.enableCryscrollerScroll = e.target.checked;
-            document.body.classList.toggle('cryscroller-scroll-enabled', state.settings.enableCryscrollerScroll);
-        });
-        elements.enableImmersiveScrollingToggle.addEventListener('change', (e) => {
-            state.settings.enableImmersiveScrolling = e.target.checked;
-            appLogic.updateImmersiveLayout();
-        });
-        elements.enableDynamicScrollMarkerColorToggle.addEventListener('change', (e) => {
-            state.settings.enableDynamicScrollMarkerColor = e.target.checked;
-            window.dispatchEvent(new Event('resize'));
-        });
-        appLogic.initCryscrollerScroll();
-        elements.enableSettingsCryscrollerScrollToggle.addEventListener('change', (e) => {
-            state.settings.enableSettingsCryscrollerScroll = e.target.checked;
-            document.body.classList.toggle('settings-cryscroller-scroll-enabled', state.settings.enableSettingsCryscrollerScroll);
-            window.dispatchEvent(new Event('resize'));
-        });
-        appLogic.initSettingsCryscrollerScroll();
-        elements.enableHistoryCryscrollerScrollToggle.addEventListener('change', (e) => {
-            state.settings.enableHistoryCryscrollerScroll = e.target.checked;
-            document.body.classList.toggle('history-cryscroller-scroll-enabled', state.settings.enableHistoryCryscrollerScroll);
-            window.dispatchEvent(new Event('resize'));
-        });
-        appLogic.initHistoryCryscrollerScroll();
         elements.extendAiBubbleWidthToggle.addEventListener('change', (e) => {
             state.settings.extendAiBubbleWidth = e.target.checked;
             uiUtils.applyAiBubbleWidthSetting();
@@ -15253,11 +14670,6 @@ Object.assign(appLogic, {
         elements.flatSettingsDesignToggle.addEventListener('change', (e) => {
             state.settings.flatSettingsDesign = e.target.checked;
             document.body.classList.toggle('flat-settings-mode', e.target.checked);
-        });
-        elements.showSessionLinkingSettingsToggle.addEventListener('change', (e) => {
-            if (elements.sessionLinkingSettingsGroup) {
-                elements.sessionLinkingSettingsGroup.classList.toggle('hidden', !e.target.checked);
-            }
         });
         elements.memoHeightInput.addEventListener('input', () => {
             const newHeight = elements.memoHeightInput.value.trim();
@@ -18607,7 +18019,6 @@ Object.assign(appLogic, {
         newSettings.autoScrollOnThought = elements.autoScrollOnThoughtCheckbox.checked;
         newSettings.historySortOrder = elements.historySortOrderSelect.value;
         newSettings.theme = elements.themeSelect.value;
-        newSettings.enableSessionLinking = elements.enableSessionLinkingCheckbox.checked;
         newSettings.fontFamily = elements.fontFamilyInput.value.trim();
         newSettings.messageBodyFontSize = elements.messageBodyFontSizeInput.value === '' ? null : parseInt(elements.messageBodyFontSizeInput.value, 10);
         newSettings.codeBlockFontSize = elements.codeBlockFontSizeInput.value === '' ? null : parseInt(elements.codeBlockFontSizeInput.value, 10);
@@ -18618,18 +18029,12 @@ Object.assign(appLogic, {
         newSettings.enableSwipeNavigation = elements.swipeNavigationToggle.checked;
         newSettings.preventZoom = elements.preventZoomToggle.checked;
         newSettings.minimizeHeaderFooter = document.getElementById('minimize-header-footer-toggle').checked;
-        newSettings.enableCryscrollerScroll = elements.enableCryscrollerScrollToggle.checked;
-        newSettings.enableImmersiveScrolling = elements.enableImmersiveScrollingToggle.checked;
-        newSettings.enableDynamicScrollMarkerColor = elements.enableDynamicScrollMarkerColorToggle.checked;
-        const scrollWidth = parseInt(elements.cryscrollerScrollWidthInput.value, 10);
-        newSettings.cryscrollerScrollWidth = (isNaN(scrollWidth) || scrollWidth < 10) ? DEFAULT_CRYSCROLLER_SCROLL_WIDTH : scrollWidth;
         newSettings.extendAiBubbleWidth = elements.extendAiBubbleWidthToggle.checked;
         newSettings.extendUserBubbleWidth = elements.extendUserBubbleWidthToggle.checked;
         newSettings.reduceMessageSpacing = elements.reduceMessageSpacingToggle.checked;
         newSettings.compactSettingsSpacing = elements.compactSettingsSpacingToggle.checked;
         newSettings.slimSettingsHeaders = elements.slimSettingsHeadersToggle.checked;
         newSettings.flatSettingsDesign = elements.flatSettingsDesignToggle.checked;
-        newSettings.showSessionLinkingSettings = elements.showSessionLinkingSettingsToggle.checked;
         newSettings.showChatTitle = elements.showChatTitleToggle.checked;
         newSettings.showNewChatButton = elements.showNewChatButtonToggle.checked;
         newSettings.showDeleteSessionButton = elements.showDeleteSessionButtonToggle.checked;
@@ -18640,7 +18045,6 @@ Object.assign(appLogic, {
         newSettings.showBulkHistoryActions = elements.showBulkHistoryActionsToggle.checked;
         newSettings.showHistoryPreviewBubble = elements.showHistoryPreviewBubbleToggle.checked;
         newSettings.stripedHistoryList = elements.stripedHistoryListToggle.checked;
-        newSettings.cryscrollerObserverDelay = parseInt(elements.cryscrollerObserverDelayInput.value, 10) || 500;
         newSettings.showPasteButtonInFooter = elements.showPasteButtonInFooterToggle.checked;
         newSettings.showPasteButtonInEdit = elements.showPasteButtonInEditToggle.checked;
         newSettings.showDiceButton = elements.showDiceButtonToggle.checked;
@@ -18690,14 +18094,6 @@ Object.assign(appLogic, {
         newSettings.toggleButtonBottomTextCollapse = elements.toggleButtonBottomTextCollapseInput.value.trim() || DEFAULT_TOGGLE_BUTTON_BOTTOM_TEXT_COLLAPSE;
         newSettings.toggleButtonBottomTextExpand = elements.toggleButtonBottomTextExpandInput.value.trim() || DEFAULT_TOGGLE_BUTTON_BOTTOM_TEXT_EXPAND;
         newSettings.thoughtSummaryOpacity = elements.thoughtSummaryOpacityInput.value === '' ? DEFAULT_THOUGHT_SUMMARY_OPACITY : parseFloat(elements.thoughtSummaryOpacityInput.value);
-        const cryscrollerScrollOpacityInput = document.getElementById('cryscroller-scroll-opacity');
-        newSettings.cryscrollerScrollOpacity = cryscrollerScrollOpacityInput.value === '' ? DEFAULT_CRYSCROLLER_SCROLL_OPACITY : parseFloat(cryscrollerScrollOpacityInput.value);
-        newSettings.enableCryscrollerScrollOpacity = document.querySelector('.opacity-disable-checkbox[data-target-id="cryscroller-scroll-opacity"]').checked;
-        const cryscrollerScrollActiveOpacityInput = document.getElementById('cryscroller-scroll-active-opacity');
-        newSettings.cryscrollerScrollActiveOpacity = cryscrollerScrollActiveOpacityInput.value === '' ? DEFAULT_CRYSCROLLER_SCROLL_ACTIVE_OPACITY : parseFloat(cryscrollerScrollActiveOpacityInput.value);
-        newSettings.enableCryscrollerScrollActiveOpacity = document.querySelector('.opacity-disable-checkbox[data-target-id="cryscroller-scroll-active-opacity"]').checked;
-        newSettings.enableSettingsCryscrollerScroll = elements.enableSettingsCryscrollerScrollToggle.checked;
-        newSettings.enableHistoryCryscrollerScroll = elements.enableHistoryCryscrollerScrollToggle.checked;
         newSettings.enableElevation = elements.enableElevationToggle.checked;
         newSettings.enableElevationHover = elements.enableElevationHoverToggle.checked;
         newSettings.autoCloseOtherSettings = elements.autoCloseOtherSettingsToggle.checked;
@@ -19662,863 +19058,6 @@ Object.assign(appLogic, {
         requestAnimationFrame(() => {
             uiUtils.scrollToBottom();
         });
-    },
-    toggleSessionLink(sessionId) {
-        if (!state.settings.enableSessionLinking)
-            return;
-        const index = state.linkedSessionIds.indexOf(sessionId);
-        if (index > -1) {
-            state.linkedSessionIds.splice(index, 1);
-        }
-        else {
-            if (state.linkedSessionIds.length >= 2) {
-                state.linkedSessionIds.shift();
-            }
-            state.linkedSessionIds.push(sessionId);
-        }
-        uiUtils.updateSessionLinkingUI();
-    },
-});
-
-/* source: session-linking-runtime.ts */
-// @ts-nocheck -- Enable after shared application types are defined.
-// Bundled into the generated index.html from this TypeScript source.
-Object.assign(appLogic, {
-    async initiateAiToAiStep() {
-        if (state.isAiToAiChatProcessing || state.isSending) {
-            await uiUtils.showCustomAlert("現在処理中です。");
-            return;
-        }
-        if (state.linkedSessionIds.length !== 2 || !state.currentChatId || !state.linkedSessionIds.includes(state.currentChatId)) {
-            await uiUtils.showCustomAlert("AI間会話を実行するには、現在のチャットを含む2つのセッションをリンクしてください。");
-            return;
-        }
-        const selectedApiProvider = state.settings.apiProvider;
-        if ((selectedApiProvider === 'gemini' && !state.settings.apiKey) ||
-            (selectedApiProvider === 'deepseek' && !state.settings.deepSeekApiKey) ||
-            (selectedApiProvider === 'claude' && !state.settings.claudeApiKey) ||
-            (selectedApiProvider === 'openai' && !state.settings.openaiApiKey) ||
-            (selectedApiProvider === 'xai' && !state.settings.xaiApiKey) ||
-            (selectedApiProvider === 'llmaggregator' && !state.settings.llmAggregatorApiKey)) {
-            await uiUtils.showCustomAlert("選択中のAPIプロバイダーのAPIキーが設定されていません。");
-            uiUtils.showScreen('settings');
-            return;
-        }
-        uiUtils.setAiToAiProcessingState(true, "AI間会話処理中 (ステップ1/2)...");
-        const sessionA_Id = state.currentChatId;
-        const sessionB_Id = state.linkedSessionIds.find(id => id !== sessionA_Id);
-        try {
-            const sessionA_Data = await dbUtils.getChat(sessionA_Id);
-            if (!sessionA_Data || !sessionA_Data.messages || sessionA_Data.messages.length === 0) {
-                throw new Error(`セッションA (${sessionA_Id}) のデータが取得できませんでした。`);
-            }
-            const lastAiMessageA = [...sessionA_Data.messages].reverse().find(msg => msg.role === 'model' && (!msg.isCascaded || msg.isSelected));
-            if (!lastAiMessageA || !lastAiMessageA.content) {
-                throw new Error(`セッションA (${sessionA_Id}) の最新のAI応答が見つかりません。`);
-            }
-            const inputForB = lastAiMessageA.content;
-            const sessionB_Data = await dbUtils.getChat(sessionB_Id);
-            if (!sessionB_Data) {
-                throw new Error(`セッションB (${sessionB_Id}) のデータが取得できませんでした。`);
-            }
-            let apiKeyForB, modelNameForB;
-            const providerForSettingsB = state.settings.apiProvider;
-            if (state.settings.showMultiApiKeys) {
-                apiKeyForB = multiApiKeyUtils.getActiveApiKey(providerForSettingsB);
-            }
-            else {
-                switch (providerForSettingsB) {
-                    case 'gemini':
-                        apiKeyForB = state.settings.apiKey;
-                        break;
-                    case 'deepseek':
-                        apiKeyForB = state.settings.deepSeekApiKey;
-                        break;
-                    case 'claude':
-                        apiKeyForB = state.settings.claudeApiKey;
-                        break;
-                    case 'openai':
-                        apiKeyForB = state.settings.openaiApiKey;
-                        break;
-                    case 'xai':
-                        apiKeyForB = state.settings.xaiApiKey;
-                        break;
-                    case 'llmaggregator':
-                        apiKeyForB = state.settings.llmAggregatorApiKey;
-                        break;
-                }
-            }
-            switch (providerForSettingsB) {
-                case 'gemini':
-                    modelNameForB = state.settings.modelName;
-                    break;
-                case 'deepseek':
-                    modelNameForB = state.settings.deepSeekModelName;
-                    break;
-                case 'claude':
-                    modelNameForB = state.settings.claudeModelName;
-                    break;
-                case 'openai':
-                    modelNameForB = state.settings.openaiModelName;
-                    break;
-                case 'xai':
-                    modelNameForB = state.settings.xaiModelName;
-                    break;
-                case 'llmaggregator':
-                    modelNameForB = state.settings.llmAggregatorModelName;
-                    break;
-            }
-            let systemPromptB, enableSystemPromptDefaultB, dummyUserB, enableDummyUserB, dummyModelB, enableDummyModelB, temperatureB, maxTokensB, topPB, streamingOutputB, streamingSpeedB, concatDummyModelB, geminiTopKB, geminiThinkingBudgetB, geminiIncludeThoughtsB, geminiPseudoStreamingB, geminiEnableGroundingB, deepSeekIncludeThoughtsB, presencePenaltyB, frequencyPenaltyB, claudeTopKB, claudeIncludeThoughtsB, claudeThinkingBudgetB, claudeExpandThoughtsByDefaultB, xaiVisionEnableB, xaiIncludeThoughtsB, xaiReasoningEffortB, llmAggregatorTopKB;
-            if (providerForSettingsB === 'gemini') {
-                systemPromptB = state.settings.geminiSystemPrompt;
-                enableSystemPromptDefaultB = state.settings.geminiEnableSystemPromptDefault;
-                temperatureB = state.settings.geminiTemperature;
-                maxTokensB = state.settings.geminiMaxTokens;
-                geminiTopKB = state.settings.geminiTopK;
-                topPB = state.settings.geminiTopP;
-                presencePenaltyB = state.settings.geminiPresencePenalty;
-                frequencyPenaltyB = state.settings.geminiFrequencyPenalty;
-                geminiThinkingBudgetB = state.settings.geminiThinkingBudget;
-                geminiIncludeThoughtsB = state.settings.geminiIncludeThoughts;
-                streamingOutputB = state.settings.geminiStreamingOutput;
-                streamingSpeedB = state.settings.geminiStreamingSpeed;
-                dummyUserB = state.settings.geminiDummyUser;
-                enableDummyUserB = state.settings.geminiEnableDummyUser;
-                dummyModelB = state.settings.geminiDummyModel;
-                enableDummyModelB = state.settings.geminiEnableDummyModel;
-                concatDummyModelB = state.settings.geminiConcatDummyModel;
-                geminiPseudoStreamingB = state.settings.geminiPseudoStreaming;
-                geminiEnableGroundingB = state.settings.geminiEnableGrounding;
-            }
-            else if (providerForSettingsB === 'deepseek') {
-                systemPromptB = state.settings.deepSeekSystemPrompt;
-                enableSystemPromptDefaultB = state.settings.deepSeekEnableSystemPromptDefault;
-                temperatureB = state.settings.deepSeekTemperature;
-                maxTokensB = state.settings.deepSeekMaxTokens;
-                topPB = state.settings.deepSeekTopP;
-                presencePenaltyB = state.settings.deepSeekPresencePenalty;
-                frequencyPenaltyB = state.settings.deepSeekFrequencyPenalty;
-                contextDeepSeekIncludeThoughts = state.settings.deepSeekIncludeDeepSeekThoughts;
-                streamingOutputB = state.settings.deepSeekStreamingOutput;
-                streamingSpeedB = state.settings.deepSeekStreamingSpeed;
-                dummyUserB = state.settings.deepSeekDummyUser;
-                enableDummyUserB = state.settings.deepSeekEnableDummyUser;
-                dummyModelB = state.settings.deepSeekDummyModel;
-                enableDummyModelB = state.settings.deepSeekEnableDummyModel;
-                concatDummyModelB = state.settings.deepSeekConcatDummyModel;
-            }
-            else if (providerForSettingsB === 'llmaggregator') {
-                systemPromptB = state.settings.llmAggregatorSystemPrompt;
-                enableSystemPromptDefaultB = state.settings.llmAggregatorEnableSystemPromptDefault;
-                temperatureB = state.settings.llmAggregatorTemperature;
-                maxTokensB = state.settings.llmAggregatorMaxTokens;
-                topPB = state.settings.llmAggregatorTopP;
-                llmAggregatorTopKB = state.settings.llmAggregatorTopK;
-                presencePenaltyB = state.settings.llmAggregatorPresencePenalty;
-                frequencyPenaltyB = state.settings.llmAggregatorFrequencyPenalty;
-                contextDeepSeekIncludeThoughts = state.settings.llmAggregatorIncludeThoughts;
-                streamingOutputB = state.settings.llmAggregatorStreamingOutput;
-                streamingSpeedB = state.settings.llmAggregatorStreamingSpeed;
-                dummyUserB = state.settings.llmAggregatorDummyUser;
-                enableDummyUserB = state.settings.llmAggregatorEnableDummyUser;
-                dummyModelB = state.settings.llmAggregatorDummyModel;
-                enableDummyModelB = state.settings.llmAggregatorEnableDummyModel;
-                concatDummyModelB = state.settings.llmAggregatorConcatDummyModel;
-            }
-            else if (providerForSettingsB === 'claude') {
-                systemPromptB = state.settings.claudeSystemPrompt;
-                enableSystemPromptDefaultB = state.settings.claudeEnableSystemPromptDefault;
-                temperatureB = state.settings.claudeTemperature;
-                maxTokensB = state.settings.claudeMaxTokens;
-                claudeTopKB = state.settings.claudeTopK;
-                topPB = state.settings.claudeTopP;
-                streamingOutputB = state.settings.claudeStreamingOutput;
-                streamingSpeedB = state.settings.claudeStreamingSpeed;
-                dummyUserB = state.settings.claudeDummyUser;
-                enableDummyUserB = state.settings.claudeEnableDummyUser;
-                dummyModelB = state.settings.claudeDummyModel;
-                enableDummyModelB = state.settings.claudeEnableDummyModel;
-                concatDummyModelB = state.settings.claudeConcatDummyModel;
-                claudeIncludeThoughtsB = state.settings.claudeIncludeThoughts;
-                claudeThinkingBudgetB = state.settings.claudeThinkingBudget;
-                claudeExpandThoughtsByDefaultB = state.settings.claudeExpandThoughtsByDefault;
-            }
-            else if (providerForSettingsB === 'openai') {
-                systemPromptB = state.settings.openaiSystemPrompt;
-                enableSystemPromptDefaultB = state.settings.openaiEnableSystemPromptDefault;
-                temperatureB = state.settings.openaiTemperature;
-                maxTokensB = state.settings.openaiMaxTokens;
-                topPB = state.settings.openaiTopP;
-                presencePenaltyB = state.settings.openaiPresencePenalty;
-                frequencyPenaltyB = state.settings.openaiFrequencyPenalty;
-                streamingOutputB = state.settings.openaiStreamingOutput;
-                streamingSpeedB = state.settings.openaiStreamingSpeed;
-                dummyUserB = state.settings.openaiDummyUser;
-                enableDummyUserB = state.settings.openaiEnableDummyUser;
-                dummyModelB = state.settings.openaiDummyModel;
-                enableDummyModelB = state.settings.openaiEnableDummyModel;
-                concatDummyModelB = state.settings.openaiConcatDummyModel;
-            }
-            else if (providerForSettingsB === 'xai') {
-                systemPromptB = state.settings.xaiSystemPrompt;
-                enableSystemPromptDefaultB = state.settings.xaiEnableSystemPromptDefault;
-                temperatureB = state.settings.xaiTemperature;
-                maxTokensB = state.settings.xaiMaxTokens;
-                topPB = state.settings.xaiTopP;
-                presencePenaltyB = state.settings.xaiPresencePenalty;
-                frequencyPenaltyB = state.settings.xaiFrequencyPenalty;
-                streamingOutputB = state.settings.xaiStreamingOutput;
-                streamingSpeedB = state.settings.xaiStreamingSpeed;
-                dummyUserB = state.settings.xaiDummyUser;
-                enableDummyUserB = state.settings.xaiEnableDummyUser;
-                dummyModelB = state.settings.xaiDummyModel;
-                enableDummyModelB = state.settings.xaiEnableDummyModel;
-                concatDummyModelB = state.settings.xaiConcatDummyModel;
-                xaiVisionEnableB = state.settings.xaiVisionEnable;
-                xaiIncludeThoughtsB = state.settings.xaiIncludeThoughts;
-                xaiReasoningEffortB = state.settings.xaiReasoningEffort;
-            }
-            const contextForB = {
-                sessionId: sessionB_Id,
-                messages: sessionB_Data.messages ? [...sessionB_Data.messages] : [],
-                systemPrompt: systemPromptB,
-                enableSystemPromptDefault: enableSystemPromptDefaultB,
-                temperature: temperatureB, maxTokens: maxTokensB, topP: topPB,
-                presencePenalty: presencePenaltyB, frequencyPenalty: frequencyPenaltyB,
-                streamingOutput: streamingOutputB, streamingSpeed: streamingSpeedB,
-                dummyUser: dummyUserB, enableDummyUser: enableDummyUserB,
-                dummyModel: dummyModelB, enableDummyModelB: enableDummyModelB, concatDummyModel: concatDummyModelB,
-                topK: providerForSettingsB === 'gemini' ? geminiTopKB :
-                    providerForSettingsB === 'claude' ? claudeTopKB :
-                        providerForSettingsB === 'llmaggregator' ? llmAggregatorTopKB : undefined,
-                thinkingBudget: providerForSettingsB === 'gemini' ? geminiThinkingBudgetB :
-                    providerForSettingsB === 'claude' ? claudeThinkingBudgetB : undefined,
-                includeThoughts: providerForSettingsB === 'gemini' ? geminiIncludeThoughtsB :
-                    (providerForSettingsB === 'deepseek' || providerForSettingsB === 'llmaggregator') ? contextDeepSeekIncludeThoughts :
-                        providerForSettingsB === 'claude' ? claudeIncludeThoughtsB :
-                            providerForSettingsB === 'xai' ? xaiIncludeThoughtsB : undefined,
-                expandThoughtsByDefault: (providerForSettingsB === 'gemini' && state.settings.geminiExpandThoughtsByDefault) ||
-                    (providerForSettingsB === 'deepseek' && state.settings.deepSeekExpandThoughtsByDefault) ||
-                    (providerForSettingsB === 'claude' ? claudeExpandThoughtsByDefaultB : undefined) ||
-                    (providerForSettingsB === 'xai' && state.settings.xaiExpandThoughtsByDefault) ||
-                    (providerForSettingsB === 'llmaggregator' && state.settings.llmAggregatorExpandThoughtsByDefault),
-                reasoningEffort: providerForSettingsB === 'xai' ? xaiReasoningEffortB : undefined,
-                pseudoStreaming: providerForSettingsB === 'gemini' ? geminiPseudoStreamingB : undefined,
-                enableGrounding: providerForSettingsB === 'gemini' ? geminiEnableGroundingB : undefined,
-                visionEnable: providerForSettingsB === 'xai' ? xaiVisionEnableB : undefined,
-                inputText: inputForB,
-                attachments: [],
-                apiProvider: providerForSettingsB,
-                _apiKeyOverride: apiKeyForB,
-                _modelNameOverride: modelNameForB
-            };
-            const responseFromB = await this.handleSend(false, -1, contextForB);
-            if (responseFromB === "APIキー未設定")
-                throw new Error("APIキーが設定されていません。");
-            if (!responseFromB || !responseFromB.content) {
-                throw new Error(`セッションB (${sessionB_Id}) からの応答がありませんでした。`);
-            }
-            const inputForA = responseFromB.content;
-            uiUtils.setAiToAiProcessingState(true, "AI間会話処理中 (ステップ2/2)...");
-            elements.userInput.value = inputForA;
-            uiUtils.adjustTextareaHeight();
-            await this.handleSend();
-        }
-        catch (error) {
-            await uiUtils.showCustomAlert(`AI間会話処理中にエラーが発生しました: ${error.message}`);
-            if (state.currentChatId === sessionA_Id && elements.chatScreen.classList.contains('active')) {
-                uiUtils.displayError(`AI間会話エラー: ${error.message}`, false);
-            }
-        }
-        finally {
-            uiUtils.setAiToAiProcessingState(false);
-        }
-    },
-    removeAttachment: async function (messageIndex, attachmentIndex, listItemElement) {
-        const message = state.currentMessages[messageIndex];
-        if (!message || !message.attachments || !message.attachments[attachmentIndex])
-            return;
-        const attachmentName = message.attachments[attachmentIndex].name;
-        let confirmed = true;
-        if (!state.settings.disableAttachmentConfirmation) {
-            confirmed = await uiUtils.showCustomConfirm(`添付ファイル「${attachmentName}」を削除しますか？`);
-        }
-        if (confirmed) {
-            message.attachments.splice(attachmentIndex, 1);
-            const list = listItemElement.parentElement;
-            listItemElement.remove();
-            const summary = list.closest('.attachment-details').querySelector('summary');
-            summary.textContent = `添付ファイル (${message.attachments.length}件)`;
-            try {
-                await dbUtils.saveChat();
-            }
-            catch (e) {
-                await uiUtils.showCustomAlert('添付ファイルの削除状態の保存に失敗しました。');
-            }
-        }
-    },
-    editAttachment: function (messageIndex, attachmentIndex) {
-        const hiddenInput = document.createElement('input');
-        hiddenInput.type = 'file';
-        hiddenInput.accept = "image/*,text/*,application/pdf,video/*,audio/*,.txt,.md,.csv,.json,.html,.css,.js,.py";
-        hiddenInput.style.display = 'none';
-        hiddenInput.onchange = async (event) => {
-            const file = event.target.files[0];
-            if (!file)
-                return;
-            if (file.size > MAX_FILE_SIZE) {
-                await uiUtils.showCustomAlert(`ファイルサイズが大きすぎます (${formatFileSize(MAX_FILE_SIZE)}以下)。`);
-                return;
-            }
-            try {
-                let textData = null;
-                let base64Data = null;
-                const fileName = file.name;
-                const fileExtension = fileName.slice(((fileName.lastIndexOf(".") - 1) >>> 0) + 2).toLowerCase();
-                let browserMimeType = file.type || '';
-                let guessedMimeType = extensionToMimeTypeMap[fileExtension] || browserMimeType || 'application/octet-stream';
-                if (guessedMimeType.startsWith('text/')) {
-                    textData = await new Promise((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.onload = () => resolve(reader.result);
-                        reader.onerror = (error) => reject(error);
-                        reader.readAsText(file);
-                    });
-                }
-                else {
-                    base64Data = await fileToBase64(file);
-                }
-                const message = state.currentMessages[messageIndex];
-                message.attachments[attachmentIndex] = {
-                    file: file,
-                    name: fileName,
-                    mimeType: guessedMimeType,
-                    base64Data: base64Data,
-                    textData: textData,
-                };
-                const messageElement = elements.messageContainer.querySelector(`.message[data-index="${messageIndex}"]`);
-                if (messageElement) {
-                    const listItem = messageElement.querySelector(`li[data-attachment-index="${attachmentIndex}"] .attachment-list-item-name`);
-                    if (listItem) {
-                        listItem.textContent = sanitizeText(fileName);
-                        listItem.title = `${sanitizeText(fileName)} (${sanitizeText(guessedMimeType)})`;
-                    }
-                }
-                await dbUtils.saveChat();
-            }
-            catch (error) {
-                await uiUtils.showCustomAlert(`ファイルの処理中にエラーが発生しました: ${error.message}`);
-            }
-            document.body.removeChild(hiddenInput);
-        };
-        document.body.appendChild(hiddenInput);
-        hiddenInput.click();
-    },
-    addMoreAttachments: function (messageIndex, listElement) {
-        const hiddenInput = document.createElement('input');
-        hiddenInput.type = 'file';
-        hiddenInput.multiple = true;
-        hiddenInput.accept = "image/*,text/*,application/pdf,video/*,audio/*,.txt,.md,.csv,.json,.html,.css,.js,.py";
-        hiddenInput.style.display = 'none';
-        hiddenInput.onchange = async (event) => {
-            const files = event.target.files;
-            if (!files || files.length === 0)
-                return;
-            const message = state.currentMessages[messageIndex];
-            let currentTotalSize = message.attachments.reduce((sum, att) => sum + (att.file?.size || 0), 0);
-            let encodingError = false;
-            for (const file of files) {
-                if (file.size > MAX_FILE_SIZE) {
-                    await uiUtils.showCustomAlert(`ファイル "${file.name}" はサイズが大きすぎます。`);
-                    continue;
-                }
-                if (currentTotalSize + file.size > MAX_TOTAL_ATTACHMENT_SIZE) {
-                    await uiUtils.showCustomAlert('合計ファイルサイズの上限を超えたため、一部のファイルは追加されませんでした。');
-                    break;
-                }
-                try {
-                    let textData = null;
-                    let base64Data = null;
-                    const fileName = file.name;
-                    const fileExtension = fileName.slice(((fileName.lastIndexOf(".") - 1) >>> 0) + 2).toLowerCase();
-                    let browserMimeType = file.type || '';
-                    let guessedMimeType = extensionToMimeTypeMap[fileExtension] || browserMimeType || 'application/octet-stream';
-                    if (guessedMimeType.startsWith('text/')) {
-                        textData = await new Promise((resolve, reject) => {
-                            const reader = new FileReader();
-                            reader.onload = () => resolve(reader.result);
-                            reader.onerror = (error) => reject(error);
-                            reader.readAsText(file);
-                        });
-                    }
-                    else {
-                        base64Data = await fileToBase64(file);
-                    }
-                    const newAttachment = {
-                        file: file,
-                        name: fileName,
-                        mimeType: guessedMimeType,
-                        base64Data: base64Data,
-                        textData: textData,
-                    };
-                    message.attachments.push(newAttachment);
-                    currentTotalSize += file.size;
-                    const newAttachmentIndex = message.attachments.length - 1;
-                    const listItem = document.createElement('li');
-                    listItem.dataset.attachmentIndex = newAttachmentIndex;
-                    const itemContainer = document.createElement('div');
-                    itemContainer.classList.add('attachment-list-item-container');
-                    const nameSpan = document.createElement('span');
-                    nameSpan.classList.add('attachment-list-item-name');
-                    nameSpan.textContent = sanitizeText(fileName);
-                    nameSpan.title = `${sanitizeText(fileName)} (${sanitizeText(guessedMimeType)})`;
-                    const actionsDiv = document.createElement('div');
-                    actionsDiv.classList.add('attachment-actions');
-                    if (guessedMimeType.startsWith('image/')) {
-                        const previewBtn = document.createElement('button');
-                        previewBtn.textContent = '表示';
-                        previewBtn.classList.add('attachment-preview-btn');
-                        previewBtn.onclick = (e) => { e.preventDefault(); appLogic.previewAttachment(messageIndex, newAttachmentIndex); };
-                        actionsDiv.appendChild(previewBtn);
-                    }
-                    const editBtn = document.createElement('button');
-                    editBtn.textContent = '編集';
-                    editBtn.classList.add('attachment-edit-btn');
-                    editBtn.onclick = (e) => { e.preventDefault(); appLogic.editAttachment(messageIndex, newAttachmentIndex); };
-                    const removeBtn = document.createElement('button');
-                    removeBtn.textContent = '削除';
-                    removeBtn.classList.add('attachment-remove-btn');
-                    removeBtn.onclick = (e) => { e.preventDefault(); appLogic.removeAttachment(messageIndex, newAttachmentIndex, listItem); };
-                    actionsDiv.appendChild(editBtn);
-                    actionsDiv.appendChild(removeBtn);
-                    itemContainer.appendChild(nameSpan);
-                    itemContainer.appendChild(actionsDiv);
-                    listItem.appendChild(itemContainer);
-                    listElement.appendChild(listItem);
-                }
-                catch (error) {
-                    encodingError = true;
-                    await uiUtils.showCustomAlert(`ファイル "${file.name}" の処理中にエラーが発生しました。`);
-                    break;
-                }
-            }
-            if (!encodingError) {
-                const summary = listElement.closest('.attachment-details').querySelector('summary');
-                summary.textContent = `添付ファイル (${message.attachments.length}件)`;
-                await dbUtils.saveChat();
-            }
-            document.body.removeChild(hiddenInput);
-        };
-        document.body.appendChild(hiddenInput);
-        hiddenInput.click();
-    },
-    previewAttachment: async function (messageIndex, attachmentIndex) {
-        const message = state.currentMessages[messageIndex];
-        const attachment = message?.attachments?.[attachmentIndex];
-        if (!attachment || !attachment.mimeType.startsWith('image/'))
-            return;
-        const dialog = elements.imagePreviewDialog;
-        const img = dialog.querySelector('img');
-        const okBtn = dialog.querySelector('.dialog-ok-btn');
-        img.src = `data:${attachment.mimeType};base64,${attachment.base64Data}`;
-        img.alt = attachment.name;
-        okBtn.onclick = () => dialog.close();
-        dialog.showModal();
-    },
-    initCryscrollerScroll() {
-        const mainContent = elements.chatScreen.querySelector('.main-content');
-        const zone = elements.cryscrollerScrollZone;
-        const handle = elements.cryscrollerScrollHandle;
-        const updateMarkers = () => {
-            if (!state.settings.enableCryscrollerScroll)
-                return;
-            zone.querySelectorAll('.scroll-marker').forEach(el => el.remove());
-            const messages = elements.messageContainer.querySelectorAll('.message');
-            const contentHeight = mainContent.scrollHeight;
-            const zoneHeight = zone.clientHeight;
-            if (contentHeight === 0 || zoneHeight === 0)
-                return;
-            const TURF_USER_RGB = "102, 215, 19";
-            const TURF_MODEL_RGB = "253, 110, 163";
-            const MAX_INTENSITY_LENGTH = 1000;
-            messages.forEach(msg => {
-                const marker = document.createElement('div');
-                marker.classList.add('scroll-marker');
-                let isUser = false;
-                let isModel = false;
-                if (msg.classList.contains('user')) {
-                    marker.classList.add('user');
-                    isUser = true;
-                }
-                else if (msg.classList.contains('model')) {
-                    marker.classList.add('model');
-                    isModel = true;
-                }
-                else {
-                    return;
-                }
-                const relativeTop = (msg.offsetTop / contentHeight) * zoneHeight;
-                marker.style.top = `${relativeTop}px`;
-                if (state.settings.enableDynamicScrollMarkerColor) {
-                    const index = parseInt(msg.dataset.index, 10);
-                    const messageData = state.currentMessages[index];
-                    const contentText = messageData ? (messageData.content || "") : msg.innerText;
-                    const textLength = contentText.length;
-                    if (textLength > 0) {
-                        const intensity = Math.min(1, textLength / MAX_INTENSITY_LENGTH);
-                        const alpha = 0.3 + (0.7 * intensity);
-                        if (isUser) {
-                            marker.style.backgroundColor = `rgba(${TURF_USER_RGB}, ${alpha})`;
-                        }
-                        else if (isModel) {
-                            marker.style.backgroundColor = `rgba(${TURF_MODEL_RGB}, ${alpha})`;
-                        }
-                    }
-                    else {
-                        marker.style.backgroundColor = "";
-                    }
-                }
-                const onMarkerClick = (e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    mainContent.scrollTop = msg.offsetTop - 10;
-                };
-                marker.addEventListener('click', onMarkerClick);
-                zone.appendChild(marker);
-            });
-        };
-        const updateHandle = () => {
-            if (!state.settings.enableCryscrollerScroll)
-                return;
-            if (!document.body.classList.contains('immersive-mode')) {
-                zone.style.top = `${mainContent.offsetTop}px`;
-                zone.style.height = `${mainContent.offsetHeight}px`;
-            }
-            else {
-                zone.style.removeProperty('top');
-                zone.style.removeProperty('height');
-            }
-            const contentHeight = mainContent.scrollHeight;
-            const viewHeight = mainContent.clientHeight;
-            const zoneHeight = zone.clientHeight;
-            const scrollTop = mainContent.scrollTop;
-            if (contentHeight <= viewHeight) {
-                handle.style.display = 'none';
-                zone.querySelectorAll('.scroll-marker').forEach(el => el.style.display = 'none');
-                return;
-            }
-            handle.style.display = 'block';
-            zone.querySelectorAll('.scroll-marker').forEach(el => el.style.display = 'block');
-            let handleHeight = (viewHeight / contentHeight) * zoneHeight;
-            handleHeight = Math.max(handleHeight, 40);
-            const maxScrollTop = contentHeight - viewHeight;
-            const maxHandleTop = zoneHeight - handleHeight;
-            let handleTop = 0;
-            if (maxScrollTop > 0) {
-                handleTop = (scrollTop / maxScrollTop) * maxHandleTop;
-            }
-            handle.style.height = `${handleHeight}px`;
-            handle.style.transform = `translateY(${handleTop}px)`;
-        };
-        const updateAll = () => {
-            updateHandle();
-            updateMarkers();
-        };
-        let scrollTimeout;
-        const onScroll = () => {
-            updateHandle();
-            zone.classList.add('is-scrolling');
-            clearTimeout(scrollTimeout);
-            scrollTimeout = setTimeout(() => {
-                zone.classList.remove('is-scrolling');
-            }, 0);
-        };
-        mainContent.addEventListener('scroll', onScroll, { passive: true });
-        window.addEventListener('resize', updateAll);
-        let observerTimeout;
-        const observer = new MutationObserver(() => {
-            if (observerTimeout)
-                return;
-            observerTimeout = setTimeout(() => {
-                updateAll();
-                observerTimeout = null;
-            }, state.isSending ? (state.settings.cryscrollerObserverDelay || 500) : 50);
-        });
-        observer.observe(elements.messageContainer, { childList: true, subtree: true, attributes: true });
-        let isDragging = false;
-        const scrollByZone = (clientY) => {
-            const rect = zone.getBoundingClientRect();
-            const relativeY = clientY - rect.top;
-            const zoneHeight = zone.clientHeight;
-            const contentHeight = mainContent.scrollHeight;
-            const viewHeight = mainContent.clientHeight;
-            const percentage = Math.min(Math.max(relativeY / zoneHeight, 0), 1);
-            const targetScrollTop = percentage * (contentHeight - viewHeight);
-            mainContent.scrollTop = targetScrollTop;
-        };
-        const startDrag = (e) => {
-            if (!state.settings.enableCryscrollerScroll)
-                return;
-            isDragging = true;
-            zone.classList.add('is-dragging');
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            scrollByZone(clientY);
-            e.preventDefault();
-        };
-        const doDrag = (e) => {
-            if (!isDragging)
-                return;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            scrollByZone(clientY);
-            e.preventDefault();
-        };
-        const endDrag = () => {
-            isDragging = false;
-            zone.classList.remove('is-dragging');
-        };
-        zone.addEventListener('touchstart', startDrag, { passive: false });
-        zone.addEventListener('touchmove', doDrag, { passive: false });
-        zone.addEventListener('touchend', endDrag);
-        zone.addEventListener('mousedown', startDrag);
-        document.addEventListener('mousemove', doDrag);
-        document.addEventListener('mouseup', endDrag);
-        setTimeout(updateAll, 100);
-    },
-});
-
-/* source: scrolling-runtime.ts */
-// @ts-nocheck -- Enable after shared application types are defined.
-// Bundled into the generated index.html from this TypeScript source.
-Object.assign(appLogic, {
-    initSettingsCryscrollerScroll() {
-        const mainContent = elements.settingsScreen.querySelector('.main-content');
-        const zone = elements.settingsCryscrollerScrollZone;
-        const handle = elements.settingsCryscrollerScrollHandle;
-        const updateHandle = () => {
-            if (!state.settings.enableSettingsCryscrollerScroll)
-                return;
-            if (!document.body.classList.contains('immersive-mode')) {
-                const headerHeight = elements.settingsScreen.querySelector('.app-header').offsetHeight;
-                zone.style.top = `${headerHeight}px`;
-                zone.style.height = `calc(100% - ${headerHeight}px)`;
-            }
-            else {
-                zone.style.removeProperty('top');
-                zone.style.removeProperty('height');
-            }
-            const contentHeight = mainContent.scrollHeight;
-            const viewHeight = mainContent.clientHeight;
-            const zoneHeight = zone.clientHeight;
-            const scrollTop = mainContent.scrollTop;
-            if (contentHeight <= viewHeight) {
-                handle.style.display = 'none';
-                return;
-            }
-            handle.style.display = 'block';
-            let handleHeight = (viewHeight / contentHeight) * zoneHeight;
-            handleHeight = Math.max(handleHeight, 40);
-            const maxScrollTop = contentHeight - viewHeight;
-            const maxHandleTop = zoneHeight - handleHeight;
-            let handleTop = 0;
-            if (maxScrollTop > 0) {
-                handleTop = (scrollTop / maxScrollTop) * maxHandleTop;
-            }
-            handle.style.height = `${handleHeight}px`;
-            handle.style.transform = `translateY(${handleTop}px)`;
-        };
-        let scrollTimeout;
-        const onScroll = () => {
-            updateHandle();
-            zone.classList.add('is-scrolling');
-            clearTimeout(scrollTimeout);
-            scrollTimeout = setTimeout(() => {
-                zone.classList.remove('is-scrolling');
-            }, 0);
-        };
-        mainContent.addEventListener('scroll', onScroll, { passive: true });
-        window.addEventListener('resize', updateHandle);
-        let observerTimeout;
-        const observer = new MutationObserver(() => {
-            if (observerTimeout)
-                return;
-            observerTimeout = setTimeout(() => {
-                updateHandle();
-                observerTimeout = null;
-            }, 100);
-        });
-        observer.observe(mainContent, { childList: true, subtree: true, attributes: true });
-        let isDragging = false;
-        const scrollByZone = (clientY) => {
-            const rect = zone.getBoundingClientRect();
-            const relativeY = clientY - rect.top;
-            const zoneHeight = zone.clientHeight;
-            const contentHeight = mainContent.scrollHeight;
-            const viewHeight = mainContent.clientHeight;
-            const percentage = Math.min(Math.max(relativeY / zoneHeight, 0), 1);
-            const targetScrollTop = percentage * (contentHeight - viewHeight);
-            mainContent.scrollTop = targetScrollTop;
-        };
-        const startDrag = (e) => {
-            if (!state.settings.enableSettingsCryscrollerScroll)
-                return;
-            isDragging = true;
-            zone.classList.add('is-dragging');
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            scrollByZone(clientY);
-            e.preventDefault();
-        };
-        const doDrag = (e) => {
-            if (!isDragging)
-                return;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            scrollByZone(clientY);
-            e.preventDefault();
-        };
-        const endDrag = () => {
-            isDragging = false;
-            zone.classList.remove('is-dragging');
-        };
-        zone.addEventListener('touchstart', startDrag, { passive: false });
-        zone.addEventListener('touchmove', doDrag, { passive: false });
-        zone.addEventListener('touchend', endDrag);
-        zone.addEventListener('mousedown', startDrag);
-        document.addEventListener('mousemove', doDrag);
-        document.addEventListener('mouseup', endDrag);
-        setTimeout(updateHandle, 500);
-    },
-    initHistoryCryscrollerScroll() {
-        const mainContent = elements.historyScreen.querySelector('.main-content');
-        const zone = elements.historyCryscrollerScrollZone;
-        const handle = elements.historyCryscrollerScrollHandle;
-        const updateHandle = () => {
-            if (!state.settings.enableHistoryCryscrollerScroll)
-                return;
-            if (!document.body.classList.contains('immersive-mode')) {
-                const headerHeight = elements.historyScreen.querySelector('.app-header').offsetHeight;
-                zone.style.top = `${headerHeight}px`;
-                zone.style.height = `calc(100% - ${headerHeight}px)`;
-            }
-            else {
-                zone.style.removeProperty('top');
-                zone.style.removeProperty('height');
-            }
-            const contentHeight = mainContent.scrollHeight;
-            const viewHeight = mainContent.clientHeight;
-            const zoneHeight = zone.clientHeight;
-            const scrollTop = mainContent.scrollTop;
-            if (contentHeight <= viewHeight) {
-                handle.style.display = 'none';
-                return;
-            }
-            handle.style.display = 'block';
-            let handleHeight = (viewHeight / contentHeight) * zoneHeight;
-            handleHeight = Math.max(handleHeight, 40);
-            const maxScrollTop = contentHeight - viewHeight;
-            const maxHandleTop = zoneHeight - handleHeight;
-            let handleTop = 0;
-            if (maxScrollTop > 0) {
-                handleTop = (scrollTop / maxScrollTop) * maxHandleTop;
-            }
-            handle.style.height = `${handleHeight}px`;
-            handle.style.transform = `translateY(${handleTop}px)`;
-        };
-        let scrollTimeout;
-        const onScroll = () => {
-            updateHandle();
-            zone.classList.add('is-scrolling');
-            clearTimeout(scrollTimeout);
-            scrollTimeout = setTimeout(() => {
-                zone.classList.remove('is-scrolling');
-            }, 0);
-        };
-        mainContent.addEventListener('scroll', onScroll, { passive: true });
-        window.addEventListener('resize', updateHandle);
-        let observerTimeout;
-        const observer = new MutationObserver(() => {
-            if (observerTimeout)
-                return;
-            observerTimeout = setTimeout(() => {
-                updateHandle();
-                observerTimeout = null;
-            }, 100);
-        });
-        observer.observe(mainContent, { childList: true, subtree: true, attributes: true });
-        let isDragging = false;
-        const scrollByZone = (clientY) => {
-            const rect = zone.getBoundingClientRect();
-            const relativeY = clientY - rect.top;
-            const zoneHeight = zone.clientHeight;
-            const contentHeight = mainContent.scrollHeight;
-            const viewHeight = mainContent.clientHeight;
-            const percentage = Math.min(Math.max(relativeY / zoneHeight, 0), 1);
-            const targetScrollTop = percentage * (contentHeight - viewHeight);
-            mainContent.scrollTop = targetScrollTop;
-        };
-        const startDrag = (e) => {
-            if (!state.settings.enableHistoryCryscrollerScroll)
-                return;
-            isDragging = true;
-            zone.classList.add('is-dragging');
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            scrollByZone(clientY);
-            e.preventDefault();
-        };
-        const doDrag = (e) => {
-            if (!isDragging)
-                return;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            scrollByZone(clientY);
-            e.preventDefault();
-        };
-        const endDrag = () => {
-            isDragging = false;
-            zone.classList.remove('is-dragging');
-        };
-        zone.addEventListener('touchstart', startDrag, { passive: false });
-        zone.addEventListener('touchmove', doDrag, { passive: false });
-        zone.addEventListener('touchend', endDrag);
-        zone.addEventListener('mousedown', startDrag);
-        document.addEventListener('mousemove', doDrag);
-        document.addEventListener('mouseup', endDrag);
-        setTimeout(updateHandle, 500);
-    },
-    updateImmersiveLayout() {
-        if (!state.settings.enableImmersiveScrolling) {
-            document.body.classList.remove('immersive-mode');
-            if (elements.cryscrollerScrollZone) {
-                elements.cryscrollerScrollZone.style.removeProperty('top');
-                elements.cryscrollerScrollZone.style.removeProperty('height');
-            }
-            if (this.layoutObserver) {
-                this.layoutObserver.disconnect();
-                this.layoutObserver = null;
-            }
-            return;
-        }
-        document.body.classList.add('immersive-mode');
-        const updateHeights = () => {
-            const activeScreen = document.querySelector('.screen.active');
-            const isChatScreen = activeScreen && activeScreen.id === 'chat-screen';
-            const header = activeScreen ? activeScreen.querySelector('.app-header') : null;
-            const footer = document.querySelector('.chat-input-area');
-            const headerHeight = header ? header.offsetHeight : 50;
-            const footerHeight = (isChatScreen && footer) ? footer.offsetHeight : 0;
-            document.documentElement.style.setProperty('--header-height', `${headerHeight}px`);
-            document.documentElement.style.setProperty('--footer-height', `${footerHeight}px`);
-            if (state.settings.enableCryscrollerScroll) {
-                window.dispatchEvent(new Event('resize'));
-            }
-        };
-        if (!this.layoutObserver) {
-            this.layoutObserver = new ResizeObserver(() => {
-                requestAnimationFrame(updateHeights);
-            });
-            document.querySelectorAll('.app-header').forEach(el => this.layoutObserver.observe(el));
-            const footer = document.querySelector('.chat-input-area');
-            if (footer)
-                this.layoutObserver.observe(footer);
-        }
-        updateHeights();
     },
 });
 

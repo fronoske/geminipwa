@@ -182,10 +182,6 @@ Object.assign(uiUtils, {
                 document.documentElement.style.setProperty('--thought-summary-opacity',
                     state.settings.enableThoughtSummaryOpacity ? state.settings.thoughtSummaryOpacity : 1
                 );
-                document.documentElement.style.setProperty('--cryscroller-scroll-active-opacity',
-                    state.settings.enableCryscrollerScrollActiveOpacity ? state.settings.cryscrollerScrollActiveOpacity : DEFAULT_CRYSCROLLER_SCROLL_ACTIVE_OPACITY
-                );
-
                 let headerColor, secondaryColor, userMessageColor, modelMessageColor, overlayBaseColor, tertiaryColorRgbStr;
 
 switch (state.settings.theme) {
@@ -591,7 +587,6 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 elements.autoScrollOnThoughtCheckbox.checked = state.settings.autoScrollOnThought;
                 elements.historySortOrderSelect.value = state.settings.historySortOrder || 'updatedAt';
                 if (elements.themeSelect) elements.themeSelect.value = state.settings.theme || 'light';
-                elements.enableSessionLinkingCheckbox.checked = state.settings.enableSessionLinking;
                 elements.fontFamilyInput.value = state.settings.fontFamily || '';
                 elements.messageBodyFontSizeInput.value = state.settings.messageBodyFontSize ?? '';
                 elements.codeBlockFontSizeInput.value = state.settings.codeBlockFontSize ?? '';
@@ -609,28 +604,6 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 elements.swipeNavigationToggle.checked = state.settings.enableSwipeNavigation;
                 elements.preventZoomToggle.checked = state.settings.preventZoom;
                 elements.minimizeHeaderFooterToggle.checked = state.settings.minimizeHeaderFooter;
-                if (state.settings.enableCryscrollerScroll === undefined) {
-                    state.settings.enableCryscrollerScroll = false;
-                }
-                elements.enableCryscrollerScrollToggle.checked = state.settings.enableCryscrollerScroll;
-                document.body.classList.toggle('cryscroller-scroll-enabled', state.settings.enableCryscrollerScroll);
-
-                elements.enableSettingsCryscrollerScrollToggle.checked = state.settings.enableSettingsCryscrollerScroll;
-                document.body.classList.toggle('settings-cryscroller-scroll-enabled', state.settings.enableSettingsCryscrollerScroll);
-                if (state.settings.enableSettingsCryscrollerScroll) { window.dispatchEvent(new Event('resize')); }
-
-                elements.enableHistoryCryscrollerScrollToggle.checked = state.settings.enableHistoryCryscrollerScroll;
-                document.body.classList.toggle('history-cryscroller-scroll-enabled', state.settings.enableHistoryCryscrollerScroll);
-                if (state.settings.enableHistoryCryscrollerScroll) { window.dispatchEvent(new Event('resize')); }
-
-                elements.enableImmersiveScrollingToggle.checked = state.settings.enableImmersiveScrolling;
-                appLogic.updateImmersiveLayout();
-                elements.enableDynamicScrollMarkerColorToggle.checked = state.settings.enableDynamicScrollMarkerColor;
-
-                const currentScrollWidth = state.settings.cryscrollerScrollWidth || DEFAULT_CRYSCROLLER_SCROLL_WIDTH;
-                elements.cryscrollerScrollWidthInput.value = currentScrollWidth;
-                document.getElementById('cryscroller-scroll-width-input-slider').value = currentScrollWidth;
-                document.documentElement.style.setProperty('--cryscroller-scroll-width', `${currentScrollWidth}px`);
                 elements.extendAiBubbleWidthToggle.checked = state.settings.extendAiBubbleWidth;
                 elements.extendUserBubbleWidthToggle.checked = state.settings.extendUserBubbleWidth;
                                 elements.reduceMessageSpacingToggle.checked = state.settings.reduceMessageSpacing;
@@ -640,12 +613,6 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 document.body.classList.toggle('slim-settings-headers', state.settings.slimSettingsHeaders);
                 elements.flatSettingsDesignToggle.checked = state.settings.flatSettingsDesign;
                 document.body.classList.toggle('flat-settings-mode', state.settings.flatSettingsDesign);
-                elements.showSessionLinkingSettingsToggle.checked = state.settings.showSessionLinkingSettings;
-
-                if (elements.sessionLinkingSettingsGroup) {
-
-                    elements.sessionLinkingSettingsGroup.classList.toggle('hidden', !state.settings.showSessionLinkingSettings);
-                }
                 elements.showChatTitleToggle.checked = state.settings.showChatTitle;
                 elements.showNewChatButtonToggle.checked = state.settings.showNewChatButton;
                 elements.showDeleteSessionButtonToggle.checked = state.settings.showDeleteSessionButton;
@@ -666,8 +633,6 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 elements.messageActionsBackgroundOpacityInput.value = state.settings.messageActionsBackgroundOpacity ?? DEFAULT_MESSAGE_ACTIONS_BACKGROUND_OPACITY;
                 elements.toggleButtonTopOpacityInput.value = state.settings.toggleButtonTopOpacity ?? DEFAULT_TOGGLE_BUTTON_TOP_OPACITY;
                 elements.thoughtSummaryOpacityInput.value = state.settings.thoughtSummaryOpacity ?? DEFAULT_THOUGHT_SUMMARY_OPACITY;
-                document.getElementById('cryscroller-scroll-opacity').value = state.settings.cryscrollerScrollOpacity ?? DEFAULT_CRYSCROLLER_SCROLL_OPACITY;
-                document.getElementById('cryscroller-scroll-active-opacity').value = state.settings.cryscrollerScrollActiveOpacity ?? DEFAULT_CRYSCROLLER_SCROLL_ACTIVE_OPACITY;
     elements.enableElevationToggle.checked = state.settings.enableElevation;
     elements.enableElevationHoverToggle.checked = state.settings.enableElevationHover;
     elements.elevationHoverOption.classList.toggle('hidden', !state.settings.enableElevation);
@@ -747,8 +712,6 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 elements.toggleButtonBottomFontSizeInput.value = state.settings.toggleButtonBottomFontSize ?? DEFAULT_TOGGLE_BUTTON_BOTTOM_FONT_SIZE;
                 elements.toggleButtonBottomTextCollapseInput.value = state.settings.toggleButtonBottomTextCollapse || DEFAULT_TOGGLE_BUTTON_BOTTOM_TEXT_COLLAPSE;
                 elements.toggleButtonBottomTextExpandInput.value = state.settings.toggleButtonBottomTextExpand || DEFAULT_TOGGLE_BUTTON_BOTTOM_TEXT_EXPAND;
-                document.getElementById('cryscroller-scroll-opacity').value = state.settings.cryscrollerScrollOpacity ?? DEFAULT_CRYSCROLLER_SCROLL_OPACITY;
-
                 document.documentElement.style.setProperty('--message-body-font-size', `${state.settings.messageBodyFontSize || DEFAULT_MESSAGE_BODY_FONT_SIZE}px`);
                 document.documentElement.style.setProperty('--code-block-font-size', `${state.settings.codeBlockFontSize || DEFAULT_CODE_BLOCK_FONT_SIZE}px`);
                 document.documentElement.style.setProperty('--thought-summary-font-size', `${state.settings.thoughtSummaryFontSize || DEFAULT_THOUGHT_SUMMARY_FONT_SIZE}px`);
@@ -781,7 +744,6 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 this.applySidePanelSettingsToUI();
                 this.applyMinimizeUI();
                 this.applyAiBubbleWidthSetting();
-                                    uiUtils.updateSessionLinkingUI();
                     uiUtils.updateApiProviderSelectOptions();
                     uiUtils.updateApiKeyCycleButtons();
                     uiUtils.toggleMultiApiKeysVisibility(state.settings.showMultiApiKeys);

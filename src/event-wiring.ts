@@ -18,7 +18,6 @@ Object.assign(appLogic, {
 
                 elements.scrollToTopBtn.addEventListener('click', () => this.scrollToTop());
                 elements.scrollToBottomBtn.addEventListener('click', () => this.scrollToBottom());
-                elements.aiToAiChatBtn.addEventListener('click', () => this.initiateAiToAiStep());
                 elements.pasteToInputBtn.addEventListener('click', () => this.pasteToUserInput());
                 elements.rollDiceBtn.addEventListener('click', () => this.rollDiceAndInput());
 
@@ -135,15 +134,6 @@ Object.assign(appLogic, {
                         const selectedProvider = event.target.value;
                         state.settings.apiProvider = selectedProvider;
                         uiUtils.toggleApiSettingsVisibility(selectedProvider);
-                    });
-                }
-                if (elements.enableSessionLinkingCheckbox) {
-                    elements.enableSessionLinkingCheckbox.addEventListener('change', () => {
-                        state.settings.enableSessionLinking = elements.enableSessionLinkingCheckbox.checked;
-                        if (!state.settings.enableSessionLinking) {
-                            state.linkedSessionIds = [];
-                        }
-                        uiUtils.updateSessionLinkingUI();
                     });
                 }
                 elements.setThinkingBudgetBtns.forEach(button => {
@@ -359,18 +349,9 @@ Object.assign(appLogic, {
                 this._setupOpacitySlider('header-footer-opacity', '--header-footer-opacity', DEFAULT_HEADER_FOOTER_OPACITY);
                 this._setupOpacitySlider('toggle-button-top-opacity', '--message-toggle-button-top-opacity', DEFAULT_TOGGLE_BUTTON_TOP_OPACITY);
                 this._setupOpacitySlider('thought-summary-opacity', '--thought-summary-opacity', DEFAULT_THOUGHT_SUMMARY_OPACITY);
-                this._setupOpacitySlider('cryscroller-scroll-opacity', '--cryscroller-scroll-opacity', DEFAULT_CRYSCROLLER_SCROLL_OPACITY);
-                this._setupOpacitySlider('cryscroller-scroll-active-opacity', '--cryscroller-scroll-active-opacity', DEFAULT_CRYSCROLLER_SCROLL_ACTIVE_OPACITY);
                 this._setupFontSizeSlider('message-body-font-size-input', '--message-body-font-size', DEFAULT_MESSAGE_BODY_FONT_SIZE);
                 this._setupFontSizeSlider('code-block-font-size-input', '--code-block-font-size', DEFAULT_CODE_BLOCK_FONT_SIZE);
                 this._setupFontSizeSlider('thought-summary-font-size', '--thought-summary-font-size', DEFAULT_THOUGHT_SUMMARY_FONT_SIZE);
-                this._setupFontSizeSlider('cryscroller-scroll-width-input', '--cryscroller-scroll-width', DEFAULT_CRYSCROLLER_SCROLL_WIDTH);
-
-                const delayVal = state.settings.cryscrollerObserverDelay || 500;
-                elements.cryscrollerObserverDelayInput.value = delayVal;
-                document.getElementById('cryscroller-observer-delay-slider').value = delayVal;
-                elements.cryscrollerObserverDelayInput.oninput = (e) => document.getElementById('cryscroller-observer-delay-slider').value = e.target.value;
-                document.getElementById('cryscroller-observer-delay-slider').oninput = (e) => elements.cryscrollerObserverDelayInput.value = e.target.value;
                 this._setupUiScaleSlider('chat-ui-scale-input', '--chat-ui-scale', 1.0);
                 this._setupUiScaleSlider('settings-ui-scale-input', '--settings-ui-scale', 1.0);
                 this._setupUiScaleSlider('history-ui-scale-input', '--history-ui-scale', 1.0);
@@ -482,31 +463,6 @@ Object.assign(appLogic, {
                     state.settings.minimizeHeaderFooter = e.target.checked;
                     uiUtils.applyMinimizeUI();
                 });
-                elements.enableCryscrollerScrollToggle.addEventListener('change', (e) => {
-                    state.settings.enableCryscrollerScroll = e.target.checked;
-                    document.body.classList.toggle('cryscroller-scroll-enabled', state.settings.enableCryscrollerScroll);
-                });
-                elements.enableImmersiveScrollingToggle.addEventListener('change', (e) => {
-                    state.settings.enableImmersiveScrolling = e.target.checked;
-                    appLogic.updateImmersiveLayout();
-                });
-                elements.enableDynamicScrollMarkerColorToggle.addEventListener('change', (e) => {
-                    state.settings.enableDynamicScrollMarkerColor = e.target.checked;
-                    window.dispatchEvent(new Event('resize'));
-                });
-                appLogic.initCryscrollerScroll();
-                elements.enableSettingsCryscrollerScrollToggle.addEventListener('change', (e) => {
-                    state.settings.enableSettingsCryscrollerScroll = e.target.checked;
-                    document.body.classList.toggle('settings-cryscroller-scroll-enabled', state.settings.enableSettingsCryscrollerScroll);
-                    window.dispatchEvent(new Event('resize'));
-                });
-                appLogic.initSettingsCryscrollerScroll();
-                elements.enableHistoryCryscrollerScrollToggle.addEventListener('change', (e) => {
-                    state.settings.enableHistoryCryscrollerScroll = e.target.checked;
-                    document.body.classList.toggle('history-cryscroller-scroll-enabled', state.settings.enableHistoryCryscrollerScroll);
-                    window.dispatchEvent(new Event('resize'));
-                });
-                appLogic.initHistoryCryscrollerScroll();
                 elements.extendAiBubbleWidthToggle.addEventListener('change', (e) => {
                     state.settings.extendAiBubbleWidth = e.target.checked;
                     uiUtils.applyAiBubbleWidthSetting();
@@ -530,13 +486,6 @@ Object.assign(appLogic, {
                 elements.flatSettingsDesignToggle.addEventListener('change', (e) => {
                     state.settings.flatSettingsDesign = e.target.checked;
                     document.body.classList.toggle('flat-settings-mode', e.target.checked);
-                });
-                elements.showSessionLinkingSettingsToggle.addEventListener('change', (e) => {
-
-                    if (elements.sessionLinkingSettingsGroup) {
-
-                        elements.sessionLinkingSettingsGroup.classList.toggle('hidden', !e.target.checked);
-                    }
                 });
                 elements.memoHeightInput.addEventListener('input', () => {
                     const newHeight = elements.memoHeightInput.value.trim();

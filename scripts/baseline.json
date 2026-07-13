@@ -38,8 +38,6 @@
     "chat-overlay-opacity": 2,
     "header-footer-opacity": 2,
     "toggle-button-top-opacity": 2,
-    "cryscroller-scroll-opacity": 2,
-    "cryscroller-scroll-active-opacity": 2,
     "thought-summary-opacity": 2
   }
 }
