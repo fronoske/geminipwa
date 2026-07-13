@@ -38,6 +38,14 @@ Object.assign(uiUtils, {
                     if (elements.footerCycleApiKeyBtn) {
                         elements.footerCycleApiKeyBtn.classList.toggle('hidden', !state.settings.showFooterCycleApiKeyBtn);
                     }
+                    if (elements.footerSecondaryActions) {
+                        const hasVisibleFooterAction = [
+                            elements.footerApiProviderToggleBtn,
+                            elements.footerCycleApiKeyBtn,
+                            elements.pasteToInputBtn,
+                        ].some((button) => button && !button.classList.contains('hidden'));
+                        elements.footerSecondaryActions.classList.toggle('hidden', !hasVisibleFooterAction);
+                    }
                     this.adjustHeaderLayout();
                     this.updateProviderToggleButtons();
                 };

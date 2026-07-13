@@ -1867,6 +1867,7 @@
             gap: 10px;
         }
 
+        .secondary-input-actions,
         .primary-input-actions {
             display: grid;
             flex: 0 0 40px;
@@ -2045,9 +2046,9 @@
             width: 0;
             flex: 1 1 0;
             min-width: 0;
-            min-height: 64px;
+            min-height: 86px;
             max-height: 120px;
-            height: 64px;
+            height: 86px;
             resize: none;
             margin-bottom: 0;
             padding: 8px 10px;
@@ -3390,8 +3391,8 @@
         }
 
         .app-container.minimized-ui .chat-input-area textarea {
-            min-height: 52px;
-            height: 52px;
+            min-height: 70px;
+            height: 70px;
             padding: 6px 8px;
             font-size: 13px;
         }

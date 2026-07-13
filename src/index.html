@@ -87,10 +87,13 @@
                     title="次の入力・出力の末尾へ">↓</button>
             </div>
             <footer class="chat-input-area">
-                <button id="footer-api-provider-toggle-btn" class="footer-action-button api-provider-toggle-btn"
-                    title="APIプロバイダー切替"></button>
-                <button id="footer-cycle-api-key-btn" class="footer-action-button api-provider-toggle-btn" title="APIキー切替" style="font-weight: bold;"></button>
-                <button id="paste-to-input-btn" title="入力欄に貼り付け" class="footer-action-button">貼</button>
+                <div id="footer-secondary-actions" class="secondary-input-actions hidden">
+                    <button id="footer-api-provider-toggle-btn" class="footer-action-button api-provider-toggle-btn"
+                        title="APIプロバイダー切替"></button>
+                    <button id="footer-cycle-api-key-btn" class="footer-action-button api-provider-toggle-btn"
+                        title="APIキー切替" style="font-weight: bold;"></button>
+                    <button id="paste-to-input-btn" title="入力欄に貼り付け" class="footer-action-button">貼</button>
+                </div>
                 <textarea id="user-input" placeholder="メッセージを入力..." rows="2" aria-label="メッセージ入力"></textarea>
                 <div class="primary-input-actions">
                     <button id="attach-file-btn" title="ファイルを添付" class="footer-action-button">+<span
@@ -1410,35 +1413,17 @@
                     </p>
                 </div>
 
-                <div class="settings-group" id="settings-group-other">
-                    <details open id="settings-group-other-details">
-                        <summary
-                            style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
-                            その他設定</summary>
-                        <div style="margin-top:10px;">
-                            <p style="height:10px"></p>
-                            <label for="theme-select">表示テーマ:</label>
-                            <select id="theme-select" aria-label="表示テーマ">
-                                <option value="light">ライトモード</option>
-                                <option value="dark">ダークモード</option>
-                                <option value="pastel-pink">パステルモード🩷</option>
-                                <option value="pastel-blue">パステルモード🩵</option>
-                                <option value="pastel-yellow">パステルモード🟡</option>
-                                <option value="pastel-purple">パステルモード🟣</option>
-                                <option value="pastel-rainbow">パステルモード🌈</option>
-                            </select>
-                            <p style="height:10px"></p>
-                            <details id="settings-group-behavior-adjustment" open>
-                                <summary
-                                    style="font-size: 14px; color: var(--text-link); padding-bottom: 5px; margin-bottom: 10px; display: list-item; list-style: revert; cursor:pointer; font-weight: normal;">
-                                    アプリの挙動を調整</summary>
-                                <div style="padding-left: 15px; margin-top: 10px;">
+                <details class="settings-group" id="settings-group-behavior-adjustment" open>
+                    <summary
+                        style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
+                        アプリの挙動を調整</summary>
+                    <div style="margin-top: 10px;">
 
-                                    <!-- ファクター: 操作の変更 -->
+                                    <!-- 操作の変更 -->
                                     <details id="settings-group-factor-operation-changes">
                                         <summary
                                             style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
-                                            ファクター: 操作の変更</summary>
+                                            操作の変更</summary>
                                         <div
                                             style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
                                             <label class="checkbox-label">
@@ -1489,88 +1474,11 @@
                                         </div>
                                     </details>
 
-                                    <!-- ファクター: 様式の変更 -->
-                                    <details id="settings-group-factor-style-changes">
-                                        <summary
-                                            style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
-                                            ファクター: 様式の変更</summary>
-                                        <div
-                                            style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="minimize-header-footer-toggle">
-                                                ヘッダー/フッターの縦幅を最小化する
-                                            </label>
-                                            <p
-                                                style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 15px;">
-                                                ※ 表示領域を最大化します。画面が小型の端末向け。
-                                            </p>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="extend-ai-bubble-width-toggle">
-                                                AI応答バブルの横幅を拡張する
-                                            </label>
-                                            <p
-                                                style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                                                ※ AIの応答メッセージの最大幅を広げ、画面をより広く使います。
-                                            </p>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="extend-user-bubble-width-toggle">
-                                                ユーザーメッセージの横幅を拡張する
-                                            </label>
-                                            <p
-                                                style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                                                ※ ユーザーのメッセージの最大幅を広げ、画面をより広く使います。
-                                            </p>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="reduce-message-spacing-toggle">
-                                                メッセージ間の余白を縮小する
-                                            </label>
-                                            <p
-                                                style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                                                ※ チャット画面のメッセージ間の縦の空白を切り詰めます。
-                                            </p>
-                                                                                        <label class="checkbox-label">
-                                                <input type="checkbox" id="compact-settings-spacing-toggle">
-                                                設定画面の項目間隔を詰める
-                                            </label>
-                                            <p
-                                                style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                                                ※ 設定画面の各項目の上下余白を小さくします。
-                                            </p>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="slim-settings-headers-toggle">
-                                                設定項目のタイトル下余白を削減する
-                                            </label>
-                                                                                        <p
-                                                style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                                                ※ 設定画面の各グループのタイトル下にある余白や線を削除します。
-                                            </p>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="flat-settings-design-toggle">
-                                                設定項目のバブル表示（枠線・背景）を無効にする
-                                            </label>
-                                            <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                                                ※ 設定画面の各グループを囲む枠と背景色を取り除き、フラットな表示にします。
-                                            </p>
-                                            <hr style="margin: 10px 0; border-top: 1px solid var(--border-tertiary);">
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="enable-elevation-toggle">
-                                                UIを立体的にする
-                                            </label>
-                                            <div id="elevation-hover-option" class="hidden" style="padding-left: 20px; margin-bottom: 5px;">
-                                                <label class="checkbox-label" style="font-size: 12px;">
-                                                    <input type="checkbox" id="enable-elevation-hover-toggle">
-                                                    ホバー時の効果
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </details>
-
-
-                                    <!-- ファクター: 確認ダイアログのスキップ -->
+                                    <!-- 確認ダイアログのスキップ -->
                                     <details id="settings-group-factor-skip-dialogs">
                                         <summary
                                             style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
-                                            ファクター: 確認ダイアログのスキップ</summary>
+                                            確認ダイアログのスキップ</summary>
                                         <div
                                             style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
                                             <label class="checkbox-label">
@@ -1588,11 +1496,11 @@
                                         </div>
                                     </details>
 
-                                    <!-- ファクター: 上級ユーザー向けオプション -->
+                                    <!-- 上級ユーザー向けオプション -->
                                     <details id="settings-group-factor-advanced-options">
                                         <summary
                                             style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
-                                            ファクター: 上級ユーザー向けオプション</summary>
+                                            上級ユーザー向けオプション</summary>
                                         <div
                                             style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
                                             <label class="checkbox-label">
@@ -1611,8 +1519,95 @@
 
                                         </div>
                                     </details>
+                    </div>
+                </details>
+
+                <details class="settings-group" id="settings-group-display-adjustment" open>
+                    <summary
+                        style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
+                        表示の調整</summary>
+                    <div style="margin-top:10px;">
+                            <p style="height:10px"></p>
+                            <label for="theme-select">表示テーマ:</label>
+                            <select id="theme-select" aria-label="表示テーマ">
+                                <option value="light">ライトモード</option>
+                                <option value="dark">ダークモード</option>
+                                <option value="pastel-pink">パステルモード🩷</option>
+                                <option value="pastel-blue">パステルモード🩵</option>
+                                <option value="pastel-yellow">パステルモード🟡</option>
+                                <option value="pastel-purple">パステルモード🟣</option>
+                                <option value="pastel-rainbow">パステルモード🌈</option>
+                            </select>
+                            <p style="height:10px"></p>
+
+                            <details id="settings-group-factor-style-changes">
+                                <summary
+                                    style="font-size: 14px; color: var(--text-link); padding-bottom: 5px; margin-bottom: 10px; display: list-item; list-style: revert; cursor:pointer; font-weight: normal;">
+                                    レイアウトと装飾</summary>
+                                <div style="padding-left: 15px; margin-top: 10px;">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="minimize-header-footer-toggle">
+                                        ヘッダー/フッターの縦幅を最小化する
+                                    </label>
+                                    <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 15px;">
+                                        ※ 表示領域を最大化します。画面が小型の端末向け。
+                                    </p>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="extend-ai-bubble-width-toggle">
+                                        AI応答バブルの横幅を拡張する
+                                    </label>
+                                    <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
+                                        ※ AIの応答メッセージの最大幅を広げ、画面をより広く使います。
+                                    </p>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="extend-user-bubble-width-toggle">
+                                        ユーザーメッセージの横幅を拡張する
+                                    </label>
+                                    <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
+                                        ※ ユーザーのメッセージの最大幅を広げ、画面をより広く使います。
+                                    </p>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="reduce-message-spacing-toggle">
+                                        メッセージ間の余白を縮小する
+                                    </label>
+                                    <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
+                                        ※ チャット画面のメッセージ間の縦の空白を切り詰めます。
+                                    </p>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="compact-settings-spacing-toggle">
+                                        設定画面の項目間隔を詰める
+                                    </label>
+                                    <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
+                                        ※ 設定画面の各項目の上下余白を小さくします。
+                                    </p>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="slim-settings-headers-toggle">
+                                        設定項目のタイトル下余白を削減する
+                                    </label>
+                                    <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
+                                        ※ 設定画面の各グループのタイトル下にある余白や線を削除します。
+                                    </p>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="flat-settings-design-toggle">
+                                        設定項目のバブル表示（枠線・背景）を無効にする
+                                    </label>
+                                    <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
+                                        ※ 設定画面の各グループを囲む枠と背景色を取り除き、フラットな表示にします。
+                                    </p>
+                                    <hr style="margin: 10px 0; border-top: 1px solid var(--border-tertiary);">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="enable-elevation-toggle">
+                                        UIを立体的にする
+                                    </label>
+                                    <div id="elevation-hover-option" class="hidden" style="padding-left: 20px; margin-bottom: 5px;">
+                                        <label class="checkbox-label" style="font-size: 12px;">
+                                            <input type="checkbox" id="enable-elevation-hover-toggle">
+                                            ホバー時の効果
+                                        </label>
+                                    </div>
                                 </div>
                             </details>
+
                             <hr
                                 style="margin: 15px 0 15px 0; border: none; border-top: 1px solid var(--border-secondary);">
 
@@ -1622,11 +1617,11 @@
                                     ボタン類の表示/非表示切替</summary>
                                 <div style="padding-left: 15px; margin-top: 10px;">
 
-                                    <!-- ファクター: 履歴画面のボタン -->
+                                    <!-- 履歴画面のボタン -->
                                     <details open id="settings-group-factor-history-buttons">
                                         <summary
                                             style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
-                                            ファクター: 履歴画面のボタン</summary>
+                                            履歴画面のボタン</summary>
                                         <div
                                             style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
                                             <label class="checkbox-label">
@@ -1645,11 +1640,11 @@
                                         </div>
                                     </details>
 
-                                    <!-- ファクター: ヘッダーのボタン -->
+                                    <!-- ヘッダーのボタン -->
                                     <details open id="settings-group-factor-header-buttons">
                                         <summary
                                             style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
-                                            ファクター: ヘッダーのボタン</summary>
+                                            ヘッダーのボタン</summary>
                                         <div
                                             style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
                                             <label class="checkbox-label">
@@ -1706,11 +1701,11 @@
                                         </div>
                                     </details>
 
-                                    <!-- ファクター: 入力・出力移動ボタン -->
+                                    <!-- 入力・出力移動ボタン -->
                                     <details open id="settings-group-factor-message-navigation-buttons">
                                         <summary
                                             style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
-                                            ファクター: 入力・出力移動ボタン</summary>
+                                            入力・出力移動ボタン</summary>
                                         <div
                                             style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
                                             <label for="message-navigation-button-mode">
@@ -1724,11 +1719,11 @@
                                         </div>
                                     </details>
 
-                                    <!-- ファクター: フッターのボタン -->
+                                    <!-- フッターのボタン -->
                                     <details open id="settings-group-factor-footer-buttons">
                                         <summary
                                             style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
-                                            ファクター: フッターのボタン</summary>
+                                            フッターのボタン</summary>
                                         <div
                                             style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
                                             <label class="checkbox-label">
@@ -1747,11 +1742,11 @@
                                         </div>
                                     </details>
 
-                                    <!-- ファクター: メッセージ要素のボタン -->
+                                    <!-- メッセージ要素のボタン -->
                                     <details open id="settings-group-factor-message-buttons">
                                         <summary
                                             style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
-                                            ファクター: メッセージ要素のボタン</summary>
+                                            メッセージ要素のボタン</summary>
                                         <div
                                             style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
                                             <label class="checkbox-label">
@@ -1816,7 +1811,7 @@
 
                                     <details open id="settings-group-factor-settings-buttons">
                                         <summary style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
-                                            ファクター: 設定パネルのボタン
+                                            設定パネルのボタン
                                         </summary>
                                         <div style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
                                             <label class="checkbox-label">
@@ -1978,28 +1973,14 @@
                         </p>
                     </div>
                 </details>
-                <div id="settings-group-elevation" style="padding-left: 15px; margin-top: 10px;">
+                        <div id="settings-group-display-auto-close" style="padding-left: 15px; margin-top: 10px;">
                             <label class="checkbox-label">
-
-                                <input type="checkbox" id="auto-close-other-settings-toggle">
-                                『その他設定』を自動で閉じる
+                                <input type="checkbox" id="auto-close-display-settings-toggle">
+                                『表示の調整』を自動で閉じる
                             </label>
                         </div>
-                        </div>
-                    </details>
-                </div>
-                <details class="settings-group" id="settings-group-sending-operation">
-                    <summary
-                        style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
-                        送信中の操作</summary>
-                    <div style="margin-top:10px;">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="disable-load-chat-confirmation-while-sending-toggle">
-                            メッセージ送信中に別チャットを読み込む際の確認ダイアログを表示しない (非推奨)
-                        </label>
                     </div>
                 </details>
-
                 <details class="settings-group" id="settings-group-input-presets">
                     <summary
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">

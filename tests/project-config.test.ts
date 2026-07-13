@@ -131,12 +131,58 @@ describe('project configuration', () => {
       html.indexOf('</div>', html.indexOf('<div class="primary-input-actions">')),
     );
     expect(actionStack.indexOf('id="attach-file-btn"')).toBeLessThan(actionStack.indexOf('id="send-button"'));
+    const styles = readFile('src/styles/app.css');
+    expect(styles).toMatch(/\.chat-input-area textarea \{[\s\S]*?min-height: 86px;[\s\S]*?height: 86px;/);
+  });
+
+  it('stacks optional footer actions vertically', () => {
+    const html = readFile('src/index.html');
+    const footerActionsStart = html.indexOf('id="footer-secondary-actions"');
+    const footerActionsEnd = html.indexOf('</div>', footerActionsStart);
+    const footerActions = html.slice(footerActionsStart, footerActionsEnd);
+    expect(footerActions).toContain('id="footer-api-provider-toggle-btn"');
+    expect(footerActions).toContain('id="footer-cycle-api-key-btn"');
+    expect(footerActions).toContain('id="paste-to-input-btn"');
+    expect(readFile('src/styles/app.css')).toMatch(/\.secondary-input-actions,[\s\S]*?display: grid;/);
   });
 
   it('uses an accessible SVG history icon instead of a text abbreviation', () => {
     const html = readFile('src/index.html');
     expect(html).toContain('class="history-icon"');
     expect(html).not.toMatch(/id="goto-history-btn"[^>]*>履<\/button>/);
+  });
+
+  it('places the edit cursor at the end without selecting the full message', () => {
+    const actions = readFile('src/message-actions.ts');
+    expect(actions).toContain('textarea.setSelectionRange(textarea.value.length, textarea.value.length)');
+    expect(actions).not.toContain('textarea.select()');
+  });
+
+  it('always confirms before interrupting a response to load another chat', () => {
+    const html = readFile('src/index.html');
+    const state = readFile('src/app-state.ts');
+    const sessions = readFile('src/chat-sessions.ts');
+    expect(html).not.toContain('settings-group-sending-operation');
+    expect(state).not.toContain('disableLoadChatConfirmationWhileSending');
+    expect(sessions).toContain('const confirmedLoad = await uiUtils.showCustomConfirm("送信中です。中断して別のチャットを読み込みますか？")');
+  });
+
+  it('separates behavior and display adjustment settings', () => {
+    const html = readFile('src/index.html');
+    const behaviorIndex = html.indexOf('id="settings-group-behavior-adjustment"');
+    const displayIndex = html.indexOf('id="settings-group-display-adjustment"');
+    const inputPresetIndex = html.indexOf('id="settings-group-input-presets"');
+    expect(behaviorIndex).toBeGreaterThan(-1);
+    expect(behaviorIndex).toBeLessThan(displayIndex);
+    const behaviorSettings = html.slice(behaviorIndex, displayIndex);
+    const displaySettings = html.slice(displayIndex, inputPresetIndex);
+    expect(behaviorSettings).not.toContain('settings-group-factor-style-changes');
+    expect(displaySettings).toContain('settings-group-factor-style-changes');
+    expect(displaySettings).toContain('settings-group-header-footer-buttons');
+    expect(displaySettings).toContain('settings-group-font');
+    expect(displaySettings).toContain('settings-group-opacity');
+    expect(html).not.toContain('id="settings-group-other"');
+    expect(html).not.toMatch(/ファクター[：:]/);
   });
 
   it('keeps the first message when clearing the current chat', () => {

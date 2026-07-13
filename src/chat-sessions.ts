@@ -59,11 +59,8 @@ Object.assign(appLogic, {
                 }
             },
             async loadChat(id) {
-                let confirmedLoad = true;
                 if (state.isSending) {
-                    if (!state.settings.disableLoadChatConfirmationWhileSending) {
-                        confirmedLoad = await uiUtils.showCustomConfirm("送信中です。中断して別のチャットを読み込みますか？");
-                    }
+                    const confirmedLoad = await uiUtils.showCustomConfirm("送信中です。中断して別のチャットを読み込みますか？");
                     if (!confirmedLoad) return;
                     this.abortRequest();
                 }

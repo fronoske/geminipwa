@@ -125,7 +125,7 @@ Object.assign(appLogic, {
 
                 uiUtils.adjustTextareaHeight(textarea, 400);
                 textarea.focus();
-                textarea.select();
+                textarea.setSelectionRange(textarea.value.length, textarea.value.length);
 
                 this.uncollapseMessage(index, messageElement);
             },

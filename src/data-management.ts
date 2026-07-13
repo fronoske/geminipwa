@@ -687,7 +687,6 @@ newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.che
                 newSettings.showClipboardStackButton = elements.showClipboardStackButtonToggle.checked;
                 newSettings.clipboardStackHeight = state.settings.clipboardStackHeight;
                 newSettings.disableRetryConfirmation = elements.disableRetryConfirmationToggle.checked;
-                newSettings.disableLoadChatConfirmationWhileSending = elements.disableLoadChatConfirmationWhileSendingToggle.checked;
                 newSettings.disableDeleteMessageConfirmation = elements.disableDeleteMessageConfirmationToggle.checked;
                 newSettings.disableAttachmentConfirmation = elements.disableAttachmentConfirmationToggle.checked;
                 newSettings.addPrefixOnImport = elements.addPrefixOnImportToggle.checked;
@@ -711,7 +710,7 @@ newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.che
 
                 newSettings.enableElevation = elements.enableElevationToggle.checked;
                 newSettings.enableElevationHover = elements.enableElevationHoverToggle.checked;
-                newSettings.autoCloseOtherSettings = elements.autoCloseOtherSettingsToggle.checked;
+                newSettings.autoCloseDisplaySettings = elements.autoCloseDisplaySettingsToggle.checked;
                 newSettings.showSettingsScrollToTopButton = elements.showSettingsScrollToTopButtonToggle.checked;
                 newSettings.showSettingsScrollToBottomButton = elements.showSettingsScrollToBottomButtonToggle.checked;
                 newSettings.showApiProviderToggleHeader = elements.showApiProviderToggleHeaderCheckbox.checked;

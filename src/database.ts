@@ -171,6 +171,12 @@ const dbUtils = {
                             state.settings.llmaggregatorBackends = backends;
                             state.settings.llmaggregatorActiveBackendIndex = (backends.length > 0) ? 0 : -1;
 
+                            const shouldMigrateAutoCloseDisplaySettings = typeof loadedSettings.autoCloseDisplaySettings !== 'boolean'
+                                && typeof loadedSettings.autoCloseOtherSettings === 'boolean';
+                            if (shouldMigrateAutoCloseDisplaySettings) {
+                                loadedSettings.autoCloseDisplaySettings = loadedSettings.autoCloseOtherSettings;
+                            }
+
                             for (const key in loadedSettings) {
                                 if (key === 'darkMode' || key === 'memoWidth' || key === 'showCollapseButtons') continue;
                                 if (key in defaultSettings) {
@@ -206,17 +212,28 @@ const dbUtils = {
 
                             const removedSettingKeys = settingsArray
                                 .map((item) => item.key)
-                                .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine|enableSessionLinking|showSessionLinkingSettings|enableCryscroller|cryscroller|enableSettingsCryscroller|enableHistoryCryscroller|enableImmersiveScrolling|enableDynamicScrollMarkerColor|enableProofreading|showProofreadingSettings|proofreading|activeProofreadingConfigId|enableImageUrlReplacement|imageUrlReplacementBase|enableAutoBaseUrlDetection|enableFuzzySearchNormalization|fuzzySearchThreshold|characterNamesList|enableRomajiToKatakanaConversion|dummyErrorDebugMode|dummyDummyModel|dummyEnableDummyModel|showDiceButton|diceMinValue|diceMaxValue|backgroundImageBlob|historyBackgroundImageBlob|settingsBackgroundImageBlob|showUserIcon|userIconBlob|showUserName|userName|showAiIcon|aiIconBlob|showAiName|aiName|iconName|messageIcon|dummyUser|enableDummyUser|dummyModel|enableDummyModel|concatDummyModel|(?:gemini|deepSeek|claude|openai|xai|llmAggregator)(?:DummyUser|EnableDummyUser|DummyModel|EnableDummyModel|ConcatDummyModel)|webhookUrl|webhookFormat|enableWebhookNotification|webhooks|showNewChatButton|showDeleteSessionButton|showCopySessionButton)/.test(key));
-                            if (removedSettingKeys.length > 0) {
+                                .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine|enableSessionLinking|showSessionLinkingSettings|enableCryscroller|cryscroller|enableSettingsCryscroller|enableHistoryCryscroller|enableImmersiveScrolling|enableDynamicScrollMarkerColor|enableProofreading|showProofreadingSettings|proofreading|activeProofreadingConfigId|enableImageUrlReplacement|imageUrlReplacementBase|enableAutoBaseUrlDetection|enableFuzzySearchNormalization|fuzzySearchThreshold|characterNamesList|enableRomajiToKatakanaConversion|dummyErrorDebugMode|dummyDummyModel|dummyEnableDummyModel|showDiceButton|diceMinValue|diceMaxValue|backgroundImageBlob|historyBackgroundImageBlob|settingsBackgroundImageBlob|showUserIcon|userIconBlob|showUserName|userName|showAiIcon|aiIconBlob|showAiName|aiName|iconName|messageIcon|dummyUser|enableDummyUser|dummyModel|enableDummyModel|concatDummyModel|(?:gemini|deepSeek|claude|openai|xai|llmAggregator)(?:DummyUser|EnableDummyUser|DummyModel|EnableDummyModel|ConcatDummyModel)|webhookUrl|webhookFormat|enableWebhookNotification|webhooks|showNewChatButton|showDeleteSessionButton|showCopySessionButton|disableLoadChatConfirmationWhileSending|autoCloseOtherSettings)/.test(key));
+                            if (removedSettingKeys.length > 0 || shouldMigrateAutoCloseDisplaySettings) {
                                 try {
                                     const cleanupStore = this._getStore(SETTINGS_STORE, 'readwrite');
-                                    await Promise.all(removedSettingKeys.map((key) => new Promise((resolveCleanup, rejectCleanup) => {
+                                    const cleanupRequests = removedSettingKeys.map((key) => new Promise((resolveCleanup, rejectCleanup) => {
                                         const deleteRequest = cleanupStore.delete(key);
                                         deleteRequest.onsuccess = () => resolveCleanup();
                                         deleteRequest.onerror = () => rejectCleanup(deleteRequest.error);
-                                    })));
+                                    }));
+                                    if (shouldMigrateAutoCloseDisplaySettings) {
+                                        cleanupRequests.push(new Promise((resolveCleanup, rejectCleanup) => {
+                                            const saveRequest = cleanupStore.put({
+                                                key: 'autoCloseDisplaySettings',
+                                                value: loadedSettings.autoCloseDisplaySettings,
+                                            });
+                                            saveRequest.onsuccess = () => resolveCleanup();
+                                            saveRequest.onerror = () => rejectCleanup(saveRequest.error);
+                                        }));
+                                    }
+                                    await Promise.all(cleanupRequests);
                                 } catch (error) {
-                                    console.warn('廃止済み設定の削除に失敗しました:', error);
+                                    console.warn('設定の移行または廃止済み設定の削除に失敗しました:', error);
                                 }
                             }
 

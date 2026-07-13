@@ -1877,6 +1877,7 @@
             gap: 10px;
         }
 
+        .secondary-input-actions,
         .primary-input-actions {
             display: grid;
             flex: 0 0 40px;
@@ -2055,9 +2056,9 @@
             width: 0;
             flex: 1 1 0;
             min-width: 0;
-            min-height: 64px;
+            min-height: 86px;
             max-height: 120px;
-            height: 64px;
+            height: 86px;
             resize: none;
             margin-bottom: 0;
             padding: 8px 10px;
@@ -3400,8 +3401,8 @@
         }
 
         .app-container.minimized-ui .chat-input-area textarea {
-            min-height: 52px;
-            height: 52px;
+            min-height: 70px;
+            height: 70px;
             padding: 6px 8px;
             font-size: 13px;
         }
@@ -4304,10 +4305,13 @@ font-size: 1.142em !important;
                     title="次の入力・出力の末尾へ">↓</button>
             </div>
             <footer class="chat-input-area">
-                <button id="footer-api-provider-toggle-btn" class="footer-action-button api-provider-toggle-btn"
-                    title="APIプロバイダー切替"></button>
-                <button id="footer-cycle-api-key-btn" class="footer-action-button api-provider-toggle-btn" title="APIキー切替" style="font-weight: bold;"></button>
-                <button id="paste-to-input-btn" title="入力欄に貼り付け" class="footer-action-button">貼</button>
+                <div id="footer-secondary-actions" class="secondary-input-actions hidden">
+                    <button id="footer-api-provider-toggle-btn" class="footer-action-button api-provider-toggle-btn"
+                        title="APIプロバイダー切替"></button>
+                    <button id="footer-cycle-api-key-btn" class="footer-action-button api-provider-toggle-btn"
+                        title="APIキー切替" style="font-weight: bold;"></button>
+                    <button id="paste-to-input-btn" title="入力欄に貼り付け" class="footer-action-button">貼</button>
+                </div>
                 <textarea id="user-input" placeholder="メッセージを入力..." rows="2" aria-label="メッセージ入力"></textarea>
                 <div class="primary-input-actions">
                     <button id="attach-file-btn" title="ファイルを添付" class="footer-action-button">+<span
@@ -5627,35 +5631,17 @@ font-size: 1.142em !important;
                     </p>
                 </div>
 
-                <div class="settings-group" id="settings-group-other">
-                    <details open id="settings-group-other-details">
-                        <summary
-                            style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
-                            その他設定</summary>
-                        <div style="margin-top:10px;">
-                            <p style="height:10px"></p>
-                            <label for="theme-select">表示テーマ:</label>
-                            <select id="theme-select" aria-label="表示テーマ">
-                                <option value="light">ライトモード</option>
-                                <option value="dark">ダークモード</option>
-                                <option value="pastel-pink">パステルモード🩷</option>
-                                <option value="pastel-blue">パステルモード🩵</option>
-                                <option value="pastel-yellow">パステルモード🟡</option>
-                                <option value="pastel-purple">パステルモード🟣</option>
-                                <option value="pastel-rainbow">パステルモード🌈</option>
-                            </select>
-                            <p style="height:10px"></p>
-                            <details id="settings-group-behavior-adjustment" open>
-                                <summary
-                                    style="font-size: 14px; color: var(--text-link); padding-bottom: 5px; margin-bottom: 10px; display: list-item; list-style: revert; cursor:pointer; font-weight: normal;">
-                                    アプリの挙動を調整</summary>
-                                <div style="padding-left: 15px; margin-top: 10px;">
+                <details class="settings-group" id="settings-group-behavior-adjustment" open>
+                    <summary
+                        style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
+                        アプリの挙動を調整</summary>
+                    <div style="margin-top: 10px;">
 
-                                    <!-- ファクター: 操作の変更 -->
+                                    <!-- 操作の変更 -->
                                     <details id="settings-group-factor-operation-changes">
                                         <summary
                                             style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
-                                            ファクター: 操作の変更</summary>
+                                            操作の変更</summary>
                                         <div
                                             style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
                                             <label class="checkbox-label">
@@ -5706,88 +5692,11 @@ font-size: 1.142em !important;
                                         </div>
                                     </details>
 
-                                    <!-- ファクター: 様式の変更 -->
-                                    <details id="settings-group-factor-style-changes">
-                                        <summary
-                                            style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
-                                            ファクター: 様式の変更</summary>
-                                        <div
-                                            style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="minimize-header-footer-toggle">
-                                                ヘッダー/フッターの縦幅を最小化する
-                                            </label>
-                                            <p
-                                                style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 15px;">
-                                                ※ 表示領域を最大化します。画面が小型の端末向け。
-                                            </p>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="extend-ai-bubble-width-toggle">
-                                                AI応答バブルの横幅を拡張する
-                                            </label>
-                                            <p
-                                                style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                                                ※ AIの応答メッセージの最大幅を広げ、画面をより広く使います。
-                                            </p>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="extend-user-bubble-width-toggle">
-                                                ユーザーメッセージの横幅を拡張する
-                                            </label>
-                                            <p
-                                                style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                                                ※ ユーザーのメッセージの最大幅を広げ、画面をより広く使います。
-                                            </p>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="reduce-message-spacing-toggle">
-                                                メッセージ間の余白を縮小する
-                                            </label>
-                                            <p
-                                                style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                                                ※ チャット画面のメッセージ間の縦の空白を切り詰めます。
-                                            </p>
-                                                                                        <label class="checkbox-label">
-                                                <input type="checkbox" id="compact-settings-spacing-toggle">
-                                                設定画面の項目間隔を詰める
-                                            </label>
-                                            <p
-                                                style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                                                ※ 設定画面の各項目の上下余白を小さくします。
-                                            </p>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="slim-settings-headers-toggle">
-                                                設定項目のタイトル下余白を削減する
-                                            </label>
-                                                                                        <p
-                                                style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                                                ※ 設定画面の各グループのタイトル下にある余白や線を削除します。
-                                            </p>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="flat-settings-design-toggle">
-                                                設定項目のバブル表示（枠線・背景）を無効にする
-                                            </label>
-                                            <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                                                ※ 設定画面の各グループを囲む枠と背景色を取り除き、フラットな表示にします。
-                                            </p>
-                                            <hr style="margin: 10px 0; border-top: 1px solid var(--border-tertiary);">
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="enable-elevation-toggle">
-                                                UIを立体的にする
-                                            </label>
-                                            <div id="elevation-hover-option" class="hidden" style="padding-left: 20px; margin-bottom: 5px;">
-                                                <label class="checkbox-label" style="font-size: 12px;">
-                                                    <input type="checkbox" id="enable-elevation-hover-toggle">
-                                                    ホバー時の効果
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </details>
-
-
-                                    <!-- ファクター: 確認ダイアログのスキップ -->
+                                    <!-- 確認ダイアログのスキップ -->
                                     <details id="settings-group-factor-skip-dialogs">
                                         <summary
                                             style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
-                                            ファクター: 確認ダイアログのスキップ</summary>
+                                            確認ダイアログのスキップ</summary>
                                         <div
                                             style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
                                             <label class="checkbox-label">
@@ -5805,11 +5714,11 @@ font-size: 1.142em !important;
                                         </div>
                                     </details>
 
-                                    <!-- ファクター: 上級ユーザー向けオプション -->
+                                    <!-- 上級ユーザー向けオプション -->
                                     <details id="settings-group-factor-advanced-options">
                                         <summary
                                             style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
-                                            ファクター: 上級ユーザー向けオプション</summary>
+                                            上級ユーザー向けオプション</summary>
                                         <div
                                             style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
                                             <label class="checkbox-label">
@@ -5828,8 +5737,95 @@ font-size: 1.142em !important;
 
                                         </div>
                                     </details>
+                    </div>
+                </details>
+
+                <details class="settings-group" id="settings-group-display-adjustment" open>
+                    <summary
+                        style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
+                        表示の調整</summary>
+                    <div style="margin-top:10px;">
+                            <p style="height:10px"></p>
+                            <label for="theme-select">表示テーマ:</label>
+                            <select id="theme-select" aria-label="表示テーマ">
+                                <option value="light">ライトモード</option>
+                                <option value="dark">ダークモード</option>
+                                <option value="pastel-pink">パステルモード🩷</option>
+                                <option value="pastel-blue">パステルモード🩵</option>
+                                <option value="pastel-yellow">パステルモード🟡</option>
+                                <option value="pastel-purple">パステルモード🟣</option>
+                                <option value="pastel-rainbow">パステルモード🌈</option>
+                            </select>
+                            <p style="height:10px"></p>
+
+                            <details id="settings-group-factor-style-changes">
+                                <summary
+                                    style="font-size: 14px; color: var(--text-link); padding-bottom: 5px; margin-bottom: 10px; display: list-item; list-style: revert; cursor:pointer; font-weight: normal;">
+                                    レイアウトと装飾</summary>
+                                <div style="padding-left: 15px; margin-top: 10px;">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="minimize-header-footer-toggle">
+                                        ヘッダー/フッターの縦幅を最小化する
+                                    </label>
+                                    <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 15px;">
+                                        ※ 表示領域を最大化します。画面が小型の端末向け。
+                                    </p>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="extend-ai-bubble-width-toggle">
+                                        AI応答バブルの横幅を拡張する
+                                    </label>
+                                    <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
+                                        ※ AIの応答メッセージの最大幅を広げ、画面をより広く使います。
+                                    </p>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="extend-user-bubble-width-toggle">
+                                        ユーザーメッセージの横幅を拡張する
+                                    </label>
+                                    <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
+                                        ※ ユーザーのメッセージの最大幅を広げ、画面をより広く使います。
+                                    </p>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="reduce-message-spacing-toggle">
+                                        メッセージ間の余白を縮小する
+                                    </label>
+                                    <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
+                                        ※ チャット画面のメッセージ間の縦の空白を切り詰めます。
+                                    </p>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="compact-settings-spacing-toggle">
+                                        設定画面の項目間隔を詰める
+                                    </label>
+                                    <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
+                                        ※ 設定画面の各項目の上下余白を小さくします。
+                                    </p>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="slim-settings-headers-toggle">
+                                        設定項目のタイトル下余白を削減する
+                                    </label>
+                                    <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
+                                        ※ 設定画面の各グループのタイトル下にある余白や線を削除します。
+                                    </p>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="flat-settings-design-toggle">
+                                        設定項目のバブル表示（枠線・背景）を無効にする
+                                    </label>
+                                    <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
+                                        ※ 設定画面の各グループを囲む枠と背景色を取り除き、フラットな表示にします。
+                                    </p>
+                                    <hr style="margin: 10px 0; border-top: 1px solid var(--border-tertiary);">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="enable-elevation-toggle">
+                                        UIを立体的にする
+                                    </label>
+                                    <div id="elevation-hover-option" class="hidden" style="padding-left: 20px; margin-bottom: 5px;">
+                                        <label class="checkbox-label" style="font-size: 12px;">
+                                            <input type="checkbox" id="enable-elevation-hover-toggle">
+                                            ホバー時の効果
+                                        </label>
+                                    </div>
                                 </div>
                             </details>
+
                             <hr
                                 style="margin: 15px 0 15px 0; border: none; border-top: 1px solid var(--border-secondary);">
 
@@ -5839,11 +5835,11 @@ font-size: 1.142em !important;
                                     ボタン類の表示/非表示切替</summary>
                                 <div style="padding-left: 15px; margin-top: 10px;">
 
-                                    <!-- ファクター: 履歴画面のボタン -->
+                                    <!-- 履歴画面のボタン -->
                                     <details open id="settings-group-factor-history-buttons">
                                         <summary
                                             style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
-                                            ファクター: 履歴画面のボタン</summary>
+                                            履歴画面のボタン</summary>
                                         <div
                                             style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
                                             <label class="checkbox-label">
@@ -5862,11 +5858,11 @@ font-size: 1.142em !important;
                                         </div>
                                     </details>
 
-                                    <!-- ファクター: ヘッダーのボタン -->
+                                    <!-- ヘッダーのボタン -->
                                     <details open id="settings-group-factor-header-buttons">
                                         <summary
                                             style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
-                                            ファクター: ヘッダーのボタン</summary>
+                                            ヘッダーのボタン</summary>
                                         <div
                                             style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
                                             <label class="checkbox-label">
@@ -5923,11 +5919,11 @@ font-size: 1.142em !important;
                                         </div>
                                     </details>
 
-                                    <!-- ファクター: 入力・出力移動ボタン -->
+                                    <!-- 入力・出力移動ボタン -->
                                     <details open id="settings-group-factor-message-navigation-buttons">
                                         <summary
                                             style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
-                                            ファクター: 入力・出力移動ボタン</summary>
+                                            入力・出力移動ボタン</summary>
                                         <div
                                             style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
                                             <label for="message-navigation-button-mode">
@@ -5941,11 +5937,11 @@ font-size: 1.142em !important;
                                         </div>
                                     </details>
 
-                                    <!-- ファクター: フッターのボタン -->
+                                    <!-- フッターのボタン -->
                                     <details open id="settings-group-factor-footer-buttons">
                                         <summary
                                             style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
-                                            ファクター: フッターのボタン</summary>
+                                            フッターのボタン</summary>
                                         <div
                                             style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
                                             <label class="checkbox-label">
@@ -5964,11 +5960,11 @@ font-size: 1.142em !important;
                                         </div>
                                     </details>
 
-                                    <!-- ファクター: メッセージ要素のボタン -->
+                                    <!-- メッセージ要素のボタン -->
                                     <details open id="settings-group-factor-message-buttons">
                                         <summary
                                             style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
-                                            ファクター: メッセージ要素のボタン</summary>
+                                            メッセージ要素のボタン</summary>
                                         <div
                                             style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
                                             <label class="checkbox-label">
@@ -6033,7 +6029,7 @@ font-size: 1.142em !important;
 
                                     <details open id="settings-group-factor-settings-buttons">
                                         <summary style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
-                                            ファクター: 設定パネルのボタン
+                                            設定パネルのボタン
                                         </summary>
                                         <div style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
                                             <label class="checkbox-label">
@@ -6195,28 +6191,14 @@ font-size: 1.142em !important;
                         </p>
                     </div>
                 </details>
-                <div id="settings-group-elevation" style="padding-left: 15px; margin-top: 10px;">
+                        <div id="settings-group-display-auto-close" style="padding-left: 15px; margin-top: 10px;">
                             <label class="checkbox-label">
-
-                                <input type="checkbox" id="auto-close-other-settings-toggle">
-                                『その他設定』を自動で閉じる
+                                <input type="checkbox" id="auto-close-display-settings-toggle">
+                                『表示の調整』を自動で閉じる
                             </label>
                         </div>
-                        </div>
-                    </details>
-                </div>
-                <details class="settings-group" id="settings-group-sending-operation">
-                    <summary
-                        style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
-                        送信中の操作</summary>
-                    <div style="margin-top:10px;">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="disable-load-chat-confirmation-while-sending-toggle">
-                            メッセージ送信中に別チャットを読み込む際の確認ダイアログを表示しない (非推奨)
-                        </label>
                     </div>
                 </details>
-
                 <details class="settings-group" id="settings-group-input-presets">
                     <summary
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
@@ -6704,7 +6686,7 @@ const elements = {
     enableElevationToggle: document.getElementById('enable-elevation-toggle'),
     enableElevationHoverToggle: document.getElementById('enable-elevation-hover-toggle'),
     elevationHoverOption: document.getElementById('elevation-hover-option'),
-    autoCloseOtherSettingsToggle: document.getElementById('auto-close-other-settings-toggle'),
+    autoCloseDisplaySettingsToggle: document.getElementById('auto-close-display-settings-toggle'),
     settingsScrollToTopBtn: document.getElementById('settings-scroll-to-top-btn'),
     settingsScrollToBottomBtn: document.getElementById('settings-scroll-to-bottom-btn'),
     showSettingsScrollToTopButtonToggle: document.getElementById('show-settings-scroll-to-top-button-toggle'),
@@ -6754,6 +6736,7 @@ const elements = {
     promptCancelBtn: getRequiredDomElement('promptDialog').querySelector('.dialog-cancel-btn'),
     attachFileBtn: document.getElementById('attach-file-btn'),
     pasteToInputBtn: document.getElementById('paste-to-input-btn'),
+    footerSecondaryActions: document.getElementById('footer-secondary-actions'),
     fileUploadDialog: document.getElementById('fileUploadDialog'),
     fileInput: document.getElementById('file-input'),
     selectFilesBtn: document.getElementById('select-files-btn'),
@@ -6770,7 +6753,6 @@ const elements = {
     memoStackHeightSettings: document.getElementById('memo-stack-height-settings'),
     memoHeightInput: document.getElementById('memo-height'),
     disableRetryConfirmationToggle: document.getElementById('disable-retry-confirmation-toggle'),
-    disableLoadChatConfirmationWhileSendingToggle: document.getElementById('disable-load-chat-confirmation-while-sending-toggle'),
     disableDeleteMessageConfirmationToggle: document.getElementById('disable-delete-message-confirmation-toggle'),
     disableAttachmentConfirmationToggle: document.getElementById('disable-attachment-confirmation-toggle'),
     addPrefixOnImportToggle: document.getElementById('add-prefix-on-import-toggle'),
@@ -6986,7 +6968,6 @@ const state = {
         showClipboardStackButton: false,
         clipboardStackHeight: DEFAULT_CLIPBOARD_STACK_HEIGHT,
         disableRetryConfirmation: false,
-        disableLoadChatConfirmationWhileSending: false,
         disableDeleteMessageConfirmation: false,
         disableAttachmentConfirmation: false,
         addPrefixOnImport: true,
@@ -7016,7 +6997,7 @@ const state = {
         chatUiScale: 1.0,
         settingsUiScale: 1.0,
         historyUiScale: 1.0,
-        autoCloseOtherSettings: true,
+        autoCloseDisplaySettings: true,
         enableMessageBubbleOpacity: true,
         enableChatOverlayOpacity: true,
         enableHeaderFooterOpacity: true,
@@ -7306,6 +7287,11 @@ const dbUtils = {
                     }
                     state.settings.llmaggregatorBackends = backends;
                     state.settings.llmaggregatorActiveBackendIndex = (backends.length > 0) ? 0 : -1;
+                    const shouldMigrateAutoCloseDisplaySettings = typeof loadedSettings.autoCloseDisplaySettings !== 'boolean'
+                        && typeof loadedSettings.autoCloseOtherSettings === 'boolean';
+                    if (shouldMigrateAutoCloseDisplaySettings) {
+                        loadedSettings.autoCloseDisplaySettings = loadedSettings.autoCloseOtherSettings;
+                    }
                     for (const key in loadedSettings) {
                         if (key === 'darkMode' || key === 'memoWidth' || key === 'showCollapseButtons')
                             continue;
@@ -7340,18 +7326,29 @@ const dbUtils = {
                     }
                     const removedSettingKeys = settingsArray
                         .map((item) => item.key)
-                        .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine|enableSessionLinking|showSessionLinkingSettings|enableCryscroller|cryscroller|enableSettingsCryscroller|enableHistoryCryscroller|enableImmersiveScrolling|enableDynamicScrollMarkerColor|enableProofreading|showProofreadingSettings|proofreading|activeProofreadingConfigId|enableImageUrlReplacement|imageUrlReplacementBase|enableAutoBaseUrlDetection|enableFuzzySearchNormalization|fuzzySearchThreshold|characterNamesList|enableRomajiToKatakanaConversion|dummyErrorDebugMode|dummyDummyModel|dummyEnableDummyModel|showDiceButton|diceMinValue|diceMaxValue|backgroundImageBlob|historyBackgroundImageBlob|settingsBackgroundImageBlob|showUserIcon|userIconBlob|showUserName|userName|showAiIcon|aiIconBlob|showAiName|aiName|iconName|messageIcon|dummyUser|enableDummyUser|dummyModel|enableDummyModel|concatDummyModel|(?:gemini|deepSeek|claude|openai|xai|llmAggregator)(?:DummyUser|EnableDummyUser|DummyModel|EnableDummyModel|ConcatDummyModel)|webhookUrl|webhookFormat|enableWebhookNotification|webhooks|showNewChatButton|showDeleteSessionButton|showCopySessionButton)/.test(key));
-                    if (removedSettingKeys.length > 0) {
+                        .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine|enableSessionLinking|showSessionLinkingSettings|enableCryscroller|cryscroller|enableSettingsCryscroller|enableHistoryCryscroller|enableImmersiveScrolling|enableDynamicScrollMarkerColor|enableProofreading|showProofreadingSettings|proofreading|activeProofreadingConfigId|enableImageUrlReplacement|imageUrlReplacementBase|enableAutoBaseUrlDetection|enableFuzzySearchNormalization|fuzzySearchThreshold|characterNamesList|enableRomajiToKatakanaConversion|dummyErrorDebugMode|dummyDummyModel|dummyEnableDummyModel|showDiceButton|diceMinValue|diceMaxValue|backgroundImageBlob|historyBackgroundImageBlob|settingsBackgroundImageBlob|showUserIcon|userIconBlob|showUserName|userName|showAiIcon|aiIconBlob|showAiName|aiName|iconName|messageIcon|dummyUser|enableDummyUser|dummyModel|enableDummyModel|concatDummyModel|(?:gemini|deepSeek|claude|openai|xai|llmAggregator)(?:DummyUser|EnableDummyUser|DummyModel|EnableDummyModel|ConcatDummyModel)|webhookUrl|webhookFormat|enableWebhookNotification|webhooks|showNewChatButton|showDeleteSessionButton|showCopySessionButton|disableLoadChatConfirmationWhileSending|autoCloseOtherSettings)/.test(key));
+                    if (removedSettingKeys.length > 0 || shouldMigrateAutoCloseDisplaySettings) {
                         try {
                             const cleanupStore = this._getStore(SETTINGS_STORE, 'readwrite');
-                            await Promise.all(removedSettingKeys.map((key) => new Promise((resolveCleanup, rejectCleanup) => {
+                            const cleanupRequests = removedSettingKeys.map((key) => new Promise((resolveCleanup, rejectCleanup) => {
                                 const deleteRequest = cleanupStore.delete(key);
                                 deleteRequest.onsuccess = () => resolveCleanup();
                                 deleteRequest.onerror = () => rejectCleanup(deleteRequest.error);
-                            })));
+                            }));
+                            if (shouldMigrateAutoCloseDisplaySettings) {
+                                cleanupRequests.push(new Promise((resolveCleanup, rejectCleanup) => {
+                                    const saveRequest = cleanupStore.put({
+                                        key: 'autoCloseDisplaySettings',
+                                        value: loadedSettings.autoCloseDisplaySettings,
+                                    });
+                                    saveRequest.onsuccess = () => resolveCleanup();
+                                    saveRequest.onerror = () => rejectCleanup(saveRequest.error);
+                                }));
+                            }
+                            await Promise.all(cleanupRequests);
                         }
                         catch (error) {
-                            console.warn('廃止済み設定の削除に失敗しました:', error);
+                            console.warn('設定の移行または廃止済み設定の削除に失敗しました:', error);
                         }
                     }
                     resolve(state.settings);
@@ -10993,7 +10990,7 @@ Object.assign(uiUtils, {
         elements.enableElevationToggle.checked = state.settings.enableElevation;
         elements.enableElevationHoverToggle.checked = state.settings.enableElevationHover;
         elements.elevationHoverOption.classList.toggle('hidden', !state.settings.enableElevation);
-        elements.autoCloseOtherSettingsToggle.checked = state.settings.autoCloseOtherSettings;
+        elements.autoCloseDisplaySettingsToggle.checked = state.settings.autoCloseDisplaySettings;
         this.applyElevationSetting();
         document.getElementById('message-bubble-opacity-slider').value = elements.messageBubbleOpacityInput.value;
         document.getElementById('chat-overlay-opacity-slider').value = elements.chatOverlayOpacityInput.value;
@@ -11015,7 +11012,6 @@ Object.assign(uiUtils, {
         elements.memoHeightInput.value = state.settings.memoHeight || '';
         elements.showClipboardStackButtonToggle.checked = state.settings.showClipboardStackButton;
         elements.disableRetryConfirmationToggle.checked = state.settings.disableRetryConfirmation;
-        elements.disableLoadChatConfirmationWhileSendingToggle.checked = state.settings.disableLoadChatConfirmationWhileSending;
         elements.disableDeleteMessageConfirmationToggle.checked = state.settings.disableDeleteMessageConfirmation;
         elements.disableAttachmentConfirmationToggle.checked = state.settings.disableAttachmentConfirmation;
         elements.addPrefixOnImportToggle.checked = state.settings.addPrefixOnImport;
@@ -11047,10 +11043,10 @@ Object.assign(uiUtils, {
         document.documentElement.style.setProperty('--message-toggle-button-bottom-font-size', `${state.settings.toggleButtonBottomFontSize || DEFAULT_TOGGLE_BUTTON_BOTTOM_FONT_SIZE}px`);
         document.documentElement.style.setProperty('--thought-summary-opacity', state.settings.thoughtSummaryOpacity || DEFAULT_THOUGHT_SUMMARY_OPACITY);
         this.applySettingsUIDetailsOpenStates();
-        if (state.settings.autoCloseOtherSettings) {
-            const otherDetails = document.getElementById('settings-group-other-details');
-            if (otherDetails)
-                otherDetails.open = false;
+        if (state.settings.autoCloseDisplaySettings) {
+            const displaySettings = document.getElementById('settings-group-display-adjustment');
+            if (displaySettings)
+                displaySettings.open = false;
         }
         this.updateChatScreenElementVisibility();
         appLogic.applyMessageNavigationMode();
@@ -11184,6 +11180,14 @@ Object.assign(uiUtils, {
             }
             if (elements.footerCycleApiKeyBtn) {
                 elements.footerCycleApiKeyBtn.classList.toggle('hidden', !state.settings.showFooterCycleApiKeyBtn);
+            }
+            if (elements.footerSecondaryActions) {
+                const hasVisibleFooterAction = [
+                    elements.footerApiProviderToggleBtn,
+                    elements.footerCycleApiKeyBtn,
+                    elements.pasteToInputBtn,
+                ].some((button) => button && !button.classList.contains('hidden'));
+                elements.footerSecondaryActions.classList.toggle('hidden', !hasVisibleFooterAction);
             }
             this.adjustHeaderLayout();
             this.updateProviderToggleButtons();
@@ -13598,11 +13602,8 @@ Object.assign(appLogic, {
         }
     },
     async loadChat(id) {
-        let confirmedLoad = true;
         if (state.isSending) {
-            if (!state.settings.disableLoadChatConfirmationWhileSending) {
-                confirmedLoad = await uiUtils.showCustomConfirm("送信中です。中断して別のチャットを読み込みますか？");
-            }
+            const confirmedLoad = await uiUtils.showCustomConfirm("送信中です。中断して別のチャットを読み込みますか？");
             if (!confirmedLoad)
                 return;
             this.abortRequest();
@@ -15553,7 +15554,6 @@ Object.assign(appLogic, {
         newSettings.showClipboardStackButton = elements.showClipboardStackButtonToggle.checked;
         newSettings.clipboardStackHeight = state.settings.clipboardStackHeight;
         newSettings.disableRetryConfirmation = elements.disableRetryConfirmationToggle.checked;
-        newSettings.disableLoadChatConfirmationWhileSending = elements.disableLoadChatConfirmationWhileSendingToggle.checked;
         newSettings.disableDeleteMessageConfirmation = elements.disableDeleteMessageConfirmationToggle.checked;
         newSettings.disableAttachmentConfirmation = elements.disableAttachmentConfirmationToggle.checked;
         newSettings.addPrefixOnImport = elements.addPrefixOnImportToggle.checked;
@@ -15576,7 +15576,7 @@ Object.assign(appLogic, {
         newSettings.thoughtSummaryOpacity = elements.thoughtSummaryOpacityInput.value === '' ? DEFAULT_THOUGHT_SUMMARY_OPACITY : parseFloat(elements.thoughtSummaryOpacityInput.value);
         newSettings.enableElevation = elements.enableElevationToggle.checked;
         newSettings.enableElevationHover = elements.enableElevationHoverToggle.checked;
-        newSettings.autoCloseOtherSettings = elements.autoCloseOtherSettingsToggle.checked;
+        newSettings.autoCloseDisplaySettings = elements.autoCloseDisplaySettingsToggle.checked;
         newSettings.showSettingsScrollToTopButton = elements.showSettingsScrollToTopButtonToggle.checked;
         newSettings.showSettingsScrollToBottomButton = elements.showSettingsScrollToBottomButtonToggle.checked;
         newSettings.showApiProviderToggleHeader = elements.showApiProviderToggleHeaderCheckbox.checked;
@@ -15815,7 +15815,7 @@ Object.assign(appLogic, {
         editArea.classList.remove('hidden');
         uiUtils.adjustTextareaHeight(textarea, 400);
         textarea.focus();
-        textarea.select();
+        textarea.setSelectionRange(textarea.value.length, textarea.value.length);
         this.uncollapseMessage(index, messageElement);
     },
     async saveEditMessage(originalIndex, messageElement) {

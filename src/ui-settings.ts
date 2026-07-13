@@ -428,7 +428,7 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
     elements.enableElevationToggle.checked = state.settings.enableElevation;
     elements.enableElevationHoverToggle.checked = state.settings.enableElevationHover;
     elements.elevationHoverOption.classList.toggle('hidden', !state.settings.enableElevation);
-    elements.autoCloseOtherSettingsToggle.checked = state.settings.autoCloseOtherSettings;
+    elements.autoCloseDisplaySettingsToggle.checked = state.settings.autoCloseDisplaySettings;
     this.applyElevationSetting();
 
                 document.getElementById('message-bubble-opacity-slider').value = elements.messageBubbleOpacityInput.value;
@@ -452,7 +452,6 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 elements.memoHeightInput.value = state.settings.memoHeight || '';
                 elements.showClipboardStackButtonToggle.checked = state.settings.showClipboardStackButton;
                 elements.disableRetryConfirmationToggle.checked = state.settings.disableRetryConfirmation;
-                elements.disableLoadChatConfirmationWhileSendingToggle.checked = state.settings.disableLoadChatConfirmationWhileSending;
                 elements.disableDeleteMessageConfirmationToggle.checked = state.settings.disableDeleteMessageConfirmation;
                 elements.disableAttachmentConfirmationToggle.checked = state.settings.disableAttachmentConfirmation;
                 elements.addPrefixOnImportToggle.checked = state.settings.addPrefixOnImport;
@@ -488,9 +487,9 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 document.documentElement.style.setProperty('--thought-summary-opacity', state.settings.thoughtSummaryOpacity || DEFAULT_THOUGHT_SUMMARY_OPACITY);
 
                 this.applySettingsUIDetailsOpenStates();
-                if (state.settings.autoCloseOtherSettings) {
-                    const otherDetails = document.getElementById('settings-group-other-details');
-                    if (otherDetails) otherDetails.open = false;
+                if (state.settings.autoCloseDisplaySettings) {
+                    const displaySettings = document.getElementById('settings-group-display-adjustment');
+                    if (displaySettings) displaySettings.open = false;
                 }
                 this.updateChatScreenElementVisibility();
                 appLogic.applyMessageNavigationMode();
