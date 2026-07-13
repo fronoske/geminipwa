@@ -1,4 +1,4 @@
-// src/aggregator-security.js is generated from this file. Edit this TypeScript source instead.
+// Bundled into the generated index.html from this TypeScript source.
         function isAllowedAggregatorDomain(urlStr: string | null | undefined): boolean {
             if (state.settings.disableLlmUrlWhitelist) return true;
             if (!urlStr) return true;

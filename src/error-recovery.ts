@@ -1,5 +1,5 @@
 // @ts-nocheck -- Enable after shared application service types are defined.
-// src/error-recovery.js is generated from this file. Edit this TypeScript source instead.
+// Bundled into the generated index.html from this TypeScript source.
         const errorRecovery = {
             errorCount: 0,
             errorTimeWindow: 60000,

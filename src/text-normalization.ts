@@ -1,5 +1,5 @@
 // @ts-nocheck -- Enable after this legacy controller is split into typed features.
-// src/text-normalization.js is generated from this file. Edit this TypeScript source instead.
+// Bundled into the generated index.html from this TypeScript source.
         function katakanaToHiragana(str) {
             if (typeof str !== 'string') return '';
             return str.replace(/[\u30a1-\u30f6]/g, function (match) {

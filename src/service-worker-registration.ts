@@ -1,4 +1,4 @@
-// src/service-worker-registration.js is generated from this file. Edit this TypeScript source instead.
+// Bundled into the generated index.html from this TypeScript source.
         function registerServiceWorker(): void {
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {

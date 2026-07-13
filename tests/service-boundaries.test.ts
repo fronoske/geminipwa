@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest';
 const projectRoot = path.resolve(import.meta.dirname, '..');
 const readFile = (filename: string): string =>
   fs.readFileSync(path.join(projectRoot, filename), 'utf8');
+const readRuntime = (name: string): string => readFile(`.build/runtime/${name}.js`);
 
 const serviceBoundaries = [
   ['webhook-manager', 'webhookUtils'],
@@ -45,14 +46,14 @@ describe('application service boundaries', () => {
 
   it.each(serviceBoundaries)('generates the %s runtime object', (filename, globalName) => {
     const context = vm.createContext({});
-    new vm.Script(readFile(`src/${filename}.js`)).runInContext(context);
+    new vm.Script(readRuntime(filename)).runInContext(context);
 
     expect(new vm.Script(`typeof ${globalName}`).runInContext(context)).toBe('object');
   });
 
   it.each(controllerFeatures)('registers the %s controller feature', (filename, globalName) => {
     const context = vm.createContext({ [globalName]: {} });
-    new vm.Script(readFile(`src/${filename}.js`)).runInContext(context);
+    new vm.Script(readRuntime(filename)).runInContext(context);
 
     expect(
       new vm.Script(`Object.keys(${globalName}).length > 0`).runInContext(context),
@@ -98,7 +99,7 @@ describe('application service boundaries', () => {
   ] as const)('preserves all %s controller methods', (globalName, expectedCount, filenames) => {
     const context = vm.createContext({ [globalName]: {} });
     for (const filename of filenames) {
-      new vm.Script(readFile(`src/${filename}.js`)).runInContext(context);
+      new vm.Script(readRuntime(filename)).runInContext(context);
     }
 
     expect(new vm.Script(`Object.keys(${globalName}).length`).runInContext(context)).toBe(

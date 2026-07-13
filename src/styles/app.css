@@ -719,7 +719,7 @@
             --default-user-name-bubble-custom-rgb: 245, 245, 245;
             --default-ai-name-bubble-custom-rgb: 245, 245, 245;
         }
-        
+
 body.turf-mode {
       --dazzle-scale: 3;
       --dazzle-dark: 0.10;
@@ -738,7 +738,7 @@ body.turf-mode {
       --text-primary: #7A4114;
       --text-secondary: #7A4114;
       --text-link: #388e3c;
-      
+
       /* [2] ヘッダーと主要ボタン（送信など） */
       --bg-header: #4CAF50;
       --bg-header-hover: #4CAF50; /* ホバー色を通常色と同じに */
@@ -798,7 +798,7 @@ body.turf-mode {
         body.turf-mode .message.model {
             border: 2px solid #FD6EA3; /* AI: ピンク色の線 */
         }
-        
+
         /* ターフモード専用のメッセージテキスト色（ここから追加） */
         body.turf-mode .message.user {
             color: #7a4114; /* ユーザーの文字*/
@@ -4207,12 +4207,12 @@ body.turf-mode button {
 }
 
 body.turf-mode button:hover:not(:disabled) {
-  --dazzle-dark: 0.14; 
+  --dazzle-dark: 0.14;
 }
 
 body.turf-mode button:active:not(:disabled) {
-  --dazzle-dark: 0.16; 
-  transform: none;     
+  --dazzle-dark: 0.16;
+  transform: none;
 }
 
 body.turf-mode button:disabled {
@@ -4562,13 +4562,13 @@ font-size: 1.142em !important;
             font-size: calc(14px * var(--history-ui-scale));
         }
         #history-screen .history-item-title {
-            font-size: 1.072em !important; 
+            font-size: 1.072em !important;
         }
         #history-screen .history-item-dates {
-            font-size: 0.643em !important; 
+            font-size: 0.643em !important;
         }
         #history-screen .history-item-actions button {
-            font-size: 1.143em !important; 
+            font-size: 1.143em !important;
             padding: 0.375em 0.5em !important;
         }
         #history-screen #no-history-message {
@@ -4692,7 +4692,7 @@ font-size: 1.142em !important;
             pointer-events: none;
         }
 
-        
+
                .history-item { position: relative; z-index: 1; overflow: hidden; }
         .history-item-details, .history-item-bottom-row { position: relative; z-index: 2; text-shadow: 0 1px 3px var(--bg-primary), 0 0 5px var(--bg-primary), 0 0 10px var(--bg-primary); }
         .history-item-preview-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; padding: 0; }
@@ -4706,7 +4706,7 @@ font-size: 1.142em !important;
             position: relative;
         }
 
-        body.immersive-mode .app-header, 
+        body.immersive-mode .app-header,
         body.immersive-mode #history-screen .app-header,
         body.immersive-mode #settings-screen .app-header {
             position: absolute;
@@ -4728,7 +4728,7 @@ font-size: 1.142em !important;
             height: 100%;
 
             padding-top: calc(var(--header-height, 50px) + 15px);
-            padding-bottom: calc(var(--footer-height, 60px) + 16px); 
+            padding-bottom: calc(var(--footer-height, 60px) + 16px);
             box-sizing: border-box;
         }
         body.immersive-mode #history-screen .main-content,

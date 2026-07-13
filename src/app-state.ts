@@ -1,4 +1,4 @@
-// src/app-state.js is generated from this file. Edit this TypeScript source instead.
+// Bundled into the generated index.html from this TypeScript source.
         const state = {
             db: null,
             currentChatId: null,

@@ -4,7 +4,7 @@ import vm from 'node:vm';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 const projectRoot = path.resolve(import.meta.dirname, '..');
-const utilitySource = fs.readFileSync(path.join(projectRoot, 'src/utilities.js'), 'utf8');
+const utilitySource = fs.readFileSync(path.join(projectRoot, '.build/runtime/utilities.js'), 'utf8');
 let context: vm.Context;
 
 beforeEach(() => {

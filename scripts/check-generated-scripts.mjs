@@ -1,51 +1,17 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const generatedDirectory = path.join(projectRoot, 'dist/generated-scripts');
-const scripts = [
-  'recovery.js',
-  'app-config.js',
-  'dom-elements.js',
-  'app-state.js',
-  'aggregator-security.js',
-  'layout-runtime.js',
-  'service-worker-registration.js',
-  'text-normalization.js',
-  'database.js',
-  'utilities.js',
-  'interruptible-sleep.js',
-  'webhook-manager.js',
-  'api-clients.js',
-  'proofreading-config.js',
-  'backend-manager.js',
-  'error-recovery.js',
-  'api-key-manager.js',
-  'twin-engine-config.js',
-  'ui-controller.js',
-  'ui-message-rendering.js',
-  'ui-message-tools.js',
-  'ui-settings.js',
-  'ui-header-controls.js',
-  'ui-interactions.js',
-  'app-controller.js',
-  'app-initialization.js',
-  'event-wiring.js',
-  'app-navigation-panels.js',
-  'chat-sessions.js',
-  'message-sending.js',
-  'data-management.js',
-  'message-actions.js',
-  'twin-engine-runtime.js',
-  'scrolling-runtime.js',
-  'main.js',
-  'input-preset.js',
-];
+const generatedDirectory = path.join(projectRoot, '.build/runtime');
+const manifest = JSON.parse(
+  fs.readFileSync(path.join(projectRoot, 'scripts/runtime-scripts.json'), 'utf8'),
+);
+const scripts = [...manifest.early, ...manifest.application].map((name) => `${name}.js`);
 const failures = [];
 
 for (const filename of scripts) {
-  const committedPath = path.join(projectRoot, 'src', filename);
   const generatedPath = path.join(generatedDirectory, filename);
 
   if (!fs.existsSync(generatedPath)) {
@@ -53,15 +19,16 @@ for (const filename of scripts) {
     continue;
   }
 
-  if (fs.readFileSync(committedPath, 'utf8') !== fs.readFileSync(generatedPath, 'utf8')) {
-    failures.push(`生成済みJavaScriptがTypeScriptソースと一致しません: src/${filename}`);
+  try {
+    new vm.Script(fs.readFileSync(generatedPath, 'utf8'), { filename });
+  } catch (error) {
+    failures.push(`TypeScript生成物の構文エラー: ${filename}: ${error.message}`);
   }
 }
 
 if (failures.length > 0) {
   console.error('TypeScript生成物の検査に失敗しました:');
   failures.forEach((failure) => console.error(`- ${failure}`));
-  console.error('npm run generate:scripts を実行して生成物を更新してください');
   process.exit(1);
 }
 

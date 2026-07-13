@@ -1,5 +1,5 @@
 // @ts-nocheck -- Enable after shared UI types are defined.
-// src/ui-settings.js is generated from this file. Edit this TypeScript source instead.
+// Bundled into the generated index.html from this TypeScript source.
 Object.assign(uiUtils, {
             revokeExistingObjectUrl() {
                 if (state.backgroundImageUrl) {

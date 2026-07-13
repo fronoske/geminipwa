@@ -1,4 +1,4 @@
-// src/dom-elements.js is generated from this file. Edit this TypeScript source instead.
+// Bundled into the generated index.html from this TypeScript source.
 const getRequiredDomElement = (id: string): HTMLElement => {
   const element = document.getElementById(id);
   if (!element) throw new Error(`Required DOM element is missing: #${id}`);

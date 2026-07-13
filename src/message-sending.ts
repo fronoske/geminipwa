@@ -1,5 +1,5 @@
 // @ts-nocheck -- Enable after shared application types are defined.
-// src/message-sending.js is generated from this file. Edit this TypeScript source instead.
+// Bundled into the generated index.html from this TypeScript source.
 Object.assign(appLogic, {
             async proofreadText(textToProofread) {
                 console.log("--- 校正処理開始 ---");

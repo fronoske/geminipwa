@@ -1,5 +1,5 @@
 // @ts-nocheck -- Enable after shared application service types are defined.
-// src/proofreading-config.js is generated from this file. Edit this TypeScript source instead.
+// Bundled into the generated index.html from this TypeScript source.
         const proofreadingApiConfigUtils = {
             MAX_CONFIGS: 10,
 

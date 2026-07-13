@@ -1,4 +1,4 @@
-// src/utilities.js is generated from this file. Edit this TypeScript source instead.
+// Bundled into the generated index.html from this TypeScript source.
 
 const sanitizeText = (text: unknown, maxLength = 255): string => {
   if (typeof text !== 'string') return '';

@@ -1,5 +1,5 @@
 // @ts-nocheck -- Enable after shared UI types are defined.
-// src/ui-message-rendering.js is generated from this file. Edit this TypeScript source instead.
+// Bundled into the generated index.html from this TypeScript source.
 Object.assign(uiUtils, {
             updateSettingsScreenElementVisibility() {
                 elements.settingsScrollToTopBtn.classList.toggle('hidden', !state.settings.showSettingsScrollToTopButton);

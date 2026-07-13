@@ -1,5 +1,5 @@
 // @ts-nocheck -- Enable after application state and persisted record types are defined.
-// src/database.js is generated from this file. Edit this TypeScript source instead.
+// Bundled into the generated index.html from this TypeScript source.
 const dbUtils = {
             _initPromise: null,
 

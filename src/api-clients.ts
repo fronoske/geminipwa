@@ -1,5 +1,5 @@
 // @ts-nocheck -- Enable after shared application service types are defined.
-// src/api-clients.js is generated from this file. Edit this TypeScript source instead.
+// Bundled into the generated index.html from this TypeScript source.
         const apiUtils = {
             async callGeminiApi(apiKey, model, messagesForApi, generationConfig, systemInstruction, useStreaming, usePseudo, enableGrounding) {
                 if (!apiKey) {

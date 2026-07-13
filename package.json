@@ -5,13 +5,12 @@
   "type": "module",
   "scripts": {
     "baseline": "node scripts/check-baseline.mjs",
-    "dev": "vite",
-    "generate:scripts": "tsc -p tsconfig.runtime.json && node scripts/normalize-generated-scripts.mjs src",
-    "check:generated": "tsc -p tsconfig.runtime.json --outDir dist/generated-scripts && node scripts/normalize-generated-scripts.mjs dist/generated-scripts && node scripts/check-generated-scripts.mjs",
-    "build": "npm run baseline && vite build",
+    "dev": "npm run build && vite",
+    "build:pages": "node scripts/prepare-build.mjs && tsc -p tsconfig.runtime.json --outDir .build/runtime && node scripts/normalize-generated-scripts.mjs .build/runtime && node scripts/check-generated-scripts.mjs && node scripts/build-pages.mjs",
+    "build": "npm run build:pages",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "verify": "npm run baseline && npm run typecheck && npm run check:generated && npm test && npm run build && node scripts/check-dist.mjs"
+    "verify": "npm run typecheck && npm run build && npm run baseline && npm test && node scripts/check-pages.mjs"
   },
   "devDependencies": {
     "@types/node": "latest",

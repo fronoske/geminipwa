@@ -1,5 +1,5 @@
 // @ts-nocheck -- Enable after shared application service types are defined.
-// src/backend-manager.js is generated from this file. Edit this TypeScript source instead.
+// Bundled into the generated index.html from this TypeScript source.
        const multiBackendUtils = {
             MAX_BACKENDS: 100,
             MAX_API_KEYS_PER_BACKEND: 100,

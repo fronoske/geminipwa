@@ -15,7 +15,7 @@ describe('database boundary', () => {
 
   it('preserves the database API surface', () => {
     const context = vm.createContext({});
-    new vm.Script(readFile('src/database.js')).runInContext(context);
+    new vm.Script(readFile('.build/runtime/database.js')).runInContext(context);
     const methodNames = new vm.Script('Object.keys(dbUtils)').runInContext(context);
 
     expect(Array.from(methodNames)).toEqual([

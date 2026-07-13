@@ -1,5 +1,5 @@
 // @ts-nocheck -- Enable after abortable task types are defined.
-// src/interruptible-sleep.js is generated from this file. Edit this TypeScript source instead.
+// Bundled into the generated index.html from this TypeScript source.
 function interruptibleSleep(ms, signal) {
             return new Promise((resolve, reject) => {
                 if (signal.aborted) {

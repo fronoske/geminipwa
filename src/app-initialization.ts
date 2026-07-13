@@ -1,5 +1,5 @@
 // @ts-nocheck -- Enable after shared application types are defined.
-// src/app-initialization.js is generated from this file. Edit this TypeScript source instead.
+// Bundled into the generated index.html from this TypeScript source.
 Object.assign(appLogic, {
             toggleAllSettingsCheckboxes(checked) {
                 const checkboxes = document.querySelectorAll('#settings-screen input[type="checkbox"]');

@@ -1,4 +1,4 @@
-// src/app-config.js is generated from this file. Edit this TypeScript source instead.
+// Bundled into the generated index.html from this TypeScript source.
         const DB_NAME = 'GeminiPWA_DB';
         const DB_VERSION = 8;
         const SETTINGS_STORE = 'settings';

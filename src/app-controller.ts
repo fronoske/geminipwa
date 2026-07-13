@@ -1,2 +1,2 @@
-// src/app-controller.js is generated from this file. Edit this TypeScript source instead.
+// Bundled into the generated index.html from this TypeScript source.
 const appLogic: Record<string, any> = {};
