@@ -1188,6 +1188,60 @@
             background-color: rgba(var(--bg-secondary-rgb, 240, 242, 245), var(--header-footer-opacity, 1));
         }
 
+        .message-navigation-controls {
+            position: absolute;
+            left: 14px;
+            bottom: 72px;
+            z-index: 3;
+            display: grid;
+            gap: 8px;
+            opacity: 0;
+            transform: translateY(8px);
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+        }
+
+        .message-navigation-controls.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .message-navigation-controls button {
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 50%;
+            background: rgba(var(--bg-button-rgb), 0.64);
+            color: var(--text-light);
+            box-shadow: 0 4px 12px var(--shadow-secondary);
+            font-size: 24px;
+            font-weight: bold;
+            line-height: 1;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+
+        .message-navigation-controls button:hover:not(:disabled),
+        .message-navigation-controls button:focus-visible {
+            background: rgba(var(--bg-button-rgb), 0.82);
+            outline: 2px solid var(--text-light);
+            outline-offset: 2px;
+        }
+
+        body.pastel-yellow-mode .message-navigation-controls button {
+            color: #424242;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .message-navigation-controls {
+                transition: none;
+            }
+        }
+
         #history-screen .main-content,
         #settings-screen .main-content {
             touch-action: pan-y;

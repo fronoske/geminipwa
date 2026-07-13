@@ -673,6 +673,7 @@ newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.che
 
                 newSettings.showChatTitle = elements.showChatTitleToggle.checked;
                 newSettings.showHeaderMenuButton = elements.showHeaderMenuButtonToggle.checked;
+                newSettings.messageNavigationButtonMode = elements.messageNavigationModeSelect.value;
                 newSettings.showScrollToTopButton = elements.showScrollToTopButtonToggle.checked;
                 newSettings.showScrollToBottomButton = elements.showScrollToBottomButtonToggle.checked;
                 newSettings.showToggleAllContentButton = elements.showToggleAllContentButtonToggle.checked;

@@ -409,6 +409,10 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 document.body.classList.toggle('flat-settings-mode', state.settings.flatSettingsDesign);
                 elements.showChatTitleToggle.checked = state.settings.showChatTitle;
                 elements.showHeaderMenuButtonToggle.checked = state.settings.showHeaderMenuButton;
+                if (!['always', 'hidden', 'scroll'].includes(state.settings.messageNavigationButtonMode)) {
+                    state.settings.messageNavigationButtonMode = 'scroll';
+                }
+                elements.messageNavigationModeSelect.value = state.settings.messageNavigationButtonMode;
                 elements.showScrollToTopButtonToggle.checked = state.settings.showScrollToTopButton;
                 elements.showScrollToBottomButtonToggle.checked = state.settings.showScrollToBottomButton;
                 elements.showToggleAllContentButtonToggle.checked = state.settings.showToggleAllContentButton;
@@ -489,6 +493,7 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                     if (otherDetails) otherDetails.open = false;
                 }
                 this.updateChatScreenElementVisibility();
+                appLogic.applyMessageNavigationMode();
                 this.updateHistoryHeaderButtonVisibility();
                 this.updateUserModelOptions();
                 this.updateDeepSeekUserModelOptions();

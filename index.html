@@ -1198,6 +1198,60 @@
             background-color: rgba(var(--bg-secondary-rgb, 240, 242, 245), var(--header-footer-opacity, 1));
         }
 
+        .message-navigation-controls {
+            position: absolute;
+            left: 14px;
+            bottom: 72px;
+            z-index: 3;
+            display: grid;
+            gap: 8px;
+            opacity: 0;
+            transform: translateY(8px);
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+        }
+
+        .message-navigation-controls.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .message-navigation-controls button {
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 50%;
+            background: rgba(var(--bg-button-rgb), 0.64);
+            color: var(--text-light);
+            box-shadow: 0 4px 12px var(--shadow-secondary);
+            font-size: 24px;
+            font-weight: bold;
+            line-height: 1;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+
+        .message-navigation-controls button:hover:not(:disabled),
+        .message-navigation-controls button:focus-visible {
+            background: rgba(var(--bg-button-rgb), 0.82);
+            outline: 2px solid var(--text-light);
+            outline-offset: 2px;
+        }
+
+        body.pastel-yellow-mode .message-navigation-controls button {
+            color: #424242;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .message-navigation-controls {
+                transition: none;
+            }
+        }
+
         #history-screen .main-content,
         #settings-screen .main-content {
             touch-action: pan-y;
@@ -4211,6 +4265,12 @@ font-size: 1.142em !important;
                 </div>
                 <div id="loading-indicator" class="loading-indicator hidden" aria-live="polite">応答中</div>
             </main>
+            <div id="message-navigation-controls" class="message-navigation-controls" aria-hidden="true">
+                <button id="message-navigation-up-btn" type="button" aria-label="前の入力・出力の末尾へ"
+                    title="前の入力・出力の末尾へ">↑</button>
+                <button id="message-navigation-down-btn" type="button" aria-label="次の入力・出力の末尾へ"
+                    title="次の入力・出力の末尾へ">↓</button>
+            </div>
             <footer class="chat-input-area">
                 <button id="footer-api-provider-toggle-btn" class="footer-action-button api-provider-toggle-btn"
                     title="APIプロバイダー切替"></button>
@@ -5829,6 +5889,24 @@ font-size: 1.142em !important;
                                         </div>
                                     </details>
 
+                                    <!-- ファクター: 入力・出力移動ボタン -->
+                                    <details open id="settings-group-factor-message-navigation-buttons">
+                                        <summary
+                                            style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
+                                            ファクター: 入力・出力移動ボタン</summary>
+                                        <div
+                                            style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
+                                            <label for="message-navigation-button-mode">
+                                                フローティングボタンの表示:
+                                            </label>
+                                            <select id="message-navigation-button-mode" aria-label="入力・出力移動ボタンの表示方法">
+                                                <option value="always">常に表示</option>
+                                                <option value="hidden">非表示</option>
+                                                <option value="scroll">スクロール時のみ表示</option>
+                                            </select>
+                                        </div>
+                                    </details>
+
                                     <!-- ファクター: フッターのボタン -->
                                     <details open id="settings-group-factor-footer-buttons">
                                         <summary
@@ -6360,7 +6438,7 @@ const LIGHT_MODE_MODEL_MESSAGE_COLOR = '#e5e5ea';
 const LIGHT_MODE_SECONDARY_COLOR = '#f0f2f5';
 const LIGHT_MODE_HEADER_COLOR = '#4a90e2';
 const LIGHT_MODE_PRIMARY_COLOR = '#ffffff';
-const APP_VERSION = "2026.07.13";
+const APP_VERSION = "2026.07.13-fronoske";
 const SWIPE_THRESHOLD = 50;
 const ZOOM_THRESHOLD = 1.01;
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -6610,6 +6688,11 @@ const elements = {
     headerMenuCopyBtn: document.getElementById('header-menu-copy-btn'),
     scrollToTopBtn: document.getElementById('scroll-to-top-btn'),
     scrollToBottomBtn: document.getElementById('scroll-to-bottom-btn'),
+    messageNavigationControls: document.getElementById('message-navigation-controls'),
+    messageNavigationUpBtn: document.getElementById('message-navigation-up-btn'),
+    messageNavigationDownBtn: document.getElementById('message-navigation-down-btn'),
+    messageNavigationModeSelect: document.getElementById('message-navigation-button-mode'),
+    chatInputArea: document.querySelector('#chat-screen .chat-input-area'),
     toggleAllContentBtn: document.getElementById('toggle-all-content-btn'),
     saveSettingsBtns: document.querySelectorAll('.js-save-settings-btn'),
     exportSettingsBtn: document.getElementById('export-settings-btn'),
@@ -6857,6 +6940,7 @@ const state = {
         flatSettingsDesign: false,
         showChatTitle: true,
         showHeaderMenuButton: true,
+        messageNavigationButtonMode: 'scroll',
         showScrollToTopButton: false,
         showScrollToBottomButton: true,
         showToggleAllContentButton: false,
@@ -6959,6 +7043,8 @@ const state = {
     areAllMessagesHidden: false,
     messageCollapsedStates: new Map(),
     thoughtSummaryOpenStates: new Map(),
+    messageNavigationHideTimer: null,
+    messageNavigationResizeObserver: null,
 };
 
 /* source: aggregator-security.ts */
@@ -10854,6 +10940,10 @@ Object.assign(uiUtils, {
         document.body.classList.toggle('flat-settings-mode', state.settings.flatSettingsDesign);
         elements.showChatTitleToggle.checked = state.settings.showChatTitle;
         elements.showHeaderMenuButtonToggle.checked = state.settings.showHeaderMenuButton;
+        if (!['always', 'hidden', 'scroll'].includes(state.settings.messageNavigationButtonMode)) {
+            state.settings.messageNavigationButtonMode = 'scroll';
+        }
+        elements.messageNavigationModeSelect.value = state.settings.messageNavigationButtonMode;
         elements.showScrollToTopButtonToggle.checked = state.settings.showScrollToTopButton;
         elements.showScrollToBottomButtonToggle.checked = state.settings.showScrollToBottomButton;
         elements.showToggleAllContentButtonToggle.checked = state.settings.showToggleAllContentButton;
@@ -10929,6 +11019,7 @@ Object.assign(uiUtils, {
                 otherDetails.open = false;
         }
         this.updateChatScreenElementVisibility();
+        appLogic.applyMessageNavigationMode();
         this.updateHistoryHeaderButtonVisibility();
         this.updateUserModelOptions();
         this.updateDeepSeekUserModelOptions();
@@ -12239,6 +12330,17 @@ Object.assign(appLogic, {
         elements.pasteClipboardStackBtn.addEventListener('click', () => this.pasteIntoClipboardStack());
         elements.scrollToTopBtn.addEventListener('click', () => this.scrollToTop());
         elements.scrollToBottomBtn.addEventListener('click', () => this.scrollToBottom());
+        elements.messageNavigationUpBtn.addEventListener('click', () => this.scrollToAdjacentMessageEnd('up'));
+        elements.messageNavigationDownBtn.addEventListener('click', () => this.scrollToAdjacentMessageEnd('down'));
+        elements.chatScreen.querySelector('.main-content').addEventListener('scroll', () => this.handleMessageNavigationScroll(), { passive: true });
+        this.updateMessageNavigationPosition();
+        if (typeof ResizeObserver !== 'undefined') {
+            state.messageNavigationResizeObserver = new ResizeObserver(() => this.updateMessageNavigationPosition());
+            state.messageNavigationResizeObserver.observe(elements.chatInputArea);
+        }
+        else {
+            window.addEventListener('resize', () => this.updateMessageNavigationPosition());
+        }
         elements.pasteToInputBtn.addEventListener('click', () => this.pasteToUserInput());
         elements.headerMenuBtn.addEventListener('click', (event) => {
             event.stopPropagation();
@@ -12481,6 +12583,10 @@ Object.assign(appLogic, {
         elements.showScrollToBottomButtonToggle.addEventListener('change', () => {
             state.settings.showScrollToBottomButton = elements.showScrollToBottomButtonToggle.checked;
             uiUtils.updateChatScreenElementVisibility();
+        });
+        elements.messageNavigationModeSelect.addEventListener('change', () => {
+            state.settings.messageNavigationButtonMode = elements.messageNavigationModeSelect.value;
+            this.applyMessageNavigationMode();
         });
         elements.showToggleAllContentButtonToggle.addEventListener('change', () => {
             state.settings.showToggleAllContentButton = elements.showToggleAllContentButtonToggle.checked;
@@ -13265,6 +13371,58 @@ Object.assign(appLogic, {
                 mainContent.scrollTop = mainContent.scrollHeight;
             }
         });
+    },
+    setMessageNavigationVisible(isVisible) {
+        elements.messageNavigationControls.classList.toggle('is-visible', isVisible);
+        elements.messageNavigationControls.setAttribute('aria-hidden', String(!isVisible));
+        const tabIndex = isVisible ? 0 : -1;
+        elements.messageNavigationUpBtn.tabIndex = tabIndex;
+        elements.messageNavigationDownBtn.tabIndex = tabIndex;
+    },
+    applyMessageNavigationMode() {
+        clearTimeout(state.messageNavigationHideTimer);
+        state.messageNavigationHideTimer = null;
+        this.setMessageNavigationVisible(state.settings.messageNavigationButtonMode === 'always');
+    },
+    updateMessageNavigationPosition() {
+        const footerHeight = elements.chatInputArea?.offsetHeight || 60;
+        elements.messageNavigationControls.style.bottom = `${footerHeight + 12}px`;
+    },
+    handleMessageNavigationScroll() {
+        if (state.settings.messageNavigationButtonMode !== 'scroll')
+            return;
+        this.setMessageNavigationVisible(true);
+        clearTimeout(state.messageNavigationHideTimer);
+        state.messageNavigationHideTimer = setTimeout(() => {
+            this.setMessageNavigationVisible(false);
+            state.messageNavigationHideTimer = null;
+        }, 1200);
+    },
+    findAdjacentMessageEnd(messageEnds, viewportEnd, direction, tolerance = 24) {
+        if (direction === 'up') {
+            return [...messageEnds].reverse().find(end => end < viewportEnd - tolerance) ?? null;
+        }
+        return messageEnds.find(end => end > viewportEnd + tolerance) ?? null;
+    },
+    scrollToAdjacentMessageEnd(direction) {
+        const scrollContainer = elements.chatScreen.querySelector('.main-content');
+        if (!scrollContainer)
+            return;
+        const containerRect = scrollContainer.getBoundingClientRect();
+        const messageEnds = Array.from(elements.messageContainer.querySelectorAll('.message[data-index]'))
+            .filter(message => !message.classList.contains('message-hidden-by-toggle'))
+            .map(message => {
+            const rect = message.getBoundingClientRect();
+            return scrollContainer.scrollTop + rect.bottom - containerRect.top;
+        })
+            .filter((end, index, ends) => Number.isFinite(end) && (index === 0 || Math.abs(end - ends[index - 1]) > 1));
+        const viewportEnd = scrollContainer.scrollTop + scrollContainer.clientHeight;
+        const targetEnd = this.findAdjacentMessageEnd(messageEnds, viewportEnd, direction);
+        if (targetEnd === null)
+            return;
+        const top = Math.max(0, targetEnd - scrollContainer.clientHeight + 12);
+        const behavior = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+        scrollContainer.scrollTo({ top, behavior });
     },
     async pasteToUserInput() {
         const button = elements.pasteToInputBtn;
@@ -15333,6 +15491,7 @@ Object.assign(appLogic, {
         newSettings.flatSettingsDesign = elements.flatSettingsDesignToggle.checked;
         newSettings.showChatTitle = elements.showChatTitleToggle.checked;
         newSettings.showHeaderMenuButton = elements.showHeaderMenuButtonToggle.checked;
+        newSettings.messageNavigationButtonMode = elements.messageNavigationModeSelect.value;
         newSettings.showScrollToTopButton = elements.showScrollToTopButtonToggle.checked;
         newSettings.showScrollToBottomButton = elements.showScrollToBottomButtonToggle.checked;
         newSettings.showToggleAllContentButton = elements.showToggleAllContentButtonToggle.checked;

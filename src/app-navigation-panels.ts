@@ -293,6 +293,57 @@ Object.assign(appLogic, {
                     }
                 });
             },
+            setMessageNavigationVisible(isVisible) {
+                elements.messageNavigationControls.classList.toggle('is-visible', isVisible);
+                elements.messageNavigationControls.setAttribute('aria-hidden', String(!isVisible));
+                const tabIndex = isVisible ? 0 : -1;
+                elements.messageNavigationUpBtn.tabIndex = tabIndex;
+                elements.messageNavigationDownBtn.tabIndex = tabIndex;
+            },
+            applyMessageNavigationMode() {
+                clearTimeout(state.messageNavigationHideTimer);
+                state.messageNavigationHideTimer = null;
+                this.setMessageNavigationVisible(state.settings.messageNavigationButtonMode === 'always');
+            },
+            updateMessageNavigationPosition() {
+                const footerHeight = elements.chatInputArea?.offsetHeight || 60;
+                elements.messageNavigationControls.style.bottom = `${footerHeight + 12}px`;
+            },
+            handleMessageNavigationScroll() {
+                if (state.settings.messageNavigationButtonMode !== 'scroll') return;
+                this.setMessageNavigationVisible(true);
+                clearTimeout(state.messageNavigationHideTimer);
+                state.messageNavigationHideTimer = setTimeout(() => {
+                    this.setMessageNavigationVisible(false);
+                    state.messageNavigationHideTimer = null;
+                }, 1200);
+            },
+            findAdjacentMessageEnd(messageEnds, viewportEnd, direction, tolerance = 24) {
+                if (direction === 'up') {
+                    return [...messageEnds].reverse().find(end => end < viewportEnd - tolerance) ?? null;
+                }
+                return messageEnds.find(end => end > viewportEnd + tolerance) ?? null;
+            },
+            scrollToAdjacentMessageEnd(direction) {
+                const scrollContainer = elements.chatScreen.querySelector('.main-content');
+                if (!scrollContainer) return;
+
+                const containerRect = scrollContainer.getBoundingClientRect();
+                const messageEnds = Array.from(elements.messageContainer.querySelectorAll('.message[data-index]'))
+                    .filter(message => !message.classList.contains('message-hidden-by-toggle'))
+                    .map(message => {
+                        const rect = message.getBoundingClientRect();
+                        return scrollContainer.scrollTop + rect.bottom - containerRect.top;
+                    })
+                    .filter((end, index, ends) => Number.isFinite(end) && (index === 0 || Math.abs(end - ends[index - 1]) > 1));
+                const viewportEnd = scrollContainer.scrollTop + scrollContainer.clientHeight;
+                const targetEnd = this.findAdjacentMessageEnd(messageEnds, viewportEnd, direction);
+                if (targetEnd === null) return;
+
+                const top = Math.max(0, targetEnd - scrollContainer.clientHeight + 12);
+                const behavior = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+                scrollContainer.scrollTo({ top, behavior });
+            },
             async pasteToUserInput() {
                 const button = elements.pasteToInputBtn;
                 const originalTextContent = button.textContent;

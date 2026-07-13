@@ -106,6 +106,18 @@ describe('project configuration', () => {
     expect(readFile('src/app-state.ts')).toContain('showHeaderMenuButton: true');
   });
 
+  it('provides configurable floating message navigation controls', () => {
+    const html = readFile('src/index.html');
+    for (const id of ['message-navigation-controls', 'message-navigation-up-btn', 'message-navigation-down-btn']) {
+      expect(html).toContain(`id="${id}"`);
+    }
+    expect(html).toContain('id="message-navigation-button-mode"');
+    expect(html).toContain('<option value="always">常に表示</option>');
+    expect(html).toContain('<option value="hidden">非表示</option>');
+    expect(html).toContain('<option value="scroll">スクロール時のみ表示</option>');
+    expect(readFile('src/app-state.ts')).toContain("messageNavigationButtonMode: 'scroll'");
+  });
+
   it('keeps the first message when clearing the current chat', () => {
     const sessions = readFile('src/chat-sessions.ts');
     expect(sessions).toContain('state.currentMessages.slice(0, 1)');
@@ -187,7 +199,7 @@ describe('project configuration', () => {
   });
 
   it('uses the current release date as the application version', () => {
-    expect(readFile('src/app-config.ts')).toContain('const APP_VERSION = "2026.07.13"');
+    expect(readFile('src/app-config.ts')).toContain('const APP_VERSION = "2026.07.13-fronoske"');
   });
 
   it('pre-caches only public runtime files', () => {

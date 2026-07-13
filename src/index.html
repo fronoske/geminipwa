@@ -74,6 +74,12 @@
                 </div>
                 <div id="loading-indicator" class="loading-indicator hidden" aria-live="polite">応答中</div>
             </main>
+            <div id="message-navigation-controls" class="message-navigation-controls" aria-hidden="true">
+                <button id="message-navigation-up-btn" type="button" aria-label="前の入力・出力の末尾へ"
+                    title="前の入力・出力の末尾へ">↑</button>
+                <button id="message-navigation-down-btn" type="button" aria-label="次の入力・出力の末尾へ"
+                    title="次の入力・出力の末尾へ">↓</button>
+            </div>
             <footer class="chat-input-area">
                 <button id="footer-api-provider-toggle-btn" class="footer-action-button api-provider-toggle-btn"
                     title="APIプロバイダー切替"></button>
@@ -1689,6 +1695,24 @@
                                                     ※ 各エリアは縦方向にリサイズ可能です。
                                                 </p>
                                             </div>
+                                        </div>
+                                    </details>
+
+                                    <!-- ファクター: 入力・出力移動ボタン -->
+                                    <details open id="settings-group-factor-message-navigation-buttons">
+                                        <summary
+                                            style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
+                                            ファクター: 入力・出力移動ボタン</summary>
+                                        <div
+                                            style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
+                                            <label for="message-navigation-button-mode">
+                                                フローティングボタンの表示:
+                                            </label>
+                                            <select id="message-navigation-button-mode" aria-label="入力・出力移動ボタンの表示方法">
+                                                <option value="always">常に表示</option>
+                                                <option value="hidden">非表示</option>
+                                                <option value="scroll">スクロール時のみ表示</option>
+                                            </select>
                                         </div>
                                     </details>
 

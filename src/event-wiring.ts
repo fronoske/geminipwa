@@ -18,6 +18,16 @@ Object.assign(appLogic, {
 
                 elements.scrollToTopBtn.addEventListener('click', () => this.scrollToTop());
                 elements.scrollToBottomBtn.addEventListener('click', () => this.scrollToBottom());
+                elements.messageNavigationUpBtn.addEventListener('click', () => this.scrollToAdjacentMessageEnd('up'));
+                elements.messageNavigationDownBtn.addEventListener('click', () => this.scrollToAdjacentMessageEnd('down'));
+                elements.chatScreen.querySelector('.main-content').addEventListener('scroll', () => this.handleMessageNavigationScroll(), { passive: true });
+                this.updateMessageNavigationPosition();
+                if (typeof ResizeObserver !== 'undefined') {
+                    state.messageNavigationResizeObserver = new ResizeObserver(() => this.updateMessageNavigationPosition());
+                    state.messageNavigationResizeObserver.observe(elements.chatInputArea);
+                } else {
+                    window.addEventListener('resize', () => this.updateMessageNavigationPosition());
+                }
                 elements.pasteToInputBtn.addEventListener('click', () => this.pasteToUserInput());
 
                 elements.headerMenuBtn.addEventListener('click', (event) => {
@@ -267,6 +277,10 @@ Object.assign(appLogic, {
                 elements.showScrollToBottomButtonToggle.addEventListener('change', () => {
                     state.settings.showScrollToBottomButton = elements.showScrollToBottomButtonToggle.checked;
                     uiUtils.updateChatScreenElementVisibility();
+                });
+                elements.messageNavigationModeSelect.addEventListener('change', () => {
+                    state.settings.messageNavigationButtonMode = elements.messageNavigationModeSelect.value;
+                    this.applyMessageNavigationMode();
                 });
                 elements.showToggleAllContentButtonToggle.addEventListener('change', () => {
                     state.settings.showToggleAllContentButton = elements.showToggleAllContentButtonToggle.checked;
