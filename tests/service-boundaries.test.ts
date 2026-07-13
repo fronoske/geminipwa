@@ -79,7 +79,7 @@ describe('application service boundaries', () => {
     ],
     [
       'appLogic',
-      81,
+      80,
       [
         'app-initialization',
         'event-wiring',

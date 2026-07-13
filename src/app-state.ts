@@ -2,7 +2,6 @@
         const state = {
             db: null,
             currentChatId: null,
-            currentChatBaseUrl: null, // チャット固有のベースURLを保持
             currentMessages: [],
             settings: {
                 apiKey: '',
@@ -33,14 +32,6 @@ geminiIncludeThoughts: false,
                 geminiConcatDummyModel: false,
                 geminiPseudoStreaming: false,
                 geminiEnableGrounding: false,
-                // ▼ここから追加▼
-                enableImageUrlReplacement: false, // デフォルトは無効
-                imageUrlReplacementBase: '',      // ベースURLは空
-                enableAutoBaseUrlDetection: true, // デフォルトでON
-                enableFuzzySearchNormalization: false, // デフォルトでON
-                fuzzySearchThreshold: 1,              // デフォルト閾値は1
-                characterNamesList: 'まゆみ,れな,みのり,葛城,日影,モガドール,メイ,アン,グレア,アストルフォ,ノーデ,レグナ,エルナ,ミネット,アキラ,グートルーネ,ハヅキ,イスタロト,フィー,ダルク,ヤン,ロイス,グライアス,ズィーグス,サンドラ,ジェシカ,アンナ,フェイ,ロディ,ジェイ,エマ,クリス,体操服,スクール水着,水着,初期衣装,マイクロビキニ,制服,全裸,私服,ビキニ,下着,部屋着,ドヤ顔,怪訝,大泣き,恐怖する,驚き,苦痛に耐える,泣く,嫌悪,困る,照れ笑い,にしし,真顔,退屈,挑発する,通常,怒る,発情,微笑,ウィンク,とろ顔,恍惚,快感,睡眠,キス顔,拗ねる,きょとん,悲しみ,眠い,恥じらう,はにかむ,涙ぐむ,嬉し泣き,笑う,てへぺろ,はわわ,悔しい,怯える,上目遣い,満面の笑み,考える,混乱,疲れてる,表情通常,表情微笑,表情哀,表情笑顔,表情怒,表情発情,表情軽い絶頂,表情深い絶頂,表情恐怖,表情驚き,表情照れ,ダンジョンを探索,攻撃,山を探索,宿に宿泊,森を探索,昼の町,町で食事,町で買い物,洞窟を探索,夜の町,昼野営,夜野営,冒険者ギルド,野外で食事,仕事中,水浴び,うろたえる,ニヤリ,むっとする,怪訝な顔,驚く,嫌悪する,号泣する,最高の笑顔,深い絶頂,真剣,赤面して耐える,赤面快感,赤面恐怖,赤面絶望,赤面涙目,赤面蠱惑的な笑み,絶頂する,絶望する,退屈する,恥ずかしがる,通常時,悲しむ,目を閉じる,落ち込む,ゲルヒルデ,リコリス,マルレーネ',                 // ▲ここまで追加▲
-                enableRomajiToKatakanaConversion: true,
 deepSeekApiKey: '',
 deepSeekApiEndpoint: '',
 deepSeekModelName: DEFAULT_DEEPSEEK_MODEL,

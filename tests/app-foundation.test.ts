@@ -36,7 +36,7 @@ describe('application foundation scripts', () => {
     expect(new vm.Script('state.settings.modelName').runInContext(context)).toBe('gemini-3.5-flash');
     expect(new vm.Script('state.settings.apiProvider').runInContext(context)).toBe('gemini');
     expect(
-      new vm.Script("Object.keys(state.settings).some((key) => /twin|resummar|sessionLink|cryscroller|immersiveScrolling|proofread/i.test(key))").runInContext(
+      new vm.Script("Object.keys(state.settings).some((key) => /twin|resummar|sessionLink|cryscroller|immersiveScrolling|proofread|imageUrlReplacement|fuzzySearch|characterNames|RomajiToKatakana/i.test(key))").runInContext(
         context,
       ),
     ).toBe(false);

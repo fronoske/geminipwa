@@ -894,13 +894,6 @@ Object.assign(appLogic, {
                 elements.enableWebhookNotificationToggle.addEventListener('change', (e) => {
                     elements.webhookSettingsContainer.classList.toggle('hidden', !e.target.checked);
                 });
-                elements.enableFuzzySearchNormalizationCheckbox.addEventListener('change', () => {
-                    elements.fuzzySearchOptionsDiv.classList.toggle('hidden', !elements.enableFuzzySearchNormalizationCheckbox.checked);
-                });
-                // ▼「elements.geminiEnableGroundingToggle.addEventListener(...)」の(もしあれば)下あたりに追加▼
-                elements.enableImageUrlReplacementCheckbox.addEventListener('change', () => {
-                    elements.imageUrlReplacementOptionsDiv.classList.toggle('hidden', !elements.enableImageUrlReplacementCheckbox.checked);
-                });
 const helpIcons = document.querySelectorAll('.api-key-help-icon');
 helpIcons.forEach(icon => {
     icon.addEventListener('click', () => {

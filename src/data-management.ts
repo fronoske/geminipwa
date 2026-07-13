@@ -912,15 +912,6 @@ newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.che
                     }
                 }
 
-                newSettings.enableImageUrlReplacement = elements.enableImageUrlReplacementCheckbox.checked;
-                newSettings.imageUrlReplacementBase = elements.imageUrlReplacementBaseInput.value.trim();
-                newSettings.characterNamesList = elements.characterNamesListTextarea.value.trim();
-                newSettings.enableRomajiToKatakanaConversion = elements.enableRomajiToKatakanaConversionCheckbox.checked;
-                newSettings.enableAutoBaseUrlDetection = elements.enableAutoBaseUrlDetectionCheckbox.checked;
-                newSettings.enableFuzzySearchNormalization = elements.enableFuzzySearchNormalizationCheckbox.checked;
-                const threshold = parseInt(elements.fuzzySearchThresholdInput.value, 10);
-                newSettings.fuzzySearchThreshold = isNaN(threshold) || threshold < 0 ? 1 : threshold;
-
                 newSettings.webhooks = state.settings.webhooks.map(webhook => {
                     const itemElement = elements.webhooksList.querySelector(`[data-webhook-id="${webhook.id}"]`);
                     if (itemElement) {

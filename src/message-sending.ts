@@ -417,10 +417,6 @@ Object.assign(appLogic, {
                     state.currentMessages.push(userMessage);
                     userMessageIndex = state.currentMessages.length - 1;
                     state.messageCollapsedStates.set(userMessageIndex, false);
-                    // これが最初のユーザーメッセージの場合、ベースURLを検出する
-                    if (state.currentMessages.filter(m => m.role === 'user').length === 1) {
-                        this.updateChatBaseUrl(state.currentMessages);
-                    }
                     uiUtils.appendMessage(userMessage.role, userMessage.content, userMessageIndex, false, null, userMessage.attachments);
                     elements.userInput.value = '';
                     state.pendingAttachments = [];

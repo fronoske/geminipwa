@@ -45,6 +45,14 @@ describe('project configuration', () => {
     expect(fs.readdirSync(path.join(projectRoot, 'src')).join('\n')).not.toMatch(/proofread/i);
   });
 
+  it('does not ship image URL replacement or fuzzy normalization', () => {
+    const retiredFeaturePattern = /image[-_ ]?url[-_ ]?replacement|fuzzy[-_ ]?search|romaji[-_ ]?to[-_ ]?katakana|character[-_ ]?names/i;
+    expect(readFile('src/index.html')).not.toMatch(retiredFeaturePattern);
+    expect(readFile('src/app-state.ts')).not.toMatch(retiredFeaturePattern);
+    expect(readFile('scripts/runtime-scripts.json')).not.toMatch(/text-normalization/i);
+    expect(fs.readdirSync(path.join(projectRoot, 'src')).join('\n')).not.toMatch(/text-normalization/i);
+  });
+
   it('uses a relative manifest start URL suitable for GitHub Pages', () => {
     expect(JSON.parse(readFile('manifest.json')).start_url).toBe('./index.html');
   });

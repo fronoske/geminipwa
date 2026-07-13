@@ -338,17 +338,6 @@ elevationHoverOption: document.getElementById('elevation-hover-option'),
             toggleButtonBottomTextExpandInput: document.getElementById('toggle-button-bottom-text-expand'),
             toggleButtonTopOpacityInput: document.getElementById('toggle-button-top-opacity'),
             geminiGroundingParam: document.getElementById('gemini-grounding-param'),
-            // ▼ここから追加▼
-            enableImageUrlReplacementCheckbox: document.getElementById('enable-image-url-replacement'),
-            imageUrlReplacementOptionsDiv: document.getElementById('image-url-replacement-options'),
-            imageUrlReplacementBaseInput: document.getElementById('image-url-replacement-base'),
-            characterNamesListTextarea: document.getElementById('character-names-list'), // この行を追加
-            enableRomajiToKatakanaConversionCheckbox: document.getElementById('enable-romaji-to-katakana-conversion'),
-            enableAutoBaseUrlDetectionCheckbox: document.getElementById('enable-auto-base-url-detection'),
-            enableFuzzySearchNormalizationCheckbox: document.getElementById('enable-fuzzy-search-normalization'),
-            fuzzySearchOptionsDiv: document.getElementById('fuzzy-search-options'),
-            fuzzySearchThresholdInput: document.getElementById('fuzzy-search-threshold'),
-
             geminiThoughtsParam: document.getElementById('gemini-thoughts-param'),
             geminiPseudoStreamingParam: document.getElementById('gemini-pseudo-streaming-param'),
             deepSeekThoughtsParam: document.getElementById('deepseek-thoughts-param'),

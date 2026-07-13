@@ -236,57 +236,6 @@ _setupParamSlider(paramId, defaultValue, storageKey) {
 
                 await Promise.allSettled(promises);
             },
-            /**
-              * 現在のチャットのメッセージからベースURLを検出し、stateを更新する
-             * @param {Array<Object>} messages - 解析対象のメッセージ配列
-             */
-            updateChatBaseUrl(messages) {
-                // 新機能のチェックボックスがOFFの場合は何もしない
-                if (!state.settings.enableAutoBaseUrlDetection) {
-                    state.currentChatBaseUrl = null;
-                    console.log('[updateChatBaseUrl] Auto-detection is disabled. Base URL cleared.');
-                    return;
-                }
-
-                console.groupCollapsed(`[updateChatBaseUrl] Detecting base URL for current chat...`);
-
-                // 最初のユーザーメッセージを探す
-                const firstUserMessage = messages.find(msg => msg.role === 'user');
-
-                if (!firstUserMessage || !firstUserMessage.content) {
-                    state.currentChatBaseUrl = null;
-                    console.log('  > No first user message found. Base URL set to null.');
-                    console.groupEnd();
-                    return;
-                }
-
-                console.log('  > Analyzing first user message:', `"${firstUserMessage.content.substring(0, 100)}..."`);
-
-                const urlRegex = /(https?:\/\/[^\s\n　「」『』（）]+)/;
-                const match = firstUserMessage.content.match(urlRegex);
-
-                if (match && match[0]) {
-                    try {
-                        // ▼▼▼ ここから変更 ▼▼▼
-                        const url = new URL(match[0]);
-                        // パスやクエリパラメータを含まない、オリジン部分のみをベースURLとして採用する
-                        const baseUrl = url.origin;
-
-                        state.currentChatBaseUrl = baseUrl;
-                        console.log(`  > Base URL detected and set: "${state.currentChatBaseUrl}"`);
-                        // ▲▲▲ ここまで変更 ▲▲▲
-
-                    } catch (e) {
-                        state.currentChatBaseUrl = null;
-                        console.warn('  > Found a URL-like string, but it was invalid. Ignored.', match[0], e);
-                    }
-                } else {
-                    state.currentChatBaseUrl = null;
-                    console.log('  > No valid URL found in the first message. Base URL set to null.');
-                }
-
-                console.groupEnd();
-            },
             async initializeApp() {
                 try {
                     if (typeof marked !== 'undefined') {

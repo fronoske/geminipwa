@@ -7,7 +7,6 @@
     "aggregator-security",
     "layout-runtime",
     "service-worker-registration",
-    "text-normalization",
     "database",
     "utilities",
     "interruptible-sleep",

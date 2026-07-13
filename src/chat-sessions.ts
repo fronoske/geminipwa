@@ -34,7 +34,6 @@ Object.assign(appLogic, {
             startNewChat() {
                 state.currentChatId = null;
                 state.currentMessages = [];
-                state.currentChatBaseUrl = null;
                 if (state.settings.commonSystemPrompt && state.settings.commonSystemPrompt.trim() !== '') {
                 }
 
@@ -90,9 +89,6 @@ Object.assign(appLogic, {
                             attachments: msg.attachments || [],
                             thoughtSummaryOpen: msg.thoughtSummaryOpen || false,
                         })) || [];
-                        // チャットのメッセージを基にベースURLを更新
-                        this.updateChatBaseUrl(state.currentMessages);
-
                         let needsSave = false;
                         const groupIds = new Set(state.currentMessages.filter(m => m.siblingGroupId).map(m => m.siblingGroupId));
                         groupIds.forEach(gid => {

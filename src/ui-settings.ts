@@ -482,16 +482,6 @@ elements.deepSeekModelNameSelect.value = state.settings.deepSeekModelName || DEF
                 elements.geminiConcatDummyModelCheckbox.checked = state.settings.geminiConcatDummyModel;
                 elements.geminiPseudoStreamingCheckbox.checked = state.settings.geminiPseudoStreaming;
                 elements.geminiEnableGroundingToggle.checked = state.settings.geminiEnableGrounding;
-                elements.enableImageUrlReplacementCheckbox.checked = state.settings.enableImageUrlReplacement;
-                elements.imageUrlReplacementBaseInput.value = state.settings.imageUrlReplacementBase || '';
-                elements.imageUrlReplacementOptionsDiv.classList.toggle('hidden', !state.settings.enableImageUrlReplacement);
-                elements.characterNamesListTextarea.value = state.settings.characterNamesList || '';
-                elements.enableRomajiToKatakanaConversionCheckbox.checked = state.settings.enableRomajiToKatakanaConversion;
-                elements.enableAutoBaseUrlDetectionCheckbox.checked = state.settings.enableAutoBaseUrlDetection;
-                elements.enableFuzzySearchNormalizationCheckbox.checked = state.settings.enableFuzzySearchNormalization;
-                elements.fuzzySearchThresholdInput.value = state.settings.fuzzySearchThreshold;
-                elements.fuzzySearchOptionsDiv.classList.toggle('hidden', !state.settings.enableFuzzySearchNormalization);
-
                 elements.deepSeekSystemPromptDefaultTextarea.value = state.settings.deepSeekSystemPrompt || '';
                 elements.deepSeekEnableSystemPromptDefaultCheckbox.checked = state.settings.deepSeekEnableSystemPromptDefault;
                 setupParamUI('deepseek-max-tokens', 'deepseekMaxTokensSliderMax');
