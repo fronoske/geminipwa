@@ -1,52 +1,39 @@
 // @ts-nocheck -- Enable after shared application types are defined.
 // Bundled into the generated index.html from this TypeScript source.
 Object.assign(appLogic, {
-            async handleSend(isRetry = false, retryUserMessageIndex = -1, sourceSessionContext = null, isTopLevelCall = true, retryCount = 0) {
-                if (!sourceSessionContext && isTopLevelCall) {
-                    await this.commitAllOpenEdits();
-                }
-
-                const isBackgroundProcess = !!sourceSessionContext;
+            async handleSend(isRetry = false, retryUserMessageIndex = -1) {
+                await this.commitAllOpenEdits();
 
                 let apiKeyToUse, modelNameToUse, selectedApiProvider;
 
-                if (isBackgroundProcess) {
-                    selectedApiProvider = sourceSessionContext.apiProvider;
-                    apiKeyToUse = sourceSessionContext._apiKeyOverride;
-                    modelNameToUse = sourceSessionContext._modelNameOverride;
+                selectedApiProvider = state.settings.apiProvider;
+                if (selectedApiProvider === 'llmaggregator') {
+                    const activeBackend = multiBackendUtils.getActiveBackend();
+                    apiKeyToUse = multiBackendUtils.getActiveApiKeyForBackend(activeBackend);
+                } else if (state.settings.showMultiApiKeys) {
+                    apiKeyToUse = multiApiKeyUtils.getActiveApiKey(selectedApiProvider);
                 } else {
-                    selectedApiProvider = state.settings.apiProvider;
-                    if (selectedApiProvider === 'llmaggregator') {
-                        const activeBackend = multiBackendUtils.getActiveBackend();
-                        apiKeyToUse = multiBackendUtils.getActiveApiKeyForBackend(activeBackend);
-                    } else if (state.settings.showMultiApiKeys) {
-                        apiKeyToUse = multiApiKeyUtils.getActiveApiKey(selectedApiProvider);
-                    } else {
-                        switch (selectedApiProvider) {
-                            case 'gemini': apiKeyToUse = state.settings.apiKey; break;
-                            case 'deepseek': apiKeyToUse = state.settings.deepSeekApiKey; break;
-                            case 'claude': apiKeyToUse = state.settings.claudeApiKey; break;
-                            case 'openai': apiKeyToUse = state.settings.openaiApiKey; break;
-                            case 'xai': apiKeyToUse = state.settings.xaiApiKey; break;
-                            case 'llmaggregator': apiKeyToUse = state.settings.llmAggregatorApiKey; break;
-                        }
-                    }
                     switch (selectedApiProvider) {
-                        case 'gemini': modelNameToUse = state.settings.modelName; break;
-                        case 'deepseek': modelNameToUse = state.settings.deepSeekModelName; break;
-                        case 'claude': modelNameToUse = state.settings.claudeModelName; break;
-                        case 'openai': modelNameToUse = state.settings.openaiModelName; break;
-                        case 'xai': modelNameToUse = state.settings.xaiModelName; break;
-                        case 'llmaggregator': modelNameToUse = state.settings.llmAggregatorModelName; break;
+                        case 'gemini': apiKeyToUse = state.settings.apiKey; break;
+                        case 'deepseek': apiKeyToUse = state.settings.deepSeekApiKey; break;
+                        case 'claude': apiKeyToUse = state.settings.claudeApiKey; break;
+                        case 'openai': apiKeyToUse = state.settings.openaiApiKey; break;
+                        case 'xai': apiKeyToUse = state.settings.xaiApiKey; break;
+                        case 'llmaggregator': apiKeyToUse = state.settings.llmAggregatorApiKey; break;
                     }
+                }
+                switch (selectedApiProvider) {
+                    case 'gemini': modelNameToUse = state.settings.modelName; break;
+                    case 'deepseek': modelNameToUse = state.settings.deepSeekModelName; break;
+                    case 'claude': modelNameToUse = state.settings.claudeModelName; break;
+                    case 'openai': modelNameToUse = state.settings.openaiModelName; break;
+                    case 'xai': modelNameToUse = state.settings.xaiModelName; break;
+                    case 'llmaggregator': modelNameToUse = state.settings.llmAggregatorModelName; break;
                 }
 
                 let text = '';
                 let attachmentsToSend = [];
-                if (isBackgroundProcess) {
-                    text = sourceSessionContext.inputText || '';
-                    attachmentsToSend = sourceSessionContext.attachments ? [...sourceSessionContext.attachments] : [];
-                } else if (isRetry) {
+                if (isRetry) {
                     const retryUserMessage = state.currentMessages[retryUserMessageIndex];
                     if (!retryUserMessage || retryUserMessage.role !== 'user') {
                         uiUtils.setSendingState(false);
@@ -59,45 +46,41 @@ Object.assign(appLogic, {
                     attachmentsToSend = [...state.pendingAttachments];
                 }
 
-                if (!isBackgroundProcess) {
-                    const isInputEmpty = text.trim() === '';
-                    const hasAttachments = attachmentsToSend.length > 0;
-                    const isDummyProvider = selectedApiProvider === 'dummy';
+                const isInputEmpty = text.trim() === '';
+                const hasAttachments = attachmentsToSend.length > 0;
+                const isDummyProvider = selectedApiProvider === 'dummy';
 
-                    if (state.isSending) {
-                        return;
-                    }
+                if (state.isSending) {
+                    return;
+                }
 
-                    if (!isDummyProvider && isInputEmpty && !hasAttachments) {
-                        return;
-                    }
+                if (!isDummyProvider && isInputEmpty && !hasAttachments) {
+                    return;
                 }
 
                 if (selectedApiProvider === 'dummy') {
-                    if (!isBackgroundProcess) {
-                        uiUtils.setSendingState(true);
-                        if (isRetry) {
-                            if (retryUserMessageIndex + 1 < state.currentMessages.length) {
-                                state.currentMessages.splice(retryUserMessageIndex + 1);
-                            }
-                            uiUtils.renderChatMessages(true);
-                        } else {
-                            const userMessage = {
-                                role: 'user', content: text, timestamp: Date.now(),
-                                attachments: attachmentsToSend, generatedByApiProvider: null
-                            };
-                            state.currentMessages.push(userMessage);
-                            const userMessageIndex = state.currentMessages.length - 1;
-                            uiUtils.appendMessage(userMessage.role, userMessage.content, userMessageIndex, false, null, userMessage.attachments);
-
-                            elements.userInput.value = '';
-                            state.pendingAttachments = [];
-                            uiUtils.adjustTextareaHeight();
-                            uiUtils.updateAttachmentBadgeVisibility();
+                    uiUtils.setSendingState(true);
+                    if (isRetry) {
+                        if (retryUserMessageIndex + 1 < state.currentMessages.length) {
+                            state.currentMessages.splice(retryUserMessageIndex + 1);
                         }
-                        await dbUtils.saveChat();
-                        await sleep(300 + Math.random() * 400);
+                        uiUtils.renderChatMessages(true);
+                    } else {
+                        const userMessage = {
+                            role: 'user', content: text, timestamp: Date.now(),
+                            attachments: attachmentsToSend, generatedByApiProvider: null
+                        };
+                        state.currentMessages.push(userMessage);
+                        const userMessageIndex = state.currentMessages.length - 1;
+                        uiUtils.appendMessage(userMessage.role, userMessage.content, userMessageIndex, false, null, userMessage.attachments);
+
+                        elements.userInput.value = '';
+                        state.pendingAttachments = [];
+                        uiUtils.adjustTextareaHeight();
+                        uiUtils.updateAttachmentBadgeVisibility();
                     }
+                    await dbUtils.saveChat();
+                    await sleep(300 + Math.random() * 400);
 
                     let dummyResponseContent = '';
 
@@ -112,10 +95,6 @@ Object.assign(appLogic, {
                         dummyResponseContent += errorLog;
                     }
 
-                    if (isBackgroundProcess) {
-                        return { content: dummyResponseContent, metadata: { finishReason: 'stop' } };
-                    }
-
                     const modelMessage = {
                         role: 'model', content: dummyResponseContent, timestamp: Date.now(), generatedByApiProvider: 'dummy'
                     };
@@ -128,41 +107,37 @@ Object.assign(appLogic, {
                     return;
                 }
 
-                let currentContextSessionId = isBackgroundProcess ? sourceSessionContext.sessionId : state.currentChatId;
-                let currentContextMessages = isBackgroundProcess ? [...sourceSessionContext.messages] : [...state.currentMessages];
+                let currentContextSessionId = state.currentChatId;
+                let currentContextMessages = [...state.currentMessages];
                 let currentContextSystemPrompt = '';
 
-                if (isBackgroundProcess) {
-                    currentContextSystemPrompt = sourceSessionContext.systemPrompt || '';
+                let individualPrompt = '';
+                let commonPrompt = '';
+
+                if (selectedApiProvider === 'gemini' && state.settings.geminiEnableSystemPromptDefault) {
+                    individualPrompt = state.settings.geminiSystemPrompt.trim();
+                } else if (selectedApiProvider === 'deepseek' && state.settings.deepSeekEnableSystemPromptDefault) {
+                    individualPrompt = state.settings.deepSeekSystemPrompt.trim();
+                } else if (selectedApiProvider === 'claude' && state.settings.claudeEnableSystemPromptDefault) {
+                    individualPrompt = state.settings.claudeSystemPrompt.trim();
+                } else if (selectedApiProvider === 'openai' && state.settings.openaiEnableSystemPromptDefault) {
+                    individualPrompt = state.settings.openaiSystemPrompt.trim();
+                } else if (selectedApiProvider === 'xai' && state.settings.xaiEnableSystemPromptDefault) {
+                    individualPrompt = state.settings.xaiSystemPrompt.trim();
+                } else if (selectedApiProvider === 'llmaggregator' && state.settings.llmAggregatorEnableSystemPromptDefault) {
+                    individualPrompt = state.settings.llmAggregatorSystemPrompt.trim();
+                }
+
+                if (state.settings.enableCommonSystemPromptDefault) {
+                    commonPrompt = state.settings.commonSystemPrompt.trim();
+                }
+
+                if (individualPrompt) {
+                    currentContextSystemPrompt = individualPrompt;
+                } else if (commonPrompt) {
+                    currentContextSystemPrompt = commonPrompt;
                 } else {
-                    let individualPrompt = '';
-                    let commonPrompt = '';
-
-                    if (selectedApiProvider === 'gemini' && state.settings.geminiEnableSystemPromptDefault) {
-                        individualPrompt = state.settings.geminiSystemPrompt.trim();
-                    } else if (selectedApiProvider === 'deepseek' && state.settings.deepSeekEnableSystemPromptDefault) {
-                        individualPrompt = state.settings.deepSeekSystemPrompt.trim();
-                    } else if (selectedApiProvider === 'claude' && state.settings.claudeEnableSystemPromptDefault) {
-                        individualPrompt = state.settings.claudeSystemPrompt.trim();
-                    } else if (selectedApiProvider === 'openai' && state.settings.openaiEnableSystemPromptDefault) {
-                        individualPrompt = state.settings.openaiSystemPrompt.trim();
-                    } else if (selectedApiProvider === 'xai' && state.settings.xaiEnableSystemPromptDefault) {
-                        individualPrompt = state.settings.xaiSystemPrompt.trim();
-                    } else if (selectedApiProvider === 'llmaggregator' && state.settings.llmAggregatorEnableSystemPromptDefault) {
-                        individualPrompt = state.settings.llmAggregatorSystemPrompt.trim();
-                    }
-
-                    if (state.settings.enableCommonSystemPromptDefault) {
-                        commonPrompt = state.settings.commonSystemPrompt.trim();
-                    }
-
-                    if (individualPrompt) {
-                        currentContextSystemPrompt = individualPrompt;
-                    } else if (commonPrompt) {
-                        currentContextSystemPrompt = commonPrompt;
-                    } else {
-                        currentContextSystemPrompt = '';
-                    }
+                    currentContextSystemPrompt = '';
                 }
 
                 let contextTemperature, contextMaxTokens, contextTopP,
@@ -182,100 +157,6 @@ Object.assign(appLogic, {
 
                 let contextLlmAggregatorTopK;
 
-                if (isBackgroundProcess) {
-                    const providerForSettingsB = sourceSessionContext.apiProvider || state.settings.apiProvider;
-                    if (providerForSettingsB === 'gemini') {
-                        contextTemperature = sourceSessionContext.temperature ?? state.settings.geminiTemperature;
-                        contextMaxTokens = sourceSessionContext.maxTokens ?? state.settings.geminiMaxTokens;
-                        contextGeminiTopK = sourceSessionContext.topK ?? state.settings.geminiTopK;
-                        contextTopP = sourceSessionContext.topP ?? state.settings.geminiTopP;
-                        contextPresencePenalty = sourceSessionContext.presencePenalty ?? state.settings.geminiPresencePenalty;
-                        contextFrequencyPenalty = sourceSessionContext.frequencyPenalty ?? state.settings.geminiFrequencyPenalty;
-                        contextGeminiThinkingBudget = sourceSessionContext.thinkingBudget ?? state.settings.geminiThinkingBudget;
-
-                        contextGeminiIncludeThoughts = sourceSessionContext.includeThoughts ?? state.settings.geminiIncludeThoughts;
-                        contextStreamingOutput = sourceSessionContext.streamingOutput ?? state.settings.geminiStreamingOutput;
-                        contextStreamingSpeed = sourceSessionContext.streamingSpeed ?? state.settings.geminiStreamingSpeed;
-                        contextDummyUser = sourceSessionContext.dummyUser ?? state.settings.geminiDummyUser;
-                        contextEnableDummyUser = sourceSessionContext.enableDummyUser ?? state.settings.geminiEnableDummyUser;
-                        contextDummyModel = sourceSessionContext.dummyModel ?? state.settings.geminiDummyModel;
-                        contextEnableDummyModel = sourceSessionContext.enableDummyModel ?? state.settings.geminiEnableDummyModel;
-                        contextConcatDummyModel = sourceSessionContext.concatDummyModel ?? state.settings.geminiConcatDummyModel;
-                        contextGeminiPseudoStreaming = sourceSessionContext.pseudoStreaming ?? state.settings.geminiPseudoStreaming;
-                        contextGeminiEnableGrounding = sourceSessionContext.enableGrounding ?? state.settings.geminiEnableGrounding;
-                    } else if (providerForSettingsB === 'deepseek') {
-                        contextTemperature = sourceSessionContext.temperature ?? state.settings.deepSeekTemperature;
-                        contextMaxTokens = sourceSessionContext.maxTokens ?? state.settings.deepSeekMaxTokens;
-                        contextTopP = sourceSessionContext.topP ?? state.settings.deepSeekTopP;
-                        contextPresencePenalty = sourceSessionContext.presencePenalty ?? state.settings.deepSeekPresencePenalty;
-                        contextFrequencyPenalty = sourceSessionContext.frequencyPenalty ?? state.settings.deepSeekFrequencyPenalty;
-                        contextDeepSeekIncludeThoughts = sourceSessionContext.includeDeepSeekThoughts ?? state.settings.deepSeekIncludeDeepSeekThoughts;
-                        contextStreamingOutput = sourceSessionContext.streamingOutput ?? state.settings.deepSeekStreamingOutput;
-                        contextStreamingSpeed = sourceSessionContext.streamingSpeed ?? state.settings.deepSeekStreamingSpeed;
-                        contextDummyUser = sourceSessionContext.dummyUser ?? state.settings.deepSeekDummyUser;
-                        contextEnableDummyUser = sourceSessionContext.enableDummyUser ?? state.settings.deepSeekEnableDummyUser;
-                        contextDummyModel = sourceSessionContext.dummyModel ?? state.settings.deepSeekDummyModel;
-                        contextEnableDummyModel = sourceSessionContext.enableDummyModel ?? state.settings.deepSeekEnableDummyModel;
-                        contextConcatDummyModel = sourceSessionContext.concatDummyModel ?? state.settings.deepSeekConcatDummyModel;
-                    } else if (providerForSettingsB === 'llmaggregator') {
-                        contextTemperature = sourceSessionContext.temperature ?? state.settings.llmAggregatorTemperature;
-                        contextMaxTokens = sourceSessionContext.maxTokens ?? state.settings.llmAggregatorMaxTokens;
-                        contextTopP = sourceSessionContext.topP ?? state.settings.llmAggregatorTopP;
-                        contextLlmAggregatorTopK = sourceSessionContext.topK ?? state.settings.llmAggregatorTopK;
-                        contextDeepSeekIncludeThoughts = sourceSessionContext.includeThoughts ?? state.settings.llmAggregatorIncludeThoughts;
-                        contextStreamingOutput = sourceSessionContext.streamingOutput ?? state.settings.llmAggregatorStreamingOutput;
-                        contextStreamingSpeed = sourceSessionContext.streamingSpeed ?? state.settings.llmAggregatorStreamingSpeed;
-                        contextDummyUser = sourceSessionContext.dummyUser ?? state.settings.llmAggregatorDummyUser;
-                        contextEnableDummyUser = sourceSessionContext.enableDummyUser ?? state.settings.llmAggregatorEnableDummyUser;
-                        contextDummyModel = sourceSessionContext.dummyModel ?? state.settings.llmAggregatorDummyModel;
-                        contextEnableDummyModel = sourceSessionContext.enableDummyModel ?? state.settings.llmAggregatorEnableDummyModel;
-                        contextConcatDummyModel = sourceSessionContext.concatDummyModel ?? state.settings.llmAggregatorConcatDummyModel;
-                    } else if (providerForSettingsB === 'claude') {
-                        contextTemperature = sourceSessionContext.temperature ?? state.settings.claudeTemperature;
-                        contextMaxTokens = sourceSessionContext.maxTokens ?? state.settings.claudeMaxTokens;
-                        contextClaudeTopK = sourceSessionContext.topK ?? state.settings.claudeTopK;
-                        contextTopP = sourceSessionContext.topP ?? state.settings.claudeTopP;
-                        contextStreamingOutput = sourceSessionContext.streamingOutput ?? state.settings.claudeStreamingOutput;
-                        contextStreamingSpeed = sourceSessionContext.streamingSpeed ?? state.settings.claudeStreamingSpeed;
-                        contextDummyUser = sourceSessionContext.dummyUser ?? state.settings.claudeDummyUser;
-                        contextEnableDummyUser = sourceSessionContext.enableDummyUser ?? state.settings.claudeEnableDummyUser;
-                        contextDummyModel = sourceSessionContext.dummyModel ?? state.settings.claudeDummyModel;
-                        contextEnableDummyModel = sourceSessionContext.enableDummyModel ?? state.settings.claudeEnableDummyModel;
-                        contextConcatDummyModel = sourceSessionContext.concatDummyModel ?? state.settings.claudeConcatDummyModel;
-                        contextClaudeIncludeThoughts = sourceSessionContext.includeThoughts ?? state.settings.claudeIncludeThoughts;
-                        contextClaudeThinkingBudget = sourceSessionContext.thinkingBudget ?? state.settings.claudeThinkingBudget;
-                        contextClaudeExpandThoughtsByDefault = sourceSessionContext.expandThoughtsByDefault ?? state.settings.claudeExpandThoughtsByDefault;
-                    } else if (providerForSettingsB === 'openai') {
-                        contextTemperature = sourceSessionContext.temperature ?? state.settings.openaiTemperature;
-                        contextMaxTokens = sourceSessionContext.maxTokens ?? state.settings.openaiMaxTokens;
-                        contextTopP = sourceSessionContext.topP ?? state.settings.openaiTopP;
-                        contextPresencePenalty = sourceSessionContext.presencePenalty ?? state.settings.openaiPresencePenalty;
-                        contextFrequencyPenalty = sourceSessionContext.frequencyPenalty ?? state.settings.openaiFrequencyPenalty;
-                        contextStreamingOutput = sourceSessionContext.streamingOutput ?? state.settings.openaiStreamingOutput;
-                        contextStreamingSpeed = sourceSessionContext.streamingSpeed ?? state.settings.openaiStreamingSpeed;
-                        contextDummyUser = sourceSessionContext.dummyUser ?? state.settings.openaiDummyUser;
-                        enableDummyUserB = state.settings.openaiEnableDummyUser;
-                        contextDummyModel = sourceSessionContext.dummyModel ?? state.settings.openaiDummyModel;
-                        contextEnableDummyModel = sourceSessionContext.enableDummyModel ?? state.settings.openaiEnableDummyModel;
-                        contextConcatDummyModel = sourceSessionContext.concatDummyModel ?? state.settings.openaiConcatDummyModel;
-                    } else if (providerForSettingsB === 'xai') {
-                        contextTemperature = sourceSessionContext.temperature ?? state.settings.xaiTemperature;
-                        contextMaxTokens = sourceSessionContext.maxTokens ?? state.settings.xaiMaxTokens;
-                        contextTopP = sourceSessionContext.topP ?? state.settings.xaiTopP;
-                        contextPresencePenalty = sourceSessionContext.presencePenalty ?? state.settings.xaiPresencePenalty;
-                        contextFrequencyPenalty = sourceSessionContext.frequencyPenalty ?? state.settings.xaiFrequencyPenalty;
-                        contextStreamingOutput = sourceSessionContext.streamingOutput ?? state.settings.xaiStreamingOutput;
-                        contextStreamingSpeed = sourceSessionContext.streamingSpeed ?? state.settings.xaiStreamingSpeed;
-                        contextDummyUser = sourceSessionContext.dummyUser ?? state.settings.xaiDummyUser;
-                        contextEnableDummyUser = sourceSessionContext.enableDummyUser ?? state.settings.xaiEnableDummyUser;
-                        contextDummyModel = sourceSessionContext.dummyModel ?? state.settings.xaiDummyModel;
-                        contextEnableDummyModel = sourceSessionContext.enableDummyModel ?? state.settings.xaiEnableDummyModel;
-                        contextConcatDummyModel = sourceSessionContext.concatDummyModel ?? state.settings.xaiConcatDummyModel;
-                        contextXaiVisionEnable = sourceSessionContext.visionEnable ?? state.settings.xaiVisionEnable;
-                        contextXaiIncludeThoughts = sourceSessionContext.includeThoughts ?? state.settings.xaiIncludeThoughts;
-                        contextXaiReasoningEffort = sourceSessionContext.reasoningEffort ?? state.settings.xaiReasoningEffort;
-                    }
-                } else {
                     if (selectedApiProvider === 'gemini') {
                         contextTemperature = state.settings.geminiTemperature;
                         contextMaxTokens = state.settings.geminiMaxTokens;
@@ -368,37 +249,28 @@ Object.assign(appLogic, {
                         contextEnableDummyModel = state.settings.llmAggregatorEnableDummyModel;
                         contextConcatDummyModel = state.settings.llmAggregatorConcatDummyModel;
                     }
-                }
 
                 if (!apiKeyToUse && selectedApiProvider !== 'dummy') {
-                    if (!isBackgroundProcess) {
-                        await uiUtils.showCustomAlert(`${selectedApiProvider} APIキーが設定されていません。設定画面を開きます。`);
-                        uiUtils.showScreen('settings');
-                    }
+                    await uiUtils.showCustomAlert(`${selectedApiProvider} APIキーが設定されていません。設定画面を開きます。`);
+                    uiUtils.showScreen('settings');
                     return "APIキー未設定";
                 }
 
                 if (selectedApiProvider === 'llmaggregator') {
                                         const activeBackend = multiBackendUtils.getActiveBackend();
                     if (!activeBackend || !activeBackend.url) {
-                        if (!isBackgroundProcess) {
-                            await uiUtils.showCustomAlert('アクティブなLLM Aggregatorバックエンドが設定されていません。');
-                            uiUtils.showScreen('settings');
-                        }
+                        await uiUtils.showCustomAlert('アクティブなLLM Aggregatorバックエンドが設定されていません。');
+                        uiUtils.showScreen('settings');
                         return "バックエンド未設定";
                     }
                     if (!isAllowedAggregatorDomain(activeBackend.url)) {
-                        if (!isBackgroundProcess) {
-                            await uiUtils.showCustomAlert('LLM AggregatorのバックエンドURLがホワイトリスト外のため、送信できません。設定を確認してください。');
-                            uiUtils.showScreen('settings');
-                        }
+                        await uiUtils.showCustomAlert('LLM AggregatorのバックエンドURLがホワイトリスト外のため、送信できません。設定を確認してください。');
+                        uiUtils.showScreen('settings');
                         return "不正なドメイン";
                     }
                 }
 
-                if (!isBackgroundProcess && isTopLevelCall) {
-                    uiUtils.setSendingState(true);
-                }
+                uiUtils.setSendingState(true);
                 state.partialStreamContent = '';
                 state.partialThoughtStreamContent = '';
 
@@ -408,7 +280,7 @@ Object.assign(appLogic, {
                 let siblingGroupIdToUse = null;
                 let messagesToProcess;
 
-                if (!isBackgroundProcess && !isRetry) {
+                if (!isRetry) {
                     const userMessage = {
                         role: 'user', content: text, timestamp: Date.now(),
                         attachments: attachmentsToSend,
@@ -424,14 +296,6 @@ Object.assign(appLogic, {
                     uiUtils.updateAttachmentBadgeVisibility();
                     if (state.settings.autoScrollOnNewMessage) uiUtils.scrollToBottom();
                     currentContextMessages = [...state.currentMessages];
-                } else if (isBackgroundProcess && !isRetry) {
-                    const userMessage = {
-                        role: 'user', content: text, timestamp: Date.now(),
-                        attachments: attachmentsToSend,
-                        generatedByApiProvider: null
-                    };
-                    currentContextMessages.push(userMessage);
-                    userMessageIndex = currentContextMessages.length - 1;
                 } else if (isRetry) {
                     let siblingStartIndex = userMessageIndex + 1;
                     while (siblingStartIndex < currentContextMessages.length && currentContextMessages[siblingStartIndex].role !== 'model') {
@@ -457,8 +321,7 @@ Object.assign(appLogic, {
                     : [...currentContextMessages];
 
 
-                if (!isBackgroundProcess) {
-                    try {
+                try {
                         let titleToSave = null;
                         let isNewChatForDBSave = !currentContextSessionId;
                         let existingChatForDBSave = null;
@@ -524,10 +387,9 @@ Object.assign(appLogic, {
                             state.currentChatId = savedId;
                             uiUtils.updateChatTitle(chatToSave.title);
                         }
-                    } catch (error) {
-                        if (currentContextSessionId) {
-                            uiUtils.displayError("チャットの保存に失敗しましたが、送信を試みます。", false);
-                        }
+                } catch (error) {
+                    if (currentContextSessionId) {
+                        uiUtils.displayError("チャットの保存に失敗しましたが、送信を試みます。", false);
                     }
                 }
                 const apiMessages = messagesToProcess
@@ -611,8 +473,8 @@ Object.assign(appLogic, {
                 let currentGroundingMetadata = null;
                 let finalUsageMetadataFromStream = null;
 
-                let useStreamingForThisCall = isBackgroundProcess ? false : contextStreamingOutput;
-                let usePseudoForThisCall = isBackgroundProcess ? false : (selectedApiProvider === 'gemini' && contextGeminiPseudoStreaming);
+                let useStreamingForThisCall = contextStreamingOutput;
+                let usePseudoForThisCall = selectedApiProvider === 'gemini' && contextGeminiPseudoStreaming;
 
                 let modelMessageObjectForStream = null;
 
@@ -636,12 +498,10 @@ Object.assign(appLogic, {
                     }
 
                     const dummyModelPrefix = (contextConcatDummyModel && dummyModelTextToUse) ? dummyModelTextToUse : '';
-                    if (!isBackgroundProcess) {
-                        state.partialStreamContent = dummyModelPrefix;
-                        state.partialThoughtStreamContent = '';
-                    }
+                    state.partialStreamContent = dummyModelPrefix;
+                    state.partialThoughtStreamContent = '';
 
-                    if (useStreamingForThisCall && !isBackgroundProcess) {
+                    if (useStreamingForThisCall) {
                         const tempPlaceholderIndex = state.currentMessages.length;
                         modelMessageObjectForStream = {
                             role: 'model',
@@ -699,7 +559,7 @@ Object.assign(appLogic, {
                                         selectedApiProvider === 'llmaggregator' ? state.settings.llmAggregatorStreamingSpeed :
                                             state.settings.openaiStreamingSpeed;
 
-                        const messageIndexForDisplay = isBackgroundProcess ? -1 : (modelMessageObjectForStream ? state.currentMessages.indexOf(modelMessageObjectForStream) : -1);
+                        const messageIndexForDisplay = modelMessageObjectForStream ? state.currentMessages.indexOf(modelMessageObjectForStream) : -1;
 
                         for await (const streamData of responseStreamIterator) {
                             if (state.abortController?.signal.aborted) {
@@ -709,27 +569,19 @@ Object.assign(appLogic, {
 
                             if (streamData.type === 'chunk') {
                                 if (streamData.thoughtText) {
-                                    if (isBackgroundProcess) {
-                                        modelThoughtSummaryContent += streamData.thoughtText;
-                                    } else {
-                                        for (const char of streamData.thoughtText) {
-                                            if (state.abortController?.signal.aborted) break;
-                                            state.partialThoughtStreamContent += char;
-                                            uiUtils.updateStreamingMessage(messageIndexForDisplay, char, true);
-                                            if (currentContextStreamSpeed > 0) await sleep(currentContextStreamSpeed);
-                                        }
+                                    for (const char of streamData.thoughtText) {
+                                        if (state.abortController?.signal.aborted) break;
+                                        state.partialThoughtStreamContent += char;
+                                        uiUtils.updateStreamingMessage(messageIndexForDisplay, char, true);
+                                        if (currentContextStreamSpeed > 0) await sleep(currentContextStreamSpeed);
                                     }
                                 }
                                 if (streamData.contentText) {
-                                    if (isBackgroundProcess) {
-                                        modelResponseRawContent += streamData.contentText;
-                                    } else {
-                                        for (const char of streamData.contentText) {
-                                            if (state.abortController?.signal.aborted) break;
-                                            state.partialStreamContent += char;
-                                            uiUtils.updateStreamingMessage(messageIndexForDisplay, char, false);
-                                            if (currentContextStreamSpeed > 0) await sleep(currentContextStreamSpeed);
-                                        }
+                                    for (const char of streamData.contentText) {
+                                        if (state.abortController?.signal.aborted) break;
+                                        state.partialStreamContent += char;
+                                        uiUtils.updateStreamingMessage(messageIndexForDisplay, char, false);
+                                        if (currentContextStreamSpeed > 0) await sleep(currentContextStreamSpeed);
                                     }
                                 }
                                 if (state.abortController?.signal.aborted) {
@@ -738,7 +590,7 @@ Object.assign(appLogic, {
                                 }
                                 if (streamData.groundingMetadata && selectedApiProvider === 'gemini') {
                                     currentGroundingMetadata = streamData.groundingMetadata;
-                                    if (!isBackgroundProcess && modelMessageObjectForStream && state.currentMessages.includes(modelMessageObjectForStream)) {
+                                    if (modelMessageObjectForStream && state.currentMessages.includes(modelMessageObjectForStream)) {
                                         const msgIndexForGrounding = state.currentMessages.indexOf(modelMessageObjectForStream);
                                         if (state.currentMessages[msgIndexForGrounding]) {
                                             state.currentMessages[msgIndexForGrounding].groundingMetadata = currentGroundingMetadata;
@@ -770,15 +622,10 @@ Object.assign(appLogic, {
                             }
                         }
 
-                        if (!isBackgroundProcess) {
-                            modelThoughtSummaryContent = state.partialThoughtStreamContent;
-                            modelResponseRawContent = state.partialStreamContent;
-                        }
+                        modelThoughtSummaryContent = state.partialThoughtStreamContent;
+                        modelResponseRawContent = state.partialStreamContent;
 
                         let finalContent = modelResponseRawContent;
-                        const finishReason = modelResponseMetadata.finishReason;
-                        const isRetryableFinishReason = ['SAFETY', 'RECITATION', 'PROHIBITED_CONTENT', 'OTHER'].includes(finishReason);
-
                         if (finalContent || modelThoughtSummaryContent || modelResponseMetadata.finishReason) {
                             if (useStreamingForThisCall && modelMessageObjectForStream) {
                                 const finalModelMessageIndex = state.currentMessages.indexOf(modelMessageObjectForStream);
@@ -830,7 +677,7 @@ Object.assign(appLogic, {
                                     (selectedApiProvider === 'llmaggregator' && state.settings.llmAggregatorExpandThoughtsByDefault);
 
                                 const targetUserIndexForCascade = userMessageIndex;
-                                if (targetUserIndexForCascade !== -1 && !isBackgroundProcess) {
+                                if (targetUserIndexForCascade !== -1) {
                                     if (siblingGroupIdToUse === null) {
                                         siblingGroupIdToUse = `gid-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
                                     }
@@ -852,7 +699,7 @@ Object.assign(appLogic, {
                                 await dbUtils.saveChat();
                             }
                         } else {
-                            if (useStreamingForThisCall && !isBackgroundProcess && modelMessageObjectForStream) {
+                            if (useStreamingForThisCall && modelMessageObjectForStream) {
                                 const tempPlaceholderIndex = state.currentMessages.indexOf(modelMessageObjectForStream);
                                 const placeholderElement = document.getElementById(`streaming-message-${tempPlaceholderIndex}`);
                                 if (placeholderElement) placeholderElement.remove();
@@ -937,20 +784,6 @@ Object.assign(appLogic, {
                     }
 
 
-                    if (isBackgroundProcess) {
-                        if (finalContent || finalThoughtSummary || finalMetadata.finishReason) {
-                            const result = {
-                                content: finalContent, metadata: finalMetadata, usageMetadata: finalUsage, generatedByApiProvider: selectedApiProvider
-                            };
-                            if (selectedApiProvider === 'gemini' && contextGeminiIncludeThoughts) { result.thoughtSummary = finalThoughtSummary || null; result.groundingMetadata = finalGrounding; }
-                            else if ((selectedApiProvider === 'deepseek' || selectedApiProvider === 'llmaggregator') && contextDeepSeekIncludeThoughts) { result.deepSeekThoughtSummary = finalThoughtSummary || null; }
-                            else if (selectedApiProvider === 'claude' && contextClaudeIncludeThoughts) { result.thoughtSummary = finalThoughtSummary || null; }
-                            else if (selectedApiProvider === 'xai' && contextXaiIncludeThoughts) { result.xaiThoughtSummary = finalThoughtSummary || null; }
-                            return result;
-                        }
-                        return { content: "", metadata: finalMetadata };
-                    }
-
                     if (finalContent || finalThoughtSummary || finalMetadata.finishReason) {
                         let finalModelMessageIndex;
                         if (useStreamingForThisCall && modelMessageObjectForStream) {
@@ -958,7 +791,7 @@ Object.assign(appLogic, {
                         } else {
                             const newModelMessage = { role: 'model', content: '', timestamp: Date.now(), ...finalMetadata, usageMetadata: finalUsage, generatedByApiProvider: selectedApiProvider };
                             const targetUserIndexForCascade = userMessageIndex;
-                            if (targetUserIndexForCascade !== -1 && !isBackgroundProcess) {
+                            if (targetUserIndexForCascade !== -1) {
                                 if (siblingGroupIdToUse === null) siblingGroupIdToUse = `gid-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
                                 newModelMessage.isCascaded = true;
                                 newModelMessage.isSelected = true;
@@ -996,7 +829,7 @@ Object.assign(appLogic, {
                             if (useStreamingForThisCall) {
                                 uiUtils.finalizeStreamingMessage(finalModelMessageIndex);
                             } else {
-                                const shouldMaintainScroll = !isBackgroundProcess && !state.settings.autoScrollOnNewMessage;
+                                const shouldMaintainScroll = !state.settings.autoScrollOnNewMessage;
 uiUtils.renderChatMessages(shouldMaintainScroll);
                             }
                             await dbUtils.saveChat();
@@ -1023,10 +856,6 @@ uiUtils.renderChatMessages(shouldMaintainScroll);
 
                     let partialThoughtContentOnError = state.partialThoughtStreamContent;
                     let partialContentOnError = state.partialStreamContent;
-
-                    if (isBackgroundProcess) {
-                        throw error;
-                    }
 
                     if ((partialContentOnError || partialThoughtContentOnError) && useStreamingForThisCall && modelMessageObjectForStream) {
                         const suffix = isAbort ? '\n\n(中断)' : '\n\n(通信が切断されました)';
@@ -1079,18 +908,15 @@ uiUtils.renderChatMessages(shouldMaintainScroll);
                     }
                 }
                 finally {
-                    if (!isBackgroundProcess && isTopLevelCall) {
-                        uiUtils.setSendingState(false);
-                        state.abortController = null;
-                        state.partialStreamContent = '';
-                        state.partialThoughtStreamContent = '';
-                        if (state.settings.autoScrollOnNewMessage) {
-                            // uiUtils.scrollToBottom();
-                        }
-                        uiUtils.updateAttachmentBadgeVisibility();
+                    uiUtils.setSendingState(false);
+                    state.abortController = null;
+                    state.partialStreamContent = '';
+                    state.partialThoughtStreamContent = '';
+                    if (state.settings.autoScrollOnNewMessage) {
+                        // uiUtils.scrollToBottom();
                     }
+                    uiUtils.updateAttachmentBadgeVisibility();
                 }
-                if (isBackgroundProcess) return null;
             },
                         async toggleApiProvider() {
                 const providersInCycle = Object.entries(state.settings.apiProviderCycle)
