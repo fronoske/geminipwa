@@ -20,7 +20,11 @@ Object.assign(appLogic, {
                 elements.scrollToBottomBtn.addEventListener('click', () => this.scrollToBottom());
                 elements.messageNavigationUpBtn.addEventListener('click', () => this.scrollToAdjacentMessageEnd('up'));
                 elements.messageNavigationDownBtn.addEventListener('click', () => this.scrollToAdjacentMessageEnd('down'));
-                elements.chatScreen.querySelector('.main-content').addEventListener('scroll', () => this.handleMessageNavigationScroll(), { passive: true });
+                elements.chatScreen.querySelector('.main-content').addEventListener('scroll', () => {
+                    this.updateMessageNavigationButtonStates();
+                    this.handleMessageNavigationScroll();
+                }, { passive: true });
+                this.updateMessageNavigationButtonStates();
                 this.updateMessageNavigationPosition();
                 if (typeof ResizeObserver !== 'undefined') {
                     state.messageNavigationResizeObserver = new ResizeObserver(() => this.updateMessageNavigationPosition());

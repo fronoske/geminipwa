@@ -1232,6 +1232,11 @@
             outline-offset: 2px;
         }
 
+        .message-navigation-controls button:disabled {
+            opacity: 0.38;
+            cursor: default;
+        }
+
         body.pastel-yellow-mode .message-navigation-controls button {
             color: #424242;
         }

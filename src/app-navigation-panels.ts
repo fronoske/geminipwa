@@ -318,6 +318,10 @@ Object.assign(appLogic, {
                     state.messageNavigationHideTimer = null;
                 }, 1200);
             },
+            updateMessageNavigationButtonStates() {
+                const scrollContainer = elements.chatScreen.querySelector('.main-content');
+                elements.messageNavigationUpBtn.disabled = !scrollContainer || scrollContainer.scrollTop <= 2;
+            },
             findAdjacentMessageEnd(messageEnds, viewportEnd, direction, tolerance = 24) {
                 if (direction === 'up') {
                     return [...messageEnds].reverse().find(end => end < viewportEnd - tolerance) ?? null;
@@ -338,7 +342,14 @@ Object.assign(appLogic, {
                     .filter((end, index, ends) => Number.isFinite(end) && (index === 0 || Math.abs(end - ends[index - 1]) > 1));
                 const viewportEnd = scrollContainer.scrollTop + scrollContainer.clientHeight;
                 const targetEnd = this.findAdjacentMessageEnd(messageEnds, viewportEnd, direction);
-                if (targetEnd === null) return;
+                if (targetEnd === null) {
+                    if (direction === 'up' && scrollContainer.scrollTop > 2) {
+                        const behavior = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+                        scrollContainer.scrollTo({ top: 0, behavior });
+                    }
+                    this.updateMessageNavigationButtonStates();
+                    return;
+                }
 
                 const top = Math.max(0, targetEnd - scrollContainer.clientHeight + 12);
                 const behavior = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';

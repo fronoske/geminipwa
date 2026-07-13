@@ -116,6 +116,10 @@ describe('project configuration', () => {
     expect(html).toContain('<option value="hidden">非表示</option>');
     expect(html).toContain('<option value="scroll">スクロール時のみ表示</option>');
     expect(readFile('src/app-state.ts')).toContain("messageNavigationButtonMode: 'scroll'");
+    const navigation = readFile('src/app-navigation-panels.ts');
+    expect(navigation).toContain("direction === 'up' && scrollContainer.scrollTop > 2");
+    expect(navigation).toContain("scrollContainer.scrollTo({ top: 0, behavior })");
+    expect(navigation).toContain('messageNavigationUpBtn.disabled');
   });
 
   it('keeps the first message when clearing the current chat', () => {
@@ -208,5 +212,15 @@ describe('project configuration', () => {
       expect(serviceWorker).toContain(`'${filename}'`);
     }
     expect(serviceWorker).not.toContain("'./src/");
+  });
+
+  it('updates the app without a pre-clear confirmation dialog', () => {
+    const dataManagement = readFile('src/data-management.ts');
+    const updateApp = dataManagement.slice(
+      dataManagement.indexOf('async updateApp()'),
+      dataManagement.indexOf('async confirmClearAllData()'),
+    );
+    expect(updateApp).not.toContain('showCustomConfirm');
+    expect(updateApp).toContain("postMessage({ action: 'clearCache' })");
   });
 });

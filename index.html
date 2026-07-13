@@ -1242,6 +1242,11 @@
             outline-offset: 2px;
         }
 
+        .message-navigation-controls button:disabled {
+            opacity: 0.38;
+            cursor: default;
+        }
+
         body.pastel-yellow-mode .message-navigation-controls button {
             color: #424242;
         }
@@ -12332,7 +12337,11 @@ Object.assign(appLogic, {
         elements.scrollToBottomBtn.addEventListener('click', () => this.scrollToBottom());
         elements.messageNavigationUpBtn.addEventListener('click', () => this.scrollToAdjacentMessageEnd('up'));
         elements.messageNavigationDownBtn.addEventListener('click', () => this.scrollToAdjacentMessageEnd('down'));
-        elements.chatScreen.querySelector('.main-content').addEventListener('scroll', () => this.handleMessageNavigationScroll(), { passive: true });
+        elements.chatScreen.querySelector('.main-content').addEventListener('scroll', () => {
+            this.updateMessageNavigationButtonStates();
+            this.handleMessageNavigationScroll();
+        }, { passive: true });
+        this.updateMessageNavigationButtonStates();
         this.updateMessageNavigationPosition();
         if (typeof ResizeObserver !== 'undefined') {
             state.messageNavigationResizeObserver = new ResizeObserver(() => this.updateMessageNavigationPosition());
@@ -13398,6 +13407,10 @@ Object.assign(appLogic, {
             state.messageNavigationHideTimer = null;
         }, 1200);
     },
+    updateMessageNavigationButtonStates() {
+        const scrollContainer = elements.chatScreen.querySelector('.main-content');
+        elements.messageNavigationUpBtn.disabled = !scrollContainer || scrollContainer.scrollTop <= 2;
+    },
     findAdjacentMessageEnd(messageEnds, viewportEnd, direction, tolerance = 24) {
         if (direction === 'up') {
             return [...messageEnds].reverse().find(end => end < viewportEnd - tolerance) ?? null;
@@ -13418,8 +13431,14 @@ Object.assign(appLogic, {
             .filter((end, index, ends) => Number.isFinite(end) && (index === 0 || Math.abs(end - ends[index - 1]) > 1));
         const viewportEnd = scrollContainer.scrollTop + scrollContainer.clientHeight;
         const targetEnd = this.findAdjacentMessageEnd(messageEnds, viewportEnd, direction);
-        if (targetEnd === null)
+        if (targetEnd === null) {
+            if (direction === 'up' && scrollContainer.scrollTop > 2) {
+                const behavior = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+                scrollContainer.scrollTo({ top: 0, behavior });
+            }
+            this.updateMessageNavigationButtonStates();
             return;
+        }
         const top = Math.max(0, targetEnd - scrollContainer.clientHeight + 12);
         const behavior = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
         scrollContainer.scrollTo({ top, behavior });
@@ -15579,19 +15598,16 @@ Object.assign(appLogic, {
             await uiUtils.showCustomAlert("Service Workerが検出されませんでした。ページをリロードしてから再試行してください。");
             return;
         }
-        const confirmed = await uiUtils.showCustomConfirm("アプリのキャッシュをクリアして最新版を再取得しますか？ (ページがリロードされます)");
-        if (confirmed) {
-            navigator.serviceWorker.ready.then(reg => {
-                if (reg.active) {
-                    reg.active.postMessage({ action: 'clearCache' });
-                }
-                else {
-                    uiUtils.showCustomAlert("アクティブなService Workerが見つかりません。手動でリロードが必要かもしれません。");
-                }
-            }).catch(async (err) => {
-                await uiUtils.showCustomAlert("Service Workerの準備中にエラーが発生しました。");
-            });
-        }
+        navigator.serviceWorker.ready.then(reg => {
+            if (reg.active) {
+                reg.active.postMessage({ action: 'clearCache' });
+            }
+            else {
+                uiUtils.showCustomAlert("アクティブなService Workerが見つかりません。手動でリロードが必要かもしれません。");
+            }
+        }).catch(async (err) => {
+            await uiUtils.showCustomAlert("Service Workerの準備中にエラーが発生しました。");
+        });
     },
     async confirmClearAllData() {
         const confirmed = await uiUtils.showCustomConfirm("本当にすべてのデータ（チャット履歴と設定）を削除しますか？この操作は元に戻せません。");

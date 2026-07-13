@@ -768,18 +768,15 @@ newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.che
                     await uiUtils.showCustomAlert("Service Workerが検出されませんでした。ページをリロードしてから再試行してください。");
                     return;
                 }
-                const confirmed = await uiUtils.showCustomConfirm("アプリのキャッシュをクリアして最新版を再取得しますか？ (ページがリロードされます)");
-                if (confirmed) {
-                    navigator.serviceWorker.ready.then(reg => {
-                        if (reg.active) {
-                            reg.active.postMessage({ action: 'clearCache' });
-                        } else {
-                            uiUtils.showCustomAlert("アクティブなService Workerが見つかりません。手動でリロードが必要かもしれません。");
-                        }
-                    }).catch(async err => {
-                        await uiUtils.showCustomAlert("Service Workerの準備中にエラーが発生しました。");
-                    });
-                }
+                navigator.serviceWorker.ready.then(reg => {
+                    if (reg.active) {
+                        reg.active.postMessage({ action: 'clearCache' });
+                    } else {
+                        uiUtils.showCustomAlert("アクティブなService Workerが見つかりません。手動でリロードが必要かもしれません。");
+                    }
+                }).catch(async err => {
+                    await uiUtils.showCustomAlert("Service Workerの準備中にエラーが発生しました。");
+                });
             },
             async confirmClearAllData() {
                 const confirmed = await uiUtils.showCustomConfirm("本当にすべてのデータ（チャット履歴と設定）を削除しますか？この操作は元に戻せません。");
