@@ -12,6 +12,7 @@ const staticFiles = [
   'src/app-config.js',
   'src/dom-elements.js',
   'src/app-state.js',
+  'src/database.js',
   'src/utilities.js',
   'src/main.js',
   'src/input-preset.js',

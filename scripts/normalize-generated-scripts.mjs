@@ -9,6 +9,7 @@ const scripts = [
   'app-config.js',
   'dom-elements.js',
   'app-state.js',
+  'database.js',
   'utilities.js',
   'main.js',
   'input-preset.js',
