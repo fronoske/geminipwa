@@ -1,4 +1,3 @@
-"use strict";
 (() => {
     const TIMEOUT = 10000;
     const RECOVERY_ATTEMPT_KEY = 'GeminiPWA_RecoveryAttempt';

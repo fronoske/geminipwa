@@ -6,8 +6,8 @@
   "scripts": {
     "baseline": "node scripts/check-baseline.mjs",
     "dev": "vite",
-    "generate:scripts": "tsc -p tsconfig.runtime.json",
-    "check:generated": "tsc -p tsconfig.runtime.json --outDir dist/generated-scripts && node scripts/check-generated-scripts.mjs",
+    "generate:scripts": "tsc -p tsconfig.runtime.json && node scripts/normalize-generated-scripts.mjs src",
+    "check:generated": "tsc -p tsconfig.runtime.json --outDir dist/generated-scripts && node scripts/normalize-generated-scripts.mjs dist/generated-scripts && node scripts/check-generated-scripts.mjs",
     "build": "npm run baseline && vite build",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

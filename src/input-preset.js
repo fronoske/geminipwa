@@ -1,4 +1,3 @@
-"use strict";
 (() => {
     const presetList = [
         { label: '続', value: '（続けて）', autoSend: true },
