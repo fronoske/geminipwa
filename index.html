@@ -52,10 +52,6 @@
             --bg-cascade-delete-button: var(--bg-button-delete);
             --bg-cascade-delete-button-hover: var(--bg-button-delete-hover);
             --text-cascade-indicator: var(--text-secondary);
-            --bg-button-header-delete: #e53935;
-            --bg-button-header-delete-hover: #c62828;
-            --bg-button-header-copy: #e91e63;
-            --bg-button-header-copy-hover: #c2185b;
             --bg-code-copy-button: var(--bg-button-action);
             --bg-code-copy-button-hover: var(--bg-button-action-hover);
             --text-code-copy-button: var(--text-light);
@@ -182,10 +178,6 @@
             --bg-cascade-delete-button: var(--bg-button-delete);
             --bg-cascade-delete-button-hover: var(--bg-button-delete-hover);
             --text-cascade-indicator: var(--text-secondary);
-            --bg-button-header-delete: var(--bg-button-delete);
-            --bg-button-header-delete-hover: var(--bg-button-delete-hover);
-            --bg-button-header-copy: var(--bg-button-copy);
-            --bg-button-header-copy-hover: var(--bg-button-copy-hover);
             --bg-code-copy-button: var(--bg-button-action);
             --bg-code-copy-button-hover: var(--bg-button-action-hover);
             --text-code-copy-button: var(--text-light);
@@ -267,10 +259,6 @@
             --bg-cascade-delete-button: var(--bg-button-delete);
             --bg-cascade-delete-button-hover: var(--bg-button-delete-hover);
             --text-cascade-indicator: var(--text-secondary);
-            --bg-button-header-delete: var(--bg-button-delete);
-            --bg-button-header-delete-hover: var(--bg-button-delete-hover);
-            --bg-button-header-copy: var(--bg-button-copy);
-            --bg-button-header-copy-hover: var(--bg-button-copy-hover);
             --bg-code-copy-button: var(--bg-button-action);
             --bg-code-copy-button-hover: var(--bg-button-action-hover);
             --text-code-copy-button: var(--text-light);
@@ -369,10 +357,6 @@
             --bg-cascade-delete-button: var(--bg-button-delete);
             --bg-cascade-delete-button-hover: var(--bg-button-delete-hover);
             --text-cascade-indicator: var(--text-secondary);
-            --bg-button-header-delete: var(--bg-button-delete);
-            --bg-button-header-delete-hover: var(--bg-button-delete-hover);
-            --bg-button-header-copy: var(--bg-button-copy);
-            --bg-button-header-copy-hover: var(--bg-button-copy-hover);
             --bg-code-copy-button: var(--bg-button-action);
             --bg-code-copy-button-hover: var(--bg-button-action-hover);
             --text-code-copy-button: var(--text-light);
@@ -471,10 +455,6 @@
             --bg-cascade-delete-button: var(--bg-button-delete);
             --bg-cascade-delete-button-hover: var(--bg-button-delete-hover);
             --text-cascade-indicator: var(--text-secondary);
-            --bg-button-header-delete: var(--bg-button-delete);
-            --bg-button-header-delete-hover: var(--bg-button-delete-hover);
-            --bg-button-header-copy: var(--bg-button-copy);
-            --bg-button-header-copy-hover: var(--bg-button-copy-hover);
             --bg-code-copy-button: var(--bg-button-action);
             --bg-code-copy-button-hover: var(--bg-button-action-hover);
             --text-code-copy-button: var(--text-light);
@@ -557,10 +537,6 @@
             --bg-cascade-delete-button: var(--bg-button-delete);
             --bg-cascade-delete-button-hover: var(--bg-button-delete-hover);
             --text-cascade-indicator: var(--text-secondary);
-            --bg-button-header-delete: var(--bg-button-delete);
-            --bg-button-header-delete-hover: var(--bg-button-delete-hover);
-            --bg-button-header-copy: var(--bg-button-copy);
-            --bg-button-header-copy-hover: var(--bg-button-copy-hover);
             --bg-code-copy-button: var(--bg-button-action);
             --bg-code-copy-button-hover: var(--bg-button-action-hover);
             --text-code-copy-button: var(--text-light);
@@ -668,10 +644,6 @@
             --bg-cascade-delete-button: var(--bg-button-delete);
             --bg-cascade-delete-button-hover: var(--bg-button-delete-hover);
             --text-cascade-indicator: var(--text-secondary);
-            --bg-button-header-delete: var(--bg-button-delete);
-            --bg-button-header-delete-hover: var(--bg-button-delete-hover);
-            --bg-button-header-copy: var(--bg-button-copy);
-            --bg-button-header-copy-hover: var(--bg-button-copy-hover);
 
             --bg-dialog-file-item: var(--bg-tertiary);
             --border-dialog-file-item: var(--border-secondary);
@@ -1087,69 +1059,62 @@
             color: #424242;
         }
 
-        body.pastel-yellow-mode .new-chat-button,
-        body.pastel-yellow-mode .app-header .action-button-in-header,
+        body.pastel-yellow-mode .header-submenu,
         body.pastel-yellow-mode .header-save-button {
             color: #424242;
         }
 
         body.pastel-rainbow-mode .header-button,
         body.pastel-rainbow-mode .header-notice,
-        body.pastel-rainbow-mode .new-chat-button,
-        body.pastel-rainbow-mode .app-header .action-button-in-header,
         body.pastel-rainbow-mode .header-save-button {
             color: var(--text-light);
         }
 
-        .new-chat-button {
-            font-size: 14px;
-            padding: 5px 10px;
-            background-color: var(--bg-button-save);
-            color: var(--text-light);
-            flex-shrink: 0;
-            border-radius: 5px;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.2s ease, padding 0.2s ease, font-size 0.2s ease, height 0.2s ease;
-        }
-
-        .new-chat-button:hover {
-            background-color: var(--bg-button-save-hover);
-        }
-
-        body.dark-mode .new-chat-button {
-            background-color: var(--bg-button-save);
-        }
-
-        body.dark-mode .new-chat-button:hover {
-            background-color: var(--bg-button-save-hover);
-        }
-
-        .app-header .action-button-in-header {
-            padding: 5px 10px;
-            font-size: 14px;
-            color: var(--text-light);
-            border-radius: 5px;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.2s ease, padding 0.2s ease, font-size 0.2s ease, height 0.2s ease;
+        .header-menu-container {
+            position: relative;
             flex-shrink: 0;
         }
 
-        .app-header #delete-session-btn {
-            background-color: var(--bg-button-header-delete);
+        .header-menu-button[aria-expanded="true"] {
+            background-color: rgba(255, 255, 255, 0.16);
+            border-radius: 5px;
         }
 
-        .app-header #delete-session-btn:hover:not(:disabled) {
-            background-color: var(--bg-button-header-delete-hover);
+        .header-submenu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            z-index: 100;
+            display: grid;
+            min-width: 168px;
+            padding: 6px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            box-shadow: 0 8px 24px var(--shadow-secondary);
         }
 
-        .app-header #copy-session-btn {
-            background-color: var(--bg-button-header-copy);
+        .header-submenu button {
+            width: 100%;
+            padding: 10px 12px;
+            border: 0;
+            border-radius: 5px;
+            background: transparent;
+            color: var(--text-primary);
+            font-size: 14px;
+            line-height: 1.3;
+            text-align: left;
+            white-space: nowrap;
         }
 
-        .app-header #copy-session-btn:hover:not(:disabled) {
-            background-color: var(--bg-button-header-copy-hover);
+        .header-submenu button:hover:not(:disabled),
+        .header-submenu button:focus-visible {
+            background: var(--bg-button-hover);
+            outline: none;
+        }
+
+        .header-submenu .danger-menu-item {
+            color: var(--text-error);
         }
 
         .main-content {
@@ -3331,8 +3296,6 @@
         }
 
         .app-container.minimized-ui .header-button,
-        .app-container.minimized-ui .new-chat-button,
-        .app-container.minimized-ui .app-header .action-button-in-header,
         .app-container.minimized-ui .header-save-button {
             padding: 2px 6px;
             font-size: 13px;
@@ -4142,13 +4105,19 @@ font-size: 1.142em !important;
 
         <div id="chat-screen" class="screen active">
             <header class="app-header">
-                                <button id="goto-history-btn" class="header-button" aria-label="履歴一覧へ">☰</button>
+                <button id="goto-history-btn" class="header-button" aria-label="履歴一覧へ" title="履歴一覧へ">履</button>
                 <h1 id="chat-title">新規チャット</h1>
                 <div style="flex-grow: 1;"></div>
-                <button id="new-chat-btn" class="new-chat-button" title="新規チャットを開始">新</button>
-
-                <button id="delete-session-btn" class="action-button-in-header" title="現在のチャットを削除">削</button>
-                <button id="copy-session-btn" class="action-button-in-header" title="チャット全体をコピー">コ</button>
+                <div id="header-menu-container" class="header-menu-container">
+                    <button id="header-menu-btn" class="header-button header-menu-button" type="button"
+                        aria-label="チャットメニュー" aria-haspopup="menu" aria-expanded="false"
+                        aria-controls="header-submenu" title="チャットメニュー">☰</button>
+                    <div id="header-submenu" class="header-submenu hidden" role="menu">
+                        <button id="header-menu-new-chat-btn" type="button" role="menuitem">新規チャット</button>
+                        <button id="header-menu-clear-btn" type="button" role="menuitem" class="danger-menu-item">全削除</button>
+                        <button id="header-menu-copy-btn" type="button" role="menuitem">全コピー</button>
+                    </div>
+                </div>
                 <button id="header-api-provider-toggle-btn" class="header-button api-provider-toggle-btn"
                     title="APIプロバイダー切替"></button>
                 <button id="header-cycle-api-key-btn" class="header-button api-provider-toggle-btn" title="APIキー切替" style="font-weight: bold;"></button>
@@ -5760,16 +5729,8 @@ font-size: 1.142em !important;
                                             </label>
                                             <hr style="margin: 10px 0; border-top: 1px solid var(--border-tertiary);">
                                             <label class="checkbox-label">
-                                                <input type="checkbox" id="show-new-chat-button-toggle">
-                                                「新規」ボタンを表示する（「新」ボタン）
-                                            </label>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="show-delete-session-button-toggle">
-                                                「全削除」ボタンを表示する（「削」ボタン）
-                                            </label>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="show-copy-session-button-toggle">
-                                                「全コピー」ボタンを表示する（「コ」ボタン）
+                                                <input type="checkbox" id="show-header-menu-button-toggle">
+                                                ハンバーガーメニューボタンを表示する
                                             </label>
                                             <hr style="margin: 10px 0; border-top: 1px solid var(--border-tertiary);">
                                             <label class="checkbox-label">
@@ -6547,9 +6508,7 @@ const elements = {
     slimSettingsHeadersToggle: document.getElementById('slim-settings-headers-toggle'),
     flatSettingsDesignToggle: document.getElementById('flat-settings-design-toggle'),
     showChatTitleToggle: document.getElementById('show-chat-title-toggle'),
-    showNewChatButtonToggle: document.getElementById('show-new-chat-button-toggle'),
-    showDeleteSessionButtonToggle: document.getElementById('show-delete-session-button-toggle'),
-    showCopySessionButtonToggle: document.getElementById('show-copy-session-button-toggle'),
+    showHeaderMenuButtonToggle: document.getElementById('show-header-menu-button-toggle'),
     showScrollToTopButtonToggle: document.getElementById('show-scroll-to-top-button-toggle'),
     showScrollToBottomButtonToggle: document.getElementById('show-scroll-to-bottom-button-toggle'),
     showToggleAllContentButtonToggle: document.getElementById('show-toggle-all-content-button-toggle'),
@@ -6574,9 +6533,12 @@ const elements = {
     gotoSettingsBtn: document.getElementById('goto-settings-btn'),
     backToChatFromHistoryBtn: document.getElementById('back-to-chat-from-history'),
     backToChatFromSettingsBtn: document.getElementById('back-to-chat-from-settings'),
-    newChatBtn: document.getElementById('new-chat-btn'),
-    deleteSessionBtn: document.getElementById('delete-session-btn'),
-    copySessionBtn: document.getElementById('copy-session-btn'),
+    headerMenuContainer: document.getElementById('header-menu-container'),
+    headerMenuBtn: document.getElementById('header-menu-btn'),
+    headerSubmenu: document.getElementById('header-submenu'),
+    headerMenuNewChatBtn: document.getElementById('header-menu-new-chat-btn'),
+    headerMenuClearBtn: document.getElementById('header-menu-clear-btn'),
+    headerMenuCopyBtn: document.getElementById('header-menu-copy-btn'),
     scrollToTopBtn: document.getElementById('scroll-to-top-btn'),
     scrollToBottomBtn: document.getElementById('scroll-to-bottom-btn'),
     toggleAllContentBtn: document.getElementById('toggle-all-content-btn'),
@@ -6821,9 +6783,7 @@ const state = {
         slimSettingsHeaders: true,
         flatSettingsDesign: false,
         showChatTitle: true,
-        showNewChatButton: true,
-        showDeleteSessionButton: false,
-        showCopySessionButton: false,
+        showHeaderMenuButton: true,
         showScrollToTopButton: false,
         showScrollToBottomButton: true,
         showToggleAllContentButton: false,
@@ -7187,7 +7147,7 @@ const dbUtils = {
                     }
                     const removedSettingKeys = settingsArray
                         .map((item) => item.key)
-                        .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine|enableSessionLinking|showSessionLinkingSettings|enableCryscroller|cryscroller|enableSettingsCryscroller|enableHistoryCryscroller|enableImmersiveScrolling|enableDynamicScrollMarkerColor|enableProofreading|showProofreadingSettings|proofreading|activeProofreadingConfigId|enableImageUrlReplacement|imageUrlReplacementBase|enableAutoBaseUrlDetection|enableFuzzySearchNormalization|fuzzySearchThreshold|characterNamesList|enableRomajiToKatakanaConversion|dummyErrorDebugMode|dummyDummyModel|dummyEnableDummyModel|showDiceButton|diceMinValue|diceMaxValue|backgroundImageBlob|historyBackgroundImageBlob|settingsBackgroundImageBlob|showUserIcon|userIconBlob|showUserName|userName|showAiIcon|aiIconBlob|showAiName|aiName|iconName|messageIcon|dummyUser|enableDummyUser|dummyModel|enableDummyModel|concatDummyModel|(?:gemini|deepSeek|claude|openai|xai|llmAggregator)(?:DummyUser|EnableDummyUser|DummyModel|EnableDummyModel|ConcatDummyModel)|webhookUrl|webhookFormat|enableWebhookNotification|webhooks)/.test(key));
+                        .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine|enableSessionLinking|showSessionLinkingSettings|enableCryscroller|cryscroller|enableSettingsCryscroller|enableHistoryCryscroller|enableImmersiveScrolling|enableDynamicScrollMarkerColor|enableProofreading|showProofreadingSettings|proofreading|activeProofreadingConfigId|enableImageUrlReplacement|imageUrlReplacementBase|enableAutoBaseUrlDetection|enableFuzzySearchNormalization|fuzzySearchThreshold|characterNamesList|enableRomajiToKatakanaConversion|dummyErrorDebugMode|dummyDummyModel|dummyEnableDummyModel|showDiceButton|diceMinValue|diceMaxValue|backgroundImageBlob|historyBackgroundImageBlob|settingsBackgroundImageBlob|showUserIcon|userIconBlob|showUserName|userName|showAiIcon|aiIconBlob|showAiName|aiName|iconName|messageIcon|dummyUser|enableDummyUser|dummyModel|enableDummyModel|concatDummyModel|(?:gemini|deepSeek|claude|openai|xai|llmAggregator)(?:DummyUser|EnableDummyUser|DummyModel|EnableDummyModel|ConcatDummyModel)|webhookUrl|webhookFormat|enableWebhookNotification|webhooks|showNewChatButton|showDeleteSessionButton|showCopySessionButton)/.test(key));
                     if (removedSettingKeys.length > 0) {
                         try {
                             const cleanupStore = this._getStore(SETTINGS_STORE, 'readwrite');
@@ -10633,9 +10593,7 @@ Object.assign(uiUtils, {
         elements.flatSettingsDesignToggle.checked = state.settings.flatSettingsDesign;
         document.body.classList.toggle('flat-settings-mode', state.settings.flatSettingsDesign);
         elements.showChatTitleToggle.checked = state.settings.showChatTitle;
-        elements.showNewChatButtonToggle.checked = state.settings.showNewChatButton;
-        elements.showDeleteSessionButtonToggle.checked = state.settings.showDeleteSessionButton;
-        elements.showCopySessionButtonToggle.checked = state.settings.showCopySessionButton;
+        elements.showHeaderMenuButtonToggle.checked = state.settings.showHeaderMenuButton;
         elements.showScrollToTopButtonToggle.checked = state.settings.showScrollToTopButton;
         elements.showScrollToBottomButtonToggle.checked = state.settings.showScrollToBottomButton;
         elements.showToggleAllContentButtonToggle.checked = state.settings.showToggleAllContentButton;
@@ -10815,9 +10773,7 @@ Object.assign(uiUtils, {
         const updateVisibility = () => {
             const toggleableButtons = [
                 { id: '#show-chat-title-toggle', element: elements.chatTitle },
-                { id: '#show-new-chat-button-toggle', element: elements.newChatBtn },
-                { id: '#show-delete-session-button-toggle', element: elements.deleteSessionBtn },
-                { id: '#show-copy-session-button-toggle', element: elements.copySessionBtn },
+                { id: '#show-header-menu-button-toggle', element: elements.headerMenuContainer },
                 { id: '#show-api-provider-toggle-header', element: elements.headerApiProviderToggleBtn },
                 { id: '#show-header-cycle-api-key-btn-toggle', element: elements.headerCycleApiKeyBtn },
                 { id: '#show-scroll-to-top-button-toggle', element: elements.scrollToTopBtn },
@@ -10832,6 +10788,9 @@ Object.assign(uiUtils, {
                     item.element.classList.toggle('hidden', !checkbox.checked);
                 }
             });
+            if (!state.settings.showHeaderMenuButton) {
+                this.setHeaderMenuOpen(false);
+            }
             if (elements.pasteToInputBtn) {
                 elements.pasteToInputBtn.classList.toggle('hidden', !state.settings.showPasteButtonInFooter);
             }
@@ -10860,7 +10819,7 @@ Object.assign(uiUtils, {
             const buttonPriority = [
                 '#toggle-clipboard-stack-btn', '#toggle-memo-btn', '#scroll-to-top-btn',
                 '#scroll-to-bottom-btn', '#toggle-all-content-btn', '#header-api-provider-toggle-btn',
-                '#copy-session-btn', '#delete-session-btn', '#new-chat-btn'
+                '#header-cycle-api-key-btn'
             ];
             if (isOverflowing) {
                 for (const selector of buttonPriority) {
@@ -10875,6 +10834,16 @@ Object.assign(uiUtils, {
                 }
             }
         });
+    },
+    setHeaderMenuOpen(isOpen) {
+        elements.headerSubmenu.classList.toggle('hidden', !isOpen);
+        elements.headerMenuBtn.setAttribute('aria-expanded', String(isOpen));
+        if (isOpen) {
+            elements.headerMenuNewChatBtn.focus();
+        }
+    },
+    toggleHeaderMenu() {
+        this.setHeaderMenuOpen(elements.headerSubmenu.classList.contains('hidden'));
     },
     updateProviderToggleButtons() {
         const providerMap = {
@@ -12010,14 +11979,33 @@ Object.assign(appLogic, {
         elements.scrollToTopBtn.addEventListener('click', () => this.scrollToTop());
         elements.scrollToBottomBtn.addEventListener('click', () => this.scrollToBottom());
         elements.pasteToInputBtn.addEventListener('click', () => this.pasteToUserInput());
-        elements.newChatBtn.addEventListener('click', () => {
+        elements.headerMenuBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            uiUtils.toggleHeaderMenu();
+        });
+        elements.headerMenuNewChatBtn.addEventListener('click', () => {
+            uiUtils.setHeaderMenuOpen(false);
             uiUtils.showCustomConfirm("現在のチャットを保存して新規チャットを開始しますか？").then(confirmed => {
                 if (confirmed)
                     this.confirmStartNewChat();
             });
         });
-        elements.deleteSessionBtn.addEventListener('click', () => this.confirmDeleteCurrentSession());
-        elements.copySessionBtn.addEventListener('click', () => this.copyCurrentSessionText());
+        elements.headerMenuClearBtn.addEventListener('click', () => {
+            uiUtils.setHeaderMenuOpen(false);
+            this.confirmClearCurrentSession();
+        });
+        elements.headerMenuCopyBtn.addEventListener('click', () => this.copyCurrentSessionText());
+        document.addEventListener('click', (event) => {
+            if (!elements.headerMenuContainer.contains(event.target)) {
+                uiUtils.setHeaderMenuOpen(false);
+            }
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && !elements.headerSubmenu.classList.contains('hidden')) {
+                uiUtils.setHeaderMenuOpen(false);
+                elements.headerMenuBtn.focus();
+            }
+        });
         elements.toggleAllContentBtn.addEventListener('click', () => this.toggleAllMessagesVisibility());
         elements.headerApiProviderToggleBtn.addEventListener('click', () => this.toggleApiProvider());
         elements.footerApiProviderToggleBtn.addEventListener('click', () => this.toggleApiProvider());
@@ -12221,16 +12209,8 @@ Object.assign(appLogic, {
             uiUtils.updateChatScreenElementVisibility();
             uiUtils.updateMemoStackHeightSettingsVisibility();
         });
-        elements.showNewChatButtonToggle.addEventListener('change', () => {
-            state.settings.showNewChatButton = elements.showNewChatButtonToggle.checked;
-            uiUtils.updateChatScreenElementVisibility();
-        });
-        elements.showDeleteSessionButtonToggle.addEventListener('change', () => {
-            state.settings.showDeleteSessionButton = elements.showDeleteSessionButtonToggle.checked;
-            uiUtils.updateChatScreenElementVisibility();
-        });
-        elements.showCopySessionButtonToggle.addEventListener('change', () => {
-            state.settings.showCopySessionButton = elements.showCopySessionButtonToggle.checked;
+        elements.showHeaderMenuButtonToggle.addEventListener('change', () => {
+            state.settings.showHeaderMenuButton = elements.showHeaderMenuButtonToggle.checked;
             uiUtils.updateChatScreenElementVisibility();
         });
         elements.showScrollToTopButtonToggle.addEventListener('change', () => {
@@ -13377,9 +13357,9 @@ Object.assign(appLogic, {
             await uiUtils.showCustomAlert(`エクスポートエラー: ${error}`);
         }
     },
-    async confirmDeleteCurrentSession() {
-        if (!state.currentChatId && state.currentMessages.length === 0) {
-            await uiUtils.showCustomAlert("削除するチャットがありません（新規チャット状態です）。");
+    async confirmClearCurrentSession() {
+        if (state.currentMessages.length <= 1) {
+            await uiUtils.showCustomAlert("削除できる内容がありません。先頭の項目は保持されます。");
             return;
         }
         if (state.isSending) {
@@ -13390,22 +13370,34 @@ Object.assign(appLogic, {
             await uiUtils.showCustomAlert("メッセージ編集中です。完了後に再度お試しください。");
             return;
         }
-        const chatTitle = elements.chatTitle.textContent.startsWith("新規チャット") ? "このチャット" : `チャット「${elements.chatTitle.textContent.replace(/^: /, '')}」`;
-        const confirmed = await uiUtils.showCustomConfirm(`${chatTitle}を完全に削除しますか？\nこの操作は元に戻せません。`);
+        const confirmed = await uiUtils.showCustomConfirm("先頭の項目を残して、それ以外の内容をすべて削除しますか？\nこの操作は元に戻せません。");
         if (confirmed) {
-            await this.deleteCurrentSession();
+            await this.clearCurrentSessionExceptFirst();
         }
     },
-    async deleteCurrentSession() {
+    async clearCurrentSessionExceptFirst() {
+        const originalMessages = state.currentMessages;
+        const originalCollapsedStates = new Map(state.messageCollapsedStates);
+        const originalThoughtStates = new Map(state.thoughtSummaryOpenStates);
+        const originalAllMessagesHidden = state.areAllMessagesHidden;
         try {
-            if (state.currentChatId) {
-                await dbUtils.deleteChat(state.currentChatId);
-            }
-            this.startNewChat();
-            await uiUtils.showCustomAlert("チャットを削除しました。");
+            state.currentMessages = state.currentMessages.slice(0, 1);
+            state.messageCollapsedStates.clear();
+            state.thoughtSummaryOpenStates.clear();
+            state.areAllMessagesHidden = false;
+            uiUtils.updateToggleAllContentButton();
+            await dbUtils.saveChat();
+            uiUtils.renderChatMessages();
+            await uiUtils.showCustomAlert("先頭の項目を残して削除しました。");
         }
         catch (error) {
-            await uiUtils.showCustomAlert(`チャットの削除中にエラーが発生しました: ${error}`);
+            state.currentMessages = originalMessages;
+            state.messageCollapsedStates = originalCollapsedStates;
+            state.thoughtSummaryOpenStates = originalThoughtStates;
+            state.areAllMessagesHidden = originalAllMessagesHidden;
+            uiUtils.updateToggleAllContentButton();
+            uiUtils.renderChatMessages();
+            await uiUtils.showCustomAlert(`内容の削除中にエラーが発生しました: ${error}`);
         }
     },
     async copyCurrentSessionText() {
@@ -13431,18 +13423,19 @@ Object.assign(appLogic, {
         });
         try {
             await navigator.clipboard.writeText(sessionText.trim());
-            const buttonElement = elements.copySessionBtn;
+            const buttonElement = elements.headerMenuCopyBtn;
             const originalText = buttonElement.textContent;
-            buttonElement.textContent = '✓';
+            buttonElement.textContent = 'コピーしました';
             buttonElement.disabled = true;
             setTimeout(() => {
                 buttonElement.textContent = originalText;
                 buttonElement.disabled = false;
-            }, 1500);
+                uiUtils.setHeaderMenuOpen(false);
+            }, 900);
         }
         catch (err) {
             await uiUtils.showCustomAlert("クリップボードへのコピーに失敗しました。\nお使いのブラウザが対応していないか、セキュリティ設定が原因の可能性があります。");
-            const buttonElement = elements.copySessionBtn;
+            const buttonElement = elements.headerMenuCopyBtn;
             const originalText = buttonElement.textContent;
             buttonElement.textContent = 'コピー失敗';
             buttonElement.disabled = true;
@@ -15077,9 +15070,7 @@ Object.assign(appLogic, {
         newSettings.slimSettingsHeaders = elements.slimSettingsHeadersToggle.checked;
         newSettings.flatSettingsDesign = elements.flatSettingsDesignToggle.checked;
         newSettings.showChatTitle = elements.showChatTitleToggle.checked;
-        newSettings.showNewChatButton = elements.showNewChatButtonToggle.checked;
-        newSettings.showDeleteSessionButton = elements.showDeleteSessionButtonToggle.checked;
-        newSettings.showCopySessionButton = elements.showCopySessionButtonToggle.checked;
+        newSettings.showHeaderMenuButton = elements.showHeaderMenuButtonToggle.checked;
         newSettings.showScrollToTopButton = elements.showScrollToTopButtonToggle.checked;
         newSettings.showScrollToBottomButton = elements.showScrollToBottomButtonToggle.checked;
         newSettings.showToggleAllContentButton = elements.showToggleAllContentButtonToggle.checked;

@@ -94,6 +94,24 @@ describe('project configuration', () => {
     expect(readFile('src/ui-settings.ts')).not.toMatch(retiredFeaturePattern);
   });
 
+  it('uses one configurable header menu for chat-wide actions', () => {
+    const html = readFile('src/index.html');
+    for (const id of ['header-menu-btn', 'header-menu-new-chat-btn', 'header-menu-clear-btn', 'header-menu-copy-btn']) {
+      expect(html).toContain(`id="${id}"`);
+    }
+    expect(html).toContain('id="show-header-menu-button-toggle"');
+    expect(html).not.toMatch(/id="(?:new-chat|delete-session|copy-session)-btn"/);
+    expect(html).not.toMatch(/id="show-(?:new-chat|delete-session|copy-session)-button-toggle"/);
+    expect(readFile('src/app-state.ts')).toContain('showHeaderMenuButton: true');
+  });
+
+  it('keeps the first message when clearing the current chat', () => {
+    const sessions = readFile('src/chat-sessions.ts');
+    expect(sessions).toContain('state.currentMessages.slice(0, 1)');
+    expect(sessions).not.toContain('confirmDeleteCurrentSession');
+    expect(sessions).not.toContain('deleteCurrentSession');
+  });
+
   it('preserves multiple API key management as a protected core feature', () => {
     expect(runtimeManifest.application).toContain('api-key-manager');
     expect(readFile('src/api-key-manager.ts')).toContain('const multiApiKeyUtils = {');

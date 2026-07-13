@@ -264,9 +264,9 @@ Object.assign(appLogic, {
                     await uiUtils.showCustomAlert(`エクスポートエラー: ${error}`);
                 }
             },
-            async confirmDeleteCurrentSession() {
-                if (!state.currentChatId && state.currentMessages.length === 0) {
-                    await uiUtils.showCustomAlert("削除するチャットがありません（新規チャット状態です）。");
+            async confirmClearCurrentSession() {
+                if (state.currentMessages.length <= 1) {
+                    await uiUtils.showCustomAlert("削除できる内容がありません。先頭の項目は保持されます。");
                     return;
                 }
                 if (state.isSending) {
@@ -277,23 +277,35 @@ Object.assign(appLogic, {
                     await uiUtils.showCustomAlert("メッセージ編集中です。完了後に再度お試しください。");
                     return;
                 }
-                const chatTitle = elements.chatTitle.textContent.startsWith("新規チャット") ? "このチャット" : `チャット「${elements.chatTitle.textContent.replace(/^: /, '')}」`;
                 const confirmed = await uiUtils.showCustomConfirm(
-                    `${chatTitle}を完全に削除しますか？\nこの操作は元に戻せません。`
+                    "先頭の項目を残して、それ以外の内容をすべて削除しますか？\nこの操作は元に戻せません。"
                 );
                 if (confirmed) {
-                    await this.deleteCurrentSession();
+                    await this.clearCurrentSessionExceptFirst();
                 }
             },
-            async deleteCurrentSession() {
+            async clearCurrentSessionExceptFirst() {
+                const originalMessages = state.currentMessages;
+                const originalCollapsedStates = new Map(state.messageCollapsedStates);
+                const originalThoughtStates = new Map(state.thoughtSummaryOpenStates);
+                const originalAllMessagesHidden = state.areAllMessagesHidden;
                 try {
-                    if (state.currentChatId) {
-                        await dbUtils.deleteChat(state.currentChatId);
-                    }
-                    this.startNewChat();
-                    await uiUtils.showCustomAlert("チャットを削除しました。");
+                    state.currentMessages = state.currentMessages.slice(0, 1);
+                    state.messageCollapsedStates.clear();
+                    state.thoughtSummaryOpenStates.clear();
+                    state.areAllMessagesHidden = false;
+                    uiUtils.updateToggleAllContentButton();
+                    await dbUtils.saveChat();
+                    uiUtils.renderChatMessages();
+                    await uiUtils.showCustomAlert("先頭の項目を残して削除しました。");
                 } catch (error) {
-                    await uiUtils.showCustomAlert(`チャットの削除中にエラーが発生しました: ${error}`);
+                    state.currentMessages = originalMessages;
+                    state.messageCollapsedStates = originalCollapsedStates;
+                    state.thoughtSummaryOpenStates = originalThoughtStates;
+                    state.areAllMessagesHidden = originalAllMessagesHidden;
+                    uiUtils.updateToggleAllContentButton();
+                    uiUtils.renderChatMessages();
+                    await uiUtils.showCustomAlert(`内容の削除中にエラーが発生しました: ${error}`);
                 }
             },
             async copyCurrentSessionText() {
@@ -319,17 +331,18 @@ Object.assign(appLogic, {
 
                 try {
                     await navigator.clipboard.writeText(sessionText.trim());
-                    const buttonElement = elements.copySessionBtn;
+                    const buttonElement = elements.headerMenuCopyBtn;
                     const originalText = buttonElement.textContent;
-                    buttonElement.textContent = '✓';
+                    buttonElement.textContent = 'コピーしました';
                     buttonElement.disabled = true;
                     setTimeout(() => {
                         buttonElement.textContent = originalText;
                         buttonElement.disabled = false;
-                    }, 1500);
+                        uiUtils.setHeaderMenuOpen(false);
+                    }, 900);
                 } catch (err) {
                     await uiUtils.showCustomAlert("クリップボードへのコピーに失敗しました。\nお使いのブラウザが対応していないか、セキュリティ設定が原因の可能性があります。");
-                    const buttonElement = elements.copySessionBtn;
+                    const buttonElement = elements.headerMenuCopyBtn;
                     const originalText = buttonElement.textContent;
                     buttonElement.textContent = 'コピー失敗';
                     buttonElement.disabled = true;

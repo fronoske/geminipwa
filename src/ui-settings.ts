@@ -408,9 +408,7 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 elements.flatSettingsDesignToggle.checked = state.settings.flatSettingsDesign;
                 document.body.classList.toggle('flat-settings-mode', state.settings.flatSettingsDesign);
                 elements.showChatTitleToggle.checked = state.settings.showChatTitle;
-                elements.showNewChatButtonToggle.checked = state.settings.showNewChatButton;
-                elements.showDeleteSessionButtonToggle.checked = state.settings.showDeleteSessionButton;
-                elements.showCopySessionButtonToggle.checked = state.settings.showCopySessionButton;
+                elements.showHeaderMenuButtonToggle.checked = state.settings.showHeaderMenuButton;
                 elements.showScrollToTopButtonToggle.checked = state.settings.showScrollToTopButton;
                 elements.showScrollToBottomButtonToggle.checked = state.settings.showScrollToBottomButton;
                 elements.showToggleAllContentButtonToggle.checked = state.settings.showToggleAllContentButton;

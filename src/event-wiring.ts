@@ -20,13 +20,32 @@ Object.assign(appLogic, {
                 elements.scrollToBottomBtn.addEventListener('click', () => this.scrollToBottom());
                 elements.pasteToInputBtn.addEventListener('click', () => this.pasteToUserInput());
 
-                elements.newChatBtn.addEventListener('click', () => {
+                elements.headerMenuBtn.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    uiUtils.toggleHeaderMenu();
+                });
+                elements.headerMenuNewChatBtn.addEventListener('click', () => {
+                    uiUtils.setHeaderMenuOpen(false);
                     uiUtils.showCustomConfirm("現在のチャットを保存して新規チャットを開始しますか？").then(confirmed => {
                         if (confirmed) this.confirmStartNewChat();
                     });
                 });
-                elements.deleteSessionBtn.addEventListener('click', () => this.confirmDeleteCurrentSession());
-                elements.copySessionBtn.addEventListener('click', () => this.copyCurrentSessionText());
+                elements.headerMenuClearBtn.addEventListener('click', () => {
+                    uiUtils.setHeaderMenuOpen(false);
+                    this.confirmClearCurrentSession();
+                });
+                elements.headerMenuCopyBtn.addEventListener('click', () => this.copyCurrentSessionText());
+                document.addEventListener('click', (event) => {
+                    if (!elements.headerMenuContainer.contains(event.target)) {
+                        uiUtils.setHeaderMenuOpen(false);
+                    }
+                });
+                document.addEventListener('keydown', (event) => {
+                    if (event.key === 'Escape' && !elements.headerSubmenu.classList.contains('hidden')) {
+                        uiUtils.setHeaderMenuOpen(false);
+                        elements.headerMenuBtn.focus();
+                    }
+                });
                 elements.toggleAllContentBtn.addEventListener('click', () => this.toggleAllMessagesVisibility());
                 elements.headerApiProviderToggleBtn.addEventListener('click', () => this.toggleApiProvider());
                 elements.footerApiProviderToggleBtn.addEventListener('click', () => this.toggleApiProvider());
@@ -237,16 +256,8 @@ Object.assign(appLogic, {
                     uiUtils.updateChatScreenElementVisibility();
                     uiUtils.updateMemoStackHeightSettingsVisibility();
                 });
-                elements.showNewChatButtonToggle.addEventListener('change', () => {
-                    state.settings.showNewChatButton = elements.showNewChatButtonToggle.checked;
-                    uiUtils.updateChatScreenElementVisibility();
-                });
-                elements.showDeleteSessionButtonToggle.addEventListener('change', () => {
-                    state.settings.showDeleteSessionButton = elements.showDeleteSessionButtonToggle.checked;
-                    uiUtils.updateChatScreenElementVisibility();
-                });
-                elements.showCopySessionButtonToggle.addEventListener('change', () => {
-                    state.settings.showCopySessionButton = elements.showCopySessionButtonToggle.checked;
+                elements.showHeaderMenuButtonToggle.addEventListener('change', () => {
+                    state.settings.showHeaderMenuButton = elements.showHeaderMenuButtonToggle.checked;
                     uiUtils.updateChatScreenElementVisibility();
                 });
                 elements.showScrollToTopButtonToggle.addEventListener('change', () => {

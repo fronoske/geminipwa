@@ -9,9 +9,7 @@ Object.assign(uiUtils, {
                 const updateVisibility = () => {
                     const toggleableButtons = [
                         { id: '#show-chat-title-toggle', element: elements.chatTitle },
-                        { id: '#show-new-chat-button-toggle', element: elements.newChatBtn },
-                        { id: '#show-delete-session-button-toggle', element: elements.deleteSessionBtn },
-                        { id: '#show-copy-session-button-toggle', element: elements.copySessionBtn },
+                        { id: '#show-header-menu-button-toggle', element: elements.headerMenuContainer },
                         { id: '#show-api-provider-toggle-header', element: elements.headerApiProviderToggleBtn },
                        { id: '#show-header-cycle-api-key-btn-toggle', element: elements.headerCycleApiKeyBtn },
                         { id: '#show-scroll-to-top-button-toggle', element: elements.scrollToTopBtn },
@@ -27,6 +25,9 @@ Object.assign(uiUtils, {
                             item.element.classList.toggle('hidden', !checkbox.checked);
                         }
                     });
+                    if (!state.settings.showHeaderMenuButton) {
+                        this.setHeaderMenuOpen(false);
+                    }
 
                     if (elements.pasteToInputBtn) {
                         elements.pasteToInputBtn.classList.toggle('hidden', !state.settings.showPasteButtonInFooter);
@@ -59,7 +60,7 @@ Object.assign(uiUtils, {
                     const buttonPriority = [
                         '#toggle-clipboard-stack-btn', '#toggle-memo-btn', '#scroll-to-top-btn',
                         '#scroll-to-bottom-btn', '#toggle-all-content-btn', '#header-api-provider-toggle-btn',
-                        '#copy-session-btn', '#delete-session-btn', '#new-chat-btn'
+                        '#header-cycle-api-key-btn'
                     ];
 
                     if (isOverflowing) {
@@ -74,6 +75,16 @@ Object.assign(uiUtils, {
                         }
                     }
                 });
+            },
+            setHeaderMenuOpen(isOpen) {
+                elements.headerSubmenu.classList.toggle('hidden', !isOpen);
+                elements.headerMenuBtn.setAttribute('aria-expanded', String(isOpen));
+                if (isOpen) {
+                    elements.headerMenuNewChatBtn.focus();
+                }
+            },
+            toggleHeaderMenu() {
+                this.setHeaderMenuOpen(elements.headerSubmenu.classList.contains('hidden'));
             },
             updateProviderToggleButtons() {
                 const providerMap = {

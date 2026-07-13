@@ -42,10 +42,6 @@
             --bg-cascade-delete-button: var(--bg-button-delete);
             --bg-cascade-delete-button-hover: var(--bg-button-delete-hover);
             --text-cascade-indicator: var(--text-secondary);
-            --bg-button-header-delete: #e53935;
-            --bg-button-header-delete-hover: #c62828;
-            --bg-button-header-copy: #e91e63;
-            --bg-button-header-copy-hover: #c2185b;
             --bg-code-copy-button: var(--bg-button-action);
             --bg-code-copy-button-hover: var(--bg-button-action-hover);
             --text-code-copy-button: var(--text-light);
@@ -172,10 +168,6 @@
             --bg-cascade-delete-button: var(--bg-button-delete);
             --bg-cascade-delete-button-hover: var(--bg-button-delete-hover);
             --text-cascade-indicator: var(--text-secondary);
-            --bg-button-header-delete: var(--bg-button-delete);
-            --bg-button-header-delete-hover: var(--bg-button-delete-hover);
-            --bg-button-header-copy: var(--bg-button-copy);
-            --bg-button-header-copy-hover: var(--bg-button-copy-hover);
             --bg-code-copy-button: var(--bg-button-action);
             --bg-code-copy-button-hover: var(--bg-button-action-hover);
             --text-code-copy-button: var(--text-light);
@@ -257,10 +249,6 @@
             --bg-cascade-delete-button: var(--bg-button-delete);
             --bg-cascade-delete-button-hover: var(--bg-button-delete-hover);
             --text-cascade-indicator: var(--text-secondary);
-            --bg-button-header-delete: var(--bg-button-delete);
-            --bg-button-header-delete-hover: var(--bg-button-delete-hover);
-            --bg-button-header-copy: var(--bg-button-copy);
-            --bg-button-header-copy-hover: var(--bg-button-copy-hover);
             --bg-code-copy-button: var(--bg-button-action);
             --bg-code-copy-button-hover: var(--bg-button-action-hover);
             --text-code-copy-button: var(--text-light);
@@ -359,10 +347,6 @@
             --bg-cascade-delete-button: var(--bg-button-delete);
             --bg-cascade-delete-button-hover: var(--bg-button-delete-hover);
             --text-cascade-indicator: var(--text-secondary);
-            --bg-button-header-delete: var(--bg-button-delete);
-            --bg-button-header-delete-hover: var(--bg-button-delete-hover);
-            --bg-button-header-copy: var(--bg-button-copy);
-            --bg-button-header-copy-hover: var(--bg-button-copy-hover);
             --bg-code-copy-button: var(--bg-button-action);
             --bg-code-copy-button-hover: var(--bg-button-action-hover);
             --text-code-copy-button: var(--text-light);
@@ -461,10 +445,6 @@
             --bg-cascade-delete-button: var(--bg-button-delete);
             --bg-cascade-delete-button-hover: var(--bg-button-delete-hover);
             --text-cascade-indicator: var(--text-secondary);
-            --bg-button-header-delete: var(--bg-button-delete);
-            --bg-button-header-delete-hover: var(--bg-button-delete-hover);
-            --bg-button-header-copy: var(--bg-button-copy);
-            --bg-button-header-copy-hover: var(--bg-button-copy-hover);
             --bg-code-copy-button: var(--bg-button-action);
             --bg-code-copy-button-hover: var(--bg-button-action-hover);
             --text-code-copy-button: var(--text-light);
@@ -547,10 +527,6 @@
             --bg-cascade-delete-button: var(--bg-button-delete);
             --bg-cascade-delete-button-hover: var(--bg-button-delete-hover);
             --text-cascade-indicator: var(--text-secondary);
-            --bg-button-header-delete: var(--bg-button-delete);
-            --bg-button-header-delete-hover: var(--bg-button-delete-hover);
-            --bg-button-header-copy: var(--bg-button-copy);
-            --bg-button-header-copy-hover: var(--bg-button-copy-hover);
             --bg-code-copy-button: var(--bg-button-action);
             --bg-code-copy-button-hover: var(--bg-button-action-hover);
             --text-code-copy-button: var(--text-light);
@@ -658,10 +634,6 @@
             --bg-cascade-delete-button: var(--bg-button-delete);
             --bg-cascade-delete-button-hover: var(--bg-button-delete-hover);
             --text-cascade-indicator: var(--text-secondary);
-            --bg-button-header-delete: var(--bg-button-delete);
-            --bg-button-header-delete-hover: var(--bg-button-delete-hover);
-            --bg-button-header-copy: var(--bg-button-copy);
-            --bg-button-header-copy-hover: var(--bg-button-copy-hover);
 
             --bg-dialog-file-item: var(--bg-tertiary);
             --border-dialog-file-item: var(--border-secondary);
@@ -1077,69 +1049,62 @@
             color: #424242;
         }
 
-        body.pastel-yellow-mode .new-chat-button,
-        body.pastel-yellow-mode .app-header .action-button-in-header,
+        body.pastel-yellow-mode .header-submenu,
         body.pastel-yellow-mode .header-save-button {
             color: #424242;
         }
 
         body.pastel-rainbow-mode .header-button,
         body.pastel-rainbow-mode .header-notice,
-        body.pastel-rainbow-mode .new-chat-button,
-        body.pastel-rainbow-mode .app-header .action-button-in-header,
         body.pastel-rainbow-mode .header-save-button {
             color: var(--text-light);
         }
 
-        .new-chat-button {
-            font-size: 14px;
-            padding: 5px 10px;
-            background-color: var(--bg-button-save);
-            color: var(--text-light);
-            flex-shrink: 0;
-            border-radius: 5px;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.2s ease, padding 0.2s ease, font-size 0.2s ease, height 0.2s ease;
-        }
-
-        .new-chat-button:hover {
-            background-color: var(--bg-button-save-hover);
-        }
-
-        body.dark-mode .new-chat-button {
-            background-color: var(--bg-button-save);
-        }
-
-        body.dark-mode .new-chat-button:hover {
-            background-color: var(--bg-button-save-hover);
-        }
-
-        .app-header .action-button-in-header {
-            padding: 5px 10px;
-            font-size: 14px;
-            color: var(--text-light);
-            border-radius: 5px;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.2s ease, padding 0.2s ease, font-size 0.2s ease, height 0.2s ease;
+        .header-menu-container {
+            position: relative;
             flex-shrink: 0;
         }
 
-        .app-header #delete-session-btn {
-            background-color: var(--bg-button-header-delete);
+        .header-menu-button[aria-expanded="true"] {
+            background-color: rgba(255, 255, 255, 0.16);
+            border-radius: 5px;
         }
 
-        .app-header #delete-session-btn:hover:not(:disabled) {
-            background-color: var(--bg-button-header-delete-hover);
+        .header-submenu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            z-index: 100;
+            display: grid;
+            min-width: 168px;
+            padding: 6px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            box-shadow: 0 8px 24px var(--shadow-secondary);
         }
 
-        .app-header #copy-session-btn {
-            background-color: var(--bg-button-header-copy);
+        .header-submenu button {
+            width: 100%;
+            padding: 10px 12px;
+            border: 0;
+            border-radius: 5px;
+            background: transparent;
+            color: var(--text-primary);
+            font-size: 14px;
+            line-height: 1.3;
+            text-align: left;
+            white-space: nowrap;
         }
 
-        .app-header #copy-session-btn:hover:not(:disabled) {
-            background-color: var(--bg-button-header-copy-hover);
+        .header-submenu button:hover:not(:disabled),
+        .header-submenu button:focus-visible {
+            background: var(--bg-button-hover);
+            outline: none;
+        }
+
+        .header-submenu .danger-menu-item {
+            color: var(--text-error);
         }
 
         .main-content {
@@ -3321,8 +3286,6 @@
         }
 
         .app-container.minimized-ui .header-button,
-        .app-container.minimized-ui .new-chat-button,
-        .app-container.minimized-ui .app-header .action-button-in-header,
         .app-container.minimized-ui .header-save-button {
             padding: 2px 6px;
             font-size: 13px;

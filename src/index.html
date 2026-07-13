@@ -20,13 +20,19 @@
 
         <div id="chat-screen" class="screen active">
             <header class="app-header">
-                                <button id="goto-history-btn" class="header-button" aria-label="履歴一覧へ">☰</button>
+                <button id="goto-history-btn" class="header-button" aria-label="履歴一覧へ" title="履歴一覧へ">履</button>
                 <h1 id="chat-title">新規チャット</h1>
                 <div style="flex-grow: 1;"></div>
-                <button id="new-chat-btn" class="new-chat-button" title="新規チャットを開始">新</button>
-
-                <button id="delete-session-btn" class="action-button-in-header" title="現在のチャットを削除">削</button>
-                <button id="copy-session-btn" class="action-button-in-header" title="チャット全体をコピー">コ</button>
+                <div id="header-menu-container" class="header-menu-container">
+                    <button id="header-menu-btn" class="header-button header-menu-button" type="button"
+                        aria-label="チャットメニュー" aria-haspopup="menu" aria-expanded="false"
+                        aria-controls="header-submenu" title="チャットメニュー">☰</button>
+                    <div id="header-submenu" class="header-submenu hidden" role="menu">
+                        <button id="header-menu-new-chat-btn" type="button" role="menuitem">新規チャット</button>
+                        <button id="header-menu-clear-btn" type="button" role="menuitem" class="danger-menu-item">全削除</button>
+                        <button id="header-menu-copy-btn" type="button" role="menuitem">全コピー</button>
+                    </div>
+                </div>
                 <button id="header-api-provider-toggle-btn" class="header-button api-provider-toggle-btn"
                     title="APIプロバイダー切替"></button>
                 <button id="header-cycle-api-key-btn" class="header-button api-provider-toggle-btn" title="APIキー切替" style="font-weight: bold;"></button>
@@ -1638,16 +1644,8 @@
                                             </label>
                                             <hr style="margin: 10px 0; border-top: 1px solid var(--border-tertiary);">
                                             <label class="checkbox-label">
-                                                <input type="checkbox" id="show-new-chat-button-toggle">
-                                                「新規」ボタンを表示する（「新」ボタン）
-                                            </label>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="show-delete-session-button-toggle">
-                                                「全削除」ボタンを表示する（「削」ボタン）
-                                            </label>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="show-copy-session-button-toggle">
-                                                「全コピー」ボタンを表示する（「コ」ボタン）
+                                                <input type="checkbox" id="show-header-menu-button-toggle">
+                                                ハンバーガーメニューボタンを表示する
                                             </label>
                                             <hr style="margin: 10px 0; border-top: 1px solid var(--border-tertiary);">
                                             <label class="checkbox-label">

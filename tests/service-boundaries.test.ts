@@ -67,7 +67,7 @@ describe('application service boundaries', () => {
   it.each([
     [
       'uiUtils',
-      64,
+      66,
       [
         'ui-message-rendering',
         'ui-message-tools',

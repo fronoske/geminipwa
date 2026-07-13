@@ -670,9 +670,7 @@ newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.che
 
 
                 newSettings.showChatTitle = elements.showChatTitleToggle.checked;
-                newSettings.showNewChatButton = elements.showNewChatButtonToggle.checked;
-                newSettings.showDeleteSessionButton = elements.showDeleteSessionButtonToggle.checked;
-                newSettings.showCopySessionButton = elements.showCopySessionButtonToggle.checked;
+                newSettings.showHeaderMenuButton = elements.showHeaderMenuButtonToggle.checked;
                 newSettings.showScrollToTopButton = elements.showScrollToTopButtonToggle.checked;
                 newSettings.showScrollToBottomButton = elements.showScrollToBottomButtonToggle.checked;
                 newSettings.showToggleAllContentButton = elements.showToggleAllContentButtonToggle.checked;
