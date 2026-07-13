@@ -170,72 +170,6 @@ _setupParamSlider(paramId, defaultValue, storageKey) {
                 });
             });
         },
-
-
-            async sendWebhookNotification(responseMessage) {
-                if (!state.settings.enableWebhookNotification || !state.settings.webhooks || state.settings.webhooks.length === 0) {
-                    return;
-                }
-
-                const enabledWebhooks = state.settings.webhooks.filter(w => w.enabled && w.url && w.url.trim());
-                if (enabledWebhooks.length === 0) {
-                    return;
-                }
-
-                const promises = enabledWebhooks.map(webhook => {
-                    return (async () => {
-                        try {
-                            new URL(webhook.url);
-                        } catch (e) {
-                            console.error(`Webhook送信失敗 (無効なURL: ${webhook.label}):`, webhook.url);
-                            return;
-                        }
-
-                        const format = webhook.format || 'json';
-                        let body;
-                        let headers;
-
-                        if (format === 'text') {
-                            body = responseMessage.content;
-                            headers = { 'Content-Type': 'text/plain' };
-                        } else {
-                            const payload = {
-                                type: "ai_response",
-                                timestamp: new Date().toISOString(),
-                                sessionId: state.currentChatId,
-                                sessionTitle: elements.chatTitle.textContent.replace(/^: /, ''),
-                                content: responseMessage.content,
-                                provider: responseMessage.generatedByApiProvider,
-                                webhookLabel: webhook.label
-                            };
-                            body = JSON.stringify(payload);
-                            headers = { 'Content-Type': 'application/json' };
-                        }
-
-                        const fetchOptions = {
-                            method: 'POST',
-                            headers: headers,
-                            body: body,
-                            mode: 'cors'
-                        };
-
-                        if (format === 'json') {
-                            fetchOptions.mode = 'no-cors';
-                        }
-
-                        try {
-                            const response = await fetch(webhook.url, fetchOptions);
-                            if (fetchOptions.mode === 'cors' && !response.ok) {
-                                console.error(`Webhook送信失敗 (${webhook.label}): サーバーがエラーステータス ${response.status} を返しました`);
-                            }
-                        } catch (error) {
-                            console.error(`Webhook送信中にネットワークエラー (${webhook.label}):`, error);
-                        }
-                    })();
-                });
-
-                await Promise.allSettled(promises);
-            },
             async initializeApp() {
                 try {
                     if (typeof marked !== 'undefined') {
@@ -287,7 +221,6 @@ _setupParamSlider(paramId, defaultValue, storageKey) {
                     state.currentScreen = 'chat';
 
                     updateMessageMaxWidthVar();
-                    webhookUtils.initialize();
                     const deleteConfirmCheckboxes = document.querySelectorAll('.js-disable-delete-api-key-confirmation-toggle');
             deleteConfirmCheckboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', (event) => {

@@ -160,6 +160,21 @@
                             </label>
                         </div>
                     </details>
+                    <details id="settings-group-common-dummy-user-prompt" style="margin-top:10px;">
+                        <summary
+                            style="font-size: 14px; color: var(--text-link); padding-bottom: 5px; margin-bottom: 10px; display: list-item; list-style: revert; cursor:pointer; font-weight: normal;">
+                            共通Dummy Userプロンプト設定</summary>
+                        <div style="padding-top:10px; padding-left:15px;">
+                            <label for="common-dummy-user">共通Dummy Userプロンプト (全API共通):</label>
+                            <textarea id="common-dummy-user"
+                                placeholder="API送信直前にuserロールとして履歴末尾へ一時的に追加されます"
+                                aria-label="共通Dummy Userプロンプト"></textarea>
+                            <label class="checkbox-label" style="margin-top: -5px; margin-bottom: 15px;">
+                                <input type="checkbox" id="enable-common-dummy-user">
+                                この共通Dummy Userプロンプトを有効にする
+                            </label>
+                        </div>
+                    </details>
                     <details id="api-provider-cycle-settings-group" style="margin-top: 10px;">
                         <summary
                             style="font-size: 14px; color: var(--text-link); padding-bottom: 5px; margin-bottom: 10px; display: list-item; list-style: revert; cursor:pointer; font-weight: normal;">
@@ -816,8 +831,7 @@
                                 </label>
                                 <p
                                     style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                                    ※ 一部のモデルでのみ利用可能。チェック時、モデルは内部思考を生成します。<br>
-                                    ※ ダミーModelプロンプトとは併用不可。
+                                    ※ 一部のモデルでのみ利用可能。チェック時、モデルは内部思考を生成します。
                                 </p>
                                 <div class="param-slider-container">
                                     <label for="claude-thinking-budget">Thinking Budget (トークン数):</label>
@@ -1254,30 +1268,6 @@
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
                         アドバンスド (Gemini)</summary>
                     <div style="margin-top:15px;">
-                        <label for="gemini-dummy-user">ダミー User プロンプト (送信時のみ追加):</label>
-                        <textarea id="gemini-dummy-user" placeholder="API送信直前に user ロールとして履歴末尾に追加されます"
-                            aria-label="Gemini ダミー User プロンプト"></textarea>
-                        <label class="checkbox-label" style="margin-top: -5px; margin-bottom: 15px;">
-                            <input type="checkbox" id="gemini-enable-dummy-user">
-                            このダミーUserプロンプトを有効にする
-                        </label>
-
-                        <label for="gemini-dummy-model">ダミー Model プロンプト (送信時のみ追加):</label>
-                        <textarea id="gemini-dummy-model" placeholder="API送信直前に model ロールとして履歴最末尾に追加されます"
-                            aria-label="Gemini ダミー Model プロンプト"></textarea>
-                        <label class="checkbox-label" style="margin-top: -5px;">
-                            <input type="checkbox" id="gemini-enable-dummy-model">
-                            このダミーModelプロンプトを有効にする
-                        </label>
-                        <label class="checkbox-label" style="margin-top: -5px; margin-bottom: 15px;">
-                            <input type="checkbox" id="gemini-concat-dummy-model">
-                            ダミーモデルと回答を連結
-                        </label>
-                        <p
-                            style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                            ※チェック時、モデル応答の先頭に上記ダミーModelの内容を付与。
-                        </p>
-                        <hr style="margin: 15px 0;">
                         <label class="checkbox-label">
                             <input type="checkbox" id="gemini-streaming-output">
                             ストリーミング出力を使用する
@@ -1307,30 +1297,6 @@
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
                         アドバンスド (DeepSeek)</summary>
                     <div style="margin-top:15px;">
-                        <label for="deepseek-dummy-user">ダミー User プロンプト (送信時のみ追加):</label>
-                        <textarea id="deepseek-dummy-user" placeholder="API送信直前に user ロールとして履歴末尾に追加されます"
-                            aria-label="DeepSeek ダミー User プロンプト"></textarea>
-                        <label class="checkbox-label" style="margin-top: -5px; margin-bottom: 15px;">
-                            <input type="checkbox" id="deepseek-enable-dummy-user">
-                            このダミーUserプロンプトを有効にする
-                        </label>
-
-                        <label for="deepseek-dummy-model">ダミー Model プロンプト (送信時のみ追加):</label>
-                        <textarea id="deepseek-dummy-model" placeholder="API送信直前に model ロールとして履歴最末尾に追加されます"
-                            aria-label="DeepSeek ダミー Model プロンプト"></textarea>
-                        <label class="checkbox-label" style="margin-top: -5px;">
-                            <input type="checkbox" id="deepseek-enable-dummy-model">
-                            このダミーModelプロンプトを有効にする
-                        </label>
-                        <label class="checkbox-label" style="margin-top: -5px; margin-bottom: 15px;">
-                            <input type="checkbox" id="deepseek-concat-dummy-model">
-                            ダミーモデルと回答を連結
-                        </label>
-                        <p
-                            style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                            ※チェック時、モデル応答の先頭に上記ダミーModelの内容を付与。
-                        </p>
-                        <hr style="margin: 15px 0;">
                         <label class="checkbox-label">
                             <input type="checkbox" id="deepseek-streaming-output">
                             ストリーミング出力を使用する
@@ -1347,30 +1313,6 @@
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
                         アドバンスド (Claude)</summary>
                     <div style="margin-top:15px;">
-                        <label for="claude-dummy-user">ダミー User プロンプト (送信時のみ追加):</label>
-                        <textarea id="claude-dummy-user" placeholder="API送信直前に user ロールとして履歴末尾に追加されます"
-                            aria-label="Claude ダミー User プロンプト"></textarea>
-                        <label class="checkbox-label" style="margin-top: -5px; margin-bottom: 15px;">
-                            <input type="checkbox" id="claude-enable-dummy-user">
-                            このダミーUserプロンプトを有効にする
-                        </label>
-
-                        <label for="claude-dummy-model">ダミー Model プロンプト (送信時のみ追加):</label>
-                        <textarea id="claude-dummy-model" placeholder="API送信直前に model ロールとして履歴最末尾に追加されます"
-                            aria-label="Claude ダミー Model プロンプト"></textarea>
-                        <label class="checkbox-label" style="margin-top: -5px;">
-                            <input type="checkbox" id="claude-enable-dummy-model">
-                            このダミーModelプロンプトを有効にする
-                        </label>
-                        <label class="checkbox-label" style="margin-top: -5px; margin-bottom: 15px;">
-                            <input type="checkbox" id="claude-concat-dummy-model">
-                            ダミーモデルと回答を連結
-                        </label>
-                        <p
-                            style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                            ※チェック時、モデル応答の先頭に上記ダミーModelの内容を付与。
-                        </p>
-                        <hr style="margin: 15px 0;">
                         <label class="checkbox-label">
                             <input type="checkbox" id="claude-streaming-output">
                             ストリーミング出力を使用する
@@ -1387,30 +1329,6 @@
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
                         アドバンスド (ChatGPT)</summary>
                     <div style="margin-top:15px;">
-                        <label for="openai-dummy-user">ダミー User プロンプト (送信時のみ追加):</label>
-                        <textarea id="openai-dummy-user" placeholder="API送信直前に user ロールとして履歴末尾に追加されます"
-                            aria-label="OpenAI ダミー User プロンプト"></textarea>
-                        <label class="checkbox-label" style="margin-top: -5px; margin-bottom: 15px;">
-                            <input type="checkbox" id="openai-enable-dummy-user">
-                            このダミーUserプロンプトを有効にする
-                        </label>
-
-                        <label for="openai-dummy-model">ダミー Model プロンプト (送信時のみ追加):</label>
-                        <textarea id="openai-dummy-model" placeholder="API送信直前に model ロールとして履歴最末尾に追加されます"
-                            aria-label="OpenAI ダミー Model プロンプト"></textarea>
-                        <label class="checkbox-label" style="margin-top: -5px;">
-                            <input type="checkbox" id="openai-enable-dummy-model">
-                            このダミーModelプロンプトを有効にする
-                        </label>
-                        <label class="checkbox-label" style="margin-top: -5px; margin-bottom: 15px;">
-                            <input type="checkbox" id="openai-concat-dummy-model">
-                            ダミーモデルと回答を連結
-                        </label>
-                        <p
-                            style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                            ※チェック時、モデル応答の先頭に上記ダミーModelの内容を付与。
-                        </p>
-                        <hr style="margin: 15px 0;">
                         <label class="checkbox-label">
                             <input type="checkbox" id="openai-streaming-output">
                             ストリーミング出力を使用する
@@ -1426,31 +1344,6 @@
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
                         アドバンスド (xAI)</summary>
                     <div style="margin-top:15px;">
-                        <label for="xai-dummy-user">ダミー User プロンプト (送信時のみ追加):</label>
-                        <textarea id="xai-dummy-user" placeholder="API送信直前に user ロールとして履歴末尾に追加されます"
-                            aria-label="xAI ダミー User プロンプト"></textarea>
-                        <label class="checkbox-label" style="margin-top: -5px; margin-bottom: 15px;">
-                            <input type="checkbox" id="xai-enable-dummy-user">
-                            このダミーUserプロンプトを有効にする
-                        </label>
-
-                        <label for="xai-dummy-model">ダミー Model プロンプト (送信時のみ追加):</label>
-                        <textarea id="xai-dummy-model" placeholder="API送信直前に model ロールとして履歴最末尾に追加されます"
-                            aria-label="xAI ダミー Model プロンプト"></textarea>
-                        <label class="checkbox-label" style="margin-top: -5px;">
-                            <input type="checkbox" id="xai-enable-dummy-model">
-                            このダミーModelプロンプトを有効にする
-                        </label>
-                        <label class="checkbox-label" style="margin-top: -5px; margin-bottom: 15px;">
-                            <input type="checkbox" id="xai-concat-dummy-model">
-                            ダミーモデルと回答を連結
-                        </label>
-                        <p
-                            style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                            ※チェック時、モデル応答の先頭に上記ダミーModelの内容を付与。
-                        </p>
-
-                        <hr style="margin: 15px 0;">
                         <label class="checkbox-label" style="margin-top: 15px;">
                             <input type="checkbox" id="xai-vision-enable">
                             Vision (画像入力) を有効にする
@@ -1474,30 +1367,6 @@
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
                         アドバンスド (LLM Aggregator)</summary>
                     <div style="margin-top:15px;">
-                        <label for="llmaggregator-dummy-user">ダミー User プロンプト (送信時のみ追加):</label>
-                        <textarea id="llmaggregator-dummy-user" placeholder="API送信直前に user ロールとして履歴末尾に追加されます"
-                            aria-label="LLM Aggregator ダミー User プロンプト"></textarea>
-                        <label class="checkbox-label" style="margin-top: -5px; margin-bottom: 15px;">
-                            <input type="checkbox" id="llmaggregator-enable-dummy-user">
-                            このダミーUserプロンプトを有効にする
-                        </label>
-
-                        <label for="llmaggregator-dummy-model">ダミー Model プロンプト (送信時のみ追加):</label>
-                        <textarea id="llmaggregator-dummy-model" placeholder="API送信直前に model ロールとして履歴最末尾に追加されます"
-                            aria-label="LLM Aggregator ダミー Model プロンプト"></textarea>
-                        <label class="checkbox-label" style="margin-top: -5px;">
-                            <input type="checkbox" id="llmaggregator-enable-dummy-model">
-                            このダミーModelプロンプトを有効にする
-                        </label>
-                        <label class="checkbox-label" style="margin-top: -5px; margin-bottom: 15px;">
-                            <input type="checkbox" id="llmaggregator-concat-dummy-model">
-                            ダミーモデルと回答を連結
-                        </label>
-                        <p
-                            style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                            ※チェック時、モデル応答の先頭に上記ダミーModelの内容を付与。
-                        </p>
-                        <hr style="margin: 15px 0;">
                         <label class="checkbox-label">
                             <input type="checkbox" id="llmaggregator-streaming-output">
                             ストリーミング出力を使用する
@@ -1710,22 +1579,6 @@
                                                 <input type="checkbox" id="add-prefix-on-import-toggle">
                                                 履歴インポート時にタイトルへ接頭辞を付与する
                                             </label>
-                                            <hr style="margin: 10px 0; border-top: 1px solid var(--border-tertiary);">
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="enable-webhook-notification-toggle">
-                                                AIの応答内容を指定URLに転送する
-                                            </label>
-                                            <div id="webhook-settings-container" class="hidden">
-                                                <div id="webhooks-list" class="api-keys-list"
-                                                    style="margin-bottom: 15px;">
-                                                </div>
-                                                <button type="button" id="add-webhook-btn"
-                                                    class="add-api-key-btn">新しいWebhookを追加</button>
-                                                <p
-                                                    style="font-size: 11px; color: var(--text-secondary); margin-top: 15px;">
-                                                    ※ AIの応答完了時に、有効化されたすべてのURLへPOSTリクエストを自動転送します。
-                                                </p>
-                                            </div>
                                             <hr style="margin: 10px 0; border-top: 1px solid var(--border-tertiary);">
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="show-multi-api-keys-toggle">

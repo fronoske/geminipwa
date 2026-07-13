@@ -700,9 +700,6 @@ Object.assign(appLogic, {
                 elements.showMultiApiKeysToggle.addEventListener('change', (e) => {
                     uiUtils.toggleMultiApiKeysVisibility(e.target.checked);
                 });
-                elements.enableWebhookNotificationToggle.addEventListener('change', (e) => {
-                    elements.webhookSettingsContainer.classList.toggle('hidden', !e.target.checked);
-                });
 const helpIcons = document.querySelectorAll('.api-key-help-icon');
 helpIcons.forEach(icon => {
     icon.addEventListener('click', () => {

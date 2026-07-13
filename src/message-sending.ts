@@ -91,9 +91,7 @@ Object.assign(appLogic, {
 
                 let contextTemperature, contextMaxTokens, contextTopP,
                     contextPresencePenalty, contextFrequencyPenalty,
-                    contextStreamingOutput, contextStreamingSpeed,
-                    contextDummyUser, contextEnableDummyUser,
-                    contextDummyModel, contextEnableDummyModel, contextConcatDummyModel;
+                    contextStreamingOutput, contextStreamingSpeed;
 
                 let contextGeminiTopK, contextGeminiThinkingBudget, contextGeminiIncludeThoughts,
                     contextGeminiPseudoStreaming, contextGeminiEnableGrounding;
@@ -117,11 +115,6 @@ Object.assign(appLogic, {
                         contextGeminiIncludeThoughts = state.settings.geminiIncludeThoughts;
                         contextStreamingOutput = state.settings.geminiStreamingOutput;
                         contextStreamingSpeed = state.settings.geminiStreamingSpeed;
-                        contextDummyUser = state.settings.geminiDummyUser;
-                        contextEnableDummyUser = state.settings.geminiEnableDummyUser;
-                        contextDummyModel = state.settings.geminiDummyModel;
-                        contextEnableDummyModel = state.settings.geminiEnableDummyModel;
-                        contextConcatDummyModel = state.settings.geminiConcatDummyModel;
                         contextGeminiPseudoStreaming = state.settings.geminiPseudoStreaming;
                         contextGeminiEnableGrounding = state.settings.geminiEnableGrounding;
                     } else if (selectedApiProvider === 'deepseek') {
@@ -133,11 +126,6 @@ Object.assign(appLogic, {
                         contextDeepSeekIncludeThoughts = state.settings.deepSeekIncludeDeepSeekThoughts;
                         contextStreamingOutput = state.settings.deepSeekStreamingOutput;
                         contextStreamingSpeed = state.settings.deepSeekStreamingSpeed;
-                        contextDummyUser = state.settings.deepSeekDummyUser;
-                        contextEnableDummyUser = state.settings.deepSeekEnableDummyUser;
-                        contextDummyModel = state.settings.deepSeekDummyModel;
-                        contextEnableDummyModel = state.settings.deepSeekEnableDummyModel;
-                        contextConcatDummyModel = state.settings.deepSeekConcatDummyModel;
                     } else if (selectedApiProvider === 'claude') {
                         contextTemperature = state.settings.claudeTemperature;
                         contextMaxTokens = state.settings.claudeMaxTokens;
@@ -145,11 +133,6 @@ Object.assign(appLogic, {
                         contextTopP = state.settings.claudeTopP;
                         contextStreamingOutput = state.settings.claudeStreamingOutput;
                         contextStreamingSpeed = state.settings.claudeStreamingSpeed;
-                        contextDummyUser = state.settings.claudeDummyUser;
-                        contextEnableDummyUser = state.settings.claudeEnableDummyUser;
-                        contextDummyModel = state.settings.claudeDummyModel;
-                        contextEnableDummyModel = state.settings.claudeEnableDummyModel;
-                        contextConcatDummyModel = state.settings.claudeConcatDummyModel;
                         contextClaudeIncludeThoughts = state.settings.claudeIncludeThoughts;
                         contextClaudeThinkingBudget = state.settings.claudeThinkingBudget;
                         contextClaudeExpandThoughtsByDefault = state.settings.claudeExpandThoughtsByDefault;
@@ -161,11 +144,6 @@ Object.assign(appLogic, {
                         contextFrequencyPenalty = state.settings.openaiFrequencyPenalty;
                         contextStreamingOutput = state.settings.openaiStreamingOutput;
                         contextStreamingSpeed = state.settings.openaiStreamingSpeed;
-                        contextDummyUser = state.settings.openaiDummyUser;
-                        contextEnableDummyUser = state.settings.openaiEnableDummyUser;
-                        contextDummyModel = state.settings.openaiDummyModel;
-                        contextEnableDummyModel = state.settings.openaiEnableDummyModel;
-                        contextConcatDummyModel = state.settings.openaiConcatDummyModel;
                     } else if (selectedApiProvider === 'xai') {
                         contextTemperature = state.settings.xaiTemperature;
                         contextMaxTokens = state.settings.xaiMaxTokens;
@@ -174,11 +152,6 @@ Object.assign(appLogic, {
                         contextFrequencyPenalty = state.settings.xaiFrequencyPenalty;
                         contextStreamingOutput = state.settings.xaiStreamingOutput;
                         contextStreamingSpeed = state.settings.xaiStreamingSpeed;
-                        contextDummyUser = state.settings.xaiDummyUser;
-                        contextEnableDummyUser = state.settings.xaiEnableDummyUser;
-                        contextDummyModel = state.settings.xaiDummyModel;
-                        contextEnableDummyModel = state.settings.xaiEnableDummyModel;
-                        contextConcatDummyModel = state.settings.xaiConcatDummyModel;
                         contextXaiVisionEnable = state.settings.xaiVisionEnable;
                         contextXaiIncludeThoughts = state.settings.xaiIncludeThoughts;
                         contextXaiReasoningEffort = state.settings.xaiReasoningEffort;
@@ -192,11 +165,6 @@ Object.assign(appLogic, {
                         contextDeepSeekIncludeThoughts = state.settings.llmAggregatorIncludeThoughts;
                         contextStreamingOutput = state.settings.llmAggregatorStreamingOutput;
                         contextStreamingSpeed = state.settings.llmAggregatorStreamingSpeed;
-                        contextDummyUser = state.settings.llmAggregatorDummyUser;
-                        contextEnableDummyUser = state.settings.llmAggregatorEnableDummyUser;
-                        contextDummyModel = state.settings.llmAggregatorDummyModel;
-                        contextEnableDummyModel = state.settings.llmAggregatorEnableDummyModel;
-                        contextConcatDummyModel = state.settings.llmAggregatorConcatDummyModel;
                     }
 
                 if (!apiKeyToUse) {
@@ -368,12 +336,12 @@ Object.assign(appLogic, {
                         }
                         return { role: msg.role, parts: parts.length > 0 ? parts : [{ text: '' }] };
                     });
-                const dummyUserTextToUse = contextEnableDummyUser && contextDummyUser?.trim() ? contextDummyUser.trim() : null;
-                const dummyModelTextToUse = contextEnableDummyModel && contextDummyModel?.trim() ? contextDummyModel.trim() : null;
-
-                if (dummyUserTextToUse) apiMessages.push({ role: 'user', parts: [{ text: dummyUserTextToUse }] });
-                if (dummyModelTextToUse) apiMessages.push({ role: 'model', parts: [{ text: dummyModelTextToUse }] });
-
+                const commonDummyUser = state.settings.enableCommonDummyUser
+                    ? state.settings.commonDummyUser?.trim()
+                    : '';
+                if (commonDummyUser) {
+                    apiMessages.push({ role: 'user', parts: [{ text: commonDummyUser }] });
+                }
                 const commonGenerationConfig = {};
                 if (contextTemperature !== null) commonGenerationConfig.temperature = contextTemperature;
                 if (contextMaxTokens !== null) commonGenerationConfig.maxOutputTokens = contextMaxTokens;
@@ -446,8 +414,7 @@ Object.assign(appLogic, {
                         throw new Error("不明なAPIプロバイダーが選択されています。");
                     }
 
-                    const dummyModelPrefix = (contextConcatDummyModel && dummyModelTextToUse) ? dummyModelTextToUse : '';
-                    state.partialStreamContent = dummyModelPrefix;
+                    state.partialStreamContent = '';
                     state.partialThoughtStreamContent = '';
 
                     if (useStreamingForThisCall) {
@@ -729,7 +696,7 @@ Object.assign(appLogic, {
                             }
                             if (!rawContentFromApi && finalMetadata.finishReason === 'stop') rawContentFromApi = "(応答が空です)";
                         }
-                        finalContent = dummyModelPrefix + rawContentFromApi;
+                        finalContent = rawContentFromApi;
                     }
 
 
@@ -783,10 +750,6 @@ uiUtils.renderChatMessages(shouldMaintainScroll);
                             }
                             await dbUtils.saveChat();
 
-                            const lastMessage = state.currentMessages[state.currentMessages.length - 1];
-                            if (lastMessage && lastMessage.role === 'model') {
-                                this.sendWebhookNotification(lastMessage).catch(console.error);
-                            }
                         }
                     } else {
                         if (useStreamingForThisCall && modelMessageObjectForStream) {

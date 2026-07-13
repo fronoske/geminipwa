@@ -17,3 +17,22 @@ The following features are essential product requirements. They must not be remo
 - Preserve the `続` preset, including automatic submission of `（続けて）`.
 - Preserve the `展` preset and its editable cursor placement for `（【今後の展開】）`.
 
+### Common Dummy User prompt
+
+- Preserve one shared Dummy User prompt for all API providers.
+- Preserve its enabled state and append it only to the API request, without adding it to persisted chat history.
+
+### Memo and clipboard stack
+
+- Preserve the independent memo panel and its copy, paste, and clear actions.
+- Preserve the clipboard stack and its integration with message copy actions.
+
+### Response branching
+
+- Preserve sibling responses created by retrying a message.
+- Preserve selection, navigation, deletion, persistence, and export behavior for branched responses.
+
+### Streaming output
+
+- Preserve provider-specific streaming output and character display speed settings.
+- Preserve Gemini pseudo-streaming.

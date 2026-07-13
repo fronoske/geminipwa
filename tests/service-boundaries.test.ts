@@ -9,7 +9,6 @@ const readFile = (filename: string): string =>
 const readRuntime = (name: string): string => readFile(`.build/runtime/${name}.js`);
 
 const serviceBoundaries = [
-  ['webhook-manager', 'webhookUtils'],
   ['api-clients', 'apiUtils'],
   ['backend-manager', 'multiBackendUtils'],
   ['error-recovery', 'errorRecovery'],
@@ -79,7 +78,7 @@ describe('application service boundaries', () => {
     ],
     [
       'appLogic',
-      73,
+      72,
       [
         'app-initialization',
         'event-wiring',

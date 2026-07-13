@@ -541,6 +541,8 @@ Object.assign(appLogic, {
                 newSettings.apiProvider = elements.apiProviderSelect.value;
                 newSettings.commonSystemPrompt = elements.commonSystemPromptDefaultTextarea.value.trim();
                 newSettings.enableCommonSystemPromptDefault = elements.enableCommonSystemPromptDefaultCheckbox.checked;
+                newSettings.commonDummyUser = elements.commonDummyUserInput.value.trim();
+                newSettings.enableCommonDummyUser = elements.enableCommonDummyUserCheckbox.checked;
 
                 newSettings.modelName = elements.geminiModelNameSelect.value;
                 newSettings.additionalModels = elements.geminiAdditionalModelsTextarea.value.trim();
@@ -560,11 +562,6 @@ Object.assign(appLogic, {
                 newSettings.geminiExpandThoughtsByDefault = elements.geminiExpandThoughtsByDefaultToggle.checked;
                 newSettings.geminiStreamingOutput = elements.geminiStreamingOutputCheckbox.checked;
                 newSettings.geminiStreamingSpeed = elements.geminiStreamingSpeedInput.value === '' ? DEFAULT_STREAMING_SPEED : parseInt(elements.geminiStreamingSpeedInput.value, 10);
-                newSettings.geminiDummyUser = elements.geminiDummyUserInput.value.trim();
-                newSettings.geminiEnableDummyUser = elements.geminiEnableDummyUserCheckbox.checked;
-                newSettings.geminiDummyModel = elements.geminiDummyModelInput.value.trim();
-                newSettings.geminiEnableDummyModel = elements.geminiEnableDummyModelCheckbox.checked;
-                newSettings.geminiConcatDummyModel = elements.geminiConcatDummyModelCheckbox.checked;
                 newSettings.geminiPseudoStreaming = elements.geminiPseudoStreamingCheckbox.checked;
                 newSettings.geminiEnableGrounding = elements.geminiEnableGroundingToggle.checked;
 
@@ -582,11 +579,6 @@ newSettings.deepSeekModelName = elements.deepSeekModelNameSelect.value;
                 newSettings.deepSeekExpandThoughtsByDefault = elements.deepSeekExpandThoughtsByDefaultToggle.checked;
                 newSettings.deepSeekStreamingOutput = elements.deepSeekStreamingOutputCheckbox.checked;
                 newSettings.deepSeekStreamingSpeed = elements.deepSeekStreamingSpeedInput.value === '' ? DEFAULT_STREAMING_SPEED : parseInt(elements.deepSeekStreamingSpeedInput.value, 10);
-                newSettings.deepSeekDummyUser = elements.deepSeekDummyUserInput.value.trim();
-                newSettings.deepSeekEnableDummyUser = elements.deepSeekEnableDummyUserCheckbox.checked;
-                newSettings.deepSeekDummyModel = elements.deepSeekDummyModelInput.value.trim();
-                newSettings.deepSeekEnableDummyModel = elements.deepSeekEnableDummyModelCheckbox.checked;
-                newSettings.deepSeekConcatDummyModel = elements.deepSeekConcatDummyModelCheckbox.checked;
 
                 newSettings.claudeModelName = elements.claudeModelNameSelect.value;
                 newSettings.claudeAdditionalModels = elements.claudeAdditionalModelsTextarea.value.trim();
@@ -601,11 +593,6 @@ newSettings.deepSeekModelName = elements.deepSeekModelNameSelect.value;
                 newSettings.claudeExpandThoughtsByDefault = elements.claudeExpandThoughtsByDefaultToggle.checked;
                 newSettings.claudeStreamingOutput = elements.claudeStreamingOutputCheckbox.checked;
                 newSettings.claudeStreamingSpeed = elements.claudeStreamingSpeedInput.value === '' ? DEFAULT_STREAMING_SPEED : parseInt(elements.claudeStreamingSpeedInput.value, 10);
-                newSettings.claudeDummyUser = elements.claudeDummyUserInput.value.trim();
-                newSettings.claudeEnableDummyUser = elements.claudeEnableDummyUserCheckbox.checked;
-                newSettings.claudeDummyModel = elements.claudeDummyModelInput.value.trim();
-                newSettings.claudeEnableDummyModel = elements.claudeEnableDummyModelCheckbox.checked;
-                newSettings.claudeConcatDummyModel = elements.claudeConcatDummyModelCheckbox.checked;
 
                 newSettings.openaiModelName = elements.openaiModelNameSelect.value;
                 newSettings.openaiAdditionalModels = elements.openaiAdditionalModelsTextarea.value.trim();
@@ -618,11 +605,6 @@ newSettings.deepSeekModelName = elements.deepSeekModelNameSelect.value;
                 newSettings.openaiFrequencyPenalty = getParamValue('openai-frequency-penalty', false, -2.0, 2.0);
                 newSettings.openaiStreamingOutput = elements.openaiStreamingOutputCheckbox.checked;
                 newSettings.openaiStreamingSpeed = elements.openaiStreamingSpeedInput.value === '' ? DEFAULT_STREAMING_SPEED : parseInt(elements.openaiStreamingSpeedInput.value, 10);
-                newSettings.openaiDummyUser = elements.openaiDummyUserInput.value.trim();
-                newSettings.openaiEnableDummyUser = elements.openaiEnableDummyUserCheckbox.checked;
-                newSettings.openaiDummyModel = elements.openaiDummyModelInput.value.trim();
-                newSettings.openaiEnableDummyModel = elements.openaiEnableDummyModelCheckbox.checked;
-                newSettings.openaiConcatDummyModel = elements.openaiConcatDummyModelCheckbox.checked;
 
                 newSettings.xaiModelName = elements.xaiModelNameSelect.value;
                 newSettings.xaiAdditionalModels = elements.xaiAdditionalModelsTextarea.value.trim();
@@ -638,11 +620,6 @@ newSettings.deepSeekModelName = elements.deepSeekModelNameSelect.value;
                 newSettings.xaiReasoningEffort = elements.xaiReasoningEffortSelect.value;
                 newSettings.xaiStreamingOutput = elements.xaiStreamingOutputCheckbox.checked;
                 newSettings.xaiStreamingSpeed = elements.xaiStreamingSpeedInput.value === '' ? DEFAULT_STREAMING_SPEED : parseInt(elements.xaiStreamingSpeedInput.value, 10);
-                newSettings.xaiDummyUser = elements.xaiDummyUserInput.value.trim();
-                newSettings.xaiEnableDummyUser = elements.xaiEnableDummyUserCheckbox.checked;
-                newSettings.xaiDummyModel = elements.xaiDummyModelInput.value.trim();
-                newSettings.xaiEnableDummyModel = elements.xaiEnableDummyModelCheckbox.checked;
-                newSettings.xaiConcatDummyModel = elements.xaiConcatDummyModelCheckbox.checked;
                 newSettings.xaiVisionEnable = elements.xaiVisionEnableCheckbox.checked;
 
                 newSettings.llmAggregatorApiBackend = elements.llmAggregatorApiBackendInput.value.trim();
@@ -660,11 +637,6 @@ newSettings.deepSeekModelName = elements.deepSeekModelNameSelect.value;
                 newSettings.llmAggregatorExpandThoughtsByDefault = elements.llmAggregatorExpandThoughtsByDefaultToggle.checked;
                 newSettings.llmAggregatorStreamingOutput = elements.llmAggregatorStreamingOutputCheckbox.checked;
                 newSettings.llmAggregatorStreamingSpeed = elements.llmAggregatorStreamingSpeedInput.value === '' ? DEFAULT_STREAMING_SPEED : parseInt(elements.llmAggregatorStreamingSpeedInput.value, 10);
-                newSettings.llmAggregatorDummyUser = elements.llmAggregatorDummyUserInput.value.trim();
-                newSettings.llmAggregatorEnableDummyUser = elements.llmAggregatorEnableDummyUserCheckbox.checked;
-                newSettings.llmAggregatorDummyModel = elements.llmAggregatorDummyModelInput.value.trim();
-                newSettings.llmAggregatorEnableDummyModel = elements.llmAggregatorEnableDummyModelCheckbox.checked;
-                newSettings.llmAggregatorConcatDummyModel = elements.llmAggregatorConcatDummyModelCheckbox.checked;
 
 newSettings.llmAggregatorAdditionalModels = elements.llmAggregatorAdditionalModelsTextarea.value.trim();
                 newSettings.llmAggregatorApiBackend = elements.llmAggregatorApiBackendInput.value.trim();
@@ -753,7 +725,6 @@ newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.che
                     xai: elements.apiProviderCycleXaiCheckbox.checked,
                     llmaggregator: elements.apiProviderCycleLlmAggregatorCheckbox.checked,
                 };
-                newSettings.enableWebhookNotification = elements.enableWebhookNotificationToggle.checked;
                 const firstDeleteConfirmCheckbox = document.querySelector('.js-disable-delete-api-key-confirmation-toggle');
                 if (firstDeleteConfirmCheckbox) {
                     newSettings.disableDeleteApiKeyConfirmation = firstDeleteConfirmCheckbox.checked;
@@ -771,20 +742,6 @@ newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.che
                         newSettings.apiProvider = enabledProvider;
                     }
                 }
-
-                newSettings.webhooks = state.settings.webhooks.map(webhook => {
-                    const itemElement = elements.webhooksList.querySelector(`[data-webhook-id="${webhook.id}"]`);
-                    if (itemElement) {
-                        return {
-                            ...webhook,
-                            enabled: itemElement.querySelector('input[type="checkbox"]').checked,
-                            label: itemElement.querySelector('.api-key-item-label').value.trim(),
-                            url: itemElement.querySelector('.api-key-item-input').value.trim(),
-                            format: itemElement.querySelector('select').value
-                        };
-                    }
-                    return webhook;
-                });
 
                 try {
                     const oldSortOrder = state.settings.historySortOrder;

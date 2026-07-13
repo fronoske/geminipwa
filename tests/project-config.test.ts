@@ -65,6 +65,22 @@ describe('project configuration', () => {
     expect(readFile('src/message-sending.ts')).not.toMatch(/apiProvider === 'dummy'|selectedApiProvider === 'dummy'/);
   });
 
+  it('does not ship provider-specific dummy prompts or Dummy Model prompts', () => {
+    const providerDummyPattern = /(?:gemini|deepSeek|claude|openai|xai|llmAggregator).*Dummy(?:User|Model)/i;
+    expect(readFile('src/index.html')).not.toMatch(/(?:gemini|deepseek|claude|openai|xai|llmaggregator)-dummy-(?:user|model)/i);
+    expect(readFile('src/app-state.ts')).not.toMatch(providerDummyPattern);
+    expect(readFile('src/message-sending.ts')).not.toMatch(providerDummyPattern);
+    expect(readFile('src/index.html')).not.toMatch(/Dummy Model|ダミーModel/i);
+  });
+
+  it('does not ship webhook forwarding', () => {
+    expect(runtimeManifest.application).not.toContain('webhook-manager');
+    expect(fs.existsSync(path.join(projectRoot, 'src/webhook-manager.ts'))).toBe(false);
+    expect(readFile('src/index.html')).not.toMatch(/webhook/i);
+    expect(readFile('src/app-state.ts')).not.toMatch(/webhook/i);
+    expect(readFile('src/message-sending.ts')).not.toMatch(/webhook/i);
+  });
+
   it('does not ship dice input and still preserves input presets', () => {
     expect(readFile('src/index.html')).not.toMatch(/roll-dice|dice-value|ダイスボタン/);
     expect(readFile('src/app-state.ts')).not.toMatch(/showDice|diceMin|diceMax/);
@@ -94,6 +110,44 @@ describe('project configuration', () => {
     expect(presetSource).toContain("label: '展'");
     expect(presetSource).toContain('autoSend: true');
     expect(readFile('docs/product-decisions.md')).toContain('Input presets');
+  });
+
+  it('preserves the common Dummy User prompt as a protected core feature', () => {
+    expect(readFile('src/index.html')).toContain('id="common-dummy-user"');
+    expect(readFile('src/app-state.ts')).toContain("commonDummyUser: ''");
+    const sending = readFile('src/message-sending.ts');
+    expect(sending).toContain("role: 'user', parts: [{ text: commonDummyUser }]");
+    expect(readFile('docs/product-decisions.md')).toContain('Common Dummy User prompt');
+  });
+
+  it('preserves memo and clipboard stack as protected core features', () => {
+    const html = readFile('src/index.html');
+    const panels = readFile('src/app-navigation-panels.ts');
+    expect(html).toContain('id="memo-editor"');
+    expect(html).toContain('id="clipboard-stack-editor"');
+    expect(panels).toContain('toggleMemo()');
+    expect(panels).toContain('toggleClipboardStack()');
+    expect(readFile('docs/product-decisions.md')).toContain('Memo and clipboard stack');
+  });
+
+  it('preserves response branching as a protected core feature', () => {
+    const sending = readFile('src/message-sending.ts');
+    const actions = readFile('src/message-actions.ts');
+    expect(sending).toContain('siblingGroupId');
+    expect(sending).toContain('isCascaded');
+    expect(actions).toContain('navigateCascade');
+    expect(readFile('docs/product-decisions.md')).toContain('Response branching');
+  });
+
+  it('preserves streaming output as a protected core feature', () => {
+    const html = readFile('src/index.html');
+    const sending = readFile('src/message-sending.ts');
+    expect(html).toContain('id="gemini-streaming-output"');
+    expect(html).toContain('id="gemini-streaming-speed"');
+    expect(html).toContain('id="gemini-pseudo-streaming"');
+    expect(sending).toContain('contextStreamingSpeed');
+    expect(sending).toContain('usePseudoForThisCall');
+    expect(readFile('docs/product-decisions.md')).toContain('Streaming output');
   });
 
   it('uses a relative manifest start URL suitable for GitHub Pages', () => {

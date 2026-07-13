@@ -218,6 +218,8 @@ document.body.classList.remove('dark-mode', 'light-mode-forced', 'pastel-pink-mo
                 elements.apiProviderSelect.value = state.settings.apiProvider;
                 elements.commonSystemPromptDefaultTextarea.value = state.settings.commonSystemPrompt || '';
                 elements.enableCommonSystemPromptDefaultCheckbox.checked = state.settings.enableCommonSystemPromptDefault;
+                elements.commonDummyUserInput.value = state.settings.commonDummyUser || '';
+                elements.enableCommonDummyUserCheckbox.checked = state.settings.enableCommonDummyUser;
                 elements.geminiApiKeyInput.value = state.settings.apiKey || '';
                 elements.geminiModelNameSelect.value = state.settings.modelName || DEFAULT_MODEL;
                 elements.geminiAdditionalModelsTextarea.value = state.settings.additionalModels || '';
@@ -307,11 +309,6 @@ elements.deepSeekModelNameSelect.value = state.settings.deepSeekModelName || DEF
                 elements.geminiExpandThoughtsByDefaultToggle.checked = state.settings.geminiExpandThoughtsByDefault;
                 elements.geminiStreamingOutputCheckbox.checked = state.settings.geminiStreamingOutput;
                 elements.geminiStreamingSpeedInput.value = state.settings.geminiStreamingSpeed ?? DEFAULT_STREAMING_SPEED;
-                elements.geminiDummyUserInput.value = state.settings.geminiDummyUser || '';
-                elements.geminiEnableDummyUserCheckbox.checked = state.settings.geminiEnableDummyUser;
-                elements.geminiDummyModelInput.value = state.settings.geminiDummyModel || '';
-                elements.geminiEnableDummyModelCheckbox.checked = state.settings.geminiEnableDummyModel;
-                elements.geminiConcatDummyModelCheckbox.checked = state.settings.geminiConcatDummyModel;
                 elements.geminiPseudoStreamingCheckbox.checked = state.settings.geminiPseudoStreaming;
                 elements.geminiEnableGroundingToggle.checked = state.settings.geminiEnableGrounding;
                 elements.deepSeekSystemPromptDefaultTextarea.value = state.settings.deepSeekSystemPrompt || '';
@@ -325,11 +322,6 @@ elements.deepSeekModelNameSelect.value = state.settings.deepSeekModelName || DEF
                 elements.deepSeekExpandThoughtsByDefaultToggle.checked = state.settings.deepSeekExpandThoughtsByDefault;
                 elements.deepSeekStreamingOutputCheckbox.checked = state.settings.deepSeekStreamingOutput;
                 elements.deepSeekStreamingSpeedInput.value = state.settings.deepSeekStreamingSpeed ?? DEFAULT_STREAMING_SPEED;
-                elements.deepSeekDummyUserInput.value = state.settings.deepSeekDummyUser || '';
-                elements.deepSeekEnableDummyUserCheckbox.checked = state.settings.deepSeekEnableDummyUser;
-                elements.deepSeekDummyModelInput.value = state.settings.deepSeekDummyModel || '';
-                elements.deepSeekEnableDummyModelCheckbox.checked = state.settings.deepSeekEnableDummyModel;
-                elements.deepSeekConcatDummyModelCheckbox.checked = state.settings.deepSeekConcatDummyModel;
 
                 elements.claudeSystemPromptDefaultTextarea.value = state.settings.claudeSystemPrompt || '';
                 elements.claudeEnableSystemPromptDefaultCheckbox.checked = state.settings.claudeEnableSystemPromptDefault;
@@ -340,11 +332,6 @@ elements.deepSeekModelNameSelect.value = state.settings.deepSeekModelName || DEF
                 setupParamUI('claude-thinking-budget', 'claudeThinkingBudgetSliderMax');
                 elements.claudeStreamingOutputCheckbox.checked = state.settings.claudeStreamingOutput;
                 elements.claudeStreamingSpeedInput.value = state.settings.claudeStreamingSpeed ?? DEFAULT_STREAMING_SPEED;
-                elements.claudeDummyUserInput.value = state.settings.claudeDummyUser || '';
-                elements.claudeEnableDummyUserCheckbox.checked = state.settings.claudeEnableDummyUser;
-                elements.claudeDummyModelInput.value = state.settings.claudeDummyModel || '';
-                elements.claudeEnableDummyModelCheckbox.checked = state.settings.claudeEnableDummyModel;
-                elements.claudeConcatDummyModelCheckbox.checked = state.settings.claudeConcatDummyModel;
                 elements.claudeIncludeThoughtsToggle.checked = state.settings.claudeIncludeThoughts;
                 elements.claudeExpandThoughtsByDefaultToggle.checked = state.settings.claudeExpandThoughtsByDefault;
                 elements.claudeThinkingBudgetInput.value = state.settings.claudeThinkingBudget === null ? '' : state.settings.claudeThinkingBudget;
@@ -358,11 +345,6 @@ elements.deepSeekModelNameSelect.value = state.settings.deepSeekModelName || DEF
                 setupParamUI('openai-frequency-penalty');
                 elements.openaiStreamingOutputCheckbox.checked = state.settings.openaiStreamingOutput;
                 elements.openaiStreamingSpeedInput.value = state.settings.openaiStreamingSpeed ?? DEFAULT_STREAMING_SPEED;
-                elements.openaiDummyUserInput.value = state.settings.openaiDummyUser || '';
-                elements.openaiEnableDummyUserCheckbox.checked = state.settings.openaiEnableDummyUser;
-                elements.openaiDummyModelInput.value = state.settings.openaiDummyModel || '';
-                elements.openaiEnableDummyModelCheckbox.checked = state.settings.openaiEnableDummyModel;
-                elements.openaiConcatDummyModelCheckbox.checked = state.settings.openaiConcatDummyModel;
 
                 elements.xaiSystemPromptDefaultTextarea.value = state.settings.xaiSystemPrompt || '';
                 elements.xaiEnableSystemPromptDefaultCheckbox.checked = state.settings.xaiEnableSystemPromptDefault;
@@ -373,11 +355,6 @@ elements.deepSeekModelNameSelect.value = state.settings.deepSeekModelName || DEF
                 setupParamUI('xai-frequency-penalty');
                 elements.xaiStreamingOutputCheckbox.checked = state.settings.xaiStreamingOutput;
                 elements.xaiStreamingSpeedInput.value = state.settings.xaiStreamingSpeed ?? DEFAULT_STREAMING_SPEED;
-                elements.xaiDummyUserInput.value = state.settings.xaiDummyUser || '';
-                elements.xaiEnableDummyUserCheckbox.checked = state.settings.xaiEnableDummyUser;
-                elements.xaiDummyModelInput.value = state.settings.xaiDummyModel || '';
-                elements.xaiEnableDummyModelCheckbox.checked = state.settings.xaiEnableDummyModel;
-                elements.xaiConcatDummyModelCheckbox.checked = state.settings.xaiConcatDummyModel;
                 elements.xaiVisionEnableCheckbox.checked = state.settings.xaiVisionEnable;
                 elements.xaiIncludeThoughtsToggle.checked = state.settings.xaiIncludeThoughts;
                 elements.xaiExpandThoughtsByDefaultToggle.checked = state.settings.xaiExpandThoughtsByDefault;
@@ -395,11 +372,6 @@ elements.deepSeekModelNameSelect.value = state.settings.deepSeekModelName || DEF
                 elements.llmAggregatorExpandThoughtsByDefaultToggle.checked = state.settings.llmAggregatorExpandThoughtsByDefault;
                 elements.llmAggregatorStreamingOutputCheckbox.checked = state.settings.llmAggregatorStreamingOutput;
                 elements.llmAggregatorStreamingSpeedInput.value = state.settings.llmAggregatorStreamingSpeed ?? DEFAULT_STREAMING_SPEED;
-                elements.llmAggregatorDummyUserInput.value = state.settings.llmAggregatorDummyUser || '';
-                elements.llmAggregatorEnableDummyUserCheckbox.checked = state.settings.llmAggregatorEnableDummyUser;
-                elements.llmAggregatorDummyModelInput.value = state.settings.llmAggregatorDummyModel || '';
-                elements.llmAggregatorEnableDummyModelCheckbox.checked = state.settings.llmAggregatorEnableDummyModel;
-                elements.llmAggregatorConcatDummyModelCheckbox.checked = state.settings.llmAggregatorConcatDummyModel;
 
                 elements.enterToSendCheckbox.checked = state.settings.enterToSend;
 elements.headerTapScrollToTopToggle.checked = state.settings.headerTapScrollToTop;
@@ -622,16 +594,5 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 elements.llmAggregatorParamsGroup.classList.toggle('hidden', !showLlmAggregator);
                 elements.llmAggregatorAdvancedGroup.classList.toggle('hidden', !showLlmAggregator);
 
-                const paramGroups = [
-                    elements.geminiParamsGroup, elements.deepseekParamsGroup, elements.claudeParamsGroup,
-                    elements.openaiParamsGroup, elements.xaiParamsGroup, elements.llmAggregatorParamsGroup,
-                    elements.geminiAdvancedGroup, elements.deepseekAdvancedGroup, elements.claudeAdvancedGroup,
-                    elements.openaiAdvancedGroup, elements.xaiAdvancedGroup, elements.llmAggregatorAdvancedGroup,
-                    elements.geminiGroundingParam
-                ];
-
-                if (showDummy) {
-                    paramGroups.forEach(group => group.classList.add('hidden'));
-                }
             },
 });

@@ -107,8 +107,15 @@ const dbUtils = {
                             }
 
                             const oldGlobalParams = ['temperature', 'maxTokens', 'topP', 'presencePenalty', 'frequencyPenalty', 'systemPrompt', 'enableSystemPromptDefault'];
-                            const oldGlobalAdvanced = ['streamingOutput', 'streamingSpeed', 'dummyUser', 'enableDummyUser', 'dummyModel', 'enableDummyModel', 'concatDummyModel'];
+                            const oldGlobalAdvanced = ['streamingOutput', 'streamingSpeed'];
                             const providerPrefixes = ['gemini', 'deepSeek', 'claude', 'openai', 'xai', 'llmaggregator'];
+
+                            if (loadedSettings.commonDummyUser === undefined && loadedSettings.dummyUser !== undefined) {
+                                loadedSettings.commonDummyUser = loadedSettings.dummyUser;
+                            }
+                            if (loadedSettings.enableCommonDummyUser === undefined && loadedSettings.enableDummyUser !== undefined) {
+                                loadedSettings.enableCommonDummyUser = loadedSettings.enableDummyUser;
+                            }
 
                             oldGlobalParams.forEach(param => {
                                 if (loadedSettings.hasOwnProperty(param)) {
@@ -164,16 +171,6 @@ const dbUtils = {
                             state.settings.llmaggregatorBackends = backends;
                             state.settings.llmaggregatorActiveBackendIndex = (backends.length > 0) ? 0 : -1;
 
-                            if (loadedSettings.webhookUrl && !loadedSettings.webhooks) {
-                                loadedSettings.webhooks = [{
-                                    id: 'migrated-' + Date.now(),
-                                    label: '以前の設定',
-                                    url: loadedSettings.webhookUrl,
-                                    enabled: loadedSettings.enableWebhookNotification,
-                                    format: loadedSettings.webhookFormat || 'json'
-                                }];
-                            }
-
                             for (const key in loadedSettings) {
                                 if (key === 'darkMode' || key === 'memoWidth' || key === 'showCollapseButtons') continue;
                                 if (key in defaultSettings) {
@@ -209,7 +206,7 @@ const dbUtils = {
 
                             const removedSettingKeys = settingsArray
                                 .map((item) => item.key)
-                                .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine|enableSessionLinking|showSessionLinkingSettings|enableCryscroller|cryscroller|enableSettingsCryscroller|enableHistoryCryscroller|enableImmersiveScrolling|enableDynamicScrollMarkerColor|enableProofreading|showProofreadingSettings|proofreading|activeProofreadingConfigId|enableImageUrlReplacement|imageUrlReplacementBase|enableAutoBaseUrlDetection|enableFuzzySearchNormalization|fuzzySearchThreshold|characterNamesList|enableRomajiToKatakanaConversion|dummyErrorDebugMode|dummyDummyModel|dummyEnableDummyModel|showDiceButton|diceMinValue|diceMaxValue|backgroundImageBlob|historyBackgroundImageBlob|settingsBackgroundImageBlob|showUserIcon|userIconBlob|showUserName|userName|showAiIcon|aiIconBlob|showAiName|aiName|iconName|messageIcon)/.test(key));
+                                .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine|enableSessionLinking|showSessionLinkingSettings|enableCryscroller|cryscroller|enableSettingsCryscroller|enableHistoryCryscroller|enableImmersiveScrolling|enableDynamicScrollMarkerColor|enableProofreading|showProofreadingSettings|proofreading|activeProofreadingConfigId|enableImageUrlReplacement|imageUrlReplacementBase|enableAutoBaseUrlDetection|enableFuzzySearchNormalization|fuzzySearchThreshold|characterNamesList|enableRomajiToKatakanaConversion|dummyErrorDebugMode|dummyDummyModel|dummyEnableDummyModel|showDiceButton|diceMinValue|diceMaxValue|backgroundImageBlob|historyBackgroundImageBlob|settingsBackgroundImageBlob|showUserIcon|userIconBlob|showUserName|userName|showAiIcon|aiIconBlob|showAiName|aiName|iconName|messageIcon|dummyUser|enableDummyUser|dummyModel|enableDummyModel|concatDummyModel|(?:gemini|deepSeek|claude|openai|xai|llmAggregator)(?:DummyUser|EnableDummyUser|DummyModel|EnableDummyModel|ConcatDummyModel)|webhookUrl|webhookFormat|enableWebhookNotification|webhooks)/.test(key));
                             if (removedSettingKeys.length > 0) {
                                 try {
                                     const cleanupStore = this._getStore(SETTINGS_STORE, 'readwrite');

@@ -10,7 +10,6 @@
     "database",
     "utilities",
     "interruptible-sleep",
-    "webhook-manager",
     "api-clients",
     "backend-manager",
     "error-recovery",
