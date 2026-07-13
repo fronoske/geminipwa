@@ -14,6 +14,13 @@ const staticFiles = [
   'src/app-state.js',
   'src/database.js',
   'src/utilities.js',
+  'src/webhook-manager.js',
+  'src/api-clients.js',
+  'src/proofreading-config.js',
+  'src/backend-manager.js',
+  'src/error-recovery.js',
+  'src/api-key-manager.js',
+  'src/twin-engine-config.js',
   'src/main.js',
   'src/input-preset.js',
 ] as const;

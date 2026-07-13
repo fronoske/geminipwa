@@ -11,6 +11,13 @@ const scripts = [
   'app-state.js',
   'database.js',
   'utilities.js',
+  'webhook-manager.js',
+  'api-clients.js',
+  'proofreading-config.js',
+  'backend-manager.js',
+  'error-recovery.js',
+  'api-key-manager.js',
+  'twin-engine-config.js',
   'main.js',
   'input-preset.js',
 ];

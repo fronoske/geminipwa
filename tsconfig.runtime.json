@@ -6,14 +6,5 @@
     "rootDir": "src",
     "noEmit": false
   },
-  "include": [
-    "src/recovery.ts",
-    "src/app-config.ts",
-    "src/dom-elements.ts",
-    "src/app-state.ts",
-    "src/database.ts",
-    "src/utilities.ts",
-    "src/main.ts",
-    "src/input-preset.ts"
-  ]
+  "include": ["src/**/*.ts"]
 }
