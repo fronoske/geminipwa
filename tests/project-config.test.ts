@@ -71,6 +71,13 @@ describe('project configuration', () => {
     expect(runtimeManifest.application).toContain('input-preset');
   });
 
+  it('does not ship retired appearance customizations', () => {
+    const retiredFeaturePattern = /turf-mode|backgroundImageBlob|userIconBlob|aiIconBlob|userNameBubble|aiNameBubble/;
+    expect(readFile('src/index.html')).not.toMatch(/value="turf"|settings-group-icons|settings-group-image/);
+    expect(readFile('src/app-state.ts')).not.toMatch(retiredFeaturePattern);
+    expect(readFile('src/ui-settings.ts')).not.toMatch(retiredFeaturePattern);
+  });
+
   it('preserves multiple API key management as a protected core feature', () => {
     expect(runtimeManifest.application).toContain('api-key-manager');
     expect(readFile('src/api-key-manager.ts')).toContain('const multiApiKeyUtils = {');

@@ -1,79 +1,6 @@
 // @ts-nocheck -- Enable after shared UI types are defined.
 // Bundled into the generated index.html from this TypeScript source.
 Object.assign(uiUtils, {
-            revokeExistingObjectUrl() {
-                if (state.backgroundImageUrl) {
-                    try { URL.revokeObjectURL(state.backgroundImageUrl); } catch (e) { }
-                    state.backgroundImageUrl = null;
-                }
-            },
-            revokeExistingIconUrls() {
-                if (state.userIconUrl) {
-                    try { URL.revokeObjectURL(state.userIconUrl); } catch (e) { }
-                    state.userIconUrl = null;
-                }
-                if (state.aiIconUrl) {
-                    try { URL.revokeObjectURL(state.aiIconUrl); } catch (e) { }
-                    state.aiIconUrl = null;
-                }
-            },
-                        updateBackgroundSettingsUI() {
-                if (elements.backgroundThumbnail && elements.deleteBackgroundBtn) {
-                    if (state.backgroundImageUrl) {
-                        elements.backgroundThumbnail.src = state.backgroundImageUrl;
-                        elements.backgroundThumbnail.classList.remove('hidden');
-                        elements.deleteBackgroundBtn.classList.remove('hidden');
-                    } else {
-                        elements.backgroundThumbnail.src = '';
-                        elements.backgroundThumbnail.classList.add('hidden');
-                        elements.deleteBackgroundBtn.classList.add('hidden');
-                    }
-                }
-                if (elements.historyBgThumbnail && elements.deleteHistoryBgBtn) {
-                    if (state.historyBackgroundImageUrl) {
-                        elements.historyBgThumbnail.src = state.historyBackgroundImageUrl;
-                        elements.historyBgThumbnail.classList.remove('hidden');
-                        elements.deleteHistoryBgBtn.classList.remove('hidden');
-                    } else {
-                        elements.historyBgThumbnail.src = '';
-                        elements.historyBgThumbnail.classList.add('hidden');
-                        elements.deleteHistoryBgBtn.classList.add('hidden');
-                    }
-                }
-                if (elements.settingsBgThumbnail && elements.deleteSettingsBgBtn) {
-                    if (state.settingsBackgroundImageUrl) {
-                        elements.settingsBgThumbnail.src = state.settingsBackgroundImageUrl;
-                        elements.settingsBgThumbnail.classList.remove('hidden');
-                        elements.deleteSettingsBgBtn.classList.remove('hidden');
-                    } else {
-                        elements.settingsBgThumbnail.src = '';
-                        elements.settingsBgThumbnail.classList.add('hidden');
-                        elements.deleteSettingsBgBtn.classList.add('hidden');
-                    }
-                }
-            },
-
-            updateIconSettingsUI() {
-                if (state.userIconUrl) {
-                    elements.userIconThumbnail.src = state.userIconUrl;
-                    elements.userIconThumbnail.classList.remove('hidden');
-                    elements.deleteUserIconBtn.classList.remove('hidden');
-                } else {
-                    elements.userIconThumbnail.src = '';
-                    elements.userIconThumbnail.classList.add('hidden');
-                    elements.deleteUserIconBtn.classList.add('hidden');
-                }
-
-                if (state.aiIconUrl) {
-                    elements.aiIconThumbnail.src = state.aiIconUrl;
-                    elements.aiIconThumbnail.classList.remove('hidden');
-                    elements.deleteAiIconBtn.classList.remove('hidden');
-                } else {
-                    elements.aiIconThumbnail.src = '';
-                    elements.aiIconThumbnail.classList.add('hidden');
-                    elements.deleteAiIconBtn.classList.add('hidden');
-                }
-            },
             applySidePanelSettingsToUI() {
                 if (elements.toggleMemoBtn) {
                     elements.toggleMemoBtn.classList.toggle('hidden', !state.settings.showMemoButton);
@@ -84,87 +11,6 @@ Object.assign(uiUtils, {
                     elements.toggleClipboardStackBtn.classList.toggle('hidden', !state.settings.showClipboardStackButton);
                 }
                 document.documentElement.style.setProperty('--clipboard-stack-height', state.settings.clipboardStackHeight || DEFAULT_CLIPBOARD_STACK_HEIGHT);
-                document.documentElement.style.setProperty('--message-icon-size', `${state.settings.messageIconSize || DEFAULT_MESSAGE_ICON_SIZE}px`);
-                document.documentElement.style.setProperty('--message-icon-offset-y', `${state.settings.messageIconOffsetY || DEFAULT_MESSAGE_ICON_OFFSET_Y}px`);
-                document.documentElement.style.setProperty('--icon-name-font-size', `${state.settings.iconNameFontSize || DEFAULT_ICON_NAME_FONT_SIZE}px`);
-                document.documentElement.style.setProperty('--icon-name-offset-y', `${state.settings.iconNameOffsetY || DEFAULT_ICON_NAME_OFFSET_Y}px`);
-
-                let userBubbleFinalBg;
-                const userBubbleOpacity = state.settings.userNameBubbleOpacity ?? DEFAULT_USER_NAME_BUBBLE_OPACITY;
-
-                if (state.settings.showUserNameBubble) {
-                    let userRgb;
-                    if (state.settings.userNameBubbleUseThemeColor) {
-                        const themeUserMsgRgbString = getComputedStyle(document.body).getPropertyValue('--current-theme-user-message-rgb').trim();
-                        const parts = themeUserMsgRgbString.split(',').map(s => parseInt(s.trim(), 10));
-                        userRgb = (parts.length === 3 && !parts.some(isNaN)) ? { r: parts[0], g: parts[1], b: parts[2] } : this.hexToRgb(DEFAULT_USER_NAME_BUBBLE_COLOR) || { r: 255, g: 255, b: 255 };
-                    } else {
-                        const customUserBubbleColor = state.settings.userNameBubbleColor;
-                        if (customUserBubbleColor && /^#([0-9A-Fa-f]{3}){1,2}$/.test(customUserBubbleColor)) {
-                            userRgb = this.hexToRgb(customUserBubbleColor);
-                        } else {
-                            const defaultRgbString = getComputedStyle(document.body).getPropertyValue('--default-user-name-bubble-custom-rgb').trim();
-                            const parts = defaultRgbString.split(',').map(s => parseInt(s.trim(), 10));
-                            userRgb = (parts.length === 3 && !parts.some(isNaN)) ? { r: parts[0], g: parts[1], b: parts[2] } : { r: 255, g: 255, b: 255 };
-                        }
-                    }
-                    userBubbleFinalBg = `rgba(${userRgb.r}, ${userRgb.g}, ${userRgb.b}, ${userBubbleOpacity})`;
-                } else {
-                    userBubbleFinalBg = 'transparent';
-                }
-                document.documentElement.style.setProperty('--user-name-bubble-bg', userBubbleFinalBg);
-
-                let aiBubbleFinalBg;
-                const aiBubbleOpacity = state.settings.aiNameBubbleOpacity ?? DEFAULT_AI_NAME_BUBBLE_OPACITY;
-
-                if (state.settings.showAiNameBubble) {
-                    let aiRgb;
-                    if (state.settings.aiNameBubbleUseThemeColor) {
-                        const themeAiMsgRgbString = getComputedStyle(document.body).getPropertyValue('--current-theme-model-message-rgb').trim();
-                        const parts = themeAiMsgRgbString.split(',').map(s => parseInt(s.trim(), 10));
-                        aiRgb = (parts.length === 3 && !parts.some(isNaN)) ? { r: parts[0], g: parts[1], b: parts[2] } : this.hexToRgb(DEFAULT_AI_NAME_BUBBLE_COLOR) || { r: 255, g: 255, b: 255 };
-                    } else {
-                        const customAiBubbleColor = state.settings.aiNameBubbleColor;
-                        if (customAiBubbleColor && /^#([0-9A-Fa-f]{3}){1,2}$/.test(customAiBubbleColor)) {
-                            aiRgb = this.hexToRgb(customAiBubbleColor);
-                        } else {
-                            const defaultRgbString = getComputedStyle(document.body).getPropertyValue('--default-ai-name-bubble-custom-rgb').trim();
-                            const parts = defaultRgbString.split(',').map(s => parseInt(s.trim(), 10));
-                            aiRgb = (parts.length === 3 && !parts.some(isNaN)) ? { r: parts[0], g: parts[1], b: parts[2] } : { r: 255, g: 255, b: 255 };
-                        }
-                    }
-                    aiBubbleFinalBg = `rgba(${aiRgb.r}, ${aiRgb.g}, ${aiRgb.b}, ${aiBubbleOpacity})`;
-                } else {
-                    aiBubbleFinalBg = 'transparent';
-                }
-                document.documentElement.style.setProperty('--ai-name-bubble-bg', aiBubbleFinalBg);
-
-                if (elements.userNameBubbleToggle && elements.userNameBubbleUseThemeColorToggle && document.getElementById('user-name-bubble-custom-color-settings')) {
-                    const customColorDiv = document.getElementById('user-name-bubble-custom-color-settings');
-                    const colorInput = customColorDiv.querySelector('#user-name-bubble-color');
-                    const colorLabel = customColorDiv.querySelector('label[for="user-name-bubble-color"]');
-                    const shouldShowCustomColor = state.settings.showUserNameBubble && !state.settings.userNameBubbleUseThemeColor;
-                    if (colorInput) colorInput.style.display = shouldShowCustomColor ? 'block' : 'none';
-                    if (colorLabel) colorLabel.style.display = shouldShowCustomColor ? 'block' : 'none';
-
-                    const opacityInput = elements.userNameBubbleOpacityInput;
-                    const opacityLabel = document.querySelector('label[for="user-name-bubble-opacity"]');
-                    if (opacityInput) opacityInput.style.display = state.settings.showUserNameBubble ? 'block' : 'none';
-                    if (opacityLabel) opacityLabel.style.display = state.settings.showUserNameBubble ? 'block' : 'none';
-                }
-                if (elements.aiNameBubbleToggle && elements.aiNameBubbleUseThemeColorToggle && document.getElementById('ai-name-bubble-custom-color-settings')) {
-                    const customColorDiv = document.getElementById('ai-name-bubble-custom-color-settings');
-                    const colorInput = customColorDiv.querySelector('#ai-name-bubble-color');
-                    const colorLabel = customColorDiv.querySelector('label[for="ai-name-bubble-color"]');
-                    const shouldShowCustomColor = state.settings.showAiNameBubble && !state.settings.aiNameBubbleUseThemeColor;
-                    if (colorInput) colorInput.style.display = shouldShowCustomColor ? 'block' : 'none';
-                    if (colorLabel) colorLabel.style.display = shouldShowCustomColor ? 'block' : 'none';
-
-                    const opacityInput = elements.aiNameBubbleOpacityInput;
-                    const opacityLabel = document.querySelector('label[for="ai-name-bubble-opacity"]');
-                    if (opacityInput) opacityInput.style.display = state.settings.showAiNameBubble ? 'block' : 'none';
-                    if (opacityLabel) opacityLabel.style.display = state.settings.showAiNameBubble ? 'block' : 'none';
-                }
             },
             applyOpacitySettings() {
                 document.documentElement.style.setProperty('--message-bubble-opacity',
@@ -191,14 +37,6 @@ switch (state.settings.theme) {
                         userMessageColor = DARK_MODE_USER_MESSAGE_COLOR;
                         modelMessageColor = DARK_MODE_MODEL_MESSAGE_COLOR;
                         overlayBaseColor = DARK_MODE_PRIMARY_COLOR;
-                        tertiaryColorRgbStr = getComputedStyle(document.body).getPropertyValue('--bg-tertiary-rgb').trim();
-                        break;
-                    case 'turf':
-                        headerColor = TURF_HEADER_COLOR;
-                        secondaryColor = TURF_SECONDARY_COLOR;
-                        userMessageColor = TURF_USER_MESSAGE_COLOR;
-                        modelMessageColor = TURF_MODEL_MESSAGE_COLOR;
-                        overlayBaseColor = TURF_PRIMARY_COLOR;
                         tertiaryColorRgbStr = getComputedStyle(document.body).getPropertyValue('--bg-tertiary-rgb').trim();
                         break;
                     case 'pastel-pink':
@@ -312,7 +150,7 @@ switch (state.settings.theme) {
             },
             applyTheme() {
                 const theme = state.settings.theme;
-document.body.classList.remove('dark-mode', 'light-mode-forced', 'pastel-pink-mode', 'pastel-blue-mode', 'pastel-yellow-mode', 'pastel-purple-mode', 'pastel-rainbow-mode', 'turf-mode');
+document.body.classList.remove('dark-mode', 'light-mode-forced', 'pastel-pink-mode', 'pastel-blue-mode', 'pastel-yellow-mode', 'pastel-purple-mode', 'pastel-rainbow-mode');
                 let themeColorMetaValue;
                 let currentThemeUserMessageBgRgb = this.hexToRgb(LIGHT_MODE_USER_MESSAGE_COLOR) || { r: 220, g: 248, b: 198 };
                 let currentThemeModelMessageBgRgb = this.hexToRgb(LIGHT_MODE_MODEL_MESSAGE_COLOR) || { r: 229, g: 229, b: 234 };
@@ -323,12 +161,6 @@ document.body.classList.remove('dark-mode', 'light-mode-forced', 'pastel-pink-mo
                         themeColorMetaValue = DARK_THEME_COLOR;
                         currentThemeUserMessageBgRgb = this.hexToRgb(DARK_MODE_USER_MESSAGE_COLOR) || { r: 5, g: 97, b: 98 };
                         currentThemeModelMessageBgRgb = this.hexToRgb(DARK_MODE_MODEL_MESSAGE_COLOR) || { r: 58, g: 58, b: 60 };
-                        break;
-                    case 'turf':
-                        document.body.classList.add('turf-mode');
-                        themeColorMetaValue = TURF_THEME_COLOR;
-                        currentThemeUserMessageBgRgb = this.hexToRgb(TURF_USER_MESSAGE_COLOR) || { r: 220, g: 248, b: 198 };
-                        currentThemeModelMessageBgRgb = this.hexToRgb(TURF_MODEL_MESSAGE_COLOR) || { r: 229, g: 229, b: 234 };
                         break;
                     case 'pastel-pink':
                         document.body.classList.add('pastel-pink-mode');
@@ -645,26 +477,6 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 elements.showMemoButtonToggle.checked = state.settings.showMemoButton;
                 elements.memoHeightInput.value = state.settings.memoHeight || '';
                 elements.showClipboardStackButtonToggle.checked = state.settings.showClipboardStackButton;
-                elements.showUserIconToggle.checked = state.settings.showUserIcon;
-                elements.showUserNameToggle.checked = state.settings.showUserName;
-                elements.userNameInput.value = state.settings.userName || '';
-                elements.showAiIconToggle.checked = state.settings.showAiIcon;
-                elements.showAiNameToggle.checked = state.settings.showAiName;
-                elements.aiNameInput.value = state.settings.aiName || '';
-                elements.iconNameFontSizeInput.value = state.settings.iconNameFontSize ?? DEFAULT_ICON_NAME_FONT_SIZE;
-                elements.iconNameOffsetYInput.value = state.settings.iconNameOffsetY !== null ? (state.settings.iconNameOffsetY * -1) : (DEFAULT_ICON_NAME_OFFSET_Y * -1);
-                elements.messageIconSizeInput.value = state.settings.messageIconSize ?? DEFAULT_MESSAGE_ICON_SIZE;
-                elements.messageIconOffsetYInput.value = state.settings.messageIconOffsetY !== null ? (state.settings.messageIconOffsetY * -1) : (DEFAULT_MESSAGE_ICON_OFFSET_Y * -1);
-
-                elements.userNameBubbleToggle.checked = state.settings.showUserNameBubble;
-                elements.userNameBubbleUseThemeColorToggle.checked = state.settings.userNameBubbleUseThemeColor;
-                elements.userNameBubbleColorInput.value = state.settings.userNameBubbleColor || DEFAULT_USER_NAME_BUBBLE_COLOR;
-                elements.userNameBubbleOpacityInput.value = state.settings.userNameBubbleOpacity ?? DEFAULT_USER_NAME_BUBBLE_OPACITY;
-                elements.aiNameBubbleToggle.checked = state.settings.showAiNameBubble;
-                elements.aiNameBubbleUseThemeColorToggle.checked = state.settings.aiNameBubbleUseThemeColor;
-                elements.aiNameBubbleColorInput.value = state.settings.aiNameBubbleColor || DEFAULT_AI_NAME_BUBBLE_COLOR;
-                elements.aiNameBubbleOpacityInput.value = state.settings.aiNameBubbleOpacity ?? DEFAULT_AI_NAME_BUBBLE_OPACITY;
-
                 elements.disableRetryConfirmationToggle.checked = state.settings.disableRetryConfirmation;
                 elements.disableLoadChatConfirmationWhileSendingToggle.checked = state.settings.disableLoadChatConfirmationWhileSending;
                 elements.disableDeleteMessageConfirmationToggle.checked = state.settings.disableDeleteMessageConfirmation;
@@ -714,8 +526,6 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 this.updateOpenAIUserModelOptions();
                 this.updateXaiUserModelOptions();
                 this.updateLlmAggregatorUserModelOptions();
-                this.updateBackgroundSettingsUI();
-                this.updateIconSettingsUI();
                 this.applyTheme();
                 this.applyFontFamily();
                 this.applySidePanelSettingsToUI();

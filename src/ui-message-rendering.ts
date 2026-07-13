@@ -86,42 +86,6 @@ appendMessage(role, content, index, isStreamingPlaceholder = false, cascadeInfo 
                 messageDiv.classList.add('message', role);
                 messageDiv.dataset.index = index;
 
-                if (role === 'user') {
-                    if (state.settings.showUserIcon && state.userIconUrl) {
-                        const iconImg = document.createElement('img');
-                        iconImg.src = state.userIconUrl;
-                        iconImg.alt = "User Icon";
-                        iconImg.classList.add('message-icon');
-                        messageDiv.appendChild(iconImg);
-                    }
-                    if (state.settings.showUserName && state.settings.userName) {
-                        const nameSpan = document.createElement('span');
-                        nameSpan.classList.add('message-icon-name');
-                        if (state.settings.showUserNameBubble) {
-                            nameSpan.classList.add('has-bubble');
-                        }
-                        nameSpan.textContent = state.settings.userName;
-                        messageDiv.appendChild(nameSpan);
-                    }
-                } else if (role === 'model') {
-                    if (state.settings.showAiIcon && state.aiIconUrl) {
-                        const iconImg = document.createElement('img');
-                        iconImg.src = state.aiIconUrl;
-                        iconImg.alt = "AI Icon";
-                        iconImg.classList.add('message-icon');
-                        messageDiv.appendChild(iconImg);
-                    }
-                    if (state.settings.showAiName && state.settings.aiName) {
-                        const nameSpan = document.createElement('span');
-                        nameSpan.classList.add('message-icon-name');
-                        if (state.settings.showAiNameBubble) {
-                            nameSpan.classList.add('has-bubble');
-                        }
-                        nameSpan.textContent = state.settings.aiName;
-                        messageDiv.appendChild(nameSpan);
-                    }
-                }
-
                 const messageData = state.currentMessages[index];
                 const messageApiProvider = messageData?.generatedByApiProvider || state.settings.apiProvider;
                 const includeThoughtsForProvider = (messageApiProvider === 'gemini' && state.settings.geminiIncludeThoughts) ||

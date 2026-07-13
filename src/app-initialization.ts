@@ -272,49 +272,6 @@ _setupParamSlider(paramId, defaultValue, storageKey) {
                 uiUtils.applyMessageSpacingSetting();
                 uiUtils.applyCompactSettingsSpacing();
 
-                if (state.settings.backgroundImageBlob instanceof Blob) {
-                        uiUtils.revokeExistingObjectUrl();
-                        try {
-                            state.backgroundImageUrl = URL.createObjectURL(state.settings.backgroundImageBlob);
-                            document.documentElement.style.setProperty('--chat-background-image', `url(${state.backgroundImageUrl})`);
-                                                } catch (e) {
-                            document.documentElement.style.setProperty('--chat-background-image', 'none');
-                        }
-                    } else {
-                        document.documentElement.style.setProperty('--chat-background-image', 'none');
-                    }
-
-                    if (state.settings.historyBackgroundImageBlob instanceof Blob) {
-                        try {
-                            if (state.historyBackgroundImageUrl) URL.revokeObjectURL(state.historyBackgroundImageUrl);
-                            state.historyBackgroundImageUrl = URL.createObjectURL(state.settings.historyBackgroundImageBlob);
-                            document.documentElement.style.setProperty('--history-background-image', `url(${state.historyBackgroundImageUrl})`);
-                        } catch (e) {
-                            document.documentElement.style.setProperty('--history-background-image', 'none');
-                        }
-                    } else {
-                        document.documentElement.style.setProperty('--history-background-image', 'none');
-                    }
-
-                    if (state.settings.settingsBackgroundImageBlob instanceof Blob) {
-                        try {
-                            if (state.settingsBackgroundImageUrl) URL.revokeObjectURL(state.settingsBackgroundImageUrl);
-                            state.settingsBackgroundImageUrl = URL.createObjectURL(state.settings.settingsBackgroundImageBlob);
-                            document.documentElement.style.setProperty('--settings-background-image', `url(${state.settingsBackgroundImageUrl})`);
-                        } catch (e) {
-                            document.documentElement.style.setProperty('--settings-background-image', 'none');
-                        }
-                    } else {
-                        document.documentElement.style.setProperty('--settings-background-image', 'none');
-                    }
-
-                    if (state.settings.userIconBlob instanceof Blob) {
-
-                        try { state.userIconUrl = URL.createObjectURL(state.settings.userIconBlob); } catch (e) { }
-                    }
-                    if (state.settings.aiIconBlob instanceof Blob) {
-                        try { state.aiIconUrl = URL.createObjectURL(state.settings.aiIconBlob); } catch (e) { }
-                    }
 
                     uiUtils.applySettingsToUI();
 

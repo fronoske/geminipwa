@@ -187,8 +187,6 @@ const getCurrentMermaidTheme = () => {
                     const bodyClasses = document.body.classList;
                     if (bodyClasses.contains('dark-mode')) {
                         return 'dark';
-                    } else if (bodyClasses.contains('turf-mode')) {
-                        return 'default';
                     } else if (bodyClasses.contains('pastel-pink-mode')) {
                         return 'base';
                     } else if (bodyClasses.contains('pastel-blue-mode')) {

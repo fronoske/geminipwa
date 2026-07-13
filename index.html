@@ -84,10 +84,6 @@
             --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             --message-body-font-size: 14px;
                         --code-block-font-size: 13px;
-            --chat-background-image: none;
-            --history-background-image: none;
-            --settings-background-image: none;
-
             --bg-dialog-file-item: var(--bg-tertiary);
 
             --border-dialog-file-item: var(--border-secondary);
@@ -110,11 +106,6 @@
 
             --memo-height: 300px;
             --clipboard-stack-height: 300px;
-            --message-icon-size: 28px;
-            --message-icon-offset-y: -10px;
-            --icon-name-font-size: 10px;
-            --icon-name-offset-y: -10px;
-
             --bg-toggle-button: var(--bg-button-action);
             --bg-toggle-button-hover: var(--bg-button-action-hover);
             --text-toggle-button: var(--text-light);
@@ -142,17 +133,6 @@
 
             --message-actions-base-rgb: 255, 255, 255;
             --message-actions-bg-opacity: 0.8;
-
-            --user-name-bubble-bg: transparent;
-            --ai-name-bubble-bg: transparent;
-            --user-name-bubble-padding-y: 2px;
-            --user-name-bubble-padding-x-ratio: 0.5;
-            --user-name-bubble-border-radius: 5px;
-            --ai-name-bubble-padding-y: 2px;
-            --ai-name-bubble-padding-x-ratio: 0.5;
-            --ai-name-bubble-border-radius: 5px;
-            --default-user-name-bubble-custom-rgb: 255, 255, 255;
-            --default-ai-name-bubble-custom-rgb: 255, 255, 255;
 
             --thought-summary-opacity: 0.85;
             --thought-summary-font-size: 13px;
@@ -241,8 +221,6 @@
             --text-button-purple: #ffffff;
 
             --message-actions-base-rgb: 50, 50, 50;
-            --default-user-name-bubble-custom-rgb: 50, 50, 50;
-            --default-ai-name-bubble-custom-rgb: 50, 50, 50;
         }
 
         body.pastel-pink-mode {
@@ -345,8 +323,6 @@
 
             --message-actions-base-rgb: 255, 230, 234;
 
-            --default-user-name-bubble-custom-rgb: 255, 230, 234;
-            --default-ai-name-bubble-custom-rgb: 255, 230, 234;
         }
 
         body.pastel-blue-mode {
@@ -449,8 +425,6 @@
 
             --message-actions-base-rgb: 224, 240, 255;
 
-            --default-user-name-bubble-custom-rgb: 224, 240, 255;
-            --default-ai-name-bubble-custom-rgb: 224, 240, 255;
         }
 
         body.pastel-yellow-mode {
@@ -537,8 +511,6 @@
 
             --message-actions-base-rgb: 255, 250, 205;
 
-            --default-user-name-bubble-custom-rgb: 255, 250, 205;
-            --default-ai-name-bubble-custom-rgb: 255, 250, 205;
         }
 
         body.pastel-purple-mode {
@@ -625,8 +597,6 @@
 
             --message-actions-base-rgb: 225, 190, 231;
 
-            --default-user-name-bubble-custom-rgb: 225, 190, 231;
-            --default-ai-name-bubble-custom-rgb: 225, 190, 231;
         }
 
         body.pastel-rainbow-mode {
@@ -725,106 +695,6 @@
 
             --message-actions-base-rgb: 245, 245, 245;
 
-            --default-user-name-bubble-custom-rgb: 245, 245, 245;
-            --default-ai-name-bubble-custom-rgb: 245, 245, 245;
-        }
-
-body.turf-mode {
-      --dazzle-scale: 3;
-      --dazzle-dark: 0.10;
-      --dazzle-size: 340%;
-      --dazzle-light: 0.06;
-      --border-alpha: 0.28;
-
-      /* --- 色設定（細分化・ホバー色なしバージョン） --- */
-
-      /* [1] 基本色 */
-      --bg-primary: #F6F4F9;
-      --bg-secondary: #F6F4F9;
-      --bg-tertiary: #F6F4F9;
-      --bg-user-message: #ffffff;
-      --bg-model-message: #ffffff;
-      --text-primary: #7A4114;
-      --text-secondary: #7A4114;
-      --text-link: #388e3c;
-
-      /* [2] ヘッダーと主要ボタン（送信など） */
-      --bg-header: #4CAF50;
-      --bg-header-hover: #4CAF50; /* ホバー色を通常色と同じに */
-      --bg-button: #4CAF50;
-      --bg-button-hover: #4CAF50; /* ホバー色を通常色と同じに */
-      --bg-button-rgb: 76, 175, 80;
-
-      /* [3] アクションボタン（汎用：Cascade, 汎用アクションなど） */
-      --bg-button-action: #9ccc65;
-      --bg-button-action-hover: #9ccc65; /* ホバー色を通常色と同じに */
-
-      /* [4] 編集ボタン */
-      --bg-button-edit: #F9B218;
-      --bg-button-edit-hover: #F9B218; /* ホバー色を通常色と同じに */
-
-      /* [5] 危険・キャンセル系ボタン */
-      --bg-button-delete: #F25560;
-      --bg-button-delete-hover: #F25560; /* ホバー色を通常色と同じに */
-      --bg-button-cancel: #F25560;
-      --bg-button-cancel-hover: #F25560;
-      --bg-button-header-delete: #F25560;
-      --bg-button-header-delete-hover: #F25560;
-
-      /* [6] 肯定・実行系ボタン */
-      --bg-button-save: #2D7FD4;
-      --bg-button-save-hover: #2D7FD4;
-      --bg-button-update: #2D7FD4;
-      --bg-button-update-hover: #2D7FD4;
-      --bg-button-retry: #2D7FD4;
-      --bg-button-retry-hover: #2D7FD4;
-
-      /* [7] データ操作系ボタン */
-      --bg-button-copy: #F5488A;
-      --bg-button-copy-hover: #F5488A;
-      --bg-button-paste: #9ccc65;
-      --bg-button-paste-hover: #9ccc65;
-      --bg-button-duplicate: #aed581;
-      --bg-button-duplicate-hover: #aed581;
-      --bg-button-export: #dce775;
-      --bg-button-export-hover: #dce775;
-      --bg-button-header-copy: #F5488A;
-      --bg-button-header-copy-hover: #F5488A;
-
-      /* [8] チャットバブル開閉ボタン */
-      --bg-toggle-button: #9E9E9E; /* 新規追加：グレー系の色を設定 */
-      --bg-toggle-button-hover: #9E9E9E; /* ホバー色を通常色と同じに */
-      --text-toggle-button: #ffffff; /* 文字色もここで設定可能 */
-
-      /* [9] その他 */
-      --border-system: #a5d6a7;
-}
-
-        /* ターフモード専用のメッセージバブル枠線 */
-        body.turf-mode .message.user {
-            border: 2px solid #66D713; /* ユーザー: 緑色の線 */
-        }
-        body.turf-mode .message.model {
-            border: 2px solid #FD6EA3; /* AI: ピンク色の線 */
-        }
-
-        /* ターフモード専用のメッセージテキスト色（ここから追加） */
-        body.turf-mode .message.user {
-            color: #7a4114; /* ユーザーの文字*/
-        }
-        body.turf-mode .message.model {
-            color: #7a4114; /* AIの文字 */
-        }
-        body.turf-mode .mermaid-diagram {
-            background-color: #f8fff8 !important;
-        }
-
-        body.turf-mode .mermaid-diagram svg .node rect,
-        body.turf-mode .mermaid-diagram svg .node circle,
-        body.turf-mode .mermaid-diagram svg .node ellipse,
-        body.turf-mode .mermaid-diagram svg .node polygon {
-            fill: #e8f5e9 !important;
-            stroke: #4CAF50 !important;
         }
 
         * {
@@ -1329,11 +1199,7 @@ body.turf-mode {
         #chat-screen {
             position: relative;
             z-index: 0;
-            background-image: var(--chat-background-image);
-            background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
-            transition: background-image 0.3s ease, transform 0.3s ease-in-out;
+            transition: transform 0.3s ease-in-out;
         }
 
         #chat-screen::before {
@@ -1566,74 +1432,6 @@ body.turf-mode {
             margin-bottom: 15px;
         }
 
-        .message-icon {
-            width: var(--message-icon-size);
-            height: var(--message-icon-size);
-            border-radius: 50%;
-            object-fit: cover;
-            position: absolute;
-            top: calc((var(--message-icon-size) / -2 + 2px) + var(--message-icon-offset-y, 0px));
-            border: 1px solid var(--border-secondary);
-            background-color: var(--bg-tertiary);
-            box-shadow: 0 1px 2px var(--shadow-primary);
-            z-index: 2;
-        }
-
-        .message.user .message-icon {
-            right: 5px;
-        }
-
-        .message.model .message-icon {
-            left: 5px;
-        }
-
-        .message-icon-name {
-            position: absolute;
-            font-size: var(--icon-name-font-size, 10px);
-            color: var(--text-secondary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 80px;
-            z-index: 2;
-            top: calc(var(--message-icon-size) + var(--message-icon-offset-y, 0px) - (var(--message-icon-size) / 4) + var(--icon-name-offset-y, 0px));
-            padding: 0;
-            background-color: transparent;
-            border-radius: 0;
-            line-height: 1.3;
-        }
-
-        .message.user .message-icon-name {
-            left: auto;
-            right: calc(var(--message-icon-size) + 8px);
-            text-align: right;
-        }
-
-        .message.model .message-icon-name {
-            left: calc(var(--message-icon-size) + 8px);
-            right: auto;
-            text-align: left;
-        }
-
-        .message.user .message-icon-name.has-bubble {
-            background-color: var(--user-name-bubble-bg);
-            padding-top: var(--user-name-bubble-padding-y);
-            padding-bottom: var(--user-name-bubble-padding-y);
-            padding-left: calc(var(--icon-name-font-size, 10px) * var(--user-name-bubble-padding-x-ratio));
-            padding-right: calc(var(--icon-name-font-size, 10px) * var(--user-name-bubble-padding-x-ratio));
-            border-radius: var(--user-name-bubble-border-radius);
-            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
-        }
-
-        .message.model .message-icon-name.has-bubble {
-            background-color: var(--ai-name-bubble-bg);
-            padding-top: var(--ai-name-bubble-padding-y);
-            padding-bottom: var(--ai-name-bubble-padding-y);
-            padding-left: calc(var(--icon-name-font-size, 10px) * var(--ai-name-bubble-padding-x-ratio));
-            padding-right: calc(var(--icon-name-font-size, 10px) * var(--ai-name-bubble-padding-x-ratio));
-            border-radius: var(--ai-name-bubble-border-radius);
-            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
-        }
 
         .message.message-hidden-by-toggle {
             visibility: hidden;
@@ -1650,8 +1448,6 @@ body.turf-mode {
         .message.message-hidden-by-toggle .message-actions,
         .message.message-hidden-by-toggle .message-cascade-controls,
         .message.message-hidden-by-toggle .message-toggle-button,
-        .message.message-hidden-by-toggle .message-icon,
-        .message.message-hidden-by-toggle .message-icon-name,
         .message.message-hidden-by-toggle .thought-summary-details {
             display: none !important;
         }
@@ -1679,7 +1475,7 @@ body.turf-mode {
             align-self: flex-end;
             border-bottom-right-radius: 5px;
 
-            body:not(.dark-mode):not(.pastel-pink-mode):not(.pastel-blue-mode):not(.pastel-yellow-mode):not(.pastel-purple-mode):not(.pastel-rainbow-mode):not(.turf-mode) & {
+            body:not(.dark-mode):not(.pastel-pink-mode):not(.pastel-blue-mode):not(.pastel-yellow-mode):not(.pastel-purple-mode):not(.pastel-rainbow-mode) & {
                 color: #333;
             }
 
@@ -2307,10 +2103,6 @@ body.turf-mode {
                         #history-screen {
             background-color: var(--bg-primary);
             transition: transform 0.3s ease-in-out;
-            background-image: var(--history-background-image);
-            background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
         }
 
         #history-screen::before {
@@ -2363,9 +2155,6 @@ body.turf-mode {
             background-color: var(--bg-secondary);
         }
 
-        body.turf-mode .history-list.striped .history-item:nth-child(even) {
-            background-color: rgba(76, 175, 80, 0.08);
-        }
 
         .history-list.striped .history-item:hover {
             background-color: var(--bg-tertiary) !important;
@@ -2482,10 +2271,6 @@ body.turf-mode {
             transition: transform 0.3s ease-in-out;
             -webkit-user-select: none;
             user-select: none;
-            background-image: var(--settings-background-image);
-            background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
         }
 
         #settings-screen::before {
@@ -2616,12 +2401,6 @@ body.turf-mode {
             min-width: 0;
         }
 
-        .image-upload-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
 
         .settings-action-button {
             background-color: var(--bg-button-action);
@@ -2657,24 +2436,6 @@ body.turf-mode {
             background-color: var(--bg-button-delete-hover);
         }
 
-        .background-thumbnail {
-            max-width: 100px;
-            max-height: 60px;
-            border-radius: 4px;
-            border: 1px solid var(--border-tertiary);
-            object-fit: cover;
-            vertical-align: middle;
-        }
-
-        .icon-thumbnail {
-            max-width: 40px;
-            max-height: 40px;
-            border-radius: 50%;
-            border: 1px solid var(--border-tertiary);
-            object-fit: cover;
-            vertical-align: middle;
-            margin-left: 10px;
-        }
 
         #gemini-additional-models,
         #deepseek-additional-models,
@@ -2688,7 +2449,7 @@ body.turf-mode {
         }
 
         @media (prefers-color-scheme: dark) {
-    body:not(.light-mode-forced):not(.pastel-pink-mode):not(.pastel-blue-mode):not(.pastel-yellow-mode):not(.pastel-purple-mode):not(.pastel-rainbow-mode):not(.turf-mode) {
+    body:not(.light-mode-forced):not(.pastel-pink-mode):not(.pastel-blue-mode):not(.pastel-yellow-mode):not(.pastel-purple-mode):not(.pastel-rainbow-mode) {
                 --bg-primary: #1a1a1a;
                 --text-primary: #e0e0e0;
             }
@@ -3944,123 +3705,6 @@ body.turf-mode {
         }
 
 
-body.turf-mode .app-header,
-body.turf-mode button {
-
-  background-image:
-    conic-gradient(from 12deg at 28% 34%,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 1.00)) 0 62deg,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 0.80)) 62deg 66deg,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 0.50)) 66deg 69deg,
-      transparent 69deg 360deg),
-    conic-gradient(from -24deg at 72% 28%,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 0.80)) 0 82deg,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 0.60)) 82deg 87deg,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 0.35)) 87deg 90deg,
-      transparent 90deg 360deg),
-    conic-gradient(from 140deg at 22% 78%,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 0.65)) 0 54deg,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 0.50)) 54deg 57deg,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 0.30)) 57deg 60deg,
-      transparent 60deg 360deg),
-    conic-gradient(from 60deg at 82% 66%,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 0.70)) 0 69deg,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 0.50)) 69deg 72deg,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 0.30)) 72deg 75deg,
-      transparent 75deg 360deg),
-    conic-gradient(from -40deg at 50% 50%,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 0.55)) 0 102deg,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 0.40)) 102deg 106deg,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 0.25)) 106deg 110deg,
-      transparent 110deg 360deg);
-
-  background-blend-mode: multiply, multiply, multiply, multiply, multiply;
-
-
-  background-size:
-    var(--dazzle-size) var(--dazzle-size),
-    var(--dazzle-size) var(--dazzle-size),
-    var(--dazzle-size) var(--dazzle-size),
-    var(--dazzle-size) var(--dazzle-size),
-    var(--dazzle-size) var(--dazzle-size);
-  background-position: center, center, center, center, center;
-  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
-
-  transition: background-image 0.25s ease, border-color 0.15s ease, color 0.15s ease;
-}
-
-body.turf-mode button:hover:not(:disabled) {
-  --dazzle-dark: 0.14;
-}
-
-body.turf-mode button:active:not(:disabled) {
-  --dazzle-dark: 0.16;
-  transform: none;
-}
-
-body.turf-mode button:disabled {
-  opacity: 0.55;
-  background-image: none;
-  cursor: not-allowed;
-}
-
-body.turf-mode .app-header:hover,
-body.turf-mode .app-header:active {
-
-  transform: none;
-}
-
-
-@supports not ((background: conic-gradient(from 0deg, #000 0 90deg, transparent 90deg)) and (background-blend-mode: multiply)) {
-  body.turf-mode .app-header,
-  body.turf-mode button {
-    background-image:
-      linear-gradient(135deg, rgba(0, 0, 0, 0.10) 0 45%, transparent 45% 55%, rgba(0, 0, 0, 0.08) 55% 100%);
-    background-size: 200% 200%;
-    background-position: center;
-  }
-  body.turf-mode button:hover:not(:disabled) {
-    filter: contrast(1.05);
-  }
-}
-
-
-
-body.turf-mode button:disabled {
-  background-image: none;
-
-}
-
-body.turf-mode .app-header:hover,
-body.turf-mode .app-header:active {
-  transform: none;
-
-}
-
-body.turf-mode button:nth-of-type(6n+1) {
-  background-position: 15% 88%, 92% 18%, 45% 63%, 7% 39%, 68% 51%;
-  background-size:     2446% 3546%, 2821% 2821%, 3389% 3389%, 2173% 2173%, 3565% 3565%;
-}
-body.turf-mode button:nth-of-type(6n+2) {
-  background-position: 81% 25%, 29% 95%, 5% 49%, 98% 71%, 42% 13%;
-  background-size:     2618% 2618%, 3032% 3032%, 2788% 2788%, 3950% 3950%, 2294% 2294%;
-}
-body.turf-mode button:nth-of-type(6n+3) {
-  background-position: 58% 9%, 19% 82%, 88% 34%, 31% 55%, 66% 97%;
-  background-size:     3536% 3536%, 2955% 2955%, 2081% 2081%, 3829% 3829%, 2407% 2407%;
-}
-body.turf-mode button:nth-of-type(6n+4) {
-  background-position: 23% 69%, 77% 12%, 11% 85%, 91% 28%, 50% 48%;
-  background-size:     2792% 2792%, 3111% 3111%, 2543% 2543%, 3926% 3926%, 2330% 2330%;
-}
-body.turf-mode button:nth-of-type(6n+5) {
-  background-position: 96% 41%, 38% 8%, 62% 79%, 14% 33%, 84% 60%;
-  background-size:     3467% 3467%, 2884% 2884%, 2149% 2149%, 3702% 3702%, 2605% 2605%;
-}
-body.turf-mode button:nth-of-type(6n) {
-  background-position: 4% 59%, 89% 21%, 27% 93%, 73% 16%, 53% 75%;
-  background-size:     2676% 2676%, 3214% 3214%, 2960% 2960%, 3898% 3898%, 2495% 2495%;
-}
 .opacity-slider-container {
     margin-bottom: 15px;
 }
@@ -4204,15 +3848,6 @@ body.elevation-enabled .custom-dialog {
     box-shadow: var(--elevation-shadow-3);
 }
 
-body.turf-mode.elevation-enabled .message {
-    border: 2px solid transparent;
-}
-body.turf-mode.elevation-enabled .message.user {
-    border-color: #66D713;
-}
-body.turf-mode.elevation-enabled .message.model {
-    border-color: #FD6EA3;
-}
 .api-key-help-icon {
     display: inline-flex;
     align-items: center;
@@ -6007,156 +5642,6 @@ font-size: 1.142em !important;
                         ※ 推論モデルは推論内で検索する場合があり、引用データが帰らない場合がある。
                     </p>
                 </div>
-                                <details class="settings-group" id="settings-group-image">
-                    <summary
-                        style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
-                        イメージ画像</summary>
-                    <div style="margin-top:15px;">
-
-                    <label style="margin-top: 15px;">履歴パネル:</label>
-                    <div class="image-upload-controls">
-                        <input type="file" id="history-bg-input" accept="image/jpeg, image/png, image/gif, image/webp" class="hidden">
-                        <button id="upload-history-bg-btn" class="settings-action-button" type="button">画像を選択...</button>
-                        <img id="history-bg-thumbnail" src="" alt="背景画像プレビュー" class="background-thumbnail hidden">
-                        <button id="delete-history-bg-btn" class="settings-delete-button hidden" type="button">画像を削除</button>
-                    </div>
-
-                    <label>チャット画面:</label>
-                    <div class="image-upload-controls">
-                        <input type="file" id="background-image-input" accept="image/jpeg, image/png, image/gif, image/webp" class="hidden">
-                        <button id="upload-background-btn" class="settings-action-button" type="button">画像を選択...</button>
-                        <img id="background-thumbnail" src="" alt="背景画像プレビュー" class="background-thumbnail hidden">
-                        <button id="delete-background-btn" class="settings-delete-button hidden" type="button">画像を削除</button>
-                    </div>
-
-                    <label style="margin-top: 15px;">設定パネル:</label>
-                    <div class="image-upload-controls">
-                        <input type="file" id="settings-bg-input" accept="image/jpeg, image/png, image/gif, image/webp" class="hidden">
-                        <button id="upload-settings-bg-btn" class="settings-action-button" type="button">画像を選択...</button>
-                        <img id="settings-bg-thumbnail" src="" alt="背景画像プレビュー" class="background-thumbnail hidden">
-                        <button id="delete-settings-bg-btn" class="settings-delete-button hidden" type="button">画像を削除</button>
-                    </div>
-
-                    <p style="font-size: 11px; color: var(--text-secondary); margin-top: 8px;">
-                        ※ 画像はブラウザ内のデータベースに保存されます。gifも可<br>
-                        ※ 可読性のため画像の上に半透明のレイヤーを表示。
-                    </p>
-                    </div>
-                </details>
-
-
-                <details class="settings-group" id="settings-group-icons">
-                    <summary
-                        style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
-                        チャットアイコン設定</summary>
-                    <div style="margin-top:15px;">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="show-user-icon-toggle">
-                            ユーザーアイコンを表示する
-                        </label>
-                        <div class="image-upload-controls" style="margin-bottom: 5px;">
-                            <input type="file" id="user-icon-input"
-                                accept="image/jpeg, image/png, image/gif, image/webp" class="hidden">
-                            <button id="upload-user-icon-btn" class="settings-action-button"
-                                type="button">ユーザーアイコン選択...</button>
-                            <img id="user-icon-thumbnail" src="" alt="ユーザーアイコンプレビュー" class="icon-thumbnail hidden">
-                            <button id="delete-user-icon-btn" class="settings-delete-button hidden"
-                                type="button">削除</button>
-                        </div>
-                        <label class="checkbox-label" style="margin-top: 5px;">
-                            <input type="checkbox" id="show-user-name-toggle">
-                            ユーザー名を表示する
-                        </label>
-                        <label for="user-name-input">表示するユーザー名:</label>
-                        <input type="text" id="user-name-input" placeholder="例: あなた" aria-label="表示するユーザー名">
-
-                        <label class="checkbox-label" style="margin-top: 20px;">
-                            <input type="checkbox" id="show-ai-icon-toggle">
-                            AIアイコンを表示する
-                        </label>
-                        <div class="image-upload-controls" style="margin-bottom: 5px;">
-                            <input type="file" id="ai-icon-input" accept="image/jpeg, image/png, image/gif, image/webp"
-                                class="hidden">
-                            <button id="upload-ai-icon-btn" class="settings-action-button"
-                                type="button">AIアイコン選択...</button>
-                            <img id="ai-icon-thumbnail" src="" alt="AIアイコンプレビュー" class="icon-thumbnail hidden">
-                            <button id="delete-ai-icon-btn" class="settings-delete-button hidden"
-                                type="button">削除</button>
-                        </div>
-                        <label class="checkbox-label" style="margin-top: 5px;">
-                            <input type="checkbox" id="show-ai-name-toggle">
-                            AI名を表示する
-                        </label>
-                        <label for="ai-name-input">表示するAI名:</label>
-                        <input type="text" id="ai-name-input" placeholder="例: Gemini" aria-label="表示するAI名">
-
-                        <details id="settings-group-icon-details">
-                            <summary
-                                style="cursor: pointer; font-weight: normal; font-size: 14px; color: var(--text-link); list-style: revert;">
-                                アイコン表示調整</summary>
-                            <div style="padding-left: 15px; margin-top: 10px;">
-                                <div style="margin-top: 10px;">
-                                    <label for="icon-name-font-size">アイコン下の名前の文字サイズ (px):</label>
-                                    <input type="number" id="icon-name-font-size" min="1" max="46" step="1"
-                                        placeholder="例: 10" aria-label="アイコン下の名前の文字サイズ（上限あり）">
-                                </div>
-                                <div style="margin-top: 10px;">
-                                    <label for="icon-name-offset-y">名前の垂直オフセット (px, 上が正):</label>
-                                    <input type="number" id="icon-name-offset-y" step="1" placeholder="例: 10"
-                                        aria-label="名前の垂直オフセット（上限あり）">
-                                </div>
-                                <div style="margin-top: 20px;">
-                                    <label for="message-icon-size">アイコン表示サイズ (px):</label>
-                                    <input type="number" id="message-icon-size" min="1" max="300" step="1"
-                                        placeholder="例: 28" aria-label="アイコン表示サイズ（上限あり）">
-                                </div>
-                                <div style="margin-top: 15px;">
-                                    <label for="message-icon-offset-y">アイコン垂直オフセット (px, 上が正):</label>
-                                    <input type="number" id="message-icon-offset-y" step="1" placeholder="例: 0 (上下に調整)"
-                                        aria-label="アイコン垂直オフセット（上限あり）">
-                                </div>
-                                <hr style="margin: 20px 0;">
-                                <h4>ユーザー名の背景バブル</h4>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="user-name-bubble-toggle">
-                                    バブルを表示する
-                                </label>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="user-name-bubble-use-theme-color-toggle">
-                                    テーマのメッセージ色に合わせる
-                                </label>
-                                <div id="user-name-bubble-custom-color-settings">
-                                    <label for="user-name-bubble-color">背景色 (上記OFF時):</label>
-                                    <input type="text" id="user-name-bubble-color" placeholder="#FFFFFF">
-                                </div>
-                                <label for="user-name-bubble-opacity">透過度 (0.0-1.0):</label>
-                                <input type="number" id="user-name-bubble-opacity" min="0" max="1" step="0.1"
-                                    placeholder="0.8">
-
-                                <h4 style="margin-top: 15px;">AI名の背景バブル</h4>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="ai-name-bubble-toggle">
-                                    バブルを表示する
-                                </label>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="ai-name-bubble-use-theme-color-toggle">
-                                    テーマのメッセージ色に合わせる
-                                </label>
-                                <div id="ai-name-bubble-custom-color-settings">
-                                    <label for="ai-name-bubble-color">背景色 (上記OFF時):</label>
-                                    <input type="text" id="ai-name-bubble-color" placeholder="#FFFFFF">
-                                </div>
-                                <label for="ai-name-bubble-opacity">透過度 (0.0-1.0):</label>
-                                <input type="number" id="ai-name-bubble-opacity" min="0" max="1" step="0.1"
-                                    placeholder="0.8">
-                            </div>
-                        </details>
-                        <p style="font-size: 11px; color: var(--text-secondary); margin-top: 15px;">
-                            ※ アイコン画像はブラウザ内のデータベースに保存されます。<br>
-                            ※ 表示時は円形に切り取られます。gifも可、デフォルトサイズ: 28px。
-                        </p>
-                    </div>
-                </details>
 
                 <div class="settings-group" id="settings-group-other">
                     <details open id="settings-group-other-details">
@@ -6174,7 +5659,6 @@ font-size: 1.142em !important;
                                 <option value="pastel-yellow">パステルモード🟡</option>
                                 <option value="pastel-purple">パステルモード🟣</option>
                                 <option value="pastel-rainbow">パステルモード🌈</option>
-                                <option value="turf">ターフモード🌱exp</option>
                             </select>
                             <p style="height:10px"></p>
                             <details id="settings-group-behavior-adjustment" open>
@@ -6947,16 +6431,6 @@ const DEFAULT_MESSAGE_BODY_FONT_SIZE = 14;
 const DEFAULT_CODE_BLOCK_FONT_SIZE = 13;
 const DEFAULT_MEMO_HEIGHT = '300px';
 const DEFAULT_CLIPBOARD_STACK_HEIGHT = '300px';
-const DEFAULT_MESSAGE_ICON_SIZE = 28;
-const DEFAULT_MESSAGE_ICON_OFFSET_Y = -10;
-const DEFAULT_USER_NAME = "あなた";
-const DEFAULT_AI_NAME = "AI";
-const DEFAULT_ICON_NAME_FONT_SIZE = 10;
-const DEFAULT_ICON_NAME_OFFSET_Y = -10;
-const DEFAULT_USER_NAME_BUBBLE_COLOR = '#FFFFFF';
-const DEFAULT_USER_NAME_BUBBLE_OPACITY = 0.8;
-const DEFAULT_AI_NAME_BUBBLE_COLOR = '#FFFFFF';
-const DEFAULT_AI_NAME_BUBBLE_OPACITY = 0.8;
 const CHAT_TITLE_LENGTH = 15;
 const TEXTAREA_MAX_HEIGHT = 120;
 const GEMINI_API_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models/';
@@ -6973,7 +6447,6 @@ const PASTEL_BLUE_THEME_COLOR = '#87cefa';
 const PASTEL_YELLOW_THEME_COLOR = '#ffd700';
 const PASTEL_PURPLE_THEME_COLOR = '#ab47bc';
 const PASTEL_RAINBOW_THEME_COLOR = '#ffadad';
-const TURF_THEME_COLOR = '#4CAF50';
 const DARK_MODE_USER_MESSAGE_COLOR = '#056162';
 const DARK_MODE_MODEL_MESSAGE_COLOR = '#3a3a3c';
 const DARK_MODE_SECONDARY_COLOR = '#101010';
@@ -7003,11 +6476,6 @@ const PASTEL_RAINBOW_MODEL_MESSAGE_COLOR = '#e0f0ff';
 const PASTEL_RAINBOW_SECONDARY_COLOR = '#f0f0f0';
 const PASTEL_RAINBOW_HEADER_COLOR = '#ffadad';
 const PASTEL_RAINBOW_PRIMARY_COLOR = '#fdfdfd';
-const TURF_USER_MESSAGE_COLOR = '#ffffff';
-const TURF_MODEL_MESSAGE_COLOR = '#ffffff';
-const TURF_SECONDARY_COLOR = '#F6F4F9';
-const TURF_HEADER_COLOR = '#89d010';
-const TURF_PRIMARY_COLOR = '#F6F4F9';
 const LIGHT_MODE_USER_MESSAGE_COLOR = '#dcf8c6';
 const LIGHT_MODE_MODEL_MESSAGE_COLOR = '#e5e5ea';
 const LIGHT_MODE_SECONDARY_COLOR = '#f0f2f5';
@@ -7277,10 +6745,6 @@ const elements = {
     showSettingsScrollToTopButtonToggle: document.getElementById('show-settings-scroll-to-top-button-toggle'),
     showSettingsScrollToBottomButtonToggle: document.getElementById('show-settings-scroll-to-bottom-button-toggle'),
     appVersionSpan: document.getElementById('app-version'),
-    backgroundImageInput: document.getElementById('background-image-input'),
-    uploadBackgroundBtn: document.getElementById('upload-background-btn'),
-    backgroundThumbnail: document.getElementById('background-thumbnail'),
-    deleteBackgroundBtn: document.getElementById('delete-background-btn'),
     gotoHistoryBtn: document.getElementById('goto-history-btn'),
     gotoSettingsBtn: document.getElementById('goto-settings-btn'),
     backToChatFromHistoryBtn: document.getElementById('back-to-chat-from-history'),
@@ -7348,32 +6812,6 @@ const elements = {
     copyClipboardStackBtn: document.getElementById('copy-clipboard-stack-btn'),
     pasteClipboardStackBtn: document.getElementById('paste-clipboard-stack-btn'),
     showClipboardStackButtonToggle: document.getElementById('show-clipboard-stack-button-toggle'),
-    showUserIconToggle: document.getElementById('show-user-icon-toggle'),
-    userIconInput: document.getElementById('user-icon-input'),
-    uploadUserIconBtn: document.getElementById('upload-user-icon-btn'),
-    userIconThumbnail: document.getElementById('user-icon-thumbnail'),
-    deleteUserIconBtn: document.getElementById('delete-user-icon-btn'),
-    showUserNameToggle: document.getElementById('show-user-name-toggle'),
-    userNameInput: document.getElementById('user-name-input'),
-    showAiIconToggle: document.getElementById('show-ai-icon-toggle'),
-    aiIconInput: document.getElementById('ai-icon-input'),
-    uploadAiIconBtn: document.getElementById('upload-ai-icon-btn'),
-    aiIconThumbnail: document.getElementById('ai-icon-thumbnail'),
-    deleteAiIconBtn: document.getElementById('delete-ai-icon-btn'),
-    showAiNameToggle: document.getElementById('show-ai-name-toggle'),
-    aiNameInput: document.getElementById('ai-name-input'),
-    iconNameFontSizeInput: document.getElementById('icon-name-font-size'),
-    iconNameOffsetYInput: document.getElementById('icon-name-offset-y'),
-    messageIconSizeInput: document.getElementById('message-icon-size'),
-    messageIconOffsetYInput: document.getElementById('message-icon-offset-y'),
-    userNameBubbleToggle: document.getElementById('user-name-bubble-toggle'),
-    userNameBubbleUseThemeColorToggle: document.getElementById('user-name-bubble-use-theme-color-toggle'),
-    userNameBubbleColorInput: document.getElementById('user-name-bubble-color'),
-    userNameBubbleOpacityInput: document.getElementById('user-name-bubble-opacity'),
-    aiNameBubbleToggle: document.getElementById('ai-name-bubble-toggle'),
-    aiNameBubbleUseThemeColorToggle: document.getElementById('ai-name-bubble-use-theme-color-toggle'),
-    aiNameBubbleColorInput: document.getElementById('ai-name-bubble-color'),
-    aiNameBubbleOpacityInput: document.getElementById('ai-name-bubble-opacity'),
     toggleButtonTopWidthInput: document.getElementById('toggle-button-top-width'),
     toggleButtonTopHeightInput: document.getElementById('toggle-button-top-height'),
     toggleButtonTopFontSizeInput: document.getElementById('toggle-button-top-font-size'),
@@ -7431,14 +6869,6 @@ const elements = {
     debugCollapseAllBtn: document.getElementById('debug-collapse-all-btn'),
     showHistoryPreviewBubbleToggle: document.getElementById('show-history-preview-bubble-toggle'),
     stripedHistoryListToggle: document.getElementById('striped-history-list-toggle'),
-    historyBgInput: document.getElementById('history-bg-input'),
-    uploadHistoryBgBtn: document.getElementById('upload-history-bg-btn'),
-    historyBgThumbnail: document.getElementById('history-bg-thumbnail'),
-    deleteHistoryBgBtn: document.getElementById('delete-history-bg-btn'),
-    settingsBgInput: document.getElementById('settings-bg-input'),
-    uploadSettingsBgBtn: document.getElementById('upload-settings-bg-btn'),
-    settingsBgThumbnail: document.getElementById('settings-bg-thumbnail'),
-    deleteSettingsBgBtn: document.getElementById('delete-settings-bg-btn'),
 };
 
 /* source: app-state.ts */
@@ -7584,9 +7014,6 @@ const state = {
         autoScrollOnThought: false,
         historySortOrder: 'updatedAt',
         theme: 'light',
-        backgroundImageBlob: null,
-        historyBackgroundImageBlob: null,
-        settingsBackgroundImageBlob: null,
         fontFamily: '',
         messageBodyFontSize: DEFAULT_MESSAGE_BODY_FONT_SIZE,
         codeBlockFontSize: DEFAULT_CODE_BLOCK_FONT_SIZE,
@@ -7614,26 +7041,6 @@ const state = {
         memoHeight: DEFAULT_MEMO_HEIGHT,
         showClipboardStackButton: false,
         clipboardStackHeight: DEFAULT_CLIPBOARD_STACK_HEIGHT,
-        showUserIcon: false,
-        userIconBlob: null,
-        showUserName: false,
-        userName: DEFAULT_USER_NAME,
-        showAiIcon: false,
-        aiIconBlob: null,
-        showAiName: false,
-        aiName: DEFAULT_AI_NAME,
-        iconNameFontSize: DEFAULT_ICON_NAME_FONT_SIZE,
-        iconNameOffsetY: DEFAULT_ICON_NAME_OFFSET_Y,
-        messageIconSize: DEFAULT_MESSAGE_ICON_SIZE,
-        messageIconOffsetY: DEFAULT_MESSAGE_ICON_OFFSET_Y,
-        showUserNameBubble: false,
-        userNameBubbleUseThemeColor: false,
-        userNameBubbleColor: DEFAULT_USER_NAME_BUBBLE_COLOR,
-        userNameBubbleOpacity: DEFAULT_USER_NAME_BUBBLE_OPACITY,
-        showAiNameBubble: false,
-        aiNameBubbleUseThemeColor: false,
-        aiNameBubbleColor: DEFAULT_AI_NAME_BUBBLE_COLOR,
-        aiNameBubbleOpacity: DEFAULT_AI_NAME_BUBBLE_OPACITY,
         disableRetryConfirmation: false,
         disableLoadChatConfirmationWhileSending: false,
         disableDeleteMessageConfirmation: false,
@@ -7706,11 +7113,6 @@ const state = {
         showHistoryPreviewBubble: false,
         stripedHistoryList: true,
     },
-    backgroundImageUrl: null,
-    historyBackgroundImageUrl: null,
-    settingsBackgroundImageUrl: null,
-    userIconUrl: null,
-    aiIconUrl: null,
     isSending: false,
     responseTimerId: null,
     responseStartTime: 0,
@@ -7969,10 +7371,7 @@ const dbUtils = {
                         if (key in defaultSettings) {
                             const loadedValue = loadedSettings[key];
                             const defaultValue = defaultSettings[key];
-                            if (['backgroundImageBlob', 'userIconBlob', 'aiIconBlob', 'historyBackgroundImageBlob', 'settingsBackgroundImageBlob'].includes(key)) {
-                                state.settings[key] = (loadedValue instanceof Blob) ? loadedValue : null;
-                            }
-                            else if (typeof defaultValue === 'boolean') {
+                            if (typeof defaultValue === 'boolean') {
                                 state.settings[key] = loadedValue === true;
                             }
                             else if (typeof defaultValue === 'number' || defaultValue === null) {
@@ -7992,12 +7391,15 @@ const dbUtils = {
                     if (!API_PROVIDERS.some((provider) => provider.value === state.settings.apiProvider)) {
                         state.settings.apiProvider = 'gemini';
                     }
+                    if (state.settings.theme === 'turf') {
+                        state.settings.theme = 'light';
+                    }
                     if (state.settings.apiProviderCycle && typeof state.settings.apiProviderCycle === 'object') {
                         delete state.settings.apiProviderCycle.dummy;
                     }
                     const removedSettingKeys = settingsArray
                         .map((item) => item.key)
-                        .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine|enableSessionLinking|showSessionLinkingSettings|enableCryscroller|cryscroller|enableSettingsCryscroller|enableHistoryCryscroller|enableImmersiveScrolling|enableDynamicScrollMarkerColor|enableProofreading|showProofreadingSettings|proofreading|activeProofreadingConfigId|enableImageUrlReplacement|imageUrlReplacementBase|enableAutoBaseUrlDetection|enableFuzzySearchNormalization|fuzzySearchThreshold|characterNamesList|enableRomajiToKatakanaConversion|dummyErrorDebugMode|dummyDummyModel|dummyEnableDummyModel|showDiceButton|diceMinValue|diceMaxValue)/.test(key));
+                        .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine|enableSessionLinking|showSessionLinkingSettings|enableCryscroller|cryscroller|enableSettingsCryscroller|enableHistoryCryscroller|enableImmersiveScrolling|enableDynamicScrollMarkerColor|enableProofreading|showProofreadingSettings|proofreading|activeProofreadingConfigId|enableImageUrlReplacement|imageUrlReplacementBase|enableAutoBaseUrlDetection|enableFuzzySearchNormalization|fuzzySearchThreshold|characterNamesList|enableRomajiToKatakanaConversion|dummyErrorDebugMode|dummyDummyModel|dummyEnableDummyModel|showDiceButton|diceMinValue|diceMaxValue|backgroundImageBlob|historyBackgroundImageBlob|settingsBackgroundImageBlob|showUserIcon|userIconBlob|showUserName|userName|showAiIcon|aiIconBlob|showAiName|aiName|iconName|messageIcon)/.test(key));
                     if (removedSettingKeys.length > 0) {
                         try {
                             const cleanupStore = this._getStore(SETTINGS_STORE, 'readwrite');
@@ -10203,42 +9605,6 @@ Object.assign(uiUtils, {
         const messageDiv = document.createElement('div');
         messageDiv.classList.add('message', role);
         messageDiv.dataset.index = index;
-        if (role === 'user') {
-            if (state.settings.showUserIcon && state.userIconUrl) {
-                const iconImg = document.createElement('img');
-                iconImg.src = state.userIconUrl;
-                iconImg.alt = "User Icon";
-                iconImg.classList.add('message-icon');
-                messageDiv.appendChild(iconImg);
-            }
-            if (state.settings.showUserName && state.settings.userName) {
-                const nameSpan = document.createElement('span');
-                nameSpan.classList.add('message-icon-name');
-                if (state.settings.showUserNameBubble) {
-                    nameSpan.classList.add('has-bubble');
-                }
-                nameSpan.textContent = state.settings.userName;
-                messageDiv.appendChild(nameSpan);
-            }
-        }
-        else if (role === 'model') {
-            if (state.settings.showAiIcon && state.aiIconUrl) {
-                const iconImg = document.createElement('img');
-                iconImg.src = state.aiIconUrl;
-                iconImg.alt = "AI Icon";
-                iconImg.classList.add('message-icon');
-                messageDiv.appendChild(iconImg);
-            }
-            if (state.settings.showAiName && state.settings.aiName) {
-                const nameSpan = document.createElement('span');
-                nameSpan.classList.add('message-icon-name');
-                if (state.settings.showAiNameBubble) {
-                    nameSpan.classList.add('has-bubble');
-                }
-                nameSpan.textContent = state.settings.aiName;
-                messageDiv.appendChild(nameSpan);
-            }
-        }
         const messageData = state.currentMessages[index];
         const messageApiProvider = messageData?.generatedByApiProvider || state.settings.apiProvider;
         const includeThoughtsForProvider = (messageApiProvider === 'gemini' && state.settings.geminiIncludeThoughts) ||
@@ -10728,9 +10094,6 @@ Object.assign(uiUtils, {
             if (bodyClasses.contains('dark-mode')) {
                 return 'dark';
             }
-            else if (bodyClasses.contains('turf-mode')) {
-                return 'default';
-            }
             else if (bodyClasses.contains('pastel-pink-mode')) {
                 return 'base';
             }
@@ -11203,91 +10566,6 @@ Object.assign(uiUtils, {
 // @ts-nocheck -- Enable after shared UI types are defined.
 // Bundled into the generated index.html from this TypeScript source.
 Object.assign(uiUtils, {
-    revokeExistingObjectUrl() {
-        if (state.backgroundImageUrl) {
-            try {
-                URL.revokeObjectURL(state.backgroundImageUrl);
-            }
-            catch (e) { }
-            state.backgroundImageUrl = null;
-        }
-    },
-    revokeExistingIconUrls() {
-        if (state.userIconUrl) {
-            try {
-                URL.revokeObjectURL(state.userIconUrl);
-            }
-            catch (e) { }
-            state.userIconUrl = null;
-        }
-        if (state.aiIconUrl) {
-            try {
-                URL.revokeObjectURL(state.aiIconUrl);
-            }
-            catch (e) { }
-            state.aiIconUrl = null;
-        }
-    },
-    updateBackgroundSettingsUI() {
-        if (elements.backgroundThumbnail && elements.deleteBackgroundBtn) {
-            if (state.backgroundImageUrl) {
-                elements.backgroundThumbnail.src = state.backgroundImageUrl;
-                elements.backgroundThumbnail.classList.remove('hidden');
-                elements.deleteBackgroundBtn.classList.remove('hidden');
-            }
-            else {
-                elements.backgroundThumbnail.src = '';
-                elements.backgroundThumbnail.classList.add('hidden');
-                elements.deleteBackgroundBtn.classList.add('hidden');
-            }
-        }
-        if (elements.historyBgThumbnail && elements.deleteHistoryBgBtn) {
-            if (state.historyBackgroundImageUrl) {
-                elements.historyBgThumbnail.src = state.historyBackgroundImageUrl;
-                elements.historyBgThumbnail.classList.remove('hidden');
-                elements.deleteHistoryBgBtn.classList.remove('hidden');
-            }
-            else {
-                elements.historyBgThumbnail.src = '';
-                elements.historyBgThumbnail.classList.add('hidden');
-                elements.deleteHistoryBgBtn.classList.add('hidden');
-            }
-        }
-        if (elements.settingsBgThumbnail && elements.deleteSettingsBgBtn) {
-            if (state.settingsBackgroundImageUrl) {
-                elements.settingsBgThumbnail.src = state.settingsBackgroundImageUrl;
-                elements.settingsBgThumbnail.classList.remove('hidden');
-                elements.deleteSettingsBgBtn.classList.remove('hidden');
-            }
-            else {
-                elements.settingsBgThumbnail.src = '';
-                elements.settingsBgThumbnail.classList.add('hidden');
-                elements.deleteSettingsBgBtn.classList.add('hidden');
-            }
-        }
-    },
-    updateIconSettingsUI() {
-        if (state.userIconUrl) {
-            elements.userIconThumbnail.src = state.userIconUrl;
-            elements.userIconThumbnail.classList.remove('hidden');
-            elements.deleteUserIconBtn.classList.remove('hidden');
-        }
-        else {
-            elements.userIconThumbnail.src = '';
-            elements.userIconThumbnail.classList.add('hidden');
-            elements.deleteUserIconBtn.classList.add('hidden');
-        }
-        if (state.aiIconUrl) {
-            elements.aiIconThumbnail.src = state.aiIconUrl;
-            elements.aiIconThumbnail.classList.remove('hidden');
-            elements.deleteAiIconBtn.classList.remove('hidden');
-        }
-        else {
-            elements.aiIconThumbnail.src = '';
-            elements.aiIconThumbnail.classList.add('hidden');
-            elements.deleteAiIconBtn.classList.add('hidden');
-        }
-    },
     applySidePanelSettingsToUI() {
         if (elements.toggleMemoBtn) {
             elements.toggleMemoBtn.classList.toggle('hidden', !state.settings.showMemoButton);
@@ -11297,94 +10575,6 @@ Object.assign(uiUtils, {
             elements.toggleClipboardStackBtn.classList.toggle('hidden', !state.settings.showClipboardStackButton);
         }
         document.documentElement.style.setProperty('--clipboard-stack-height', state.settings.clipboardStackHeight || DEFAULT_CLIPBOARD_STACK_HEIGHT);
-        document.documentElement.style.setProperty('--message-icon-size', `${state.settings.messageIconSize || DEFAULT_MESSAGE_ICON_SIZE}px`);
-        document.documentElement.style.setProperty('--message-icon-offset-y', `${state.settings.messageIconOffsetY || DEFAULT_MESSAGE_ICON_OFFSET_Y}px`);
-        document.documentElement.style.setProperty('--icon-name-font-size', `${state.settings.iconNameFontSize || DEFAULT_ICON_NAME_FONT_SIZE}px`);
-        document.documentElement.style.setProperty('--icon-name-offset-y', `${state.settings.iconNameOffsetY || DEFAULT_ICON_NAME_OFFSET_Y}px`);
-        let userBubbleFinalBg;
-        const userBubbleOpacity = state.settings.userNameBubbleOpacity ?? DEFAULT_USER_NAME_BUBBLE_OPACITY;
-        if (state.settings.showUserNameBubble) {
-            let userRgb;
-            if (state.settings.userNameBubbleUseThemeColor) {
-                const themeUserMsgRgbString = getComputedStyle(document.body).getPropertyValue('--current-theme-user-message-rgb').trim();
-                const parts = themeUserMsgRgbString.split(',').map(s => parseInt(s.trim(), 10));
-                userRgb = (parts.length === 3 && !parts.some(isNaN)) ? { r: parts[0], g: parts[1], b: parts[2] } : this.hexToRgb(DEFAULT_USER_NAME_BUBBLE_COLOR) || { r: 255, g: 255, b: 255 };
-            }
-            else {
-                const customUserBubbleColor = state.settings.userNameBubbleColor;
-                if (customUserBubbleColor && /^#([0-9A-Fa-f]{3}){1,2}$/.test(customUserBubbleColor)) {
-                    userRgb = this.hexToRgb(customUserBubbleColor);
-                }
-                else {
-                    const defaultRgbString = getComputedStyle(document.body).getPropertyValue('--default-user-name-bubble-custom-rgb').trim();
-                    const parts = defaultRgbString.split(',').map(s => parseInt(s.trim(), 10));
-                    userRgb = (parts.length === 3 && !parts.some(isNaN)) ? { r: parts[0], g: parts[1], b: parts[2] } : { r: 255, g: 255, b: 255 };
-                }
-            }
-            userBubbleFinalBg = `rgba(${userRgb.r}, ${userRgb.g}, ${userRgb.b}, ${userBubbleOpacity})`;
-        }
-        else {
-            userBubbleFinalBg = 'transparent';
-        }
-        document.documentElement.style.setProperty('--user-name-bubble-bg', userBubbleFinalBg);
-        let aiBubbleFinalBg;
-        const aiBubbleOpacity = state.settings.aiNameBubbleOpacity ?? DEFAULT_AI_NAME_BUBBLE_OPACITY;
-        if (state.settings.showAiNameBubble) {
-            let aiRgb;
-            if (state.settings.aiNameBubbleUseThemeColor) {
-                const themeAiMsgRgbString = getComputedStyle(document.body).getPropertyValue('--current-theme-model-message-rgb').trim();
-                const parts = themeAiMsgRgbString.split(',').map(s => parseInt(s.trim(), 10));
-                aiRgb = (parts.length === 3 && !parts.some(isNaN)) ? { r: parts[0], g: parts[1], b: parts[2] } : this.hexToRgb(DEFAULT_AI_NAME_BUBBLE_COLOR) || { r: 255, g: 255, b: 255 };
-            }
-            else {
-                const customAiBubbleColor = state.settings.aiNameBubbleColor;
-                if (customAiBubbleColor && /^#([0-9A-Fa-f]{3}){1,2}$/.test(customAiBubbleColor)) {
-                    aiRgb = this.hexToRgb(customAiBubbleColor);
-                }
-                else {
-                    const defaultRgbString = getComputedStyle(document.body).getPropertyValue('--default-ai-name-bubble-custom-rgb').trim();
-                    const parts = defaultRgbString.split(',').map(s => parseInt(s.trim(), 10));
-                    aiRgb = (parts.length === 3 && !parts.some(isNaN)) ? { r: parts[0], g: parts[1], b: parts[2] } : { r: 255, g: 255, b: 255 };
-                }
-            }
-            aiBubbleFinalBg = `rgba(${aiRgb.r}, ${aiRgb.g}, ${aiRgb.b}, ${aiBubbleOpacity})`;
-        }
-        else {
-            aiBubbleFinalBg = 'transparent';
-        }
-        document.documentElement.style.setProperty('--ai-name-bubble-bg', aiBubbleFinalBg);
-        if (elements.userNameBubbleToggle && elements.userNameBubbleUseThemeColorToggle && document.getElementById('user-name-bubble-custom-color-settings')) {
-            const customColorDiv = document.getElementById('user-name-bubble-custom-color-settings');
-            const colorInput = customColorDiv.querySelector('#user-name-bubble-color');
-            const colorLabel = customColorDiv.querySelector('label[for="user-name-bubble-color"]');
-            const shouldShowCustomColor = state.settings.showUserNameBubble && !state.settings.userNameBubbleUseThemeColor;
-            if (colorInput)
-                colorInput.style.display = shouldShowCustomColor ? 'block' : 'none';
-            if (colorLabel)
-                colorLabel.style.display = shouldShowCustomColor ? 'block' : 'none';
-            const opacityInput = elements.userNameBubbleOpacityInput;
-            const opacityLabel = document.querySelector('label[for="user-name-bubble-opacity"]');
-            if (opacityInput)
-                opacityInput.style.display = state.settings.showUserNameBubble ? 'block' : 'none';
-            if (opacityLabel)
-                opacityLabel.style.display = state.settings.showUserNameBubble ? 'block' : 'none';
-        }
-        if (elements.aiNameBubbleToggle && elements.aiNameBubbleUseThemeColorToggle && document.getElementById('ai-name-bubble-custom-color-settings')) {
-            const customColorDiv = document.getElementById('ai-name-bubble-custom-color-settings');
-            const colorInput = customColorDiv.querySelector('#ai-name-bubble-color');
-            const colorLabel = customColorDiv.querySelector('label[for="ai-name-bubble-color"]');
-            const shouldShowCustomColor = state.settings.showAiNameBubble && !state.settings.aiNameBubbleUseThemeColor;
-            if (colorInput)
-                colorInput.style.display = shouldShowCustomColor ? 'block' : 'none';
-            if (colorLabel)
-                colorLabel.style.display = shouldShowCustomColor ? 'block' : 'none';
-            const opacityInput = elements.aiNameBubbleOpacityInput;
-            const opacityLabel = document.querySelector('label[for="ai-name-bubble-opacity"]');
-            if (opacityInput)
-                opacityInput.style.display = state.settings.showAiNameBubble ? 'block' : 'none';
-            if (opacityLabel)
-                opacityLabel.style.display = state.settings.showAiNameBubble ? 'block' : 'none';
-        }
     },
     applyOpacitySettings() {
         document.documentElement.style.setProperty('--message-bubble-opacity', state.settings.enableMessageBubbleOpacity ? state.settings.messageBubbleOpacity : 1);
@@ -11400,14 +10590,6 @@ Object.assign(uiUtils, {
                 userMessageColor = DARK_MODE_USER_MESSAGE_COLOR;
                 modelMessageColor = DARK_MODE_MODEL_MESSAGE_COLOR;
                 overlayBaseColor = DARK_MODE_PRIMARY_COLOR;
-                tertiaryColorRgbStr = getComputedStyle(document.body).getPropertyValue('--bg-tertiary-rgb').trim();
-                break;
-            case 'turf':
-                headerColor = TURF_HEADER_COLOR;
-                secondaryColor = TURF_SECONDARY_COLOR;
-                userMessageColor = TURF_USER_MESSAGE_COLOR;
-                modelMessageColor = TURF_MODEL_MESSAGE_COLOR;
-                overlayBaseColor = TURF_PRIMARY_COLOR;
                 tertiaryColorRgbStr = getComputedStyle(document.body).getPropertyValue('--bg-tertiary-rgb').trim();
                 break;
             case 'pastel-pink':
@@ -11520,7 +10702,7 @@ Object.assign(uiUtils, {
     },
     applyTheme() {
         const theme = state.settings.theme;
-        document.body.classList.remove('dark-mode', 'light-mode-forced', 'pastel-pink-mode', 'pastel-blue-mode', 'pastel-yellow-mode', 'pastel-purple-mode', 'pastel-rainbow-mode', 'turf-mode');
+        document.body.classList.remove('dark-mode', 'light-mode-forced', 'pastel-pink-mode', 'pastel-blue-mode', 'pastel-yellow-mode', 'pastel-purple-mode', 'pastel-rainbow-mode');
         let themeColorMetaValue;
         let currentThemeUserMessageBgRgb = this.hexToRgb(LIGHT_MODE_USER_MESSAGE_COLOR) || { r: 220, g: 248, b: 198 };
         let currentThemeModelMessageBgRgb = this.hexToRgb(LIGHT_MODE_MODEL_MESSAGE_COLOR) || { r: 229, g: 229, b: 234 };
@@ -11530,12 +10712,6 @@ Object.assign(uiUtils, {
                 themeColorMetaValue = DARK_THEME_COLOR;
                 currentThemeUserMessageBgRgb = this.hexToRgb(DARK_MODE_USER_MESSAGE_COLOR) || { r: 5, g: 97, b: 98 };
                 currentThemeModelMessageBgRgb = this.hexToRgb(DARK_MODE_MODEL_MESSAGE_COLOR) || { r: 58, g: 58, b: 60 };
-                break;
-            case 'turf':
-                document.body.classList.add('turf-mode');
-                themeColorMetaValue = TURF_THEME_COLOR;
-                currentThemeUserMessageBgRgb = this.hexToRgb(TURF_USER_MESSAGE_COLOR) || { r: 220, g: 248, b: 198 };
-                currentThemeModelMessageBgRgb = this.hexToRgb(TURF_MODEL_MESSAGE_COLOR) || { r: 229, g: 229, b: 234 };
                 break;
             case 'pastel-pink':
                 document.body.classList.add('pastel-pink-mode');
@@ -11836,24 +11012,6 @@ Object.assign(uiUtils, {
         elements.showMemoButtonToggle.checked = state.settings.showMemoButton;
         elements.memoHeightInput.value = state.settings.memoHeight || '';
         elements.showClipboardStackButtonToggle.checked = state.settings.showClipboardStackButton;
-        elements.showUserIconToggle.checked = state.settings.showUserIcon;
-        elements.showUserNameToggle.checked = state.settings.showUserName;
-        elements.userNameInput.value = state.settings.userName || '';
-        elements.showAiIconToggle.checked = state.settings.showAiIcon;
-        elements.showAiNameToggle.checked = state.settings.showAiName;
-        elements.aiNameInput.value = state.settings.aiName || '';
-        elements.iconNameFontSizeInput.value = state.settings.iconNameFontSize ?? DEFAULT_ICON_NAME_FONT_SIZE;
-        elements.iconNameOffsetYInput.value = state.settings.iconNameOffsetY !== null ? (state.settings.iconNameOffsetY * -1) : (DEFAULT_ICON_NAME_OFFSET_Y * -1);
-        elements.messageIconSizeInput.value = state.settings.messageIconSize ?? DEFAULT_MESSAGE_ICON_SIZE;
-        elements.messageIconOffsetYInput.value = state.settings.messageIconOffsetY !== null ? (state.settings.messageIconOffsetY * -1) : (DEFAULT_MESSAGE_ICON_OFFSET_Y * -1);
-        elements.userNameBubbleToggle.checked = state.settings.showUserNameBubble;
-        elements.userNameBubbleUseThemeColorToggle.checked = state.settings.userNameBubbleUseThemeColor;
-        elements.userNameBubbleColorInput.value = state.settings.userNameBubbleColor || DEFAULT_USER_NAME_BUBBLE_COLOR;
-        elements.userNameBubbleOpacityInput.value = state.settings.userNameBubbleOpacity ?? DEFAULT_USER_NAME_BUBBLE_OPACITY;
-        elements.aiNameBubbleToggle.checked = state.settings.showAiNameBubble;
-        elements.aiNameBubbleUseThemeColorToggle.checked = state.settings.aiNameBubbleUseThemeColor;
-        elements.aiNameBubbleColorInput.value = state.settings.aiNameBubbleColor || DEFAULT_AI_NAME_BUBBLE_COLOR;
-        elements.aiNameBubbleOpacityInput.value = state.settings.aiNameBubbleOpacity ?? DEFAULT_AI_NAME_BUBBLE_OPACITY;
         elements.disableRetryConfirmationToggle.checked = state.settings.disableRetryConfirmation;
         elements.disableLoadChatConfirmationWhileSendingToggle.checked = state.settings.disableLoadChatConfirmationWhileSending;
         elements.disableDeleteMessageConfirmationToggle.checked = state.settings.disableDeleteMessageConfirmation;
@@ -11900,8 +11058,6 @@ Object.assign(uiUtils, {
         this.updateOpenAIUserModelOptions();
         this.updateXaiUserModelOptions();
         this.updateLlmAggregatorUserModelOptions();
-        this.updateBackgroundSettingsUI();
-        this.updateIconSettingsUI();
         this.applyTheme();
         this.applyFontFamily();
         this.applySidePanelSettingsToUI();
@@ -13116,59 +12272,6 @@ Object.assign(appLogic, {
             uiUtils.applyUserBubbleWidthSetting();
             uiUtils.applyMessageSpacingSetting();
             uiUtils.applyCompactSettingsSpacing();
-            if (state.settings.backgroundImageBlob instanceof Blob) {
-                uiUtils.revokeExistingObjectUrl();
-                try {
-                    state.backgroundImageUrl = URL.createObjectURL(state.settings.backgroundImageBlob);
-                    document.documentElement.style.setProperty('--chat-background-image', `url(${state.backgroundImageUrl})`);
-                }
-                catch (e) {
-                    document.documentElement.style.setProperty('--chat-background-image', 'none');
-                }
-            }
-            else {
-                document.documentElement.style.setProperty('--chat-background-image', 'none');
-            }
-            if (state.settings.historyBackgroundImageBlob instanceof Blob) {
-                try {
-                    if (state.historyBackgroundImageUrl)
-                        URL.revokeObjectURL(state.historyBackgroundImageUrl);
-                    state.historyBackgroundImageUrl = URL.createObjectURL(state.settings.historyBackgroundImageBlob);
-                    document.documentElement.style.setProperty('--history-background-image', `url(${state.historyBackgroundImageUrl})`);
-                }
-                catch (e) {
-                    document.documentElement.style.setProperty('--history-background-image', 'none');
-                }
-            }
-            else {
-                document.documentElement.style.setProperty('--history-background-image', 'none');
-            }
-            if (state.settings.settingsBackgroundImageBlob instanceof Blob) {
-                try {
-                    if (state.settingsBackgroundImageUrl)
-                        URL.revokeObjectURL(state.settingsBackgroundImageUrl);
-                    state.settingsBackgroundImageUrl = URL.createObjectURL(state.settings.settingsBackgroundImageBlob);
-                    document.documentElement.style.setProperty('--settings-background-image', `url(${state.settingsBackgroundImageUrl})`);
-                }
-                catch (e) {
-                    document.documentElement.style.setProperty('--settings-background-image', 'none');
-                }
-            }
-            else {
-                document.documentElement.style.setProperty('--settings-background-image', 'none');
-            }
-            if (state.settings.userIconBlob instanceof Blob) {
-                try {
-                    state.userIconUrl = URL.createObjectURL(state.settings.userIconBlob);
-                }
-                catch (e) { }
-            }
-            if (state.settings.aiIconBlob instanceof Blob) {
-                try {
-                    state.aiIconUrl = URL.createObjectURL(state.settings.aiIconBlob);
-                }
-                catch (e) { }
-            }
             uiUtils.applySettingsToUI();
             const chats = await dbUtils.getAllChats(state.settings.historySortOrder);
             if (chats && chats.length > 0) {
@@ -13459,197 +12562,6 @@ Object.assign(appLogic, {
                     }
                 }
             });
-        });
-        const handleBgUpload = async (file, type) => {
-            if (!file)
-                return;
-            if (file.size > MAX_FILE_SIZE) {
-                await uiUtils.showCustomAlert(`ファイルサイズが大きすぎます (${formatFileSize(file.size)})。${formatFileSize(MAX_FILE_SIZE)}以下にしてください。`);
-                return;
-            }
-            const objectUrl = URL.createObjectURL(file);
-            if (type === 'chat') {
-                if (state.backgroundImageUrl)
-                    URL.revokeObjectURL(state.backgroundImageUrl);
-                state.backgroundImageUrl = objectUrl;
-                state.settings.backgroundImageBlob = file;
-                document.documentElement.style.setProperty('--chat-background-image', `url(${objectUrl})`);
-                await dbUtils.saveSetting('backgroundImageBlob', file);
-            }
-            else if (type === 'history') {
-                if (state.historyBackgroundImageUrl)
-                    URL.revokeObjectURL(state.historyBackgroundImageUrl);
-                state.historyBackgroundImageUrl = objectUrl;
-                state.settings.historyBackgroundImageBlob = file;
-                document.documentElement.style.setProperty('--history-background-image', `url(${objectUrl})`);
-                await dbUtils.saveSetting('historyBackgroundImageBlob', file);
-            }
-            else if (type === 'settings') {
-                if (state.settingsBackgroundImageUrl)
-                    URL.revokeObjectURL(state.settingsBackgroundImageUrl);
-                state.settingsBackgroundImageUrl = objectUrl;
-                state.settings.settingsBackgroundImageBlob = file;
-                document.documentElement.style.setProperty('--settings-background-image', `url(${objectUrl})`);
-                await dbUtils.saveSetting('settingsBackgroundImageBlob', file);
-            }
-            uiUtils.updateBackgroundSettingsUI();
-            if (state.settings.autoSaveSettings)
-                this.saveSettings(false);
-        };
-        const confirmDeleteBg = async (type) => {
-            const confirmed = await uiUtils.showCustomConfirm("背景画像を削除しますか？");
-            if (confirmed) {
-                if (type === 'chat') {
-                    if (state.backgroundImageUrl)
-                        URL.revokeObjectURL(state.backgroundImageUrl);
-                    state.backgroundImageUrl = null;
-                    state.settings.backgroundImageBlob = null;
-                    document.documentElement.style.setProperty('--chat-background-image', 'none');
-                    await dbUtils.saveSetting('backgroundImageBlob', null);
-                }
-                else if (type === 'history') {
-                    if (state.historyBackgroundImageUrl)
-                        URL.revokeObjectURL(state.historyBackgroundImageUrl);
-                    state.historyBackgroundImageUrl = null;
-                    state.settings.historyBackgroundImageBlob = null;
-                    document.documentElement.style.setProperty('--history-background-image', 'none');
-                    await dbUtils.saveSetting('historyBackgroundImageBlob', null);
-                }
-                else if (type === 'settings') {
-                    if (state.settingsBackgroundImageUrl)
-                        URL.revokeObjectURL(state.settingsBackgroundImageUrl);
-                    state.settingsBackgroundImageUrl = null;
-                    state.settings.settingsBackgroundImageBlob = null;
-                    document.documentElement.style.setProperty('--settings-background-image', 'none');
-                    await dbUtils.saveSetting('settingsBackgroundImageBlob', null);
-                }
-                uiUtils.updateBackgroundSettingsUI();
-                if (state.settings.autoSaveSettings)
-                    this.saveSettings(false);
-            }
-        };
-        elements.uploadBackgroundBtn.addEventListener('click', () => elements.backgroundImageInput.click());
-        elements.backgroundImageInput.addEventListener('change', (e) => { handleBgUpload(e.target.files[0], 'chat'); e.target.value = null; });
-        elements.deleteBackgroundBtn.addEventListener('click', () => confirmDeleteBg('chat'));
-        if (elements.uploadHistoryBgBtn) {
-            elements.uploadHistoryBgBtn.addEventListener('click', () => elements.historyBgInput.click());
-            elements.historyBgInput.addEventListener('change', (e) => { handleBgUpload(e.target.files[0], 'history'); e.target.value = null; });
-            elements.deleteHistoryBgBtn.addEventListener('click', () => confirmDeleteBg('history'));
-        }
-        if (elements.uploadSettingsBgBtn) {
-            elements.uploadSettingsBgBtn.addEventListener('click', () => elements.settingsBgInput.click());
-            elements.settingsBgInput.addEventListener('change', (e) => { handleBgUpload(e.target.files[0], 'settings'); e.target.value = null; });
-            elements.deleteSettingsBgBtn.addEventListener('click', () => confirmDeleteBg('settings'));
-        }
-        elements.showUserIconToggle.addEventListener('change', () => {
-            state.settings.showUserIcon = elements.showUserIconToggle.checked;
-            uiUtils.renderChatMessages(true, true);
-        });
-        elements.uploadUserIconBtn.addEventListener('click', () => elements.userIconInput.click());
-        elements.userIconInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file)
-                this.handleIconUpload('user', file);
-            event.target.value = null;
-        });
-        elements.deleteUserIconBtn.addEventListener('click', () => this.confirmDeleteIcon('user'));
-        elements.showUserNameToggle.addEventListener('change', () => {
-            state.settings.showUserName = elements.showUserNameToggle.checked;
-            uiUtils.renderChatMessages(true, true);
-        });
-        elements.showAiIconToggle.addEventListener('change', () => {
-            state.settings.showAiIcon = elements.showAiIconToggle.checked;
-            uiUtils.renderChatMessages(true, true);
-        });
-        elements.uploadAiIconBtn.addEventListener('click', () => elements.aiIconInput.click());
-        elements.aiIconInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file)
-                this.handleIconUpload('ai', file);
-            event.target.value = null;
-        });
-        elements.deleteAiIconBtn.addEventListener('click', () => this.confirmDeleteIcon('ai'));
-        elements.showAiNameToggle.addEventListener('change', () => {
-            state.settings.showAiName = elements.showAiNameToggle.checked;
-            uiUtils.renderChatMessages(true, true);
-        });
-        elements.iconNameFontSizeInput.addEventListener('input', () => {
-            const newSize = parseInt(elements.iconNameFontSizeInput.value, 10);
-            if (newSize >= 6 && newSize <= 16) {
-                document.documentElement.style.setProperty('--icon-name-font-size', `${newSize}px`);
-            }
-            else if (elements.iconNameFontSizeInput.value === '') {
-                document.documentElement.style.setProperty('--icon-name-font-size', `${DEFAULT_ICON_NAME_FONT_SIZE}px`);
-            }
-        });
-        elements.iconNameOffsetYInput.addEventListener('input', () => {
-            const uiOffsetY = parseInt(elements.iconNameOffsetYInput.value, 10);
-            const internalOffsetY = isNaN(uiOffsetY) ? DEFAULT_ICON_NAME_OFFSET_Y : (uiOffsetY * -1);
-            if (internalOffsetY >= -20 && internalOffsetY <= 20) {
-                document.documentElement.style.setProperty('--icon-name-offset-y', `${internalOffsetY}px`);
-            }
-            else if (elements.iconNameOffsetYInput.value === '') {
-                document.documentElement.style.setProperty('--icon-name-offset-y', `${DEFAULT_ICON_NAME_OFFSET_Y}px`);
-            }
-        });
-        elements.messageIconSizeInput.addEventListener('input', () => {
-            const newSize = parseInt(elements.messageIconSizeInput.value, 10);
-            if (newSize >= 16 && newSize <= 64) {
-                document.documentElement.style.setProperty('--message-icon-size', `${newSize}px`);
-            }
-            else if (elements.messageIconSizeInput.value === '') {
-                document.documentElement.style.setProperty('--message-icon-size', `${DEFAULT_MESSAGE_ICON_SIZE}px`);
-            }
-        });
-        elements.messageIconOffsetYInput.addEventListener('input', () => {
-            const uiOffsetY = parseInt(elements.messageIconOffsetYInput.value, 10);
-            const internalOffsetY = isNaN(uiOffsetY) ? DEFAULT_MESSAGE_ICON_OFFSET_Y : (uiOffsetY * -1);
-            if (internalOffsetY >= -50 && internalOffsetY <= 50) {
-                document.documentElement.style.setProperty('--message-icon-offset-y', `${internalOffsetY}px`);
-            }
-            else if (elements.messageIconOffsetYInput.value === '') {
-                document.documentElement.style.setProperty('--message-icon-offset-y', `${DEFAULT_MESSAGE_ICON_OFFSET_Y}px`);
-            }
-        });
-        elements.userNameBubbleToggle.addEventListener('change', () => {
-            state.settings.showUserNameBubble = elements.userNameBubbleToggle.checked;
-            uiUtils.applySidePanelSettingsToUI();
-            uiUtils.renderChatMessages(true, true);
-        });
-        elements.userNameBubbleUseThemeColorToggle.addEventListener('change', () => {
-            state.settings.userNameBubbleUseThemeColor = elements.userNameBubbleUseThemeColorToggle.checked;
-            uiUtils.applySidePanelSettingsToUI();
-            uiUtils.renderChatMessages(true, true);
-        });
-        elements.userNameBubbleColorInput.addEventListener('input', () => {
-            state.settings.userNameBubbleColor = elements.userNameBubbleColorInput.value.trim() || DEFAULT_USER_NAME_BUBBLE_COLOR;
-            uiUtils.applySidePanelSettingsToUI();
-            uiUtils.renderChatMessages(true, true);
-        });
-        elements.userNameBubbleOpacityInput.addEventListener('input', () => {
-            state.settings.userNameBubbleOpacity = elements.userNameBubbleOpacityInput.value === '' ? DEFAULT_USER_NAME_BUBBLE_OPACITY : parseFloat(elements.userNameBubbleOpacityInput.value);
-            uiUtils.applySidePanelSettingsToUI();
-            uiUtils.renderChatMessages(true, true);
-        });
-        elements.aiNameBubbleToggle.addEventListener('change', () => {
-            state.settings.showAiNameBubble = elements.aiNameBubbleToggle.checked;
-            uiUtils.applySidePanelSettingsToUI();
-            uiUtils.renderChatMessages(true, true);
-        });
-        elements.aiNameBubbleUseThemeColorToggle.addEventListener('change', () => {
-            state.settings.aiNameBubbleUseThemeColor = elements.aiNameBubbleUseThemeColorToggle.checked;
-            uiUtils.applySidePanelSettingsToUI();
-            uiUtils.renderChatMessages(true, true);
-        });
-        elements.aiNameBubbleColorInput.addEventListener('input', () => {
-            state.settings.aiNameBubbleColor = elements.aiNameBubbleColorInput.value.trim() || DEFAULT_AI_NAME_BUBBLE_COLOR;
-            uiUtils.applySidePanelSettingsToUI();
-            uiUtils.renderChatMessages(true, true);
-        });
-        elements.aiNameBubbleOpacityInput.addEventListener('input', () => {
-            state.settings.aiNameBubbleOpacity = elements.aiNameBubbleOpacityInput.value === '' ? DEFAULT_AI_NAME_BUBBLE_OPACITY : parseFloat(elements.aiNameBubbleOpacityInput.value);
-            uiUtils.applySidePanelSettingsToUI();
-            uiUtils.renderChatMessages(true, true);
         });
         this._setupOpacitySlider('message-bubble-opacity', '--message-bubble-opacity', DEFAULT_MESSAGE_BUBBLE_OPACITY);
         this._setupOpacitySlider('message-actions-background-opacity', '--message-actions-bg-opacity', DEFAULT_MESSAGE_ACTIONS_BACKGROUND_OPACITY);
@@ -16266,13 +15178,6 @@ Object.assign(appLogic, {
         reader.readAsText(file);
     },
     getTextSettingsForExport() {
-        const excludedKeys = new Set([
-            'backgroundImageBlob',
-            'historyBackgroundImageBlob',
-            'settingsBackgroundImageBlob',
-            'userIconBlob',
-            'aiIconBlob'
-        ]);
         const cloneTextValue = (value) => {
             if (value === null)
                 return null;
@@ -16301,8 +15206,6 @@ Object.assign(appLogic, {
         };
         const exportSettings = {};
         Object.entries(state.settings).forEach(([key, value]) => {
-            if (excludedKeys.has(key))
-                return;
             const cloned = cloneTextValue(value);
             if (typeof cloned !== 'undefined') {
                 exportSettings[key] = cloned;
@@ -16311,7 +15214,7 @@ Object.assign(appLogic, {
         return exportSettings;
     },
     async exportSettings() {
-        const confirmed = await uiUtils.showCustomConfirm("APIキーを含むテキスト設定をJSONファイルとしてエクスポートしますか？\n背景画像やアイコン画像は含まれません。");
+        const confirmed = await uiUtils.showCustomConfirm("APIキーを含むテキスト設定をJSONファイルとしてエクスポートしますか？");
         if (!confirmed)
             return;
         try {
@@ -16323,7 +15226,6 @@ Object.assign(appLogic, {
                 appVersion: APP_VERSION,
                 exportedAt: new Date().toISOString(),
                 includesApiKeys: true,
-                excluded: ['backgroundImageBlob', 'historyBackgroundImageBlob', 'settingsBackgroundImageBlob', 'userIconBlob', 'aiIconBlob'],
                 settings: this.getTextSettingsForExport()
             };
             const jsonString = JSON.stringify(exportData, null, 2);
@@ -16364,17 +15266,10 @@ Object.assign(appLogic, {
                     await uiUtils.showCustomAlert("無効な設定ファイルです。");
                     return;
                 }
-                const confirmed = await uiUtils.showCustomConfirm("APIキーを含む設定を現在の設定へ上書きインポートしますか？\n背景画像やアイコン画像は変更されません。");
+                const confirmed = await uiUtils.showCustomConfirm("APIキーを含む設定を現在の設定へ上書きインポートしますか？");
                 if (!confirmed)
                     return;
-                const excludedKeys = new Set([
-                    'backgroundImageBlob',
-                    'historyBackgroundImageBlob',
-                    'settingsBackgroundImageBlob',
-                    'userIconBlob',
-                    'aiIconBlob'
-                ]);
-                const allowedKeys = new Set(Object.keys(state.settings).filter(key => !excludedKeys.has(key)));
+                const allowedKeys = new Set(Object.keys(state.settings));
                 const isPlainObject = (value) => value && typeof value === 'object' && !Array.isArray(value);
                 const sanitizeImportedValue = (value) => {
                     if (value === null)
@@ -16435,112 +15330,6 @@ Object.assign(appLogic, {
             await uiUtils.showCustomAlert("ファイルの読み込みに失敗しました。");
         };
         reader.readAsText(file);
-    },
-    async handleBackgroundImageUpload(file) {
-        const maxSize = 5 * 1024 * 1024;
-        if (file.size > maxSize) {
-            await uiUtils.showCustomAlert(`画像サイズが大きすぎます (${(maxSize / 1024 / 1024).toFixed(1)}MB以下にしてください)`);
-            return;
-        }
-        if (!file.type.startsWith('image/')) {
-            await uiUtils.showCustomAlert("画像ファイルを選択してください (JPEG, PNG, GIF, WebPなど)");
-            return;
-        }
-        try {
-            uiUtils.revokeExistingObjectUrl();
-            const blob = file;
-            await dbUtils.saveSetting('backgroundImageBlob', blob);
-            state.settings.backgroundImageBlob = blob;
-            state.backgroundImageUrl = URL.createObjectURL(blob);
-            document.documentElement.style.setProperty('--chat-background-image', `url(${state.backgroundImageUrl})`);
-            uiUtils.updateBackgroundSettingsUI();
-        }
-        catch (error) {
-            uiUtils.revokeExistingObjectUrl();
-            document.documentElement.style.setProperty('--chat-background-image', 'none');
-            state.settings.backgroundImageBlob = null;
-            uiUtils.updateBackgroundSettingsUI();
-        }
-    },
-    async confirmDeleteBackgroundImage() {
-        const confirmed = await uiUtils.showCustomConfirm("背景画像を削除しますか？");
-        if (confirmed) {
-            await this.handleBackgroundImageDelete();
-        }
-    },
-    async handleBackgroundImageDelete() {
-        try {
-            uiUtils.revokeExistingObjectUrl();
-            await dbUtils.saveSetting('backgroundImageBlob', null);
-            state.settings.backgroundImageBlob = null;
-            document.documentElement.style.setProperty('--chat-background-image', 'none');
-            uiUtils.updateBackgroundSettingsUI();
-        }
-        catch (error) {
-        }
-    },
-    async handleIconUpload(type, file) {
-        const maxSize = 1 * 1024 * 1024;
-        if (file.size > maxSize) {
-            await uiUtils.showCustomAlert(`画像サイズが大きすぎます (${(maxSize / 1024 / 1024).toFixed(1)}MB以下)。`);
-            return;
-        }
-        if (!file.type.startsWith('image/')) {
-            await uiUtils.showCustomAlert("画像ファイルを選択してください。");
-            return;
-        }
-        try {
-            const blob = file;
-            if (type === 'user') {
-                if (state.userIconUrl)
-                    URL.revokeObjectURL(state.userIconUrl);
-                await dbUtils.saveSetting('userIconBlob', blob);
-                state.settings.userIconBlob = blob;
-                state.userIconUrl = URL.createObjectURL(blob);
-            }
-            else if (type === 'ai') {
-                if (state.aiIconUrl)
-                    URL.revokeObjectURL(state.aiIconUrl);
-                await dbUtils.saveSetting('aiIconBlob', blob);
-                state.settings.aiIconBlob = blob;
-                state.aiIconUrl = URL.createObjectURL(blob);
-            }
-            uiUtils.updateIconSettingsUI();
-            uiUtils.renderChatMessages(true, true);
-        }
-        catch (error) {
-            await uiUtils.showCustomAlert(`${type === 'user' ? 'ユーザー' : 'AI'}アイコンの処理エラー: ${error}`);
-        }
-    },
-    async confirmDeleteIcon(type) {
-        const iconName = type === 'user' ? 'ユーザー' : 'AI';
-        const confirmed = await uiUtils.showCustomConfirm(`${iconName}アイコンを削除しますか？`);
-        if (confirmed) {
-            await this.handleIconDelete(type);
-        }
-    },
-    async handleIconDelete(type) {
-        try {
-            if (type === 'user') {
-                if (state.userIconUrl)
-                    URL.revokeObjectURL(state.userIconUrl);
-                state.userIconUrl = null;
-                state.settings.userIconBlob = null;
-                await dbUtils.saveSetting('userIconBlob', null);
-            }
-            else if (type === 'ai') {
-                if (state.aiIconUrl)
-                    URL.revokeObjectURL(state.aiIconUrl);
-                state.aiIconUrl = null;
-                state.settings.aiIconBlob = null;
-                await dbUtils.saveSetting('aiIconBlob', null);
-            }
-            uiUtils.updateIconSettingsUI();
-            uiUtils.renderChatMessages(true, true);
-        }
-        catch (error) {
-            await uiUtils.showCustomAlert(`${type === 'user' ? 'ユーザー' : 'AI'}アイコンの削除エラー: ${error}`);
-        }
     },
     cycleActiveApiKey() {
         const provider = state.settings.apiProvider;
@@ -16779,24 +15568,6 @@ Object.assign(appLogic, {
         newSettings.memoHeight = elements.memoHeightInput.value.trim() || DEFAULT_MEMO_HEIGHT;
         newSettings.showClipboardStackButton = elements.showClipboardStackButtonToggle.checked;
         newSettings.clipboardStackHeight = state.settings.clipboardStackHeight;
-        newSettings.showUserIcon = elements.showUserIconToggle.checked;
-        newSettings.showUserName = elements.showUserNameToggle.checked;
-        newSettings.userName = elements.userNameInput.value.trim() || DEFAULT_USER_NAME;
-        newSettings.showAiIcon = elements.showAiIconToggle.checked;
-        newSettings.showAiName = elements.showAiNameToggle.checked;
-        newSettings.aiName = elements.aiNameInput.value.trim() || DEFAULT_AI_NAME;
-        newSettings.iconNameFontSize = parseInt(elements.iconNameFontSizeInput.value, 10) || DEFAULT_ICON_NAME_FONT_SIZE;
-        newSettings.iconNameOffsetY = (elements.iconNameOffsetYInput.value === '' ? DEFAULT_ICON_NAME_OFFSET_Y : parseInt(elements.iconNameOffsetYInput.value, 10) * -1);
-        newSettings.messageIconSize = parseInt(elements.messageIconSizeInput.value, 10) || DEFAULT_MESSAGE_ICON_SIZE;
-        newSettings.messageIconOffsetY = (elements.messageIconOffsetYInput.value === '' ? DEFAULT_MESSAGE_ICON_OFFSET_Y : parseInt(elements.messageIconOffsetYInput.value, 10) * -1);
-        newSettings.showUserNameBubble = elements.userNameBubbleToggle.checked;
-        newSettings.userNameBubbleUseThemeColor = elements.userNameBubbleUseThemeColorToggle.checked;
-        newSettings.userNameBubbleColor = elements.userNameBubbleColorInput.value.trim() || DEFAULT_USER_NAME_BUBBLE_COLOR;
-        newSettings.userNameBubbleOpacity = elements.userNameBubbleOpacityInput.value === '' ? DEFAULT_USER_NAME_BUBBLE_OPACITY : parseFloat(elements.userNameBubbleOpacityInput.value);
-        newSettings.showAiNameBubble = elements.aiNameBubbleToggle.checked;
-        newSettings.aiNameBubbleUseThemeColor = elements.aiNameBubbleUseThemeColorToggle.checked;
-        newSettings.aiNameBubbleColor = elements.aiNameBubbleColorInput.value.trim() || DEFAULT_AI_NAME_BUBBLE_COLOR;
-        newSettings.aiNameBubbleOpacity = elements.aiNameBubbleOpacityInput.value === '' ? DEFAULT_AI_NAME_BUBBLE_OPACITY : parseFloat(elements.aiNameBubbleOpacityInput.value);
         newSettings.disableRetryConfirmation = elements.disableRetryConfirmationToggle.checked;
         newSettings.disableLoadChatConfirmationWhileSending = elements.disableLoadChatConfirmationWhileSendingToggle.checked;
         newSettings.disableDeleteMessageConfirmation = elements.disableDeleteMessageConfirmationToggle.checked;
@@ -16869,8 +15640,7 @@ Object.assign(appLogic, {
         });
         try {
             const oldSortOrder = state.settings.historySortOrder;
-            const { backgroundImageBlob, historyBackgroundImageBlob, settingsBackgroundImageBlob, userIconBlob, aiIconBlob, ...settingsToSave } = newSettings;
-            const promises = Object.entries(settingsToSave).map(([key, value]) => dbUtils.saveSetting(key, value));
+            const promises = Object.entries(newSettings).map(([key, value]) => dbUtils.saveSetting(key, value));
             await Promise.all(promises);
             state.settings = newSettings;
             if (showNotice && !state.settings.disableSaveSettingsConfirmation) {
@@ -16904,8 +15674,6 @@ Object.assign(appLogic, {
         const confirmed = await uiUtils.showCustomConfirm("本当にすべてのデータ（チャット履歴と設定）を削除しますか？この操作は元に戻せません。");
         if (confirmed) {
             try {
-                uiUtils.revokeExistingObjectUrl();
-                uiUtils.revokeExistingIconUrls();
                 await dbUtils.clearAllData();
                 try {
                     localStorage.clear();

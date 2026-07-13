@@ -32,16 +32,6 @@
         const DEFAULT_CODE_BLOCK_FONT_SIZE = 13;
         const DEFAULT_MEMO_HEIGHT = '300px';
         const DEFAULT_CLIPBOARD_STACK_HEIGHT = '300px';
-        const DEFAULT_MESSAGE_ICON_SIZE = 28;
-        const DEFAULT_MESSAGE_ICON_OFFSET_Y = -10;
-        const DEFAULT_USER_NAME = "あなた";
-        const DEFAULT_AI_NAME = "AI";
-        const DEFAULT_ICON_NAME_FONT_SIZE = 10;
-        const DEFAULT_ICON_NAME_OFFSET_Y = -10;
-        const DEFAULT_USER_NAME_BUBBLE_COLOR = '#FFFFFF';
-        const DEFAULT_USER_NAME_BUBBLE_OPACITY = 0.8;
-        const DEFAULT_AI_NAME_BUBBLE_COLOR = '#FFFFFF';
-        const DEFAULT_AI_NAME_BUBBLE_OPACITY = 0.8;
         const CHAT_TITLE_LENGTH = 15;
         const TEXTAREA_MAX_HEIGHT = 120;
         const GEMINI_API_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models/';
@@ -59,7 +49,6 @@
         const PASTEL_YELLOW_THEME_COLOR = '#ffd700';
         const PASTEL_PURPLE_THEME_COLOR = '#ab47bc';
 const PASTEL_RAINBOW_THEME_COLOR = '#ffadad';
-        const TURF_THEME_COLOR = '#4CAF50';
 
         const DARK_MODE_USER_MESSAGE_COLOR = '#056162';
         const DARK_MODE_MODEL_MESSAGE_COLOR = '#3a3a3c';
@@ -95,12 +84,6 @@ const PASTEL_RAINBOW_THEME_COLOR = '#ffadad';
         const PASTEL_RAINBOW_SECONDARY_COLOR = '#f0f0f0';
         const PASTEL_RAINBOW_HEADER_COLOR = '#ffadad';
         const PASTEL_RAINBOW_PRIMARY_COLOR = '#fdfdfd';
-
-        const TURF_USER_MESSAGE_COLOR = '#ffffff';
-        const TURF_MODEL_MESSAGE_COLOR = '#ffffff';
-        const TURF_SECONDARY_COLOR = '#F6F4F9';
-        const TURF_HEADER_COLOR = '#89d010';
-        const TURF_PRIMARY_COLOR = '#F6F4F9';
 
         const LIGHT_MODE_USER_MESSAGE_COLOR = '#dcf8c6';
         const LIGHT_MODE_MODEL_MESSAGE_COLOR = '#e5e5ea';

@@ -304,14 +304,6 @@ Object.assign(appLogic, {
                 reader.readAsText(file);
             },
             getTextSettingsForExport() {
-                const excludedKeys = new Set([
-                    'backgroundImageBlob',
-                    'historyBackgroundImageBlob',
-                    'settingsBackgroundImageBlob',
-                    'userIconBlob',
-                    'aiIconBlob'
-                ]);
-
                 const cloneTextValue = (value) => {
                     if (value === null) return null;
                     if (['string', 'number', 'boolean'].includes(typeof value)) return value;
@@ -337,7 +329,6 @@ Object.assign(appLogic, {
 
                 const exportSettings = {};
                 Object.entries(state.settings).forEach(([key, value]) => {
-                    if (excludedKeys.has(key)) return;
                     const cloned = cloneTextValue(value);
                     if (typeof cloned !== 'undefined') {
                         exportSettings[key] = cloned;
@@ -346,7 +337,7 @@ Object.assign(appLogic, {
                 return exportSettings;
             },
             async exportSettings() {
-                const confirmed = await uiUtils.showCustomConfirm("APIキーを含むテキスト設定をJSONファイルとしてエクスポートしますか？\n背景画像やアイコン画像は含まれません。");
+                const confirmed = await uiUtils.showCustomConfirm("APIキーを含むテキスト設定をJSONファイルとしてエクスポートしますか？");
                 if (!confirmed) return;
 
                 try {
@@ -358,7 +349,6 @@ Object.assign(appLogic, {
                         appVersion: APP_VERSION,
                         exportedAt: new Date().toISOString(),
                         includesApiKeys: true,
-                        excluded: ['backgroundImageBlob', 'historyBackgroundImageBlob', 'settingsBackgroundImageBlob', 'userIconBlob', 'aiIconBlob'],
                         settings: this.getTextSettingsForExport()
                     };
                     const jsonString = JSON.stringify(exportData, null, 2);
@@ -402,17 +392,10 @@ Object.assign(appLogic, {
                             return;
                         }
 
-                        const confirmed = await uiUtils.showCustomConfirm("APIキーを含む設定を現在の設定へ上書きインポートしますか？\n背景画像やアイコン画像は変更されません。");
+                        const confirmed = await uiUtils.showCustomConfirm("APIキーを含む設定を現在の設定へ上書きインポートしますか？");
                         if (!confirmed) return;
 
-                        const excludedKeys = new Set([
-                            'backgroundImageBlob',
-                            'historyBackgroundImageBlob',
-                            'settingsBackgroundImageBlob',
-                            'userIconBlob',
-                            'aiIconBlob'
-                        ]);
-                        const allowedKeys = new Set(Object.keys(state.settings).filter(key => !excludedKeys.has(key)));
+                        const allowedKeys = new Set(Object.keys(state.settings));
                         const isPlainObject = (value) => value && typeof value === 'object' && !Array.isArray(value);
                         const sanitizeImportedValue = (value) => {
                             if (value === null) return null;
@@ -473,104 +456,6 @@ Object.assign(appLogic, {
                     await uiUtils.showCustomAlert("ファイルの読み込みに失敗しました。");
                 };
                 reader.readAsText(file);
-            },
-            async handleBackgroundImageUpload(file) {
-                const maxSize = 5 * 1024 * 1024;
-                if (file.size > maxSize) {
-                    await uiUtils.showCustomAlert(`画像サイズが大きすぎます (${(maxSize / 1024 / 1024).toFixed(1)}MB以下にしてください)`);
-                    return;
-                }
-                if (!file.type.startsWith('image/')) {
-                    await uiUtils.showCustomAlert("画像ファイルを選択してください (JPEG, PNG, GIF, WebPなど)");
-                    return;
-                }
-
-                try {
-                    uiUtils.revokeExistingObjectUrl();
-                    const blob = file;
-                    await dbUtils.saveSetting('backgroundImageBlob', blob);
-                    state.settings.backgroundImageBlob = blob;
-                    state.backgroundImageUrl = URL.createObjectURL(blob);
-                    document.documentElement.style.setProperty('--chat-background-image', `url(${state.backgroundImageUrl})`);
-                    uiUtils.updateBackgroundSettingsUI();
-                } catch (error) {
-                    uiUtils.revokeExistingObjectUrl();
-                    document.documentElement.style.setProperty('--chat-background-image', 'none');
-                    state.settings.backgroundImageBlob = null;
-                    uiUtils.updateBackgroundSettingsUI();
-                }
-            },
-            async confirmDeleteBackgroundImage() {
-                const confirmed = await uiUtils.showCustomConfirm("背景画像を削除しますか？");
-                if (confirmed) {
-                    await this.handleBackgroundImageDelete();
-                }
-            },
-            async handleBackgroundImageDelete() {
-                try {
-                    uiUtils.revokeExistingObjectUrl();
-                    await dbUtils.saveSetting('backgroundImageBlob', null);
-                    state.settings.backgroundImageBlob = null;
-                    document.documentElement.style.setProperty('--chat-background-image', 'none');
-                    uiUtils.updateBackgroundSettingsUI();
-                } catch (error) {
-                }
-            },
-            async handleIconUpload(type, file) {
-                const maxSize = 1 * 1024 * 1024;
-                if (file.size > maxSize) {
-                    await uiUtils.showCustomAlert(`画像サイズが大きすぎます (${(maxSize / 1024 / 1024).toFixed(1)}MB以下)。`);
-                    return;
-                }
-                if (!file.type.startsWith('image/')) {
-                    await uiUtils.showCustomAlert("画像ファイルを選択してください。");
-                    return;
-                }
-
-                try {
-                    const blob = file;
-                    if (type === 'user') {
-                        if (state.userIconUrl) URL.revokeObjectURL(state.userIconUrl);
-                        await dbUtils.saveSetting('userIconBlob', blob);
-                        state.settings.userIconBlob = blob;
-                        state.userIconUrl = URL.createObjectURL(blob);
-                    } else if (type === 'ai') {
-                        if (state.aiIconUrl) URL.revokeObjectURL(state.aiIconUrl);
-                        await dbUtils.saveSetting('aiIconBlob', blob);
-                        state.settings.aiIconBlob = blob;
-                        state.aiIconUrl = URL.createObjectURL(blob);
-                    }
-                    uiUtils.updateIconSettingsUI();
-                    uiUtils.renderChatMessages(true, true);
-                } catch (error) {
-                    await uiUtils.showCustomAlert(`${type === 'user' ? 'ユーザー' : 'AI'}アイコンの処理エラー: ${error}`);
-                }
-            },
-            async confirmDeleteIcon(type) {
-                const iconName = type === 'user' ? 'ユーザー' : 'AI';
-                const confirmed = await uiUtils.showCustomConfirm(`${iconName}アイコンを削除しますか？`);
-                if (confirmed) {
-                    await this.handleIconDelete(type);
-                }
-            },
-            async handleIconDelete(type) {
-                try {
-                    if (type === 'user') {
-                        if (state.userIconUrl) URL.revokeObjectURL(state.userIconUrl);
-                        state.userIconUrl = null;
-                        state.settings.userIconBlob = null;
-                        await dbUtils.saveSetting('userIconBlob', null);
-                    } else if (type === 'ai') {
-                        if (state.aiIconUrl) URL.revokeObjectURL(state.aiIconUrl);
-                        state.aiIconUrl = null;
-                        state.settings.aiIconBlob = null;
-                        await dbUtils.saveSetting('aiIconBlob', null);
-                    }
-                    uiUtils.updateIconSettingsUI();
-                    uiUtils.renderChatMessages(true, true);
-                } catch (error) {
-                    await uiUtils.showCustomAlert(`${type === 'user' ? 'ユーザー' : 'AI'}アイコンの削除エラー: ${error}`);
-                }
             },
 
            cycleActiveApiKey() {
@@ -828,24 +713,6 @@ newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.che
                 newSettings.memoHeight = elements.memoHeightInput.value.trim() || DEFAULT_MEMO_HEIGHT;
                 newSettings.showClipboardStackButton = elements.showClipboardStackButtonToggle.checked;
                 newSettings.clipboardStackHeight = state.settings.clipboardStackHeight;
-                newSettings.showUserIcon = elements.showUserIconToggle.checked;
-                newSettings.showUserName = elements.showUserNameToggle.checked;
-                newSettings.userName = elements.userNameInput.value.trim() || DEFAULT_USER_NAME;
-                newSettings.showAiIcon = elements.showAiIconToggle.checked;
-                newSettings.showAiName = elements.showAiNameToggle.checked;
-                newSettings.aiName = elements.aiNameInput.value.trim() || DEFAULT_AI_NAME;
-                newSettings.iconNameFontSize = parseInt(elements.iconNameFontSizeInput.value, 10) || DEFAULT_ICON_NAME_FONT_SIZE;
-                newSettings.iconNameOffsetY = (elements.iconNameOffsetYInput.value === '' ? DEFAULT_ICON_NAME_OFFSET_Y : parseInt(elements.iconNameOffsetYInput.value, 10) * -1);
-                newSettings.messageIconSize = parseInt(elements.messageIconSizeInput.value, 10) || DEFAULT_MESSAGE_ICON_SIZE;
-                newSettings.messageIconOffsetY = (elements.messageIconOffsetYInput.value === '' ? DEFAULT_MESSAGE_ICON_OFFSET_Y : parseInt(elements.messageIconOffsetYInput.value, 10) * -1);
-                newSettings.showUserNameBubble = elements.userNameBubbleToggle.checked;
-                newSettings.userNameBubbleUseThemeColor = elements.userNameBubbleUseThemeColorToggle.checked;
-                newSettings.userNameBubbleColor = elements.userNameBubbleColorInput.value.trim() || DEFAULT_USER_NAME_BUBBLE_COLOR;
-                newSettings.userNameBubbleOpacity = elements.userNameBubbleOpacityInput.value === '' ? DEFAULT_USER_NAME_BUBBLE_OPACITY : parseFloat(elements.userNameBubbleOpacityInput.value);
-                newSettings.showAiNameBubble = elements.aiNameBubbleToggle.checked;
-                newSettings.aiNameBubbleUseThemeColor = elements.aiNameBubbleUseThemeColorToggle.checked;
-                newSettings.aiNameBubbleColor = elements.aiNameBubbleColorInput.value.trim() || DEFAULT_AI_NAME_BUBBLE_COLOR;
-                newSettings.aiNameBubbleOpacity = elements.aiNameBubbleOpacityInput.value === '' ? DEFAULT_AI_NAME_BUBBLE_OPACITY : parseFloat(elements.aiNameBubbleOpacityInput.value);
                 newSettings.disableRetryConfirmation = elements.disableRetryConfirmationToggle.checked;
                 newSettings.disableLoadChatConfirmationWhileSending = elements.disableLoadChatConfirmationWhileSendingToggle.checked;
                 newSettings.disableDeleteMessageConfirmation = elements.disableDeleteMessageConfirmationToggle.checked;
@@ -922,9 +789,7 @@ newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.che
                 try {
                     const oldSortOrder = state.settings.historySortOrder;
 
-                    const { backgroundImageBlob, historyBackgroundImageBlob, settingsBackgroundImageBlob, userIconBlob, aiIconBlob, ...settingsToSave } = newSettings;
-
-                    const promises = Object.entries(settingsToSave).map(([key, value]) =>
+                    const promises = Object.entries(newSettings).map(([key, value]) =>
                         dbUtils.saveSetting(key, value)
                     );
 
@@ -961,8 +826,6 @@ newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.che
                 const confirmed = await uiUtils.showCustomConfirm("本当にすべてのデータ（チャット履歴と設定）を削除しますか？この操作は元に戻せません。");
                 if (confirmed) {
                     try {
-                        uiUtils.revokeExistingObjectUrl();
-                        uiUtils.revokeExistingIconUrls();
                         await dbUtils.clearAllData();
 
                         try {

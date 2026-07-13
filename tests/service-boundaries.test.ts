@@ -68,7 +68,7 @@ describe('application service boundaries', () => {
   it.each([
     [
       'uiUtils',
-      68,
+      64,
       [
         'ui-message-rendering',
         'ui-message-tools',
@@ -79,7 +79,7 @@ describe('application service boundaries', () => {
     ],
     [
       'appLogic',
-      79,
+      73,
       [
         'app-initialization',
         'event-wiring',

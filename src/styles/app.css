@@ -74,10 +74,6 @@
             --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             --message-body-font-size: 14px;
                         --code-block-font-size: 13px;
-            --chat-background-image: none;
-            --history-background-image: none;
-            --settings-background-image: none;
-
             --bg-dialog-file-item: var(--bg-tertiary);
 
             --border-dialog-file-item: var(--border-secondary);
@@ -100,11 +96,6 @@
 
             --memo-height: 300px;
             --clipboard-stack-height: 300px;
-            --message-icon-size: 28px;
-            --message-icon-offset-y: -10px;
-            --icon-name-font-size: 10px;
-            --icon-name-offset-y: -10px;
-
             --bg-toggle-button: var(--bg-button-action);
             --bg-toggle-button-hover: var(--bg-button-action-hover);
             --text-toggle-button: var(--text-light);
@@ -132,17 +123,6 @@
 
             --message-actions-base-rgb: 255, 255, 255;
             --message-actions-bg-opacity: 0.8;
-
-            --user-name-bubble-bg: transparent;
-            --ai-name-bubble-bg: transparent;
-            --user-name-bubble-padding-y: 2px;
-            --user-name-bubble-padding-x-ratio: 0.5;
-            --user-name-bubble-border-radius: 5px;
-            --ai-name-bubble-padding-y: 2px;
-            --ai-name-bubble-padding-x-ratio: 0.5;
-            --ai-name-bubble-border-radius: 5px;
-            --default-user-name-bubble-custom-rgb: 255, 255, 255;
-            --default-ai-name-bubble-custom-rgb: 255, 255, 255;
 
             --thought-summary-opacity: 0.85;
             --thought-summary-font-size: 13px;
@@ -231,8 +211,6 @@
             --text-button-purple: #ffffff;
 
             --message-actions-base-rgb: 50, 50, 50;
-            --default-user-name-bubble-custom-rgb: 50, 50, 50;
-            --default-ai-name-bubble-custom-rgb: 50, 50, 50;
         }
 
         body.pastel-pink-mode {
@@ -335,8 +313,6 @@
 
             --message-actions-base-rgb: 255, 230, 234;
 
-            --default-user-name-bubble-custom-rgb: 255, 230, 234;
-            --default-ai-name-bubble-custom-rgb: 255, 230, 234;
         }
 
         body.pastel-blue-mode {
@@ -439,8 +415,6 @@
 
             --message-actions-base-rgb: 224, 240, 255;
 
-            --default-user-name-bubble-custom-rgb: 224, 240, 255;
-            --default-ai-name-bubble-custom-rgb: 224, 240, 255;
         }
 
         body.pastel-yellow-mode {
@@ -527,8 +501,6 @@
 
             --message-actions-base-rgb: 255, 250, 205;
 
-            --default-user-name-bubble-custom-rgb: 255, 250, 205;
-            --default-ai-name-bubble-custom-rgb: 255, 250, 205;
         }
 
         body.pastel-purple-mode {
@@ -615,8 +587,6 @@
 
             --message-actions-base-rgb: 225, 190, 231;
 
-            --default-user-name-bubble-custom-rgb: 225, 190, 231;
-            --default-ai-name-bubble-custom-rgb: 225, 190, 231;
         }
 
         body.pastel-rainbow-mode {
@@ -715,106 +685,6 @@
 
             --message-actions-base-rgb: 245, 245, 245;
 
-            --default-user-name-bubble-custom-rgb: 245, 245, 245;
-            --default-ai-name-bubble-custom-rgb: 245, 245, 245;
-        }
-
-body.turf-mode {
-      --dazzle-scale: 3;
-      --dazzle-dark: 0.10;
-      --dazzle-size: 340%;
-      --dazzle-light: 0.06;
-      --border-alpha: 0.28;
-
-      /* --- 色設定（細分化・ホバー色なしバージョン） --- */
-
-      /* [1] 基本色 */
-      --bg-primary: #F6F4F9;
-      --bg-secondary: #F6F4F9;
-      --bg-tertiary: #F6F4F9;
-      --bg-user-message: #ffffff;
-      --bg-model-message: #ffffff;
-      --text-primary: #7A4114;
-      --text-secondary: #7A4114;
-      --text-link: #388e3c;
-
-      /* [2] ヘッダーと主要ボタン（送信など） */
-      --bg-header: #4CAF50;
-      --bg-header-hover: #4CAF50; /* ホバー色を通常色と同じに */
-      --bg-button: #4CAF50;
-      --bg-button-hover: #4CAF50; /* ホバー色を通常色と同じに */
-      --bg-button-rgb: 76, 175, 80;
-
-      /* [3] アクションボタン（汎用：Cascade, 汎用アクションなど） */
-      --bg-button-action: #9ccc65;
-      --bg-button-action-hover: #9ccc65; /* ホバー色を通常色と同じに */
-
-      /* [4] 編集ボタン */
-      --bg-button-edit: #F9B218;
-      --bg-button-edit-hover: #F9B218; /* ホバー色を通常色と同じに */
-
-      /* [5] 危険・キャンセル系ボタン */
-      --bg-button-delete: #F25560;
-      --bg-button-delete-hover: #F25560; /* ホバー色を通常色と同じに */
-      --bg-button-cancel: #F25560;
-      --bg-button-cancel-hover: #F25560;
-      --bg-button-header-delete: #F25560;
-      --bg-button-header-delete-hover: #F25560;
-
-      /* [6] 肯定・実行系ボタン */
-      --bg-button-save: #2D7FD4;
-      --bg-button-save-hover: #2D7FD4;
-      --bg-button-update: #2D7FD4;
-      --bg-button-update-hover: #2D7FD4;
-      --bg-button-retry: #2D7FD4;
-      --bg-button-retry-hover: #2D7FD4;
-
-      /* [7] データ操作系ボタン */
-      --bg-button-copy: #F5488A;
-      --bg-button-copy-hover: #F5488A;
-      --bg-button-paste: #9ccc65;
-      --bg-button-paste-hover: #9ccc65;
-      --bg-button-duplicate: #aed581;
-      --bg-button-duplicate-hover: #aed581;
-      --bg-button-export: #dce775;
-      --bg-button-export-hover: #dce775;
-      --bg-button-header-copy: #F5488A;
-      --bg-button-header-copy-hover: #F5488A;
-
-      /* [8] チャットバブル開閉ボタン */
-      --bg-toggle-button: #9E9E9E; /* 新規追加：グレー系の色を設定 */
-      --bg-toggle-button-hover: #9E9E9E; /* ホバー色を通常色と同じに */
-      --text-toggle-button: #ffffff; /* 文字色もここで設定可能 */
-
-      /* [9] その他 */
-      --border-system: #a5d6a7;
-}
-
-        /* ターフモード専用のメッセージバブル枠線 */
-        body.turf-mode .message.user {
-            border: 2px solid #66D713; /* ユーザー: 緑色の線 */
-        }
-        body.turf-mode .message.model {
-            border: 2px solid #FD6EA3; /* AI: ピンク色の線 */
-        }
-
-        /* ターフモード専用のメッセージテキスト色（ここから追加） */
-        body.turf-mode .message.user {
-            color: #7a4114; /* ユーザーの文字*/
-        }
-        body.turf-mode .message.model {
-            color: #7a4114; /* AIの文字 */
-        }
-        body.turf-mode .mermaid-diagram {
-            background-color: #f8fff8 !important;
-        }
-
-        body.turf-mode .mermaid-diagram svg .node rect,
-        body.turf-mode .mermaid-diagram svg .node circle,
-        body.turf-mode .mermaid-diagram svg .node ellipse,
-        body.turf-mode .mermaid-diagram svg .node polygon {
-            fill: #e8f5e9 !important;
-            stroke: #4CAF50 !important;
         }
 
         * {
@@ -1319,11 +1189,7 @@ body.turf-mode {
         #chat-screen {
             position: relative;
             z-index: 0;
-            background-image: var(--chat-background-image);
-            background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
-            transition: background-image 0.3s ease, transform 0.3s ease-in-out;
+            transition: transform 0.3s ease-in-out;
         }
 
         #chat-screen::before {
@@ -1556,74 +1422,6 @@ body.turf-mode {
             margin-bottom: 15px;
         }
 
-        .message-icon {
-            width: var(--message-icon-size);
-            height: var(--message-icon-size);
-            border-radius: 50%;
-            object-fit: cover;
-            position: absolute;
-            top: calc((var(--message-icon-size) / -2 + 2px) + var(--message-icon-offset-y, 0px));
-            border: 1px solid var(--border-secondary);
-            background-color: var(--bg-tertiary);
-            box-shadow: 0 1px 2px var(--shadow-primary);
-            z-index: 2;
-        }
-
-        .message.user .message-icon {
-            right: 5px;
-        }
-
-        .message.model .message-icon {
-            left: 5px;
-        }
-
-        .message-icon-name {
-            position: absolute;
-            font-size: var(--icon-name-font-size, 10px);
-            color: var(--text-secondary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 80px;
-            z-index: 2;
-            top: calc(var(--message-icon-size) + var(--message-icon-offset-y, 0px) - (var(--message-icon-size) / 4) + var(--icon-name-offset-y, 0px));
-            padding: 0;
-            background-color: transparent;
-            border-radius: 0;
-            line-height: 1.3;
-        }
-
-        .message.user .message-icon-name {
-            left: auto;
-            right: calc(var(--message-icon-size) + 8px);
-            text-align: right;
-        }
-
-        .message.model .message-icon-name {
-            left: calc(var(--message-icon-size) + 8px);
-            right: auto;
-            text-align: left;
-        }
-
-        .message.user .message-icon-name.has-bubble {
-            background-color: var(--user-name-bubble-bg);
-            padding-top: var(--user-name-bubble-padding-y);
-            padding-bottom: var(--user-name-bubble-padding-y);
-            padding-left: calc(var(--icon-name-font-size, 10px) * var(--user-name-bubble-padding-x-ratio));
-            padding-right: calc(var(--icon-name-font-size, 10px) * var(--user-name-bubble-padding-x-ratio));
-            border-radius: var(--user-name-bubble-border-radius);
-            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
-        }
-
-        .message.model .message-icon-name.has-bubble {
-            background-color: var(--ai-name-bubble-bg);
-            padding-top: var(--ai-name-bubble-padding-y);
-            padding-bottom: var(--ai-name-bubble-padding-y);
-            padding-left: calc(var(--icon-name-font-size, 10px) * var(--ai-name-bubble-padding-x-ratio));
-            padding-right: calc(var(--icon-name-font-size, 10px) * var(--ai-name-bubble-padding-x-ratio));
-            border-radius: var(--ai-name-bubble-border-radius);
-            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
-        }
 
         .message.message-hidden-by-toggle {
             visibility: hidden;
@@ -1640,8 +1438,6 @@ body.turf-mode {
         .message.message-hidden-by-toggle .message-actions,
         .message.message-hidden-by-toggle .message-cascade-controls,
         .message.message-hidden-by-toggle .message-toggle-button,
-        .message.message-hidden-by-toggle .message-icon,
-        .message.message-hidden-by-toggle .message-icon-name,
         .message.message-hidden-by-toggle .thought-summary-details {
             display: none !important;
         }
@@ -1669,7 +1465,7 @@ body.turf-mode {
             align-self: flex-end;
             border-bottom-right-radius: 5px;
 
-            body:not(.dark-mode):not(.pastel-pink-mode):not(.pastel-blue-mode):not(.pastel-yellow-mode):not(.pastel-purple-mode):not(.pastel-rainbow-mode):not(.turf-mode) & {
+            body:not(.dark-mode):not(.pastel-pink-mode):not(.pastel-blue-mode):not(.pastel-yellow-mode):not(.pastel-purple-mode):not(.pastel-rainbow-mode) & {
                 color: #333;
             }
 
@@ -2297,10 +2093,6 @@ body.turf-mode {
                         #history-screen {
             background-color: var(--bg-primary);
             transition: transform 0.3s ease-in-out;
-            background-image: var(--history-background-image);
-            background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
         }
 
         #history-screen::before {
@@ -2353,9 +2145,6 @@ body.turf-mode {
             background-color: var(--bg-secondary);
         }
 
-        body.turf-mode .history-list.striped .history-item:nth-child(even) {
-            background-color: rgba(76, 175, 80, 0.08);
-        }
 
         .history-list.striped .history-item:hover {
             background-color: var(--bg-tertiary) !important;
@@ -2472,10 +2261,6 @@ body.turf-mode {
             transition: transform 0.3s ease-in-out;
             -webkit-user-select: none;
             user-select: none;
-            background-image: var(--settings-background-image);
-            background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
         }
 
         #settings-screen::before {
@@ -2606,12 +2391,6 @@ body.turf-mode {
             min-width: 0;
         }
 
-        .image-upload-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
 
         .settings-action-button {
             background-color: var(--bg-button-action);
@@ -2647,24 +2426,6 @@ body.turf-mode {
             background-color: var(--bg-button-delete-hover);
         }
 
-        .background-thumbnail {
-            max-width: 100px;
-            max-height: 60px;
-            border-radius: 4px;
-            border: 1px solid var(--border-tertiary);
-            object-fit: cover;
-            vertical-align: middle;
-        }
-
-        .icon-thumbnail {
-            max-width: 40px;
-            max-height: 40px;
-            border-radius: 50%;
-            border: 1px solid var(--border-tertiary);
-            object-fit: cover;
-            vertical-align: middle;
-            margin-left: 10px;
-        }
 
         #gemini-additional-models,
         #deepseek-additional-models,
@@ -2678,7 +2439,7 @@ body.turf-mode {
         }
 
         @media (prefers-color-scheme: dark) {
-    body:not(.light-mode-forced):not(.pastel-pink-mode):not(.pastel-blue-mode):not(.pastel-yellow-mode):not(.pastel-purple-mode):not(.pastel-rainbow-mode):not(.turf-mode) {
+    body:not(.light-mode-forced):not(.pastel-pink-mode):not(.pastel-blue-mode):not(.pastel-yellow-mode):not(.pastel-purple-mode):not(.pastel-rainbow-mode) {
                 --bg-primary: #1a1a1a;
                 --text-primary: #e0e0e0;
             }
@@ -3934,123 +3695,6 @@ body.turf-mode {
         }
 
 
-body.turf-mode .app-header,
-body.turf-mode button {
-
-  background-image:
-    conic-gradient(from 12deg at 28% 34%,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 1.00)) 0 62deg,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 0.80)) 62deg 66deg,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 0.50)) 66deg 69deg,
-      transparent 69deg 360deg),
-    conic-gradient(from -24deg at 72% 28%,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 0.80)) 0 82deg,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 0.60)) 82deg 87deg,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 0.35)) 87deg 90deg,
-      transparent 90deg 360deg),
-    conic-gradient(from 140deg at 22% 78%,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 0.65)) 0 54deg,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 0.50)) 54deg 57deg,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 0.30)) 57deg 60deg,
-      transparent 60deg 360deg),
-    conic-gradient(from 60deg at 82% 66%,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 0.70)) 0 69deg,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 0.50)) 69deg 72deg,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 0.30)) 72deg 75deg,
-      transparent 75deg 360deg),
-    conic-gradient(from -40deg at 50% 50%,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 0.55)) 0 102deg,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 0.40)) 102deg 106deg,
-      rgba(0, 0, 0, calc(var(--dazzle-dark) * 0.25)) 106deg 110deg,
-      transparent 110deg 360deg);
-
-  background-blend-mode: multiply, multiply, multiply, multiply, multiply;
-
-
-  background-size:
-    var(--dazzle-size) var(--dazzle-size),
-    var(--dazzle-size) var(--dazzle-size),
-    var(--dazzle-size) var(--dazzle-size),
-    var(--dazzle-size) var(--dazzle-size),
-    var(--dazzle-size) var(--dazzle-size);
-  background-position: center, center, center, center, center;
-  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
-
-  transition: background-image 0.25s ease, border-color 0.15s ease, color 0.15s ease;
-}
-
-body.turf-mode button:hover:not(:disabled) {
-  --dazzle-dark: 0.14;
-}
-
-body.turf-mode button:active:not(:disabled) {
-  --dazzle-dark: 0.16;
-  transform: none;
-}
-
-body.turf-mode button:disabled {
-  opacity: 0.55;
-  background-image: none;
-  cursor: not-allowed;
-}
-
-body.turf-mode .app-header:hover,
-body.turf-mode .app-header:active {
-
-  transform: none;
-}
-
-
-@supports not ((background: conic-gradient(from 0deg, #000 0 90deg, transparent 90deg)) and (background-blend-mode: multiply)) {
-  body.turf-mode .app-header,
-  body.turf-mode button {
-    background-image:
-      linear-gradient(135deg, rgba(0, 0, 0, 0.10) 0 45%, transparent 45% 55%, rgba(0, 0, 0, 0.08) 55% 100%);
-    background-size: 200% 200%;
-    background-position: center;
-  }
-  body.turf-mode button:hover:not(:disabled) {
-    filter: contrast(1.05);
-  }
-}
-
-
-
-body.turf-mode button:disabled {
-  background-image: none;
-
-}
-
-body.turf-mode .app-header:hover,
-body.turf-mode .app-header:active {
-  transform: none;
-
-}
-
-body.turf-mode button:nth-of-type(6n+1) {
-  background-position: 15% 88%, 92% 18%, 45% 63%, 7% 39%, 68% 51%;
-  background-size:     2446% 3546%, 2821% 2821%, 3389% 3389%, 2173% 2173%, 3565% 3565%;
-}
-body.turf-mode button:nth-of-type(6n+2) {
-  background-position: 81% 25%, 29% 95%, 5% 49%, 98% 71%, 42% 13%;
-  background-size:     2618% 2618%, 3032% 3032%, 2788% 2788%, 3950% 3950%, 2294% 2294%;
-}
-body.turf-mode button:nth-of-type(6n+3) {
-  background-position: 58% 9%, 19% 82%, 88% 34%, 31% 55%, 66% 97%;
-  background-size:     3536% 3536%, 2955% 2955%, 2081% 2081%, 3829% 3829%, 2407% 2407%;
-}
-body.turf-mode button:nth-of-type(6n+4) {
-  background-position: 23% 69%, 77% 12%, 11% 85%, 91% 28%, 50% 48%;
-  background-size:     2792% 2792%, 3111% 3111%, 2543% 2543%, 3926% 3926%, 2330% 2330%;
-}
-body.turf-mode button:nth-of-type(6n+5) {
-  background-position: 96% 41%, 38% 8%, 62% 79%, 14% 33%, 84% 60%;
-  background-size:     3467% 3467%, 2884% 2884%, 2149% 2149%, 3702% 3702%, 2605% 2605%;
-}
-body.turf-mode button:nth-of-type(6n) {
-  background-position: 4% 59%, 89% 21%, 27% 93%, 73% 16%, 53% 75%;
-  background-size:     2676% 2676%, 3214% 3214%, 2960% 2960%, 3898% 3898%, 2495% 2495%;
-}
 .opacity-slider-container {
     margin-bottom: 15px;
 }
@@ -4194,15 +3838,6 @@ body.elevation-enabled .custom-dialog {
     box-shadow: var(--elevation-shadow-3);
 }
 
-body.turf-mode.elevation-enabled .message {
-    border: 2px solid transparent;
-}
-body.turf-mode.elevation-enabled .message.user {
-    border-color: #66D713;
-}
-body.turf-mode.elevation-enabled .message.model {
-    border-color: #FD6EA3;
-}
 .api-key-help-icon {
     display: inline-flex;
     align-items: center;
