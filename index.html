@@ -3983,7 +3983,7 @@ font-size: 1.142em !important;
         body.dark-mode .history-preview-bubble { opacity: 0.25; }
 
       #input-preset-popup {
-        display: none;
+        display: flex;
         position: absolute;
         z-index: 1000;
         left: 0; top: 0;
@@ -4009,6 +4009,58 @@ font-size: 1.142em !important;
       }
       #input-preset-popup button:hover {
         background: var(--bg-button-hover, #357abd);
+      }
+
+      .input-preset-settings-list {
+        display: grid;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .input-preset-setting-item {
+        padding: 12px;
+        border: 1px solid var(--border-secondary);
+        border-radius: 8px;
+        background: var(--bg-secondary);
+      }
+
+      .input-preset-setting-header {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: end;
+        gap: 10px;
+      }
+
+      .input-preset-setting-header label {
+        margin: 0;
+      }
+
+      .input-preset-setting-header input,
+      .input-preset-setting-item textarea {
+        margin-bottom: 8px;
+      }
+
+      .input-preset-setting-item textarea {
+        min-height: 96px;
+        white-space: pre-wrap;
+      }
+
+      .input-preset-delete-btn {
+        margin-bottom: 8px;
+        padding: 8px 12px;
+        background: var(--bg-button-delete);
+        color: var(--text-light);
+      }
+
+      .input-preset-auto-send-label {
+        margin: 0;
+        font-weight: normal;
+      }
+
+      .add-input-preset-btn {
+        width: 100%;
+        background: var(--bg-button-save);
+        color: var(--text-light);
       }
     </style>
 
@@ -4114,7 +4166,7 @@ font-size: 1.142em !important;
                         aria-controls="header-submenu" title="チャットメニュー">☰</button>
                     <div id="header-submenu" class="header-submenu hidden" role="menu">
                         <button id="header-menu-new-chat-btn" type="button" role="menuitem">新規チャット</button>
-                        <button id="header-menu-clear-btn" type="button" role="menuitem" class="danger-menu-item">全削除</button>
+                        <button id="header-menu-clear-btn" type="button" role="menuitem" class="danger-menu-item">全削除（先頭を除く）</button>
                         <button id="header-menu-copy-btn" type="button" role="menuitem">全コピー</button>
                     </div>
                 </div>
@@ -6053,6 +6105,19 @@ font-size: 1.142em !important;
                     </div>
                 </details>
 
+                <details class="settings-group" id="settings-group-input-presets">
+                    <summary
+                        style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
+                        入力プリセット</summary>
+                    <div style="margin-top:10px;">
+                        <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">
+                            ラベルと本文を編集できます。本文は改行に対応し、<code>{|}</code>を置いた位置へ挿入後のカーソルが移動します。
+                        </p>
+                        <div id="input-preset-settings-list" class="input-preset-settings-list"></div>
+                        <button type="button" id="add-input-preset-btn" class="add-input-preset-btn">プリセットを追加</button>
+                    </div>
+                </details>
+
                 <div style="display: flex; justify-content: center; flex-wrap: nowrap; gap: 10px; margin: 14px 0 18px;">
                     <button id="export-settings-btn" class="settings-import-export-button history-action-button gold" title="APIキーを含むテキスト設定をJSON形式で出力">設定出力</button>
                     <button id="import-settings-btn" class="settings-import-export-button history-action-button purple" title="APIキーを含むテキスト設定をJSON形式で取込">設定取込</button>
@@ -6208,7 +6273,7 @@ font-size: 1.142em !important;
 
     <!-- プリセット入力機能 -->
 
-    <div id="input-preset-popup"></div>
+    <div id="input-preset-popup" class="hidden"></div>
     <script>
 /* source: app-config.ts */
 // Bundled into the generated index.html from this TypeScript source.
@@ -6295,7 +6360,7 @@ const LIGHT_MODE_MODEL_MESSAGE_COLOR = '#e5e5ea';
 const LIGHT_MODE_SECONDARY_COLOR = '#f0f2f5';
 const LIGHT_MODE_HEADER_COLOR = '#4a90e2';
 const LIGHT_MODE_PRIMARY_COLOR = '#ffffff';
-const APP_VERSION = "0.26ti (627)";
+const APP_VERSION = "2026.07.13";
 const SWIPE_THRESHOLD = 50;
 const ZOOM_THRESHOLD = 1.01;
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -6318,6 +6383,10 @@ const DEFAULT_AUTO_SCROLL_ON_NEW_MESSAGE = true;
 const DEFAULT_PERSIST_MESSAGE_COLLAPSE_STATE = true;
 const DEFAULT_THOUGHT_SUMMARY_OPACITY = 0.65;
 const DEFAULT_THOUGHT_SUMMARY_FONT_SIZE = 13;
+const DEFAULT_INPUT_PRESETS = [
+    { id: 'continue', label: '続', content: '（続けて）', autoSend: true },
+    { id: 'development', label: '展', content: '（【今後の展開】{|}）', autoSend: false },
+];
 const ALLOWED_LLMAGGREGATOR_DOMAINS = [
     'openrouter.ai',
     'vercel.com',
@@ -6652,6 +6721,9 @@ const elements = {
     debugCollapseAllBtn: document.getElementById('debug-collapse-all-btn'),
     showHistoryPreviewBubbleToggle: document.getElementById('show-history-preview-bubble-toggle'),
     stripedHistoryListToggle: document.getElementById('striped-history-list-toggle'),
+    inputPresetSettingsList: document.getElementById('input-preset-settings-list'),
+    addInputPresetBtn: document.getElementById('add-input-preset-btn'),
+    inputPresetPopup: document.getElementById('input-preset-popup'),
 };
 
 /* source: app-state.ts */
@@ -6668,6 +6740,7 @@ const state = {
         enableCommonSystemPromptDefault: false,
         commonDummyUser: '',
         enableCommonDummyUser: true,
+        inputPresets: DEFAULT_INPUT_PRESETS.map(preset => ({ ...preset })),
         geminiSystemPrompt: '',
         geminiEnableSystemPromptDefault: true,
         geminiTemperature: null,
@@ -7427,6 +7500,193 @@ function interruptibleSleep(ms, signal) {
         signal.addEventListener('abort', onAbort, { once: true });
     });
 }
+
+/* source: input-preset.ts */
+// @ts-nocheck -- Enable after shared settings and DOM types are defined.
+// Bundled into the generated index.html from this TypeScript source.
+const INPUT_PRESET_CURSOR_MARKER = '{|}';
+const inputPresetUtils = {
+    initialized: false,
+    createId() {
+        if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+            return crypto.randomUUID();
+        }
+        return `preset-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    },
+    normalizePresets(presets) {
+        if (!Array.isArray(presets))
+            return [];
+        const usedIds = new Set();
+        return presets
+            .filter(preset => preset && typeof preset === 'object')
+            .map(preset => {
+            let id = typeof preset.id === 'string' && preset.id ? preset.id : this.createId();
+            if (usedIds.has(id))
+                id = this.createId();
+            usedIds.add(id);
+            return {
+                id,
+                label: typeof preset.label === 'string' ? preset.label : '',
+                content: typeof preset.content === 'string' ? preset.content : '',
+                autoSend: preset.autoSend === true,
+            };
+        });
+    },
+    parseTemplate(template) {
+        const content = typeof template === 'string' ? template : '';
+        const markerIndex = content.indexOf(INPUT_PRESET_CURSOR_MARKER);
+        const text = content.split(INPUT_PRESET_CURSOR_MARKER).join('');
+        const cursorOffset = markerIndex === -1
+            ? text.length
+            : content.slice(0, markerIndex).split(INPUT_PRESET_CURSOR_MARKER).join('').length;
+        return { text, cursorOffset };
+    },
+    initialize() {
+        if (this.initialized) {
+            this.refresh();
+            return;
+        }
+        this.initialized = true;
+        state.settings.inputPresets = this.normalizePresets(state.settings.inputPresets);
+        elements.addInputPresetBtn.addEventListener('click', () => {
+            const presets = this.readSettingsFromUI();
+            presets.push({ id: this.createId(), label: '', content: '', autoSend: false });
+            state.settings.inputPresets = presets;
+            this.renderSettings();
+            this.notifySettingsChanged();
+            elements.inputPresetSettingsList.lastElementChild?.querySelector('.input-preset-label')?.focus();
+        });
+        elements.userInput.addEventListener('focus', () => {
+            if (elements.userInput.value.trim() === '')
+                this.showPopup();
+        });
+        elements.userInput.addEventListener('blur', () => {
+            setTimeout(() => this.hidePopup(), 160);
+        });
+        window.addEventListener('resize', () => {
+            if (!elements.inputPresetPopup.classList.contains('hidden'))
+                this.positionPopup();
+        });
+        this.refresh();
+    },
+    refresh() {
+        state.settings.inputPresets = this.normalizePresets(state.settings.inputPresets);
+        this.renderSettings();
+        this.renderPopup();
+    },
+    notifySettingsChanged() {
+        elements.inputPresetSettingsList.dispatchEvent(new Event('change', { bubbles: true }));
+    },
+    readSettingsFromUI() {
+        if (!elements.inputPresetSettingsList)
+            return [];
+        return Array.from(elements.inputPresetSettingsList.querySelectorAll('.input-preset-setting-item')).map(item => ({
+            id: item.dataset.presetId || this.createId(),
+            label: item.querySelector('.input-preset-label').value,
+            content: item.querySelector('.input-preset-content').value,
+            autoSend: item.querySelector('.input-preset-auto-send').checked,
+        }));
+    },
+    renderSettings() {
+        const container = elements.inputPresetSettingsList;
+        container.replaceChildren();
+        state.settings.inputPresets.forEach((preset, index) => {
+            const item = document.createElement('div');
+            item.className = 'input-preset-setting-item';
+            item.dataset.presetId = preset.id;
+            const header = document.createElement('div');
+            header.className = 'input-preset-setting-header';
+            const labelWrapper = document.createElement('label');
+            labelWrapper.textContent = 'ラベル';
+            const labelInput = document.createElement('input');
+            labelInput.type = 'text';
+            labelInput.className = 'input-preset-label';
+            labelInput.value = preset.label;
+            labelInput.setAttribute('aria-label', `プリセット${index + 1}のラベル`);
+            labelWrapper.appendChild(labelInput);
+            const deleteButton = document.createElement('button');
+            deleteButton.type = 'button';
+            deleteButton.className = 'input-preset-delete-btn';
+            deleteButton.textContent = '削除';
+            deleteButton.setAttribute('aria-label', `プリセット${index + 1}を削除`);
+            deleteButton.addEventListener('click', () => {
+                state.settings.inputPresets = this.readSettingsFromUI().filter(itemPreset => itemPreset.id !== preset.id);
+                this.renderSettings();
+                this.renderPopup();
+                this.notifySettingsChanged();
+            });
+            header.append(labelWrapper, deleteButton);
+            const contentLabel = document.createElement('label');
+            contentLabel.textContent = '本文';
+            const contentInput = document.createElement('textarea');
+            contentInput.className = 'input-preset-content';
+            contentInput.value = preset.content;
+            contentInput.placeholder = `本文を入力。カーソル位置: ${INPUT_PRESET_CURSOR_MARKER}`;
+            contentInput.setAttribute('aria-label', `プリセット${index + 1}の本文`);
+            contentLabel.appendChild(contentInput);
+            const autoSendLabel = document.createElement('label');
+            autoSendLabel.className = 'checkbox-label input-preset-auto-send-label';
+            const autoSendInput = document.createElement('input');
+            autoSendInput.type = 'checkbox';
+            autoSendInput.className = 'input-preset-auto-send';
+            autoSendInput.checked = preset.autoSend;
+            autoSendLabel.append(autoSendInput, ' 挿入後に自動送信する');
+            item.append(header, contentLabel, autoSendLabel);
+            container.appendChild(item);
+        });
+    },
+    renderPopup() {
+        const popup = elements.inputPresetPopup;
+        popup.replaceChildren();
+        state.settings.inputPresets
+            .filter(preset => preset.label.trim() && preset.content)
+            .forEach(preset => {
+            const button = document.createElement('button');
+            button.textContent = preset.label;
+            button.type = 'button';
+            button.tabIndex = -1;
+            button.addEventListener('mousedown', event => event.preventDefault());
+            button.addEventListener('click', event => {
+                event.preventDefault();
+                const parsed = this.parseTemplate(preset.content);
+                this.insertAtCursor(elements.userInput, parsed.text, parsed.cursorOffset);
+                this.hidePopup();
+                elements.userInput.focus();
+                if (preset.autoSend) {
+                    setTimeout(() => elements.sendButton?.click(), 50);
+                }
+            });
+            popup.appendChild(button);
+        });
+        if (!popup.children.length)
+            this.hidePopup();
+    },
+    positionPopup() {
+        const rect = elements.userInput.getBoundingClientRect();
+        const popup = elements.inputPresetPopup;
+        popup.style.left = `${window.scrollX + rect.left}px`;
+        popup.style.top = `${window.scrollY + rect.top - popup.offsetHeight - 8}px`;
+    },
+    showPopup() {
+        if (!elements.inputPresetPopup.children.length)
+            return;
+        elements.inputPresetPopup.classList.remove('hidden');
+        this.positionPopup();
+    },
+    hidePopup() {
+        elements.inputPresetPopup.classList.add('hidden');
+    },
+    insertAtCursor(textarea, text, cursorOffset) {
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const before = textarea.value.substring(0, start);
+        const after = textarea.value.substring(end);
+        textarea.value = before + text + after;
+        const newPosition = before.length + Math.max(0, Math.min(cursorOffset, text.length));
+        textarea.setSelectionRange(newPosition, newPosition);
+        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+    },
+};
 
 /* source: api-clients.ts */
 // @ts-nocheck -- Enable after shared application service types are defined.
@@ -11833,6 +12093,7 @@ Object.assign(appLogic, {
             uiUtils.applyMessageSpacingSetting();
             uiUtils.applyCompactSettingsSpacing();
             uiUtils.applySettingsToUI();
+            inputPresetUtils.initialize();
             const chats = await dbUtils.getAllChats(state.settings.historySortOrder);
             if (chats && chats.length > 0) {
                 await this.loadChat(chats[0].id);
@@ -13388,7 +13649,6 @@ Object.assign(appLogic, {
             uiUtils.updateToggleAllContentButton();
             await dbUtils.saveChat();
             uiUtils.renderChatMessages();
-            await uiUtils.showCustomAlert("先頭の項目を残して削除しました。");
         }
         catch (error) {
             state.currentMessages = originalMessages;
@@ -14865,6 +15125,7 @@ Object.assign(appLogic, {
                 uiUtils.applyMessageSpacingSetting();
                 uiUtils.applyCompactSettingsSpacing();
                 uiUtils.applySettingsToUI();
+                inputPresetUtils.refresh();
                 await uiUtils.showCustomAlert(`${Object.keys(settingsToImport).length}件の設定をインポートしました。`);
             }
             catch (error) {
@@ -14954,6 +15215,7 @@ Object.assign(appLogic, {
         newSettings.enableCommonSystemPromptDefault = elements.enableCommonSystemPromptDefaultCheckbox.checked;
         newSettings.commonDummyUser = elements.commonDummyUserInput.value.trim();
         newSettings.enableCommonDummyUser = elements.enableCommonDummyUserCheckbox.checked;
+        newSettings.inputPresets = inputPresetUtils.readSettingsFromUI();
         newSettings.modelName = elements.geminiModelNameSelect.value;
         newSettings.additionalModels = elements.geminiAdditionalModelsTextarea.value.trim();
         newSettings.geminiSystemPrompt = elements.geminiSystemPromptDefaultTextarea.value.trim();
@@ -15144,6 +15406,7 @@ Object.assign(appLogic, {
             const promises = Object.entries(newSettings).map(([key, value]) => dbUtils.saveSetting(key, value));
             await Promise.all(promises);
             state.settings = newSettings;
+            inputPresetUtils.renderPopup();
             if (showNotice && !state.settings.disableSaveSettingsConfirmation) {
                 await uiUtils.showCustomAlert("設定を保存しました。");
             }
@@ -16044,73 +16307,6 @@ Object.assign(appLogic, {
 errorRecovery.init();
 window.errorRecovery = errorRecovery;
 appLogic.initializeApp();
-
-/* source: input-preset.ts */
-// @ts-nocheck -- Preserve the pre-migration input preset behavior exactly.
-// Bundled into the generated index.html from this TypeScript source.
-(function () {
-    const presetList = [
-        { label: '続', value: '（続けて）', autoSend: true },
-        { label: '展', value: '（【今後の展開】）', autoSend: false, moveCursorLeft: 1 },
-    ];
-    const textarea = document.getElementById('user-input');
-    const popup = document.getElementById('input-preset-popup');
-    popup.style.display = 'none';
-    popup.style.position = 'absolute';
-    popup.style.flexDirection = 'row';
-    popup.innerHTML = '';
-    presetList.forEach(preset => {
-        const btn = document.createElement('button');
-        btn.textContent = preset.label;
-        btn.type = 'button';
-        btn.tabIndex = -1;
-        btn.onclick = function (e) {
-            e.preventDefault();
-            insertAtCursor(textarea, preset.value, preset.moveCursorLeft || 0);
-            hidePopup();
-            textarea.focus();
-            if (preset.autoSend) {
-                setTimeout(() => {
-                    document.getElementById('send-button')?.click();
-                }, 50);
-            }
-        };
-        popup.appendChild(btn);
-    });
-    function showPopup() {
-        const rect = textarea.getBoundingClientRect();
-        popup.style.display = 'flex';
-        popup.style.left = (window.scrollX + rect.left) + 'px';
-        popup.style.top = (window.scrollY + rect.top - popup.offsetHeight - 8) + 'px';
-        popup.style.opacity = 1;
-    }
-    function hidePopup() {
-        popup.style.display = 'none';
-        popup.style.opacity = 0;
-    }
-    function insertAtCursor(textarea, text, moveLeft = 0) {
-        const start = textarea.selectionStart, end = textarea.selectionEnd;
-        const before = textarea.value.substring(0, start);
-        const after = textarea.value.substring(end);
-        textarea.value = before + text + after;
-        let newPos = before.length + text.length - moveLeft;
-        newPos = Math.max(newPos, 0);
-        textarea.setSelectionRange(newPos, newPos);
-        textarea.dispatchEvent(new Event('input', { bubbles: true }));
-    }
-    textarea.addEventListener('focus', () => {
-        if (textarea.value.trim() === '')
-            showPopup();
-    });
-    textarea.addEventListener('blur', () => {
-        setTimeout(hidePopup, 160);
-    });
-    window.addEventListener('resize', () => {
-        if (popup.style.display === 'flex')
-            showPopup();
-    });
-})();
-document.getElementById('app-version').textContent = '2026.07.06-fronoske';
     </script>
 </body>
 

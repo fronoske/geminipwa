@@ -297,7 +297,6 @@ Object.assign(appLogic, {
                     uiUtils.updateToggleAllContentButton();
                     await dbUtils.saveChat();
                     uiUtils.renderChatMessages();
-                    await uiUtils.showCustomAlert("先頭の項目を残して削除しました。");
                 } catch (error) {
                     state.currentMessages = originalMessages;
                     state.messageCollapsedStates = originalCollapsedStates;

@@ -319,4 +319,7 @@ elevationHoverOption: document.getElementById('elevation-hover-option'),
             debugCollapseAllBtn: document.getElementById('debug-collapse-all-btn'),
             showHistoryPreviewBubbleToggle: document.getElementById('show-history-preview-bubble-toggle'),
             stripedHistoryListToggle: document.getElementById('striped-history-list-toggle'),
+            inputPresetSettingsList: document.getElementById('input-preset-settings-list'),
+            addInputPresetBtn: document.getElementById('add-input-preset-btn'),
+            inputPresetPopup: document.getElementById('input-preset-popup'),
         };

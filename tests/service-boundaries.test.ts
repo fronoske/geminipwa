@@ -9,6 +9,7 @@ const readFile = (filename: string): string =>
 const readRuntime = (name: string): string => readFile(`.build/runtime/${name}.js`);
 
 const serviceBoundaries = [
+  ['input-preset', 'inputPresetUtils'],
   ['api-clients', 'apiUtils'],
   ['backend-manager', 'multiBackendUtils'],
   ['error-recovery', 'errorRecovery'],

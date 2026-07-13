@@ -99,6 +99,7 @@ describe('project configuration', () => {
     for (const id of ['header-menu-btn', 'header-menu-new-chat-btn', 'header-menu-clear-btn', 'header-menu-copy-btn']) {
       expect(html).toContain(`id="${id}"`);
     }
+    expect(html).toContain('全削除（先頭を除く）');
     expect(html).toContain('id="show-header-menu-button-toggle"');
     expect(html).not.toMatch(/id="(?:new-chat|delete-session|copy-session)-btn"/);
     expect(html).not.toMatch(/id="show-(?:new-chat|delete-session|copy-session)-button-toggle"/);
@@ -123,10 +124,17 @@ describe('project configuration', () => {
   it('preserves input presets as a protected core feature', () => {
     expect(runtimeManifest.application).toContain('input-preset');
     expect(readFile('src/index.html')).toContain('id="input-preset-popup"');
+    expect(readFile('src/index.html')).toContain('id="input-preset-settings-list"');
+    expect(readFile('src/index.html')).toContain('id="add-input-preset-btn"');
+    const appConfig = readFile('src/app-config.ts');
+    expect(appConfig).toContain("label: '続'");
+    expect(appConfig).toContain("label: '展'");
+    expect(appConfig).toContain("content: '（続けて）', autoSend: true");
+    expect(appConfig).toContain("content: '（【今後の展開】{|}）'");
     const presetSource = readFile('src/input-preset.ts');
-    expect(presetSource).toContain("label: '続'");
-    expect(presetSource).toContain("label: '展'");
-    expect(presetSource).toContain('autoSend: true');
+    expect(presetSource).toContain("const INPUT_PRESET_CURSOR_MARKER = '{|}'");
+    expect(presetSource).toContain("document.createElement('textarea')");
+    expect(readFile('src/app-state.ts')).toContain('inputPresets: DEFAULT_INPUT_PRESETS');
     expect(readFile('docs/product-decisions.md')).toContain('Input presets');
   });
 
@@ -176,6 +184,10 @@ describe('project configuration', () => {
     const appConfig = readFile('src/app-config.ts');
     expect(appConfig).toContain("const DB_NAME = 'GeminiPWA_DB'");
     expect(appConfig).toContain('const DB_VERSION = 8');
+  });
+
+  it('uses the current release date as the application version', () => {
+    expect(readFile('src/app-config.ts')).toContain('const APP_VERSION = "2026.07.13"');
   });
 
   it('pre-caches only public runtime files', () => {

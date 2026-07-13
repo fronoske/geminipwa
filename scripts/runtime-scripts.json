@@ -10,6 +10,7 @@
     "database",
     "utilities",
     "interruptible-sleep",
+    "input-preset",
     "api-clients",
     "backend-manager",
     "error-recovery",
@@ -28,7 +29,6 @@
     "message-sending",
     "data-management",
     "message-actions",
-    "main",
-    "input-preset"
+    "main"
   ]
 }

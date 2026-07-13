@@ -91,7 +91,7 @@ const PASTEL_RAINBOW_THEME_COLOR = '#ffadad';
         const LIGHT_MODE_HEADER_COLOR = '#4a90e2';
         const LIGHT_MODE_PRIMARY_COLOR = '#ffffff';
 
-        const APP_VERSION = "0.26ti (627)";
+        const APP_VERSION = "2026.07.13";
         const SWIPE_THRESHOLD = 50;
         const ZOOM_THRESHOLD = 1.01;
         const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -114,6 +114,10 @@ const PASTEL_RAINBOW_THEME_COLOR = '#ffadad';
         const DEFAULT_PERSIST_MESSAGE_COLLAPSE_STATE = true;
         const DEFAULT_THOUGHT_SUMMARY_OPACITY = 0.65;
         const DEFAULT_THOUGHT_SUMMARY_FONT_SIZE = 13;
+        const DEFAULT_INPUT_PRESETS = [
+            { id: 'continue', label: '続', content: '（続けて）', autoSend: true },
+            { id: 'development', label: '展', content: '（【今後の展開】{|}）', autoSend: false },
+        ];
 
         const ALLOWED_LLMAGGREGATOR_DOMAINS = [
             'openrouter.ai',

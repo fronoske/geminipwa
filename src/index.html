@@ -29,7 +29,7 @@
                         aria-controls="header-submenu" title="チャットメニュー">☰</button>
                     <div id="header-submenu" class="header-submenu hidden" role="menu">
                         <button id="header-menu-new-chat-btn" type="button" role="menuitem">新規チャット</button>
-                        <button id="header-menu-clear-btn" type="button" role="menuitem" class="danger-menu-item">全削除</button>
+                        <button id="header-menu-clear-btn" type="button" role="menuitem" class="danger-menu-item">全削除（先頭を除く）</button>
                         <button id="header-menu-copy-btn" type="button" role="menuitem">全コピー</button>
                     </div>
                 </div>
@@ -1968,6 +1968,19 @@
                     </div>
                 </details>
 
+                <details class="settings-group" id="settings-group-input-presets">
+                    <summary
+                        style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
+                        入力プリセット</summary>
+                    <div style="margin-top:10px;">
+                        <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">
+                            ラベルと本文を編集できます。本文は改行に対応し、<code>{|}</code>を置いた位置へ挿入後のカーソルが移動します。
+                        </p>
+                        <div id="input-preset-settings-list" class="input-preset-settings-list"></div>
+                        <button type="button" id="add-input-preset-btn" class="add-input-preset-btn">プリセットを追加</button>
+                    </div>
+                </details>
+
                 <div style="display: flex; justify-content: center; flex-wrap: nowrap; gap: 10px; margin: 14px 0 18px;">
                     <button id="export-settings-btn" class="settings-import-export-button history-action-button gold" title="APIキーを含むテキスト設定をJSON形式で出力">設定出力</button>
                     <button id="import-settings-btn" class="settings-import-export-button history-action-button purple" title="APIキーを含むテキスト設定をJSON形式で取込">設定取込</button>
@@ -2123,7 +2136,7 @@
 
     <!-- プリセット入力機能 -->
 
-    <div id="input-preset-popup"></div>
+    <div id="input-preset-popup" class="hidden"></div>
     <!-- APP_SCRIPTS -->
 </body>
 

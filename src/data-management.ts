@@ -447,6 +447,7 @@ Object.assign(appLogic, {
                         uiUtils.applyMessageSpacingSetting();
                         uiUtils.applyCompactSettingsSpacing();
                         uiUtils.applySettingsToUI();
+                        inputPresetUtils.refresh();
                         await uiUtils.showCustomAlert(`${Object.keys(settingsToImport).length}件の設定をインポートしました。`);
                     } catch (error) {
                         await uiUtils.showCustomAlert(`設定のインポート中にエラーが発生しました: ${error.message || error}`);
@@ -543,6 +544,7 @@ Object.assign(appLogic, {
                 newSettings.enableCommonSystemPromptDefault = elements.enableCommonSystemPromptDefaultCheckbox.checked;
                 newSettings.commonDummyUser = elements.commonDummyUserInput.value.trim();
                 newSettings.enableCommonDummyUser = elements.enableCommonDummyUserCheckbox.checked;
+                newSettings.inputPresets = inputPresetUtils.readSettingsFromUI();
 
                 newSettings.modelName = elements.geminiModelNameSelect.value;
                 newSettings.additionalModels = elements.geminiAdditionalModelsTextarea.value.trim();
@@ -751,6 +753,7 @@ newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.che
                     await Promise.all(promises);
 
                     state.settings = newSettings;
+                    inputPresetUtils.renderPopup();
 
                     if (showNotice && !state.settings.disableSaveSettingsConfirmation) {
                         await uiUtils.showCustomAlert("設定を保存しました。");

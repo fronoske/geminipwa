@@ -11,6 +11,7 @@
                 enableCommonSystemPromptDefault: false,
                 commonDummyUser: '',
                 enableCommonDummyUser: true,
+                inputPresets: DEFAULT_INPUT_PRESETS.map(preset => ({ ...preset })),
                 geminiSystemPrompt: '',
                 geminiEnableSystemPromptDefault: true,
                 geminiTemperature: null,

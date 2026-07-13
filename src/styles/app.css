@@ -3973,7 +3973,7 @@ font-size: 1.142em !important;
         body.dark-mode .history-preview-bubble { opacity: 0.25; }
 
       #input-preset-popup {
-        display: none;
+        display: flex;
         position: absolute;
         z-index: 1000;
         left: 0; top: 0;
@@ -3999,4 +3999,56 @@ font-size: 1.142em !important;
       }
       #input-preset-popup button:hover {
         background: var(--bg-button-hover, #357abd);
+      }
+
+      .input-preset-settings-list {
+        display: grid;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .input-preset-setting-item {
+        padding: 12px;
+        border: 1px solid var(--border-secondary);
+        border-radius: 8px;
+        background: var(--bg-secondary);
+      }
+
+      .input-preset-setting-header {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: end;
+        gap: 10px;
+      }
+
+      .input-preset-setting-header label {
+        margin: 0;
+      }
+
+      .input-preset-setting-header input,
+      .input-preset-setting-item textarea {
+        margin-bottom: 8px;
+      }
+
+      .input-preset-setting-item textarea {
+        min-height: 96px;
+        white-space: pre-wrap;
+      }
+
+      .input-preset-delete-btn {
+        margin-bottom: 8px;
+        padding: 8px 12px;
+        background: var(--bg-button-delete);
+        color: var(--text-light);
+      }
+
+      .input-preset-auto-send-label {
+        margin: 0;
+        font-weight: normal;
+      }
+
+      .add-input-preset-btn {
+        width: 100%;
+        background: var(--bg-button-save);
+        color: var(--text-light);
       }

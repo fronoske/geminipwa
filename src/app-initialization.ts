@@ -208,6 +208,7 @@ _setupParamSlider(paramId, defaultValue, storageKey) {
 
 
                     uiUtils.applySettingsToUI();
+                    inputPresetUtils.initialize();
 
                     const chats = await dbUtils.getAllChats(state.settings.historySortOrder);
                     if (chats && chats.length > 0) {

@@ -14,8 +14,9 @@ The following features are essential product requirements. They must not be remo
 ### Input presets
 
 - Preserve the input preset popup shown when the empty chat input receives focus.
-- Preserve the `続` preset, including automatic submission of `（続けて）`.
-- Preserve the `展` preset and its editable cursor placement for `（【今後の展開】）`.
+- Preserve `続` and `展` as the default presets, including automatic submission for `続`.
+- Preserve settings-based addition, editing, deletion, multiline content, and automatic submission.
+- Preserve `{|}` as the editable insertion-cursor marker; without it, place the cursor at the end.
 
 ### Common Dummy User prompt
 
