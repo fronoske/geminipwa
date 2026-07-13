@@ -817,6 +817,17 @@
             transition: padding 0.2s ease, font-size 0.2s ease, min-width 0.2s ease, height 0.2s ease;
         }
 
+        .history-icon {
+            display: block;
+            width: 22px;
+            height: 22px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.9;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
         #goto-settings-btn {
             order: 99;
             margin-left: 5px;
@@ -1866,6 +1877,14 @@
             gap: 10px;
         }
 
+        .primary-input-actions {
+            display: grid;
+            flex: 0 0 40px;
+            gap: 6px;
+            align-self: flex-end;
+            justify-items: center;
+        }
+
         .footer-action-button {
             height: 40px;
             width: 40px;
@@ -2033,10 +2052,12 @@
         }
 
         .chat-input-area textarea {
-            flex-grow: 1;
-            min-height: 40px;
+            width: 0;
+            flex: 1 1 0;
+            min-width: 0;
+            min-height: 64px;
             max-height: 120px;
-            height: 40px;
+            height: 64px;
             resize: none;
             margin-bottom: 0;
             padding: 8px 10px;
@@ -3379,8 +3400,8 @@
         }
 
         .app-container.minimized-ui .chat-input-area textarea {
-            min-height: 32px;
-            height: 32px;
+            min-height: 52px;
+            height: 52px;
             padding: 6px 8px;
             font-size: 13px;
         }
@@ -4216,7 +4237,13 @@ font-size: 1.142em !important;
 
         <div id="chat-screen" class="screen active">
             <header class="app-header">
-                <button id="goto-history-btn" class="header-button" aria-label="履歴一覧へ" title="履歴一覧へ">履</button>
+                <button id="goto-history-btn" class="header-button" aria-label="履歴一覧へ" title="履歴一覧へ">
+                    <svg class="history-icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M3.5 12a8.5 8.5 0 1 0 2.1-5.6"></path>
+                        <path d="M3.5 4v5h5"></path>
+                        <path d="M12 7.5V12l3 2"></path>
+                    </svg>
+                </button>
                 <h1 id="chat-title">新規チャット</h1>
                 <div style="flex-grow: 1;"></div>
                 <div id="header-menu-container" class="header-menu-container">
@@ -4281,10 +4308,12 @@ font-size: 1.142em !important;
                     title="APIプロバイダー切替"></button>
                 <button id="footer-cycle-api-key-btn" class="footer-action-button api-provider-toggle-btn" title="APIキー切替" style="font-weight: bold;"></button>
                 <button id="paste-to-input-btn" title="入力欄に貼り付け" class="footer-action-button">貼</button>
-                <textarea id="user-input" placeholder="メッセージを入力..." rows="1" aria-label="メッセージ入力"></textarea>
-                <button id="attach-file-btn" title="ファイルを添付" class="footer-action-button">+<span
-                        class="attachment-badge"></span></button>
-                <button id="send-button" title="送信">送</button>
+                <textarea id="user-input" placeholder="メッセージを入力..." rows="2" aria-label="メッセージ入力"></textarea>
+                <div class="primary-input-actions">
+                    <button id="attach-file-btn" title="ファイルを添付" class="footer-action-button">+<span
+                            class="attachment-badge"></span></button>
+                    <button id="send-button" title="送信">送</button>
+                </div>
             </footer>
         </div>
 

@@ -807,6 +807,17 @@
             transition: padding 0.2s ease, font-size 0.2s ease, min-width 0.2s ease, height 0.2s ease;
         }
 
+        .history-icon {
+            display: block;
+            width: 22px;
+            height: 22px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.9;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
         #goto-settings-btn {
             order: 99;
             margin-left: 5px;
@@ -1856,6 +1867,14 @@
             gap: 10px;
         }
 
+        .primary-input-actions {
+            display: grid;
+            flex: 0 0 40px;
+            gap: 6px;
+            align-self: flex-end;
+            justify-items: center;
+        }
+
         .footer-action-button {
             height: 40px;
             width: 40px;
@@ -2023,10 +2042,12 @@
         }
 
         .chat-input-area textarea {
-            flex-grow: 1;
-            min-height: 40px;
+            width: 0;
+            flex: 1 1 0;
+            min-width: 0;
+            min-height: 64px;
             max-height: 120px;
-            height: 40px;
+            height: 64px;
             resize: none;
             margin-bottom: 0;
             padding: 8px 10px;
@@ -3369,8 +3390,8 @@
         }
 
         .app-container.minimized-ui .chat-input-area textarea {
-            min-height: 32px;
-            height: 32px;
+            min-height: 52px;
+            height: 52px;
             padding: 6px 8px;
             font-size: 13px;
         }

@@ -122,6 +122,23 @@ describe('project configuration', () => {
     expect(navigation).toContain('messageNavigationUpBtn.disabled');
   });
 
+  it('uses a two-line input with stacked attach and send actions', () => {
+    const html = readFile('src/index.html');
+    expect(html).toContain('id="user-input" placeholder="メッセージを入力..." rows="2"');
+    expect(html).toContain('class="primary-input-actions"');
+    const actionStack = html.slice(
+      html.indexOf('<div class="primary-input-actions">'),
+      html.indexOf('</div>', html.indexOf('<div class="primary-input-actions">')),
+    );
+    expect(actionStack.indexOf('id="attach-file-btn"')).toBeLessThan(actionStack.indexOf('id="send-button"'));
+  });
+
+  it('uses an accessible SVG history icon instead of a text abbreviation', () => {
+    const html = readFile('src/index.html');
+    expect(html).toContain('class="history-icon"');
+    expect(html).not.toMatch(/id="goto-history-btn"[^>]*>履<\/button>/);
+  });
+
   it('keeps the first message when clearing the current chat', () => {
     const sessions = readFile('src/chat-sessions.ts');
     expect(sessions).toContain('state.currentMessages.slice(0, 1)');
