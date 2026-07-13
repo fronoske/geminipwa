@@ -1,83 +1,68 @@
+// @ts-nocheck -- Preserve the pre-migration input preset behavior exactly.
 // Bundled into the generated index.html from this TypeScript source.
-interface InputPreset {
-  label: string;
-  value: string;
-  autoSend: boolean;
-  moveCursorLeft?: number;
-}
-
-(() => {
-  const presetList: InputPreset[] = [
-    { label: '続', value: '（続けて）', autoSend: true },
-    { label: '展', value: '（【今後の展開】）', autoSend: false, moveCursorLeft: 1 },
+(function() {
+  const presetList = [
+    {label: '続', value: '（続けて）', autoSend: true},
+    {label: '展', value: '（【今後の展開】）', autoSend: false, moveCursorLeft: 1},
   ];
 
   const textarea = document.getElementById('user-input');
   const popup = document.getElementById('input-preset-popup');
-  if (!(textarea instanceof HTMLTextAreaElement) || !(popup instanceof HTMLElement)) {
-    throw new Error('Input preset elements are missing');
-  }
-  const input: HTMLTextAreaElement = textarea;
-  const presetPopup: HTMLElement = popup;
 
-  presetPopup.style.display = 'none';
-  presetPopup.style.position = 'absolute';
-  presetPopup.style.flexDirection = 'row';
-  presetPopup.innerHTML = '';
-  presetList.forEach((preset) => {
-    const button = document.createElement('button');
-    button.textContent = preset.label;
-    button.type = 'button';
-    button.tabIndex = -1;
-    button.onclick = (event) => {
-      event.preventDefault();
-      insertAtCursor(input, preset.value, preset.moveCursorLeft ?? 0);
+  popup.style.display = 'none';
+  popup.style.position = 'absolute';
+  popup.style.flexDirection = 'row';
+  popup.innerHTML = '';
+  presetList.forEach(preset => {
+    const btn = document.createElement('button');
+    btn.textContent = preset.label;
+    btn.type = 'button';
+    btn.tabIndex = -1;
+    btn.onclick = function(e) {
+      e.preventDefault();
+      insertAtCursor(textarea, preset.value, preset.moveCursorLeft || 0);
       hidePopup();
-      input.focus();
+      textarea.focus();
       if (preset.autoSend) {
-        window.setTimeout(() => {
+        setTimeout(() => {
           document.getElementById('send-button')?.click();
         }, 50);
       }
     };
-    presetPopup.appendChild(button);
+    popup.appendChild(btn);
   });
 
-  function showPopup(): void {
-    const rect = input.getBoundingClientRect();
-    presetPopup.style.display = 'flex';
-    presetPopup.style.left = `${window.scrollX + rect.left}px`;
-    presetPopup.style.top = `${window.scrollY + rect.top - presetPopup.offsetHeight - 8}px`;
-    presetPopup.style.opacity = '1';
+  function showPopup() {
+    const rect = textarea.getBoundingClientRect();
+    popup.style.display = 'flex';
+    popup.style.left = (window.scrollX + rect.left) + 'px';
+    popup.style.top = (window.scrollY + rect.top - popup.offsetHeight - 8) + 'px';
+    popup.style.opacity = 1;
+  }
+  function hidePopup() {
+    popup.style.display = 'none';
+    popup.style.opacity = 0;
   }
 
-  function hidePopup(): void {
-    presetPopup.style.display = 'none';
-    presetPopup.style.opacity = '0';
+  function insertAtCursor(textarea, text, moveLeft = 0) {
+    const start = textarea.selectionStart, end = textarea.selectionEnd;
+    const before = textarea.value.substring(0, start);
+    const after = textarea.value.substring(end);
+    textarea.value = before + text + after;
+    let newPos = before.length + text.length - moveLeft;
+    newPos = Math.max(newPos, 0);
+    textarea.setSelectionRange(newPos, newPos);
+    textarea.dispatchEvent(new Event('input', { bubbles: true }));
   }
 
-  function insertAtCursor(target: HTMLTextAreaElement, text: string, moveLeft = 0): void {
-    const start = target.selectionStart;
-    const end = target.selectionEnd;
-    const before = target.value.substring(0, start);
-    const after = target.value.substring(end);
-    target.value = before + text + after;
-    const newPosition = Math.max(before.length + text.length - moveLeft, 0);
-    target.setSelectionRange(newPosition, newPosition);
-    target.dispatchEvent(new Event('input', { bubbles: true }));
-  }
-
-  input.addEventListener('focus', () => {
-    if (input.value.trim() === '') showPopup();
+  textarea.addEventListener('focus', () => {
+    if (textarea.value.trim() === '') showPopup();
   });
-  input.addEventListener('blur', () => {
-    window.setTimeout(hidePopup, 160);
+  textarea.addEventListener('blur', () => {
+    setTimeout(hidePopup, 160);
   });
   window.addEventListener('resize', () => {
-    if (presetPopup.style.display === 'flex') showPopup();
+    if (popup.style.display === 'flex') showPopup();
   });
 })();
-
-const appVersion = document.getElementById('app-version');
-if (!appVersion) throw new Error('App version element is missing');
-appVersion.textContent = '2026.07.06-fronoske';
+document.getElementById('app-version').textContent = '2026.07.06-fronoske';

@@ -4928,20 +4928,20 @@ font-size: 1.142em !important;
 <body>
     <script>
 /* source: recovery.ts */
-(() => {
+(function () {
     const TIMEOUT = 10000;
     const RECOVERY_ATTEMPT_KEY = 'GeminiPWA_RecoveryAttempt';
-    let recoveryAttempt = Number.parseInt(sessionStorage.getItem(RECOVERY_ATTEMPT_KEY) || '0', 10);
-    const watchdogTimer = window.setTimeout(() => {
-        void handleInitializationFailure();
+    let recoveryAttempt = parseInt(sessionStorage.getItem(RECOVERY_ATTEMPT_KEY) || '0', 10);
+    const watchdogTimer = setTimeout(() => {
+        handleInitializationFailure();
     }, TIMEOUT);
-    window.initializationSuccess = () => {
-        window.clearTimeout(watchdogTimer);
+    window.initializationSuccess = function () {
+        clearTimeout(watchdogTimer);
         sessionStorage.removeItem(RECOVERY_ATTEMPT_KEY);
     };
     async function handleInitializationFailure() {
         recoveryAttempt++;
-        sessionStorage.setItem(RECOVERY_ATTEMPT_KEY, String(recoveryAttempt));
+        sessionStorage.setItem(RECOVERY_ATTEMPT_KEY, recoveryAttempt);
         if (recoveryAttempt === 1) {
             alert('アプリの起動に時間がかかっています。キャッシュをクリアして再起動します。(ステップ1/3)');
             await clearCachesAndReload();
@@ -4959,35 +4959,35 @@ font-size: 1.142em !important;
             }
             else {
                 sessionStorage.removeItem(RECOVERY_ATTEMPT_KEY);
-                reloadPage();
+                window.location.reload(true);
             }
         }
     }
     async function clearCachesAndReload() {
         try {
             if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                await new Promise((resolve) => {
+                await new Promise(resolve => {
                     navigator.serviceWorker.addEventListener('message', function handler(event) {
-                        if (event.data?.action === 'cacheCleared') {
+                        if (event.data && event.data.action === 'cacheCleared') {
                             navigator.serviceWorker.removeEventListener('message', handler);
                             resolve();
                         }
                     });
-                    navigator.serviceWorker.controller?.postMessage({ action: 'clearCache' });
+                    navigator.serviceWorker.controller.postMessage({ action: 'clearCache' });
                 });
             }
         }
-        catch { }
-        reloadPage();
+        catch (e) { }
+        window.location.reload(true);
     }
     async function clearAllCachesAndReload() {
         try {
             if ('caches' in window) {
                 const cacheNames = await caches.keys();
-                await Promise.all(cacheNames.map((name) => caches.delete(name)));
+                await Promise.all(cacheNames.map(name => caches.delete(name)));
             }
         }
-        catch { }
+        catch (e) { }
         await clearCachesAndReload();
     }
     async function clearAllSiteDataAndReload() {
@@ -4995,21 +4995,17 @@ font-size: 1.142em !important;
             await new Promise((resolve, reject) => {
                 const deleteRequest = indexedDB.deleteDatabase('GeminiPWA_DB');
                 deleteRequest.onsuccess = () => resolve();
-                deleteRequest.onerror = () => reject(deleteRequest.error);
+                deleteRequest.onerror = () => reject();
                 deleteRequest.onblocked = () => window.location.reload();
             });
         }
-        catch { }
+        catch (e) { }
         try {
             localStorage.clear();
             sessionStorage.clear();
         }
-        catch { }
+        catch (e) { }
         await clearAllCachesAndReload();
-    }
-    function reloadPage() {
-        // Firefox still supports the legacy forceGet argument used by the original implementation.
-        window.location.reload(true);
     }
 })();
     </script>
@@ -8827,13 +8823,13 @@ function updateMessageMaxWidthVar() {
     const container = elements.messageContainer;
     if (!container)
         return;
-    const maxWidthPx = container.clientWidth * 0.8;
+    let maxWidthPx = container.clientWidth * 0.8;
     document.documentElement.style.setProperty('--message-max-width', `${maxWidthPx}px`);
 }
 let resizeTimer;
 window.addEventListener('resize', () => {
-    window.clearTimeout(resizeTimer);
-    resizeTimer = window.setTimeout(updateMessageMaxWidthVar, 150);
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(updateMessageMaxWidthVar, 150);
 });
 
 /* source: service-worker-registration.ts */
@@ -8842,7 +8838,7 @@ function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./sw.js')
-                .then(() => {
+                .then(registration => {
                 navigator.serviceWorker.addEventListener('message', event => {
                     if (event.data && event.data.action === 'reloadPage') {
                         alert('アプリが更新されました。この表示の後、ページがロードされます。');
@@ -8850,7 +8846,7 @@ function registerServiceWorker() {
                     }
                 });
             })
-                .catch(() => { });
+                .catch(err => { });
         });
     }
 }
@@ -9486,37 +9482,34 @@ const dbUtils = {
 };
 
 /* source: utilities.ts */
+// @ts-nocheck -- Preserve the original browser error behavior during source migration.
 // Bundled into the generated index.html from this TypeScript source.
 const sanitizeText = (text, maxLength = 255) => {
     if (typeof text !== 'string')
         return '';
     return text.replace(/[<>'"&]/g, '').substring(0, maxLength);
 };
-const sleep = (milliseconds) => {
+const sleep = (ms) => {
     if (document.hidden)
         return Promise.resolve();
-    return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
+    return new Promise(resolve => setTimeout(resolve, ms));
 };
 function formatFileSize(bytes) {
     if (bytes === 0)
         return '0 Bytes';
-    const unit = 1024;
+    const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-    const unitIndex = Math.floor(Math.log(bytes) / Math.log(unit));
-    return `${Number.parseFloat((bytes / unit ** unitIndex).toFixed(2))} ${sizes[unitIndex]}`;
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 function fileToBase64(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => {
-            const result = reader.result;
-            if (typeof result !== 'string') {
-                reject(new Error('FileReader returned a non-string result'));
-                return;
-            }
-            resolve(result.split(',')[1] ?? '');
+            const base64String = reader.result.split(',')[1];
+            resolve(base64String);
         };
-        reader.onerror = (error) => reject(error);
+        reader.onerror = error => reject(error);
         reader.readAsDataURL(file);
     });
 }
@@ -21671,77 +21664,71 @@ window.errorRecovery = errorRecovery;
 appLogic.initializeApp();
 
 /* source: input-preset.ts */
-(() => {
+// @ts-nocheck -- Preserve the pre-migration input preset behavior exactly.
+// Bundled into the generated index.html from this TypeScript source.
+(function () {
     const presetList = [
         { label: '続', value: '（続けて）', autoSend: true },
         { label: '展', value: '（【今後の展開】）', autoSend: false, moveCursorLeft: 1 },
     ];
     const textarea = document.getElementById('user-input');
     const popup = document.getElementById('input-preset-popup');
-    if (!(textarea instanceof HTMLTextAreaElement) || !(popup instanceof HTMLElement)) {
-        throw new Error('Input preset elements are missing');
-    }
-    const input = textarea;
-    const presetPopup = popup;
-    presetPopup.style.display = 'none';
-    presetPopup.style.position = 'absolute';
-    presetPopup.style.flexDirection = 'row';
-    presetPopup.innerHTML = '';
-    presetList.forEach((preset) => {
-        const button = document.createElement('button');
-        button.textContent = preset.label;
-        button.type = 'button';
-        button.tabIndex = -1;
-        button.onclick = (event) => {
-            event.preventDefault();
-            insertAtCursor(input, preset.value, preset.moveCursorLeft ?? 0);
+    popup.style.display = 'none';
+    popup.style.position = 'absolute';
+    popup.style.flexDirection = 'row';
+    popup.innerHTML = '';
+    presetList.forEach(preset => {
+        const btn = document.createElement('button');
+        btn.textContent = preset.label;
+        btn.type = 'button';
+        btn.tabIndex = -1;
+        btn.onclick = function (e) {
+            e.preventDefault();
+            insertAtCursor(textarea, preset.value, preset.moveCursorLeft || 0);
             hidePopup();
-            input.focus();
+            textarea.focus();
             if (preset.autoSend) {
-                window.setTimeout(() => {
+                setTimeout(() => {
                     document.getElementById('send-button')?.click();
                 }, 50);
             }
         };
-        presetPopup.appendChild(button);
+        popup.appendChild(btn);
     });
     function showPopup() {
-        const rect = input.getBoundingClientRect();
-        presetPopup.style.display = 'flex';
-        presetPopup.style.left = `${window.scrollX + rect.left}px`;
-        presetPopup.style.top = `${window.scrollY + rect.top - presetPopup.offsetHeight - 8}px`;
-        presetPopup.style.opacity = '1';
+        const rect = textarea.getBoundingClientRect();
+        popup.style.display = 'flex';
+        popup.style.left = (window.scrollX + rect.left) + 'px';
+        popup.style.top = (window.scrollY + rect.top - popup.offsetHeight - 8) + 'px';
+        popup.style.opacity = 1;
     }
     function hidePopup() {
-        presetPopup.style.display = 'none';
-        presetPopup.style.opacity = '0';
+        popup.style.display = 'none';
+        popup.style.opacity = 0;
     }
-    function insertAtCursor(target, text, moveLeft = 0) {
-        const start = target.selectionStart;
-        const end = target.selectionEnd;
-        const before = target.value.substring(0, start);
-        const after = target.value.substring(end);
-        target.value = before + text + after;
-        const newPosition = Math.max(before.length + text.length - moveLeft, 0);
-        target.setSelectionRange(newPosition, newPosition);
-        target.dispatchEvent(new Event('input', { bubbles: true }));
+    function insertAtCursor(textarea, text, moveLeft = 0) {
+        const start = textarea.selectionStart, end = textarea.selectionEnd;
+        const before = textarea.value.substring(0, start);
+        const after = textarea.value.substring(end);
+        textarea.value = before + text + after;
+        let newPos = before.length + text.length - moveLeft;
+        newPos = Math.max(newPos, 0);
+        textarea.setSelectionRange(newPos, newPos);
+        textarea.dispatchEvent(new Event('input', { bubbles: true }));
     }
-    input.addEventListener('focus', () => {
-        if (input.value.trim() === '')
+    textarea.addEventListener('focus', () => {
+        if (textarea.value.trim() === '')
             showPopup();
     });
-    input.addEventListener('blur', () => {
-        window.setTimeout(hidePopup, 160);
+    textarea.addEventListener('blur', () => {
+        setTimeout(hidePopup, 160);
     });
     window.addEventListener('resize', () => {
-        if (presetPopup.style.display === 'flex')
+        if (popup.style.display === 'flex')
             showPopup();
     });
 })();
-const appVersion = document.getElementById('app-version');
-if (!appVersion)
-    throw new Error('App version element is missing');
-appVersion.textContent = '2026.07.06-fronoske';
+document.getElementById('app-version').textContent = '2026.07.06-fronoske';
     </script>
 </body>
 

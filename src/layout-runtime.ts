@@ -2,12 +2,12 @@
         function updateMessageMaxWidthVar(): void {
             const container = elements.messageContainer;
             if (!container) return;
-            const maxWidthPx = container.clientWidth * 0.8;
+            let maxWidthPx = container.clientWidth * 0.8;
             document.documentElement.style.setProperty('--message-max-width', `${maxWidthPx}px`);
         }
 
-        let resizeTimer: number | undefined;
+        let resizeTimer: ReturnType<typeof setTimeout> | undefined;
         window.addEventListener('resize', () => {
-            window.clearTimeout(resizeTimer);
-            resizeTimer = window.setTimeout(updateMessageMaxWidthVar, 150);
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(updateMessageMaxWidthVar, 150);
         });

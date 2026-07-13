@@ -155,6 +155,14 @@
 - Service Workerの初回登録、更新、キャッシュ消去、オフライン再表示。
 - ハンバーガーメニューの表示設定と、「全削除」で先頭項目が残ること。
 
+## 外部仕様監査
+
+ソース分割前の基準はコミット `863b245` の `index.html` とする。
+
+- `npm run audit:spec` は、生成版と基準版のDOM、CSS、外部スクリプト参照、282関数、起動復旧IIFE、入力プリセットIIFEを比較する。
+- `node scripts/spec-audit-server.mjs` は、基準版を `/baseline/`、生成版を `/current/` で同時配信する。
+- `node scripts/audit-browser-equivalence.mjs` は、Chrome DevTools Protocolのポート `9222` を利用し、初期表示、画面遷移、設定保存、IndexedDB、Dummy AI送信、履歴複製・削除、再起動、Service Worker、390px幅レイアウトを差分比較する。
+
 ## 想定リスクと対策
 
 - 実行順序の変化: 外部ファイル化の段階では古典スクリプトの順序を維持し、ESモジュール化は別フェーズにする。

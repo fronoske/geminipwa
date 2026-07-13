@@ -3,7 +3,7 @@
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {
                     navigator.serviceWorker.register('./sw.js')
-                        .then(() => {
+                        .then(registration => {
                             navigator.serviceWorker.addEventListener('message', event => {
                                 if (event.data && event.data.action === 'reloadPage') {
                                     alert('アプリが更新されました。この表示の後、ページがロードされます。');
@@ -11,7 +11,7 @@
                                 }
                             });
                         })
-                        .catch(() => {});
+                        .catch(err => { });
                 });
             }
         }
