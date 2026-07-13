@@ -1,0 +1,20 @@
+{
+  "name": "geminipwa",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "baseline": "node scripts/check-baseline.mjs",
+    "dev": "vite",
+    "build": "npm run baseline && vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "verify": "npm run baseline && npm run typecheck && npm test && npm run build && node scripts/check-dist.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "typescript": "latest",
+    "vite": "latest",
+    "vitest": "latest"
+  }
+}
