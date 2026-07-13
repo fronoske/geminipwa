@@ -1,0 +1,368 @@
+// @ts-nocheck -- Enable after shared UI types are defined.
+// src/ui-header-controls.js is generated from this file. Edit this TypeScript source instead.
+Object.assign(uiUtils, {
+    updateChatScreenElementVisibility() {
+        const header = elements.chatScreen.querySelector('.app-header');
+        const allButtons = Array.from(header.querySelectorAll('button'));
+        allButtons.forEach(btn => btn.classList.remove('layout-hidden'));
+        const updateVisibility = () => {
+            const toggleableButtons = [
+                { id: '#show-chat-title-toggle', element: elements.chatTitle },
+                { id: '#show-new-chat-button-toggle', element: elements.newChatBtn },
+                { id: '#show-delete-session-button-toggle', element: elements.deleteSessionBtn },
+                { id: '#show-copy-session-button-toggle', element: elements.copySessionBtn },
+                { id: '#show-api-provider-toggle-header', element: elements.headerApiProviderToggleBtn },
+                { id: '#show-header-cycle-api-key-btn-toggle', element: elements.headerCycleApiKeyBtn },
+                { id: '#show-scroll-to-top-button-toggle', element: elements.scrollToTopBtn },
+                { id: '#show-scroll-to-bottom-button-toggle', element: elements.scrollToBottomBtn },
+                { id: '#show-toggle-all-content-button-toggle', element: elements.toggleAllContentBtn },
+                { id: '#show-memo-button-toggle', element: elements.toggleMemoBtn },
+                { id: '#show-clipboard-stack-button-toggle', element: elements.toggleClipboardStackBtn },
+            ];
+            toggleableButtons.forEach(item => {
+                const checkbox = document.querySelector(item.id);
+                if (item.element) {
+                    item.element.classList.toggle('hidden', !checkbox.checked);
+                }
+            });
+            if (elements.pasteToInputBtn) {
+                elements.pasteToInputBtn.classList.toggle('hidden', !state.settings.showPasteButtonInFooter);
+            }
+            if (elements.rollDiceBtn) {
+                elements.rollDiceBtn.classList.toggle('hidden', !state.settings.showDiceButton);
+            }
+            if (elements.aiToAiChatBtn) {
+                const showAiToAiBtn = state.settings.enableSessionLinking &&
+                    state.linkedSessionIds.length === 2 &&
+                    state.currentChatId && state.linkedSessionIds.includes(state.currentChatId);
+                elements.aiToAiChatBtn.classList.toggle('hidden', !showAiToAiBtn);
+            }
+            if (elements.footerApiProviderToggleBtn) {
+                elements.footerApiProviderToggleBtn.classList.toggle('hidden', !state.settings.showApiProviderToggleFooter);
+            }
+            if (elements.footerCycleApiKeyBtn) {
+                elements.footerCycleApiKeyBtn.classList.toggle('hidden', !state.settings.showFooterCycleApiKeyBtn);
+            }
+            if (elements.footerTwinEngineModeToggleBtn) {
+                const showButton = state.settings.showTwinEngineSettings && state.settings.showFooterTwinEngineToggleButton;
+                elements.footerTwinEngineModeToggleBtn.classList.toggle('hidden', !showButton);
+            }
+            if (elements.footerResummarizeBtn) {
+                const showButton = state.settings.showTwinEngineSettings && state.settings.showFooterResummarizeButton;
+                elements.footerResummarizeBtn.classList.toggle('hidden', !showButton);
+            }
+            this.adjustHeaderLayout();
+            this.updateProviderToggleButtons();
+            if (elements.twinEngineSummaryBtn) {
+                const showButton = state.settings.showTwinEngineSettings && state.settings.showTwinEngineSummaryButton;
+                elements.twinEngineSummaryBtn.classList.toggle('hidden', !showButton);
+            }
+        };
+        requestAnimationFrame(updateVisibility);
+    },
+    adjustHeaderLayout() {
+        const header = elements.chatScreen.querySelector('.app-header');
+        if (!header)
+            return;
+        const allButtons = Array.from(header.querySelectorAll('button:not(#goto-history-btn):not(#goto-settings-btn)'));
+        allButtons.forEach(btn => btn.classList.remove('layout-hidden'));
+        requestAnimationFrame(() => {
+            let containerWidth = header.offsetWidth;
+            let settingsBtnRect = elements.gotoSettingsBtn.getBoundingClientRect();
+            let headerRect = header.getBoundingClientRect();
+            let isOverflowing = settingsBtnRect.right > headerRect.right - 5;
+            const buttonPriority = [
+                '#toggle-clipboard-stack-btn', '#toggle-memo-btn', '#twin-engine-summary-btn', '#scroll-to-top-btn',
+                '#scroll-to-bottom-btn', '#toggle-all-content-btn', '#header-api-provider-toggle-btn',
+                '#copy-session-btn', '#delete-session-btn', '#new-chat-btn'
+            ];
+            if (isOverflowing) {
+                for (const selector of buttonPriority) {
+                    const btn = header.querySelector(selector);
+                    if (btn && !btn.classList.contains('hidden') && !btn.classList.contains('layout-hidden')) {
+                        btn.classList.add('layout-hidden');
+                        settingsBtnRect = elements.gotoSettingsBtn.getBoundingClientRect();
+                        isOverflowing = settingsBtnRect.right > headerRect.right - 5;
+                        if (!isOverflowing)
+                            break;
+                    }
+                }
+            }
+        });
+    },
+    updateProviderToggleButtons() {
+        const providerMap = {
+            gemini: { text: 'GE', title: 'Gemini', className: 'gemini' },
+            deepseek: { text: 'DS', title: 'DeepSeek', className: 'deepseek' },
+            claude: { text: 'AN', title: 'Anthropic', className: 'claude' },
+            openai: { text: 'OP', title: 'OpenAI', className: 'openai' },
+            xai: { text: 'XA', title: 'xAI', className: 'xai' },
+            llmaggregator: { text: 'LA', title: 'LLM Aggregator', className: 'llmaggregator' },
+            dummy: { text: 'DU', title: 'Dummy AI', className: 'dummy' },
+        };
+        const currentProviderInfo = providerMap[state.settings.apiProvider] || { text: '??', title: 'Unknown', className: '' };
+        [elements.headerApiProviderToggleBtn, elements.footerApiProviderToggleBtn].forEach(button => {
+            if (button) {
+                button.textContent = currentProviderInfo.text;
+                button.title = `API: ${currentProviderInfo.title}`;
+                button.classList.remove('gemini', 'deepseek', 'claude', 'openai', 'xai', 'llmaggregator', 'dummy');
+                if (currentProviderInfo.className) {
+                    button.classList.add(currentProviderInfo.className);
+                }
+            }
+        });
+    },
+    updateTwinEngineModeButton() {
+        const isEnabled = state.settings.showTwinEngineSettings;
+        const isFullAuto = isEnabled && state.settings.twinEngineEnableFullAuto;
+        let headerText, headerTitle, footerText, footerTitle;
+        if (isFullAuto) {
+            headerText = 'モード: 自動 🛞';
+            footerText = '🛞';
+            headerTitle = footerTitle = 'クリックして手動モードに切り替え';
+        }
+        else {
+            headerText = 'モード: 手動 ✋️';
+            footerText = '✋️';
+            headerTitle = footerTitle = isEnabled ? 'クリックして自動モードに切り替え' : 'Twin-engineが無効です';
+        }
+        if (elements.twinEngineModeToggleBtn) {
+            elements.twinEngineModeToggleBtn.textContent = headerText;
+            elements.twinEngineModeToggleBtn.title = headerTitle;
+            elements.twinEngineModeToggleBtn.disabled = !isEnabled;
+        }
+        if (elements.footerTwinEngineModeToggleBtn) {
+            elements.footerTwinEngineModeToggleBtn.textContent = footerText;
+            elements.footerTwinEngineModeToggleBtn.title = footerTitle;
+            elements.footerTwinEngineModeToggleBtn.disabled = !isEnabled;
+        }
+    },
+    updateTwinEngineApiKeyCycleButton() {
+        const button = elements.twinEngineApiKeyCycleBtn;
+        if (!button)
+            return;
+        const configs = state.settings.twinEngineApiConfigs;
+        const activeId = state.settings.twinEngineActiveConfigId;
+        if (configs.length === 0) {
+            button.classList.add('hidden');
+            return;
+        }
+        button.classList.remove('hidden');
+        button.disabled = configs.length <= 1;
+        const activeConfig = configs.find(c => c.id === activeId) || configs[0];
+        if (activeConfig) {
+            const initial = activeConfig.label?.trim().charAt(0) || '?';
+            button.textContent = `キー: ${initial}`;
+            button.title = `現在のキー: ${activeConfig.label || 'ラベル未設定'}`;
+        }
+        else {
+            button.textContent = 'キー: -';
+            button.title = 'APIキーが設定されていません';
+        }
+    },
+    updateHistoryHeaderButtonVisibility() {
+        const showBulkActions = state.settings.showBulkHistoryActions;
+        if (elements.exportAllSessionsBtn) {
+            elements.exportAllSessionsBtn.classList.toggle('hidden', !showBulkActions);
+        }
+        if (elements.importAllSessionsBtn) {
+            elements.importAllSessionsBtn.classList.toggle('hidden', !showBulkActions);
+        }
+    },
+    updateUserModelOptions() {
+        const group = elements.geminiUserDefinedModelsGroup;
+        group.innerHTML = '';
+        const models = (state.settings.additionalModels || '')
+            .split(',')
+            .map(m => m.trim())
+            .filter(m => m !== '');
+        if (models.length > 0) {
+            group.disabled = false;
+            models.forEach(modelId => {
+                const option = document.createElement('option');
+                option.value = modelId;
+                option.textContent = modelId;
+                group.appendChild(option);
+            });
+            if (models.includes(state.settings.modelName)) {
+                elements.geminiModelNameSelect.value = state.settings.modelName;
+            }
+        }
+        else {
+            group.disabled = true;
+        }
+    },
+    updateDeepSeekUserModelOptions() {
+        const select = elements.deepSeekModelNameSelect;
+        const userDefinedOptgroup = select.querySelector('optgroup[label="ユーザー指定 (DeepSeek)"]');
+        if (userDefinedOptgroup) {
+            userDefinedOptgroup.remove();
+        }
+        const baseModelsOptgroup = select.querySelector('optgroup[label="基本モデル (DeepSeek)"]') || select;
+        baseModelsOptgroup.innerHTML = '';
+        const defaultDeepSeekModels = ['deepseek-chat', 'deepseek-coder', 'deepseek-reasoner'];
+        defaultDeepSeekModels.forEach(modelId => {
+            const option = document.createElement('option');
+            option.value = modelId;
+            option.textContent = modelId;
+            baseModelsOptgroup.appendChild(option);
+        });
+        const additionalModels = (state.settings.deepSeekAdditionalModels || '')
+            .split(',')
+            .map(m => m.trim())
+            .filter(m => m !== '');
+        if (additionalModels.length > 0) {
+            let optgroup = document.createElement('optgroup');
+            optgroup.label = 'ユーザー指定 (DeepSeek)';
+            optgroup.id = 'deepseek-user-defined-models-group';
+            additionalModels.forEach(modelId => {
+                const option = document.createElement('option');
+                option.value = modelId;
+                option.textContent = modelId;
+                optgroup.appendChild(option);
+            });
+            select.appendChild(optgroup);
+        }
+        if (state.settings.deepSeekModelName && Array.from(select.options).some(opt => opt.value === state.settings.deepSeekModelName)) {
+            select.value = state.settings.deepSeekModelName;
+        }
+        else if (select.options.length > 0) {
+            select.value = defaultDeepSeekModels[0];
+            state.settings.deepSeekModelName = select.value;
+        }
+    },
+    updateClaudeUserModelOptions() {
+        const group = elements.claudeUserDefinedModelsGroup;
+        group.innerHTML = '';
+        const models = (state.settings.claudeAdditionalModels || '')
+            .split(',')
+            .map(m => m.trim())
+            .filter(m => m !== '');
+        if (models.length > 0) {
+            group.disabled = false;
+            models.forEach(modelId => {
+                const option = document.createElement('option');
+                option.value = modelId;
+                option.textContent = modelId;
+                group.appendChild(option);
+            });
+            if (models.includes(state.settings.claudeModelName)) {
+                elements.claudeModelNameSelect.value = state.settings.claudeModelName;
+            }
+        }
+        else {
+            group.disabled = true;
+        }
+    },
+    updateOpenAIUserModelOptions() {
+        const select = elements.openaiModelNameSelect;
+        select.querySelectorAll('optgroup[label="ユーザー指定"]').forEach(el => el.remove());
+        const models = (state.settings.openaiAdditionalModels || '')
+            .split(',')
+            .map(m => m.trim())
+            .filter(m => m !== '');
+        if (models.length > 0) {
+            const optgroup = document.createElement('optgroup');
+            optgroup.label = 'ユーザー指定';
+            models.forEach(modelId => {
+                const option = document.createElement('option');
+                option.value = modelId;
+                option.textContent = modelId;
+                optgroup.appendChild(option);
+            });
+            select.appendChild(optgroup);
+        }
+        if (Array.from(select.options).some(opt => opt.value === state.settings.openaiModelName)) {
+            select.value = state.settings.openaiModelName;
+        }
+        else {
+            select.value = DEFAULT_OPENAI_MODEL;
+        }
+    },
+    updateXaiUserModelOptions() {
+        const group = elements.xaiUserDefinedModelsGroup;
+        group.innerHTML = '';
+        const models = (state.settings.xaiAdditionalModels || '')
+            .split(',')
+            .map(m => m.trim())
+            .filter(m => m !== '');
+        if (models.length > 0) {
+            group.disabled = false;
+            models.forEach(modelId => {
+                const option = document.createElement('option');
+                option.value = modelId;
+                option.textContent = modelId;
+                group.appendChild(option);
+            });
+            if (models.includes(state.settings.xaiModelName)) {
+                elements.xaiModelNameSelect.value = state.settings.xaiModelName;
+            }
+        }
+        else {
+            group.disabled = true;
+        }
+    },
+    updateLlmAggregatorUserModelOptions() {
+        const select = elements.llmAggregatorModelNameSelect;
+        const userDefinedOptgroup = select.querySelector('optgroup[label="ユーザー指定"]');
+        select.innerHTML = '';
+        const hfOptgroup = document.createElement('optgroup');
+        hfOptgroup.label = 'Hugging Faceサンプル';
+        const hfOption = document.createElement('option');
+        hfOption.value = 'moonshotai/Kimi-K2-Thinking:novita';
+        hfOption.textContent = 'moonshotai/Kimi-K2-Thinking:novita';
+        hfOptgroup.appendChild(hfOption);
+        select.appendChild(hfOptgroup);
+        const openRouterOptgroup = document.createElement('optgroup');
+        openRouterOptgroup.label = 'OpenRouterサンプル';
+        const openRouterModels = [
+            'google/gemma-4-31b-it:free',
+            'google/gemini-3.1-pro-preview',
+            'google/gemini-2.5-pro',
+            'anthropic/claude-sonnet-5',
+            'z-ai/glm-5.2',
+            'deepseek/deepseek-v4-pro'
+        ];
+        openRouterModels.forEach(modelId => {
+            const option = document.createElement('option');
+            option.value = modelId;
+            option.textContent = modelId;
+            openRouterOptgroup.appendChild(option);
+        });
+        select.appendChild(openRouterOptgroup);
+        const additionalModels = (state.settings.llmAggregatorAdditionalModels || '')
+            .split(',')
+            .map(m => m.trim())
+            .filter(m => m !== '');
+        if (additionalModels.length > 0) {
+            let optgroup = document.createElement('optgroup');
+            optgroup.label = 'ユーザー指定';
+            optgroup.id = 'llmaggregator-user-defined-models-group';
+            additionalModels.forEach(modelId => {
+                const option = document.createElement('option');
+                option.value = modelId;
+                option.textContent = modelId;
+                optgroup.appendChild(option);
+            });
+            select.appendChild(optgroup);
+        }
+        if (state.settings.llmAggregatorModelName && Array.from(select.options).some(opt => opt.value === state.settings.llmAggregatorModelName)) {
+            select.value = state.settings.llmAggregatorModelName;
+        }
+        else if (select.options.length > 0) {
+            select.value = DEFAULT_LLMAGGREGATOR_MODEL;
+            state.settings.llmAggregatorModelName = select.value;
+        }
+    },
+    applyFontFamily() {
+        const customFont = state.settings.fontFamily?.trim();
+        const fontFamilyToApply = customFont ? customFont : DEFAULT_FONT_FAMILY;
+        document.documentElement.style.setProperty('--font-family', fontFamilyToApply);
+        document.documentElement.style.setProperty('--message-body-font-size', `${state.settings.messageBodyFontSize || DEFAULT_MESSAGE_BODY_FONT_SIZE}px`);
+        document.documentElement.style.setProperty('--code-block-font-size', `${state.settings.codeBlockFontSize || DEFAULT_CODE_BLOCK_FONT_SIZE}px`);
+        document.documentElement.style.setProperty('--thought-summary-font-size', `${state.settings.thoughtSummaryFontSize || DEFAULT_THOUGHT_SUMMARY_FONT_SIZE}px`);
+        document.documentElement.style.setProperty('--chat-ui-scale', state.settings.chatUiScale || 1.0);
+        document.documentElement.style.setProperty('--settings-ui-scale', state.settings.settingsUiScale || 1.0);
+        document.documentElement.style.setProperty('--history-ui-scale', state.settings.historyUiScale || 1.0);
+    },
+});

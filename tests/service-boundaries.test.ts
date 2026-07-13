@@ -15,8 +15,22 @@ const serviceBoundaries = [
   ['error-recovery', 'errorRecovery'],
   ['api-key-manager', 'multiApiKeyUtils'],
   ['twin-engine-config', 'twinEngineApiConfigUtils'],
-  ['ui-controller', 'uiUtils'],
-  ['app-controller', 'appLogic'],
+] as const;
+
+const controllerFeatures = [
+  ['ui-message-rendering', 'uiUtils'],
+  ['ui-message-tools', 'uiUtils'],
+  ['ui-settings', 'uiUtils'],
+  ['ui-header-controls', 'uiUtils'],
+  ['ui-interactions', 'uiUtils'],
+  ['app-initialization', 'appLogic'],
+  ['app-navigation-panels', 'appLogic'],
+  ['chat-sessions', 'appLogic'],
+  ['message-sending', 'appLogic'],
+  ['data-management', 'appLogic'],
+  ['message-actions', 'appLogic'],
+  ['twin-engine-runtime', 'appLogic'],
+  ['scrolling-runtime', 'appLogic'],
 ] as const;
 
 describe('application service boundaries', () => {
@@ -33,6 +47,61 @@ describe('application service boundaries', () => {
     new vm.Script(readFile(`src/${filename}.js`)).runInContext(context);
 
     expect(new vm.Script(`typeof ${globalName}`).runInContext(context)).toBe('object');
+  });
+
+  it.each(controllerFeatures)('registers the %s controller feature', (filename, globalName) => {
+    const context = vm.createContext({ [globalName]: {} });
+    new vm.Script(readFile(`src/${filename}.js`)).runInContext(context);
+
+    expect(
+      new vm.Script(`Object.keys(${globalName}).length > 0`).runInContext(context),
+    ).toBe(true);
+  });
+
+  it('keeps controller roots as small feature registries', () => {
+    expect(readFile('src/ui-controller.ts')).toContain(
+      'const uiUtils: Record<string, any> = {}',
+    );
+    expect(readFile('src/app-controller.ts')).toContain(
+      'const appLogic: Record<string, any> = {}',
+    );
+  });
+
+  it.each([
+    [
+      'uiUtils',
+      72,
+      [
+        'ui-message-rendering',
+        'ui-message-tools',
+        'ui-settings',
+        'ui-header-controls',
+        'ui-interactions',
+      ],
+    ],
+    [
+      'appLogic',
+      100,
+      [
+        'app-initialization',
+        'app-navigation-panels',
+        'chat-sessions',
+        'message-sending',
+        'data-management',
+        'message-actions',
+        'twin-engine-runtime',
+        'scrolling-runtime',
+      ],
+    ],
+  ] as const)('preserves all %s controller methods', (globalName, expectedCount, filenames) => {
+    const context = vm.createContext({ [globalName]: {} });
+    for (const filename of filenames) {
+      new vm.Script(readFile(`src/${filename}.js`)).runInContext(context);
+    }
+
+    expect(new vm.Script(`Object.keys(${globalName}).length`).runInContext(context)).toBe(
+      expectedCount,
+    );
   });
 
   it('keeps the main entry focused on application startup', () => {
