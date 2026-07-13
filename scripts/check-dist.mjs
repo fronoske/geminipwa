@@ -11,6 +11,7 @@ const requiredFiles = [
   'sw.js',
   'marked.js',
   'icon-192x192.png',
+  'src/styles/app.css',
 ];
 const failures = [];
 
@@ -33,7 +34,7 @@ if (failures.length === 0) {
     }
   }
 
-  const requiredReferences = ['manifest.json', 'marked.js', 'sw.js'];
+  const requiredReferences = ['manifest.json', 'marked.js', 'sw.js', 'src/styles/app.css'];
   for (const reference of requiredReferences) {
     if (!html.includes(reference)) failures.push(`dist/index.htmlに参照がありません: ${reference}`);
   }

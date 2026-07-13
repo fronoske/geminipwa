@@ -50,5 +50,14 @@ export default defineConfig({
     outDir: 'dist',
     emptyOutDir: true,
     target: 'es2022',
+    rollupOptions: {
+      output: {
+        assetFileNames(assetInfo) {
+          return assetInfo.names.some((name) => name.endsWith('.css'))
+            ? 'src/styles/app.css'
+            : 'assets/[name]-[hash][extname]';
+        },
+      },
+    },
   },
 });

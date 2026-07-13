@@ -19,6 +19,9 @@ const assert = (condition, message) => {
 const scriptPattern = /<script\b([^>]*)>([\s\S]*?)<\/script>/gi;
 const inlineScripts = [];
 const externalScripts = [];
+const externalStylesheets = [
+  ...html.matchAll(/<link\b(?=[^>]*\brel=["']stylesheet["'])[^>]*\bhref=["']([^"']+)["'][^>]*>/gi),
+].map((match) => match[1]);
 
 for (const match of html.matchAll(scriptPattern)) {
   const attributes = match[1];
@@ -69,6 +72,7 @@ const localReferences = [
   manifest.start_url,
   ...manifest.icons.map((icon) => icon.src),
   ...externalScripts.filter((source) => !/^https?:\/\//i.test(source)),
+  ...externalStylesheets.filter((source) => !/^https?:\/\//i.test(source)),
   'manifest.json',
   'sw.js',
 ];
@@ -109,6 +113,7 @@ console.log('ベースライン検査に成功しました');
 console.log(`- HTML: ${html.split('\n').length}行 / ${Buffer.byteLength(html)} bytes`);
 console.log(`- インラインスクリプト: ${inlineScripts.length}`);
 console.log(`- 外部スクリプト: ${externalScripts.length}`);
+console.log(`- 外部スタイルシート: ${externalStylesheets.length}`);
 console.log(`- DOM ID: ${ids.length}（既知の重複ID ${Object.keys(duplicateIdCounts).length}件）`);
 console.log(`- IndexedDB: ${dbName} / version ${dbVersion}`);
 console.log(`- APP_VERSION: ${appVersion}`);
