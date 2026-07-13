@@ -31,9 +31,6 @@ Object.assign(uiUtils, {
                     if (elements.pasteToInputBtn) {
                         elements.pasteToInputBtn.classList.toggle('hidden', !state.settings.showPasteButtonInFooter);
                     }
-                    if (elements.rollDiceBtn) {
-                        elements.rollDiceBtn.classList.toggle('hidden', !state.settings.showDiceButton);
-                    }
                     if (elements.footerApiProviderToggleBtn) {
                         elements.footerApiProviderToggleBtn.classList.toggle('hidden', !state.settings.showApiProviderToggleFooter);
                     }

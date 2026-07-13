@@ -4559,7 +4559,6 @@ font-size: 1.142em !important;
                 <button id="footer-api-provider-toggle-btn" class="footer-action-button api-provider-toggle-btn"
                     title="APIプロバイダー切替"></button>
                 <button id="footer-cycle-api-key-btn" class="footer-action-button api-provider-toggle-btn" title="APIキー切替" style="font-weight: bold;"></button>
-                <button id="roll-dice-btn" title="ランダム数値を入力" class="footer-action-button hidden">🎲</button>
                 <button id="paste-to-input-btn" title="入力欄に貼り付け" class="footer-action-button">貼</button>
                 <textarea id="user-input" placeholder="メッセージを入力..." rows="1" aria-label="メッセージ入力"></textarea>
                 <button id="attach-file-btn" title="ファイルを添付" class="footer-action-button">+<span
@@ -6500,24 +6499,6 @@ font-size: 1.142em !important;
                                                 <input type="checkbox" id="show-paste-button-in-footer-toggle">
                                                 「貼付け」ボタンを表示する
                                             </label>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="show-dice-button-toggle">
-                                                ダイスボタン(🎲)を表示する
-                                            </label>
-                                            <div id="dice-value-settings" class="hidden" style="margin-top:5px;">
-                                                <div class="param-grid">
-                                                    <div>
-                                                        <label for="dice-min-value">ダイス最小値:</label>
-                                                        <input type="number" id="dice-min-value" min="0" step="1"
-                                                            placeholder="例: 1">
-                                                    </div>
-                                                    <div>
-                                                        <label for="dice-max-value">ダイス最大値:</label>
-                                                        <input type="number" id="dice-max-value" min="0" step="1"
-                                                            placeholder="例: 100">
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </div>
                                     </details>
 
@@ -7053,8 +7034,6 @@ const DEFAULT_TOGGLE_BUTTON_BOTTOM_TEXT_COLLAPSE = "_";
 const DEFAULT_TOGGLE_BUTTON_BOTTOM_TEXT_EXPAND = "□";
 const DEFAULT_AUTO_SCROLL_ON_NEW_MESSAGE = true;
 const DEFAULT_PERSIST_MESSAGE_COLLAPSE_STATE = true;
-const DEFAULT_DICE_MIN_VALUE = 1;
-const DEFAULT_DICE_MAX_VALUE = 100;
 const DEFAULT_THOUGHT_SUMMARY_OPACITY = 0.65;
 const DEFAULT_THOUGHT_SUMMARY_FONT_SIZE = 13;
 const ALLOWED_LLMAGGREGATOR_DOMAINS = [
@@ -7284,9 +7263,6 @@ const elements = {
     showBulkHistoryActionsToggle: document.getElementById('show-bulk-history-actions-toggle'),
     showPasteButtonInFooterToggle: document.getElementById('show-paste-button-in-footer-toggle'),
     showPasteButtonInEditToggle: document.getElementById('show-paste-button-in-edit-toggle'),
-    showDiceButtonToggle: document.getElementById('show-dice-button-toggle'),
-    diceMinValueInput: document.getElementById('dice-min-value'),
-    diceMaxValueInput: document.getElementById('dice-max-value'),
     messageBubbleOpacityInput: document.getElementById('message-bubble-opacity'),
     chatOverlayOpacityInput: document.getElementById('chat-overlay-opacity'),
     headerFooterOpacityInput: document.getElementById('header-footer-opacity'),
@@ -7339,7 +7315,6 @@ const elements = {
     promptInput: getRequiredDomElement('promptDialog').querySelector('.dialog-input'),
     promptOkBtn: getRequiredDomElement('promptDialog').querySelector('.dialog-ok-btn'),
     promptCancelBtn: getRequiredDomElement('promptDialog').querySelector('.dialog-cancel-btn'),
-    rollDiceBtn: document.getElementById('roll-dice-btn'),
     attachFileBtn: document.getElementById('attach-file-btn'),
     pasteToInputBtn: document.getElementById('paste-to-input-btn'),
     fileUploadDialog: document.getElementById('fileUploadDialog'),
@@ -7635,9 +7610,6 @@ const state = {
         showBulkHistoryActions: true,
         showPasteButtonInFooter: false,
         showPasteButtonInEdit: false,
-        showDiceButton: false,
-        diceMinValue: DEFAULT_DICE_MIN_VALUE,
-        diceMaxValue: DEFAULT_DICE_MAX_VALUE,
         showMemoButton: false,
         memoHeight: DEFAULT_MEMO_HEIGHT,
         showClipboardStackButton: false,
@@ -8025,7 +7997,7 @@ const dbUtils = {
                     }
                     const removedSettingKeys = settingsArray
                         .map((item) => item.key)
-                        .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine|enableSessionLinking|showSessionLinkingSettings|enableCryscroller|cryscroller|enableSettingsCryscroller|enableHistoryCryscroller|enableImmersiveScrolling|enableDynamicScrollMarkerColor|enableProofreading|showProofreadingSettings|proofreading|activeProofreadingConfigId|enableImageUrlReplacement|imageUrlReplacementBase|enableAutoBaseUrlDetection|enableFuzzySearchNormalization|fuzzySearchThreshold|characterNamesList|enableRomajiToKatakanaConversion|dummyErrorDebugMode|dummyDummyModel|dummyEnableDummyModel)/.test(key));
+                        .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine|enableSessionLinking|showSessionLinkingSettings|enableCryscroller|cryscroller|enableSettingsCryscroller|enableHistoryCryscroller|enableImmersiveScrolling|enableDynamicScrollMarkerColor|enableProofreading|showProofreadingSettings|proofreading|activeProofreadingConfigId|enableImageUrlReplacement|imageUrlReplacementBase|enableAutoBaseUrlDetection|enableFuzzySearchNormalization|fuzzySearchThreshold|characterNamesList|enableRomajiToKatakanaConversion|dummyErrorDebugMode|dummyDummyModel|dummyEnableDummyModel|showDiceButton|diceMinValue|diceMaxValue)/.test(key));
                     if (removedSettingKeys.length > 0) {
                         try {
                             const cleanupStore = this._getStore(SETTINGS_STORE, 'readwrite');
@@ -11834,10 +11806,6 @@ Object.assign(uiUtils, {
         elements.showBulkHistoryActionsToggle.checked = state.settings.showBulkHistoryActions;
         elements.showPasteButtonInFooterToggle.checked = state.settings.showPasteButtonInFooter;
         elements.showPasteButtonInEditToggle.checked = state.settings.showPasteButtonInEdit;
-        elements.showDiceButtonToggle.checked = state.settings.showDiceButton;
-        document.getElementById('dice-value-settings').classList.toggle('hidden', !state.settings.showDiceButton);
-        elements.diceMinValueInput.value = state.settings.diceMinValue ?? '';
-        elements.diceMaxValueInput.value = state.settings.diceMaxValue ?? '';
         elements.messageBubbleOpacityInput.value = state.settings.messageBubbleOpacity ?? DEFAULT_MESSAGE_BUBBLE_OPACITY;
         elements.chatOverlayOpacityInput.value = state.settings.chatOverlayOpacity ?? DEFAULT_CHAT_OVERLAY_OPACITY;
         elements.headerFooterOpacityInput.value = state.settings.headerFooterOpacity ?? DEFAULT_HEADER_FOOTER_OPACITY;
@@ -12060,9 +12028,6 @@ Object.assign(uiUtils, {
             });
             if (elements.pasteToInputBtn) {
                 elements.pasteToInputBtn.classList.toggle('hidden', !state.settings.showPasteButtonInFooter);
-            }
-            if (elements.rollDiceBtn) {
-                elements.rollDiceBtn.classList.toggle('hidden', !state.settings.showDiceButton);
             }
             if (elements.footerApiProviderToggleBtn) {
                 elements.footerApiProviderToggleBtn.classList.toggle('hidden', !state.settings.showApiProviderToggleFooter);
@@ -13352,7 +13317,6 @@ Object.assign(appLogic, {
         elements.scrollToTopBtn.addEventListener('click', () => this.scrollToTop());
         elements.scrollToBottomBtn.addEventListener('click', () => this.scrollToBottom());
         elements.pasteToInputBtn.addEventListener('click', () => this.pasteToUserInput());
-        elements.rollDiceBtn.addEventListener('click', () => this.rollDiceAndInput());
         elements.newChatBtn.addEventListener('click', () => {
             uiUtils.showCustomConfirm("現在のチャットを保存して新規チャットを開始しますか？").then(confirmed => {
                 if (confirmed)
@@ -13785,11 +13749,6 @@ Object.assign(appLogic, {
         });
         elements.showPasteButtonInEditToggle.addEventListener('change', () => {
             state.settings.showPasteButtonInEdit = elements.showPasteButtonInEditToggle.checked;
-        });
-        elements.showDiceButtonToggle.addEventListener('change', () => {
-            state.settings.showDiceButton = elements.showDiceButtonToggle.checked;
-            uiUtils.updateChatScreenElementVisibility();
-            document.getElementById('dice-value-settings').classList.toggle('hidden', !state.settings.showDiceButton);
         });
         elements.preventZoomToggle.addEventListener('change', () => {
             state.settings.preventZoom = elements.preventZoomToggle.checked;
@@ -14625,25 +14584,6 @@ Object.assign(appLogic, {
                 button.disabled = false;
             }, 2000);
         }
-    },
-    rollDiceAndInput() {
-        let min = parseInt(state.settings.diceMinValue, 10);
-        let max = parseInt(state.settings.diceMaxValue, 10);
-        if (isNaN(min))
-            min = DEFAULT_DICE_MIN_VALUE;
-        if (isNaN(max))
-            max = DEFAULT_DICE_MAX_VALUE;
-        if (min > max) {
-            [min, max] = [max, min];
-        }
-        const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
-        const currentText = elements.userInput.value;
-        const selectionStart = elements.userInput.selectionStart;
-        const selectionEnd = elements.userInput.selectionEnd;
-        elements.userInput.value = currentText.substring(0, selectionStart) + randomNumber + currentText.substring(selectionEnd);
-        elements.userInput.selectionStart = elements.userInput.selectionEnd = selectionStart + String(randomNumber).length;
-        uiUtils.adjustTextareaHeight();
-        uiUtils.updateAttachmentBadgeVisibility();
     },
 });
 
@@ -16835,9 +16775,6 @@ Object.assign(appLogic, {
         newSettings.stripedHistoryList = elements.stripedHistoryListToggle.checked;
         newSettings.showPasteButtonInFooter = elements.showPasteButtonInFooterToggle.checked;
         newSettings.showPasteButtonInEdit = elements.showPasteButtonInEditToggle.checked;
-        newSettings.showDiceButton = elements.showDiceButtonToggle.checked;
-        newSettings.diceMinValue = elements.diceMinValueInput.value === '' ? null : parseInt(elements.diceMinValueInput.value, 10);
-        newSettings.diceMaxValue = elements.diceMaxValueInput.value === '' ? null : parseInt(elements.diceMaxValueInput.value, 10);
         newSettings.showMemoButton = elements.showMemoButtonToggle.checked;
         newSettings.memoHeight = elements.memoHeightInput.value.trim() || DEFAULT_MEMO_HEIGHT;
         newSettings.showClipboardStackButton = elements.showClipboardStackButtonToggle.checked;

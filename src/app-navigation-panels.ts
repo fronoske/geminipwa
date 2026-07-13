@@ -351,25 +351,4 @@ Object.assign(appLogic, {
                     }, 2000);
                 }
             },
-            rollDiceAndInput() {
-                let min = parseInt(state.settings.diceMinValue, 10);
-                let max = parseInt(state.settings.diceMaxValue, 10);
-
-                if (isNaN(min)) min = DEFAULT_DICE_MIN_VALUE;
-                if (isNaN(max)) max = DEFAULT_DICE_MAX_VALUE;
-
-                if (min > max) {
-                    [min, max] = [max, min];
-                }
-
-                const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
-                const currentText = elements.userInput.value;
-                const selectionStart = elements.userInput.selectionStart;
-                const selectionEnd = elements.userInput.selectionEnd;
-
-                elements.userInput.value = currentText.substring(0, selectionStart) + randomNumber + currentText.substring(selectionEnd);
-                elements.userInput.selectionStart = elements.userInput.selectionEnd = selectionStart + String(randomNumber).length;
-                uiUtils.adjustTextareaHeight();
-                uiUtils.updateAttachmentBadgeVisibility();
-            },
 });

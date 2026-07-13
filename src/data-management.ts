@@ -824,9 +824,6 @@ newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.che
                 newSettings.stripedHistoryList = elements.stripedHistoryListToggle.checked;
                 newSettings.showPasteButtonInFooter = elements.showPasteButtonInFooterToggle.checked;
                 newSettings.showPasteButtonInEdit = elements.showPasteButtonInEditToggle.checked;
-                newSettings.showDiceButton = elements.showDiceButtonToggle.checked;
-                newSettings.diceMinValue = elements.diceMinValueInput.value === '' ? null : parseInt(elements.diceMinValueInput.value, 10);
-                newSettings.diceMaxValue = elements.diceMaxValueInput.value === '' ? null : parseInt(elements.diceMaxValueInput.value, 10);
                 newSettings.showMemoButton = elements.showMemoButtonToggle.checked;
                 newSettings.memoHeight = elements.memoHeightInput.value.trim() || DEFAULT_MEMO_HEIGHT;
                 newSettings.showClipboardStackButton = elements.showClipboardStackButtonToggle.checked;

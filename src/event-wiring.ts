@@ -19,7 +19,6 @@ Object.assign(appLogic, {
                 elements.scrollToTopBtn.addEventListener('click', () => this.scrollToTop());
                 elements.scrollToBottomBtn.addEventListener('click', () => this.scrollToBottom());
                 elements.pasteToInputBtn.addEventListener('click', () => this.pasteToUserInput());
-                elements.rollDiceBtn.addEventListener('click', () => this.rollDiceAndInput());
 
                 elements.newChatBtn.addEventListener('click', () => {
                     uiUtils.showCustomConfirm("現在のチャットを保存して新規チャットを開始しますか？").then(confirmed => {
@@ -449,11 +448,6 @@ Object.assign(appLogic, {
                 });
                 elements.showPasteButtonInEditToggle.addEventListener('change', () => {
                     state.settings.showPasteButtonInEdit = elements.showPasteButtonInEditToggle.checked;
-                });
-                elements.showDiceButtonToggle.addEventListener('change', () => {
-                    state.settings.showDiceButton = elements.showDiceButtonToggle.checked;
-                    uiUtils.updateChatScreenElementVisibility();
-                    document.getElementById('dice-value-settings').classList.toggle('hidden', !state.settings.showDiceButton);
                 });
                 elements.preventZoomToggle.addEventListener('change', () => {
                     state.settings.preventZoom = elements.preventZoomToggle.checked;

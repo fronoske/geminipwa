@@ -65,6 +65,12 @@ describe('project configuration', () => {
     expect(readFile('src/message-sending.ts')).not.toMatch(/apiProvider === 'dummy'|selectedApiProvider === 'dummy'/);
   });
 
+  it('does not ship dice input and still preserves input presets', () => {
+    expect(readFile('src/index.html')).not.toMatch(/roll-dice|dice-value|ダイスボタン/);
+    expect(readFile('src/app-state.ts')).not.toMatch(/showDice|diceMin|diceMax/);
+    expect(runtimeManifest.application).toContain('input-preset');
+  });
+
   it('preserves multiple API key management as a protected core feature', () => {
     expect(runtimeManifest.application).toContain('api-key-manager');
     expect(readFile('src/api-key-manager.ts')).toContain('const multiApiKeyUtils = {');

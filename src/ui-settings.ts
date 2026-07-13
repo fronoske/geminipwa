@@ -613,10 +613,6 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 elements.showBulkHistoryActionsToggle.checked = state.settings.showBulkHistoryActions;
                 elements.showPasteButtonInFooterToggle.checked = state.settings.showPasteButtonInFooter;
                 elements.showPasteButtonInEditToggle.checked = state.settings.showPasteButtonInEdit;
-                elements.showDiceButtonToggle.checked = state.settings.showDiceButton;
-                document.getElementById('dice-value-settings').classList.toggle('hidden', !state.settings.showDiceButton);
-                elements.diceMinValueInput.value = state.settings.diceMinValue ?? '';
-                elements.diceMaxValueInput.value = state.settings.diceMaxValue ?? '';
                elements.messageBubbleOpacityInput.value = state.settings.messageBubbleOpacity ?? DEFAULT_MESSAGE_BUBBLE_OPACITY;
                 elements.chatOverlayOpacityInput.value = state.settings.chatOverlayOpacity ?? DEFAULT_CHAT_OVERLAY_OPACITY;
                 elements.headerFooterOpacityInput.value = state.settings.headerFooterOpacity ?? DEFAULT_HEADER_FOOTER_OPACITY;
