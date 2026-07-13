@@ -16,15 +16,6 @@ Object.assign(appLogic, {
                 elements.copyClipboardStackBtn.addEventListener('click', () => this.copyClipboardStackText());
                 elements.pasteClipboardStackBtn.addEventListener('click', () => this.pasteIntoClipboardStack());
 
-                elements.twinEngineSummaryBtn.addEventListener('click', () => this.toggleTwinEngineSummary());
-                elements.twinEngineApiKeyCycleBtn.addEventListener('click', () => this.cycleTwinEngineApiKey());
-                elements.copyTwinEngineSummaryBtn.addEventListener('click', () => this.copyTwinEngineSummaryText());
-                elements.clearTwinEngineSummaryBtn.addEventListener('click', () => this.clearTwinEngineSummary());
-                elements.resummarizeBtn.addEventListener('click', () => this.manualResummarize());
-                elements.footerResummarizeBtn.addEventListener('click', () => this.manualResummarize());
-                elements.twinEngineModeToggleBtn.addEventListener('click', () => this.toggleTwinEngineMode());
-                elements.footerTwinEngineModeToggleBtn.addEventListener('click', () => this.toggleTwinEngineMode());
-
                 elements.scrollToTopBtn.addEventListener('click', () => this.scrollToTop());
                 elements.scrollToBottomBtn.addEventListener('click', () => this.scrollToBottom());
                 elements.aiToAiChatBtn.addEventListener('click', () => this.initiateAiToAiStep());
@@ -179,21 +170,6 @@ Object.assign(appLogic, {
                             }
                         }
                     });
-                });
-
-                elements.showTwinEngineSettingsToggle.addEventListener('change', (e) => {
-                    state.settings.showTwinEngineSettings = e.target.checked;
-                    const isVisible = e.target.checked;
-                    const twinEngineSettingsGroup = document.getElementById('settings-group-twin-engine');
-                    if (twinEngineSettingsGroup) {
-                        twinEngineSettingsGroup.classList.toggle('hidden', !isVisible);
-                    }
-                    if (elements.twinEngineSummaryBtn) {
-                        const showButton = isVisible && state.settings.showTwinEngineSummaryButton;
-                        elements.twinEngineSummaryBtn.classList.toggle('hidden', !showButton);
-                    }
-                    uiUtils.updateChatScreenElementVisibility();
-                    uiUtils.updateTwinEngineModeButton();
                 });
 
                                 const handleBgUpload = async (file, type) => {
@@ -456,10 +432,6 @@ Object.assign(appLogic, {
                     uiUtils.updateChatScreenElementVisibility();
                     uiUtils.updateMemoStackHeightSettingsVisibility();
                 });
-                elements.showTwinEngineSummaryButtonToggle.addEventListener('change', () => {
-                    state.settings.showTwinEngineSummaryButton = elements.showTwinEngineSummaryButtonToggle.checked;
-                    uiUtils.updateChatScreenElementVisibility();
-                });
                 elements.showClipboardStackButtonToggle.addEventListener('change', () => {
                     state.settings.showClipboardStackButton = elements.showClipboardStackButtonToggle.checked;
                     uiUtils.updateChatScreenElementVisibility();
@@ -501,10 +473,6 @@ Object.assign(appLogic, {
                     state.settings.showDiceButton = elements.showDiceButtonToggle.checked;
                     uiUtils.updateChatScreenElementVisibility();
                     document.getElementById('dice-value-settings').classList.toggle('hidden', !state.settings.showDiceButton);
-                });
-                elements.showFooterTwinEngineToggleButtonToggle.addEventListener('change', () => {
-                    state.settings.showFooterTwinEngineToggleButton = elements.showFooterTwinEngineToggleButtonToggle.checked;
-                    uiUtils.updateChatScreenElementVisibility();
                 });
                 elements.preventZoomToggle.addEventListener('change', () => {
                     state.settings.preventZoom = elements.preventZoomToggle.checked;
@@ -570,18 +538,6 @@ Object.assign(appLogic, {
                         elements.sessionLinkingSettingsGroup.classList.toggle('hidden', !e.target.checked);
                     }
                 });
-                elements.showTwinEngineSettingsToggle.addEventListener('change', (e) => {
-                    const isVisible = e.target.checked;
-                    const twinEngineSettingsGroup = document.getElementById('settings-group-twin-engine');
-                    if (twinEngineSettingsGroup) {
-                        twinEngineSettingsGroup.classList.toggle('hidden', !isVisible);
-                    }
-                    if (elements.twinEngineSummaryBtn) {
-                        const showButton = isVisible && state.settings.showTwinEngineSummaryButton;
-                        elements.twinEngineSummaryBtn.classList.toggle('hidden', !showButton);
-                    }
-                });
-
                 elements.memoHeightInput.addEventListener('input', () => {
                     const newHeight = elements.memoHeightInput.value.trim();
                     if (newHeight) {
@@ -990,8 +946,6 @@ Object.assign(appLogic, {
                 elements.showMultiApiKeysToggle.addEventListener('change', (e) => {
                     uiUtils.toggleMultiApiKeysVisibility(e.target.checked);
                 });
-                twinEngineApiConfigUtils.initialize();
-
                 elements.enableWebhookNotificationToggle.addEventListener('change', (e) => {
                     elements.webhookSettingsContainer.classList.toggle('hidden', !e.target.checked);
                 });

@@ -110,7 +110,7 @@
                 keyInput.addEventListener('input', (e) => this.updateConfigValue(config.id, 'apiKey', e.target.value));
 
                 const providerSelect = document.createElement('select');
-                providerSelect.className = 'twin-engine-config-provider';
+                providerSelect.className = 'api-config-provider';
                 API_PROVIDERS.forEach(providerInfo => {
                     if (providerInfo.value !== 'dummy') {
                         const option = document.createElement('option');
@@ -123,7 +123,7 @@
                 providerSelect.addEventListener('change', (e) => this.updateConfigValue(config.id, 'provider', e.target.value));
 
                 const modelSelect = document.createElement('select');
-                modelSelect.className = 'twin-engine-config-model';
+                modelSelect.className = 'api-config-model';
                 this.populateModelOptions(modelSelect, config.provider);
                 modelSelect.value = config.modelName;
                 modelSelect.addEventListener('change', (e) => this.updateConfigValue(config.id, 'modelName', e.target.value));

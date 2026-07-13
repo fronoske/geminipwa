@@ -45,10 +45,6 @@ Object.assign(appLogic, {
                 state.isClipboardStackVisible = false;
                 elements.clipboardStackArea.classList.add('hidden');
                 state.clipboardStackContent = '';
-                state.isTwinEngineSummaryVisible = false;
-                elements.twinEngineSummaryArea.classList.add('hidden');
-                state.twinEngineSummaryContent = '';
-                elements.twinEngineSummaryEditor.value = '';
                 state.areAllMessagesHidden = false;
                 uiUtils.updateToggleAllContentButton();
                 state.messageCollapsedStates.clear();
@@ -134,14 +130,6 @@ Object.assign(appLogic, {
                         uiUtils.setSendingState(false);
                         uiUtils.updateAttachmentBadgeVisibility();
                         elements.memoEditor.value = '';
-                        if (state.settings.showTwinEngineSettings && state.settings.twinEngineEnableFullAuto) {
-                            const userTurnCount = (chat.messages || []).filter(msg => msg.role === 'user').length;
-                            const summarizeAfterTurns = state.settings.twinEngineSummarizeAfterTurns || 0;
-
-                            if (userTurnCount > summarizeAfterTurns) {
-                                setTimeout(() => this.triggerTwinEngineSummaryInBackground(), 500);
-                            }
-                        }
                         if (needsSave) {
                             await dbUtils.saveChat();
                         }

@@ -15,7 +15,6 @@ const serviceBoundaries = [
   ['backend-manager', 'multiBackendUtils'],
   ['error-recovery', 'errorRecovery'],
   ['api-key-manager', 'multiApiKeyUtils'],
-  ['twin-engine-config', 'twinEngineApiConfigUtils'],
 ] as const;
 
 const controllerFeatures = [
@@ -31,7 +30,7 @@ const controllerFeatures = [
   ['message-sending', 'appLogic'],
   ['data-management', 'appLogic'],
   ['message-actions', 'appLogic'],
-  ['twin-engine-runtime', 'appLogic'],
+  ['session-linking-runtime', 'appLogic'],
   ['scrolling-runtime', 'appLogic'],
 ] as const;
 
@@ -72,7 +71,7 @@ describe('application service boundaries', () => {
   it.each([
     [
       'uiUtils',
-      72,
+      70,
       [
         'ui-message-rendering',
         'ui-message-tools',
@@ -83,7 +82,7 @@ describe('application service boundaries', () => {
     ],
     [
       'appLogic',
-      100,
+      92,
       [
         'app-initialization',
         'event-wiring',
@@ -92,7 +91,7 @@ describe('application service boundaries', () => {
         'message-sending',
         'data-management',
         'message-actions',
-        'twin-engine-runtime',
+        'session-linking-runtime',
         'scrolling-runtime',
       ],
     ],

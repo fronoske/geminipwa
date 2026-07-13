@@ -35,6 +35,11 @@ describe('application foundation scripts', () => {
     expect(new vm.Script('state.currentMessages.length').runInContext(context)).toBe(0);
     expect(new vm.Script('state.settings.modelName').runInContext(context)).toBe('gemini-3.5-flash');
     expect(new vm.Script('state.settings.apiProvider').runInContext(context)).toBe('gemini');
+    expect(
+      new vm.Script("Object.keys(state.settings).some((key) => /twin|resummar/i.test(key))").runInContext(
+        context,
+      ),
+    ).toBe(false);
   });
 
   it('only references element IDs present in the HTML template', () => {

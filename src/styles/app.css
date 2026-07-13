@@ -973,7 +973,6 @@ body.turf-mode {
 
         .app-header #toggle-clipboard-stack-btn,
         .app-header #toggle-memo-btn,
-        .app-header #twin-engine-summary-btn,
         .app-header .scroll-jump-button,
         .app-header #toggle-all-content-btn,
         .app-header .api-provider-toggle-btn {
@@ -987,7 +986,6 @@ body.turf-mode {
         @media (hover: hover) {
             .app-header #toggle-clipboard-stack-btn:hover,
             .app-header #toggle-memo-btn:hover,
-            .app-header #twin-engine-summary-btn:hover,
             .app-header .scroll-jump-button:hover,
             .app-header #toggle-all-content-btn:hover,
             .app-header .api-provider-toggle-btn:hover {
@@ -998,7 +996,6 @@ body.turf-mode {
 
         body.pastel-yellow-mode .app-header #toggle-clipboard-stack-btn,
         body.pastel-yellow-mode .app-header #toggle-memo-btn,
-        body.pastel-yellow-mode .app-header #twin-engine-summary-btn,
         body.pastel-yellow-mode .app-header .scroll-jump-button,
         body.pastel-yellow-mode .app-header #toggle-all-content-btn,
         body.pastel-yellow-mode .app-header .api-provider-toggle-btn {
@@ -1008,7 +1005,6 @@ body.turf-mode {
         @media (hover: hover) {
             body.pastel-yellow-mode .app-header #toggle-clipboard-stack-btn:hover,
             body.pastel-yellow-mode .app-header #toggle-memo-btn:hover,
-            body.pastel-yellow-mode .app-header #twin-engine-summary-btn:hover,
             body.pastel-yellow-mode .app-header .scroll-jump-button:hover,
             body.pastel-yellow-mode .app-header #toggle-all-content-btn:hover,
             body.pastel-yellow-mode .app-header .api-provider-toggle-btn:hover {
@@ -1020,7 +1016,6 @@ body.turf-mode {
         @media (hover: hover) {
             body.dark-mode .app-header #toggle-clipboard-stack-btn:hover,
             body.dark-mode .app-header #toggle-memo-btn:hover,
-            body.dark-mode .app-header #twin-engine-summary-btn:hover,
             body.dark-mode .app-header .scroll-jump-button:hover,
             body.dark-mode .app-header #toggle-all-content-btn:hover,
             body.dark-mode .app-header .api-provider-toggle-btn:hover {
@@ -1519,109 +1514,6 @@ body.turf-mode {
         }
 
         #clipboard-stack-editor {
-            flex-grow: 1;
-            width: 100%;
-            border: none;
-            resize: none;
-            background-color: transparent;
-            color: var(--text-memo);
-            font-family: inherit;
-            font-size: 14px;
-            outline: none;
-            padding: 0;
-            margin: 0;
-            min-height: 50px;
-            display: block;
-        }
-
-        #twin-engine-summary-area {
-            position: relative;
-            width: 100%;
-            min-height: 80px;
-            max-height: var(--memo-height);
-            background-color: var(--bg-memo);
-            border-bottom: 1px solid var(--border-secondary);
-            padding: 10px 15px;
-            z-index: 4;
-            box-shadow: 0 1px 3px var(--shadow-primary);
-            overflow: auto;
-            display: flex;
-            flex-direction: column;
-            transition: max-height 0.3s ease-out, padding-top 0.3s ease-out, padding-bottom 0.3s ease-out, opacity 0.3s ease-out, border-width 0.3s ease-out;
-            resize: vertical;
-            margin-bottom: 0;
-        }
-
-        #twin-engine-summary-area.hidden {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-            max-height: 0 !important;
-            min-height: 0 !important;
-            padding-top: 0 !important;
-            padding-bottom: 0 !important;
-            border-width: 0 !important;
-            overflow: hidden;
-        }
-
-        .twin-engine-summary-actions-container {
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-            padding-bottom: 8px;
-            flex-shrink: 0;
-        }
-
-        .twin-engine-summary-actions-container button {
-            padding: 4px 10px;
-            font-size: 12px;
-        }
-
-        .twin-engine-summary-actions-container .resummarize-btn {
-            margin-left: auto;
-            background-color: var(--bg-button-update);
-        }
-
-        .twin-engine-summary-actions-container #twin-engine-mode-toggle-btn {
-            background-color: var(--bg-button-action);
-            min-width: 110px;
-            text-align: center;
-        }
-
-        .twin-engine-summary-actions-container #twin-engine-api-key-cycle-btn {
-            background-color: var(--bg-button-action);
-            min-width: 60px;
-        }
-
-        .twin-engine-summary-actions-container #twin-engine-api-key-cycle-btn:hover:not(:disabled) {
-            background-color: var(--bg-button-action-hover);
-        }
-
-        .twin-engine-summary-actions-container #twin-engine-mode-toggle-btn:hover:not(:disabled) {
-            background-color: var(--bg-button-action-hover);
-        }
-
-        .twin-engine-summary-actions-container .resummarize-btn:hover:not(:disabled) {
-            background-color: var(--bg-button-update-hover);
-        }
-
-        .twin-engine-summary-actions-container .clear-twin-engine-summary-btn {
-            background-color: var(--bg-button-delete);
-        }
-
-        .twin-engine-summary-actions-container .clear-twin-engine-summary-btn:hover {
-            background-color: var(--bg-button-delete-hover);
-        }
-
-        .twin-engine-summary-actions-container .copy-twin-engine-summary-btn {
-            background-color: var(--bg-button-copy);
-        }
-
-        .twin-engine-summary-actions-container .copy-twin-engine-summary-btn:hover {
-            background-color: var(--bg-button-copy-hover);
-        }
-
-        #twin-engine-summary-editor {
             flex-grow: 1;
             width: 100%;
             border: none;
@@ -4069,18 +3961,8 @@ body.turf-mode {
             display: none !important;
         }
 
-        .twin-engine-api-config-item {}
-
-        .twin-engine-api-config-item .api-key-item-label {
-            flex: 0 0 120px;
-        }
-
-        .twin-engine-api-config-item .api-key-item-input {
-            flex: 1;
-        }
-
-        .twin-engine-config-provider,
-        .twin-engine-config-model {
+        .api-config-provider,
+        .api-config-model {
             padding: 6px 8px;
             font-size: 13px;
             border: 1px solid var(--border-primary);
@@ -4093,23 +3975,13 @@ body.turf-mode {
             min-width: 120px;
         }
 
-        #footer-resummarize-btn {
-            background-color: var(--bg-button);
-        }
-
-        #footer-resummarize-btn:hover:not(:disabled) {
-            background-color: var(--bg-button-hover);
-        }
-
-        .proofreading-api-config-item,
-        .twin-engine-api-config-item {
+        .proofreading-api-config-item {
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
 
-        .proofreading-api-config-item>div,
-        .twin-engine-api-config-item>div {
+        .proofreading-api-config-item>div {
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
@@ -4118,39 +3990,30 @@ body.turf-mode {
 
         .proofreading-api-config-item .api-key-item-label,
         .proofreading-api-config-item .api-key-item-input,
-        .proofreading-api-config-item .twin-engine-config-provider,
-        .proofreading-api-config-item .twin-engine-config-model,
-        .twin-engine-api-config-item .api-key-item-label,
-        .twin-engine-api-config-item .api-key-item-input,
-        .twin-engine-api-config-item .twin-engine-config-provider,
-        .twin-engine-api-config-item .twin-engine-config-model {
+        .proofreading-api-config-item .api-config-provider,
+        .proofreading-api-config-item .api-config-model {
             flex: 1 1 auto;
             min-width: 0;
             margin-bottom: 0;
         }
 
-        .proofreading-api-config-item .api-key-item-label,
-        .twin-engine-api-config-item .api-key-item-label {
+        .proofreading-api-config-item .api-key-item-label {
             flex-grow: 2;
         }
 
-        .proofreading-api-config-item .api-key-item-input,
-        .twin-engine-api-config-item .api-key-item-input {
+        .proofreading-api-config-item .api-key-item-input {
             flex-grow: 3;
         }
 
-        .proofreading-api-config-item .twin-engine-config-provider,
-        .twin-engine-api-config-item .twin-engine-config-provider {
+        .proofreading-api-config-item .api-config-provider {
             flex: 1 1 120px;
         }
 
-        .proofreading-api-config-item .twin-engine-config-model,
-        .twin-engine-api-config-item .twin-engine-config-model {
+        .proofreading-api-config-item .api-config-model {
             flex: 2 1 150px;
         }
 
-        .proofreading-api-config-item .api-key-item-actions,
-        .twin-engine-api-config-item .api-key-item-actions {
+        .proofreading-api-config-item .api-key-item-actions {
             flex-shrink: 0;
             margin-left: auto;
         }

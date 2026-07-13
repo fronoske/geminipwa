@@ -65,8 +65,7 @@
 │   └── features/
 │       ├── attachments.ts
 │       ├── clipboard.ts
-│       ├── memo.ts
-│       └── twin-engine.ts
+│       └── memo.ts
 ├── tests/
 ├── package.json
 ├── tsconfig.json
@@ -150,18 +149,10 @@
 - 新規チャット、保存、読込、複製、削除、インポート、エクスポート。
 - 設定の保存、再読込、既存設定キーの保持。
 - 全APIプロバイダーのリクエスト生成。実API呼び出しを伴わない検証を優先する。
-- ストリーミング中断、再送、編集、添付、校正、Twin-engine。
+- ストリーミング中断、再送、編集、添付、校正。
 - チャット・履歴・設定の画面遷移とスマートフォン幅での操作。
 - Service Workerの初回登録、更新、キャッシュ消去、オフライン再表示。
 - ハンバーガーメニューの表示設定と、「全削除」で先頭項目が残ること。
-
-## 外部仕様監査
-
-ソース分割前の基準はコミット `863b245` の `index.html` とする。
-
-- `npm run audit:spec` は、生成版と基準版のDOM、CSS、外部スクリプト参照、282関数、起動復旧IIFE、入力プリセットIIFEを比較する。
-- `node scripts/spec-audit-server.mjs` は、基準版を `/baseline/`、生成版を `/current/` で同時配信する。
-- `node scripts/audit-browser-equivalence.mjs` は、Chrome DevTools Protocolのポート `9222` を利用し、初期表示、画面遷移、設定保存、IndexedDB、Dummy AI送信、履歴複製・削除、再起動、Service Worker、390px幅レイアウトを差分比較する。
 
 ## 想定リスクと対策
 

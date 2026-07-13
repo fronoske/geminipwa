@@ -38,8 +38,6 @@
                     title="全メッセージの表示/非表示を切り替え">🖼️</button>
                 <button id="toggle-clipboard-stack-btn" class="header-button" aria-label="クリップボードスタックを開閉">🗒️</button>
                 <button id="toggle-memo-btn" class="header-button" aria-label="メモを開閉">📝</button>
-                <button id="twin-engine-summary-btn" class="header-button hidden" aria-label="要約セッション履歴を開閉"
-                    title="要約セッション履歴">⚗️</button>
                 <button id="goto-settings-btn" class="header-button" aria-label="設定へ">⚙</button>
             </header>
 
@@ -65,20 +63,6 @@
                     placeholder="ここにコピーされたメッセージが蓄積されます...（保存されません）"></textarea>
             </div>
 
-            <div id="twin-engine-summary-area" class="hidden">
-                <div class="twin-engine-summary-actions-container">
-                    <button id="twin-engine-mode-toggle-btn" title="要約モードを切り替え"></button>
-                    <button id="twin-engine-api-key-cycle-btn" title="要約に使用するAPIキーを切り替え">キー:</button>
-                    <button id="resummarize-btn" class="resummarize-btn" title="現在のチャット履歴を要約">要約実行♻️</button>
-                    <button id="copy-twin-engine-summary-btn" class="copy-twin-engine-summary-btn"
-                        title="内容をコピー">コピー</button>
-                    <button id="clear-twin-engine-summary-btn" class="clear-twin-engine-summary-btn"
-                        title="内容を全て削除">全削除</button>
-                </div>
-                <textarea id="twin-engine-summary-editor" aria-label="要約セッション履歴"
-                    placeholder="ここにTwin-engineによって生成されたセッションの要約が表示されます..."></textarea>
-            </div>
-
             <main class="main-content">
                 <div id="message-container" class="message-container">
                 </div>
@@ -93,9 +77,6 @@
                 <button id="footer-cycle-api-key-btn" class="footer-action-button api-provider-toggle-btn" title="APIキー切替" style="font-weight: bold;"></button>
                 <button id="roll-dice-btn" title="ランダム数値を入力" class="footer-action-button hidden">🎲</button>
                 <button id="ai-to-ai-chat-btn" title="AI間会話ステップ実行" class="footer-action-button hidden">👥</button>
-                <button id="footer-twin-engine-mode-toggle-btn" title="Twin-engineモード切替"
-                    class="footer-action-button hidden">🛞</button>
-                <button id="footer-resummarize-btn" title="現在のチャット履歴を要約" class="footer-action-button hidden">♻️</button>
                 <button id="paste-to-input-btn" title="入力欄に貼り付け" class="footer-action-button">貼</button>
                 <textarea id="user-input" placeholder="メッセージを入力..." rows="1" aria-label="メッセージ入力"></textarea>
                 <button id="attach-file-btn" title="ファイルを添付" class="footer-action-button">+<span
@@ -606,23 +587,6 @@
                     <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
                         ※ チェック時、これまでに発生したJavaScriptエラーのログを応答します。
                     </p>
-
-                    <details style="margin-top: 15px;">
-                        <summary
-                            style="font-size: 14px; color: var(--text-link); padding-bottom: 5px; margin-bottom: 10px; display: list-item; list-style: revert; cursor:pointer; font-weight: normal;">
-                            テスト用の機能</summary>
-                        <div style="padding-left: 15px; margin-top: 10px;">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="dummy-twin-engine-debug-mode">
-                                Twin-engineデバッグモードを有効にする
-                            </label>
-                            <p
-                                style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                                ※ 有効時、Twin-engineが起動するタイミングで、要約AIに送信されるはずの完全なプロンプトを応答として返します。<br>
-                                ※ この機能はデバッグ専用です。
-                            </p>
-                        </div>
-                    </details>
 
                 </details>
 
@@ -2081,14 +2045,6 @@
                                                 ※ 応答生成後に別のモデルで文章を校正する機能に関する設定項目を表示します。
                                             </p>
                                             <label class="checkbox-label">
-                                                <input type="checkbox" id="show-twin-engine-settings-toggle">
-                                                Twin-engine（自動要約）を使用する
-                                            </label>
-                                            <p
-                                                style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 15px;">
-                                                ※ 会話履歴の自動要約機能に関する設定項目を表示します。
-                                            </p>
-                                            <label class="checkbox-label">
                                                 <input type="checkbox" id="show-session-linking-settings-toggle">
                                                 AI間会話モード（セッション間リンク）設定を表示する
                                             </label>
@@ -2531,137 +2487,6 @@
                                 </div>
                             </details>
                         </div>
-                    </div>
-                </details>
-                <details class="settings-group" id="settings-group-twin-engine">
-                    <summary
-                        style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
-                        Twin-engine (experimental)</summary>
-                    <div style="margin-top:10px;">
-                        <label class="checkbox-label" style="margin-bottom: 5px;">
-                            <input type="checkbox" id="show-twin-engine-summary-button-toggle">
-                            ヘッダーに「要約セッション履歴」ボタンを表示する（⚗️ボタン）
-                        </label>
-                        <p
-                            style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 15px;">
-                            ※ Twin-engineで生成された要約履歴を表示・編集するためのパネルを開閉します。
-                        </p>
-                        <div id="twin-engine-full-auto-setting-container" class="hidden" style="padding-left: 20px;">
-                            <label class="checkbox-label" style="margin-bottom: 5px;">
-                                <input type="checkbox" id="twin-engine-enable-full-auto-toggle">
-                                バックグラウンドでの全自動要約を有効にする
-                            </label>
-                            <p
-                                style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 15px;">
-                                ※ 有効にすると、AIの応答完了後に自動的に会話履歴の要約が生成されます。無効時は手動での要約実行（セミオート）のみ可能です。
-                            </p>
-                        </div>
-                        <div style="padding-left: 20px; margin-top: 5px;">
-                            <label class="checkbox-label" style="margin-bottom: 5px;">
-                                <input type="checkbox" id="show-footer-twin-engine-toggle-button-toggle">
-                                フッターにTwin-engineモード切替ボタンを表示する
-                            </label>
-                            <p
-                                style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 15px;">
-                                ※ Twin-engineが有効な場合にのみ、フッターに自動/手動モードを切り替えるボタンを表示します。
-                            </p>
-                        </div>
-                        <div style="padding-left: 20px; margin-top: 5px;">
-                            <label class="checkbox-label" style="margin-bottom: 5px;">
-                                <input type="checkbox" id="show-footer-resummarize-button-toggle">
-                                フッターに「要約実行(♻️)」ボタンを表示する
-                            </label>
-                            <p
-                                style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 15px;">
-                                ※ Twin-engineが有効な場合にのみ、フッターに手動で要約を実行するボタンを表示します。
-                            </p>
-                        </div>
-                        <div id="twin-engine-inclusion-settings"
-                            style="margin-top: 15px; border: 1px solid var(--border-tertiary); padding: 10px; border-radius: 5px;">
-                            <h4
-                                style="font-size: 13px; color: var(--text-secondary); margin-top: 0; margin-bottom: 10px;">
-                                要約送信時に含める会話履歴</h4>
-
-                            <label for="twin-engine-summarize-after-turns" style="margin-top: 15px;">要約開始ターン数:</label>
-                            <input type="number" id="twin-engine-summarize-after-turns" min="0" step="1"
-                                placeholder="例: 5 (0で即時要約)">
-                            <p
-                                style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 15px;">
-                                ※ ユーザーの送信がここで指定した回数を超えた後、Twin-engineによる要約が開始されます。<br>
-                                ※ それまでは、要約ではなく全ての会話履歴をAIに送信します。<br>
-                                ※ 0を指定すると、最初の応答から要約を開始します。
-                            </p>
-                        </div>
-
-                        <div id="twin-engine-inclusion-settings"
-                            style="margin-top: 15px; border: 1px solid var(--border-tertiary); padding: 10px; border-radius: 5px;">
-                            <h4
-                                style="font-size: 13px; color: var(--text-secondary); margin-top: 0; margin-bottom: 10px;">
-                                要約送信時に含める会話履歴</h4>
-
-                            <label for="twin-engine-initial-turns-to-include">要約に含めるセッション初期のユーザーメッセージ数:</label>
-                            <input type="number" id="twin-engine-initial-turns-to-include" min="0" step="1"
-                                placeholder="例: 1 (0で含めない)">
-                            <p
-                                style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 0;">
-                                ※ 要約とともに、セッションの最初からここで指定した数のユーザーメッセージ（とAIの応答）を送信します。<br>
-                                ※ これにより、会話の初期の重要なコンテキストをAIに保持させることができます。
-                            </p>
-                        </div>
-
-                        <label for="twin-engine-summary-prompt" style="margin-top:15px;">Twin-engine 要約用プロンプト:</label>
-                        <textarea id="twin-engine-summary-prompt" placeholder="例: 以下の会話履歴を、重要なポイントを箇条書きで簡潔に要約してください。"
-                            aria-label="Twin-engine 要約用プロンプト"></textarea>
-                        <p
-                            style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 15px;">
-                            ※ ここに入力した内容が、会話履歴とともにTwin-engine用AIへの指示として送信されます。
-                        </p>
-                        <hr style="margin: 20px 0;">
-                        <details open>
-                            <summary
-                                style="font-size: 14px; color: var(--text-link); padding-bottom: 5px; margin-bottom: 10px; display: list-item; list-style: revert; cursor:pointer; font-weight: normal;">
-                                Twin-engine用 API設定</summary>
-                            <div style="padding-left: 15px; margin-top: 10px;">
-                                <div id="twin-engine-api-configs-list" class="api-keys-list"
-                                    style="margin-top:10px; margin-bottom: 15px;">
-                                </div>
-                                <button type="button" id="add-twin-engine-api-config-btn"
-                                    class="add-api-key-btn">新しいAPI設定を追加</button>
-
-                                <p style="font-size: 11px; color: var(--text-secondary); margin-top: 15px;">
-                                    ※「セッションの過去の会話 → ある程度セッションが進んだ時点で別の AI で要約 → システムプロンプトとその要約だけを現在の AI
-                                    に渡して続きの対話を開始する」というワークフローを行う機能。<br>
-                                    ※要約内容がまだ存在しない（空の）場合は、要約機能を一時的にスキップし、セッションの全履歴をAIに送信
-                                </p>
-                            </div>
-                        </details>
-                        <hr style="margin: 20px 0;">
-                        <h4 style="font-size: 14px; color: var(--text-link); margin-bottom: 10px;">アドバンスド (Twin-engine)
-                        </h4>
-
-                        <label for="twin-engine-dummy-user">ダミー User プロンプト (要約時のみ追加):</label>
-                        <textarea id="twin-engine-dummy-user" placeholder="API送信直前に user ロールとして履歴末尾に追加されます"
-                            aria-label="Twin-engine ダミー User プロンプト"></textarea>
-                        <label class="checkbox-label" style="margin-top: -5px; margin-bottom: 15px;">
-                            <input type="checkbox" id="twin-engine-enable-dummy-user">
-                            このダミーUserプロンプトを有効にする
-                        </label>
-
-                        <label for="twin-engine-dummy-model">ダミー Model プロンプト (要約時のみ追加):</label>
-                        <textarea id="twin-engine-dummy-model" placeholder="API送信直前に model ロールとして履歴最末尾に追加されます"
-                            aria-label="Twin-engine ダミー Model プロンプト"></textarea>
-                        <label class="checkbox-label" style="margin-top: -5px;">
-                            <input type="checkbox" id="twin-engine-enable-dummy-model">
-                            このダミーModelプロンプトを有効にする
-                        </label>
-                        <label class="checkbox-label" style="margin-top: -5px; margin-bottom: 15px;">
-                            <input type="checkbox" id="twin-engine-concat-dummy-model">
-                            ダミーモデルと要約結果を連結
-                        </label>
-                        <p
-                            style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                            ※チェック時、要約結果の先頭に上記ダミーModelの内容を付与。
-                        </p>
                     </div>
                 </details>
                 <details class="settings-group" id="settings-group-session-linking">

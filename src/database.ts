@@ -94,7 +94,7 @@ const dbUtils = {
                     try {
                         const store = this._getStore(SETTINGS_STORE);
                         const request = store.getAll();
-                        request.onsuccess = (event) => {
+                        request.onsuccess = async (event) => {
                             const settingsArray = event.target.result;
                             const loadedSettings = {};
                             settingsArray.forEach(item => { loadedSettings[item.key] = item.value; });
@@ -199,27 +199,6 @@ const dbUtils = {
                                 }
                             }
 
-                            if ((!loadedSettings.twinEngineApiConfigs || loadedSettings.twinEngineApiConfigs.length === 0) && loadedSettings.twinEngineProvider) {
-                                const provider = loadedSettings.twinEngineProvider;
-                                if (provider !== 'dummy') {
-                                    let apiKey = '', modelName = '';
-                                    if (provider === 'gemini') { apiKey = loadedSettings.twinEngineGeminiApiKey; modelName = loadedSettings.twinEngineGeminiModelName; }
-                                    else if (provider === 'deepseek') { apiKey = loadedSettings.twinEngineDeepseekApiKey; modelName = loadedSettings.twinEngineDeepseekModelName; }
-                                    const oldConfig = {
-                                        id: `migrated-${Date.now()}`,
-                                        label: `移行した設定 (${provider})`,
-                                        provider: provider,
-                                        apiKey: apiKey || '',
-                                        modelName: modelName || '',
-                                    };
-                                    state.settings.twinEngineApiConfigs = [oldConfig];
-                                    state.settings.twinEngineActiveConfigId = oldConfig.id;
-                                }
-                            } else if (loadedSettings.twinEngineApiConfigs) {
-                                state.settings.twinEngineApiConfigs = loadedSettings.twinEngineApiConfigs;
-                                state.settings.twinEngineActiveConfigId = loadedSettings.twinEngineActiveConfigId;
-                            }
-
                             if (loadedSettings.hasOwnProperty('proofreadingModelName') && (!state.settings.proofreadingApiConfigs || state.settings.proofreadingApiConfigs.length === 0)) {
                                 const oldConfig = {
                                     id: `migrated-proofreading-${Date.now()}`,
@@ -232,6 +211,22 @@ const dbUtils = {
                                 };
                                 state.settings.proofreadingApiConfigs = [oldConfig];
                                 state.settings.activeProofreadingConfigId = oldConfig.id;
+                            }
+
+                            const removedSettingKeys = settingsArray
+                                .map((item) => item.key)
+                                .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine)/.test(key));
+                            if (removedSettingKeys.length > 0) {
+                                try {
+                                    const cleanupStore = this._getStore(SETTINGS_STORE, 'readwrite');
+                                    await Promise.all(removedSettingKeys.map((key) => new Promise((resolveCleanup, rejectCleanup) => {
+                                        const deleteRequest = cleanupStore.delete(key);
+                                        deleteRequest.onsuccess = () => resolveCleanup();
+                                        deleteRequest.onerror = () => rejectCleanup(deleteRequest.error);
+                                    })));
+                                } catch (error) {
+                                    console.warn('廃止済み設定の削除に失敗しました:', error);
+                                }
                             }
 
                             resolve(state.settings);

@@ -17,7 +17,6 @@
     "backend-manager",
     "error-recovery",
     "api-key-manager",
-    "twin-engine-config",
     "ui-controller",
     "ui-message-rendering",
     "ui-message-tools",
@@ -32,7 +31,7 @@
     "message-sending",
     "data-management",
     "message-actions",
-    "twin-engine-runtime",
+    "session-linking-runtime",
     "scrolling-runtime",
     "main",
     "input-preset"

@@ -452,36 +452,6 @@ Object.assign(appLogic, {
                 }
 
                 if (confirmed) {
-                    const isTwinEngineAutoOn = state.settings.showTwinEngineSettings && state.settings.twinEngineEnableFullAuto;
-                    const messagesUpToRetryPoint = state.currentMessages.slice(0, index + 1);
-                    const userTurnsUpToRetryPoint = messagesUpToRetryPoint.filter(msg => msg.role === 'user').length;
-                    const summarizeAfterTurns = state.settings.twinEngineSummarizeAfterTurns || 0;
-
-                    if (isTwinEngineAutoOn && userTurnsUpToRetryPoint > summarizeAfterTurns) {
-                        state.isSummarizingForRetry = true;
-                        uiUtils.updateLoadingIndicator();
-                        elements.sendButton.disabled = true;
-                        elements.userInput.disabled = true;
-
-                        try {
-                            const response = await this.summarizeCurrentSession(messagesUpToRetryPoint);
-                            if (response && response.content) {
-                                state.twinEngineSummaryContent = response.content.trim() + "\n\n";
-                                elements.twinEngineSummaryEditor.value = state.twinEngineSummaryContent;
-                            }
-                        } catch (error) {
-                            await uiUtils.showCustomAlert(`リトライ前の要約処理中にエラーが発生しました: ${error.message}`);
-                            state.isSummarizingForRetry = false;
-                            uiUtils.updateLoadingIndicator();
-                            elements.sendButton.disabled = false;
-                            elements.userInput.disabled = false;
-                            return;
-                        } finally {
-                            state.isSummarizingForRetry = false;
-                            uiUtils.updateLoadingIndicator();
-                        }
-                    }
-
                     let deleteStartIndex = -1;
                     let scanIndex = index + 1;
                     let targetSiblingGroupId = null;

@@ -47,21 +47,8 @@ Object.assign(uiUtils, {
                     if (elements.footerCycleApiKeyBtn) {
                         elements.footerCycleApiKeyBtn.classList.toggle('hidden', !state.settings.showFooterCycleApiKeyBtn);
                     }
-                    if (elements.footerTwinEngineModeToggleBtn) {
-                        const showButton = state.settings.showTwinEngineSettings && state.settings.showFooterTwinEngineToggleButton;
-                        elements.footerTwinEngineModeToggleBtn.classList.toggle('hidden', !showButton);
-                    }
-                    if (elements.footerResummarizeBtn) {
-                        const showButton = state.settings.showTwinEngineSettings && state.settings.showFooterResummarizeButton;
-                        elements.footerResummarizeBtn.classList.toggle('hidden', !showButton);
-                    }
-
                     this.adjustHeaderLayout();
                     this.updateProviderToggleButtons();
-                    if (elements.twinEngineSummaryBtn) {
-                        const showButton = state.settings.showTwinEngineSettings && state.settings.showTwinEngineSummaryButton;
-                        elements.twinEngineSummaryBtn.classList.toggle('hidden', !showButton);
-                    }
                 };
 
                 requestAnimationFrame(updateVisibility);
@@ -80,7 +67,7 @@ Object.assign(uiUtils, {
                     let isOverflowing = settingsBtnRect.right > headerRect.right - 5;
 
                     const buttonPriority = [
-                        '#toggle-clipboard-stack-btn', '#toggle-memo-btn', '#twin-engine-summary-btn', '#scroll-to-top-btn',
+                        '#toggle-clipboard-stack-btn', '#toggle-memo-btn', '#scroll-to-top-btn',
                         '#scroll-to-bottom-btn', '#toggle-all-content-btn', '#header-api-provider-toggle-btn',
                         '#copy-session-btn', '#delete-session-btn', '#new-chat-btn'
                     ];
@@ -120,60 +107,6 @@ Object.assign(uiUtils, {
                         }
                     }
                 });
-            },
-            updateTwinEngineModeButton() {
-                const isEnabled = state.settings.showTwinEngineSettings;
-                const isFullAuto = isEnabled && state.settings.twinEngineEnableFullAuto;
-
-                let headerText, headerTitle, footerText, footerTitle;
-
-                if (isFullAuto) {
-                    headerText = 'モード: 自動 🛞';
-                    footerText = '🛞';
-                    headerTitle = footerTitle = 'クリックして手動モードに切り替え';
-                } else {
-                    headerText = 'モード: 手動 ✋️';
-                    footerText = '✋️';
-                    headerTitle = footerTitle = isEnabled ? 'クリックして自動モードに切り替え' : 'Twin-engineが無効です';
-                }
-
-                if (elements.twinEngineModeToggleBtn) {
-                    elements.twinEngineModeToggleBtn.textContent = headerText;
-                    elements.twinEngineModeToggleBtn.title = headerTitle;
-                    elements.twinEngineModeToggleBtn.disabled = !isEnabled;
-                }
-
-                if (elements.footerTwinEngineModeToggleBtn) {
-                    elements.footerTwinEngineModeToggleBtn.textContent = footerText;
-                    elements.footerTwinEngineModeToggleBtn.title = footerTitle;
-                    elements.footerTwinEngineModeToggleBtn.disabled = !isEnabled;
-                }
-            },
-            updateTwinEngineApiKeyCycleButton() {
-                const button = elements.twinEngineApiKeyCycleBtn;
-                if (!button) return;
-
-                const configs = state.settings.twinEngineApiConfigs;
-                const activeId = state.settings.twinEngineActiveConfigId;
-
-                if (configs.length === 0) {
-                    button.classList.add('hidden');
-                    return;
-                }
-
-                button.classList.remove('hidden');
-                button.disabled = configs.length <= 1;
-
-                const activeConfig = configs.find(c => c.id === activeId) || configs[0];
-
-                if (activeConfig) {
-                    const initial = activeConfig.label?.trim().charAt(0) || '?';
-                    button.textContent = `キー: ${initial}`;
-                    button.title = `現在のキー: ${activeConfig.label || 'ラベル未設定'}`;
-                } else {
-                    button.textContent = 'キー: -';
-                    button.title = 'APIキーが設定されていません';
-                }
             },
             updateHistoryHeaderButtonVisibility() {
                 const showBulkActions = state.settings.showBulkHistoryActions;

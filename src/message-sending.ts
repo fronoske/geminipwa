@@ -156,59 +156,15 @@ Object.assign(appLogic, {
 
                     let dummyResponseContent = '';
 
-                    if (state.settings.dummyTwinEngineDebugMode && !isBackgroundProcess) {
-                        const userTurnCount = state.currentMessages.filter(msg => msg.role === 'user').length;
-                        const summarizeAfterTurns = state.settings.twinEngineSummarizeAfterTurns || 0;
-                        const isTwinEngineActive = state.settings.showTwinEngineSettings && userTurnCount > summarizeAfterTurns;
-
-                        let debugOutput = "--- Twin-engine デバッグモード ---\n\n";
-                        if (isTwinEngineActive) {
-                            debugOutput += `Twin-engineはアクティブです。\n(現在のユーザーターン数: ${userTurnCount} / 閾値: ${summarizeAfterTurns})\n\n`;
-
-                            const messagesToSummarize = [...state.currentMessages];
-                            const summaryPrompt = state.settings.twinEngineSummaryPrompt || '以下の会話を簡潔に要約してください。';
-
-                            debugOutput += "--- システムプロンプト (要約指示) ---\n";
-                            debugOutput += `${summaryPrompt}\n\n`;
-
-                            debugOutput += "--- 会話履歴 ---\n";
-                            messagesToSummarize.forEach(msg => {
-                                debugOutput += `[${msg.role}]\n${msg.content}\n`;
-                                if (msg.attachments && msg.attachments.length > 0) {
-                                    debugOutput += `  (添付ファイル: ${msg.attachments.map(a => a.name).join(', ')})\n`;
-                                }
-                                debugOutput += "\n";
-                            });
-
-                            const twinEngineDummyUser = state.settings.twinEngineDummyUser;
-                            const twinEngineEnableDummyUser = state.settings.twinEngineEnableDummyUser;
-                            if (twinEngineEnableDummyUser && twinEngineDummyUser) {
-                                debugOutput += "--- ダミーUserプロンプト (Twin-engine) ---\n";
-                                debugOutput += `[user]\n${twinEngineDummyUser}\n\n`;
-                            }
-
-                            const twinEngineDummyModel = state.settings.twinEngineDummyModel;
-                            const twinEngineEnableDummyModel = state.settings.twinEngineEnableDummyModel;
-                            if (twinEngineEnableDummyModel && twinEngineDummyModel) {
-                                debugOutput += "--- ダミーModelプロンプト (Twin-engine) ---\n";
-                                debugOutput += `[model]\n${twinEngineDummyModel}\n\n`;
-                            }
-
-                            dummyResponseContent = debugOutput.trim();
-                        } else {
-                            dummyResponseContent = `--- Twin-engine デバッグモード ---\n\nTwin-engineはまだ起動していません。\n(Twin-engine有効: ${state.settings.showTwinEngineSettings}, 現在のユーザーターン数: ${userTurnCount}, 閾値: ${summarizeAfterTurns})`;
+                    if (state.settings.dummyEnableDummyModel && state.settings.dummyDummyModel) {
+                        dummyResponseContent += state.settings.dummyDummyModel;
+                    }
+                    if (state.settings.dummyErrorDebugMode) {
+                        const errorLog = errorRecovery.getErrorLogAsString();
+                        if (dummyResponseContent) {
+                            dummyResponseContent += '\n\n';
                         }
-                    } else {
-                        if (state.settings.dummyEnableDummyModel && state.settings.dummyDummyModel) {
-                            dummyResponseContent += state.settings.dummyDummyModel;
-                        }
-                        if (state.settings.dummyErrorDebugMode) {
-                            const errorLog = errorRecovery.getErrorLogAsString();
-                            if (dummyResponseContent) {
-                                dummyResponseContent += '\n\n';
-                            }
-                            dummyResponseContent += errorLog;
-                        }
+                        dummyResponseContent += errorLog;
                     }
 
                     if (isBackgroundProcess) {
@@ -555,72 +511,9 @@ Object.assign(appLogic, {
                     }
                 }
 
-                const userTurnCount = isBackgroundProcess
-                    ? (sourceSessionContext.messages || []).filter(msg => msg.role === 'user').length
-                    : state.currentMessages.filter(msg => msg.role === 'user').length;
-
-                const summarizeAfterTurns = state.settings.twinEngineSummarizeAfterTurns || 0;
-
-
-                const shouldUseSummary = state.settings.showTwinEngineSettings &&
-                    !isBackgroundProcess &&
-                    userTurnCount > summarizeAfterTurns &&
-                    state.twinEngineSummaryContent &&
-                    state.twinEngineSummaryContent.trim() !== '';
-
-
-                if (shouldUseSummary) {
-                    messagesToProcess = [];
-
-                    const summaryContent = state.twinEngineSummaryContent.trim();
-                    const initialTurnsToInclude = state.settings.twinEngineInitialTurnsToInclude || 0;
-                    const includedMessageIndices = new Set();
-
-                    if (initialTurnsToInclude > 0) {
-                        let userMessagesCounted = 0;
-                        for (let i = 0; i < state.currentMessages.length; i++) {
-                            const msg = state.currentMessages[i];
-                            messagesToProcess.push(msg);
-                            includedMessageIndices.add(i);
-
-                            if (msg.role === 'user') {
-                                userMessagesCounted++;
-                            }
-
-                            if (userMessagesCounted >= initialTurnsToInclude) {
-                                if (i + 1 < state.currentMessages.length && state.currentMessages[i + 1].role === 'model') {
-                                    messagesToProcess.push(state.currentMessages[i + 1]);
-                                    includedMessageIndices.add(i + 1);
-                                }
-                                break;
-                            }
-                        }
-                    }
-
-                    if (summaryContent) {
-                        messagesToProcess.push({
-                            role: 'user',
-                            content: 'これまでの会話の要約は以下の通りです。この文脈を踏まえて、次の応答を生成してください。',
-                            timestamp: Date.now() - 2,
-                            attachments: [],
-                        });
-                        messagesToProcess.push({
-                            role: 'model',
-                            content: `承知いたしました。以下の要約を基に会話を継続します。\n\n---\n${summaryContent}\n---`,
-                            timestamp: Date.now() - 1,
-                        });
-                    }
-
-                    const lastUserMessageIndex = currentContextMessages.map(m => m.role).lastIndexOf('user');
-                    if (lastUserMessageIndex !== -1 && !includedMessageIndices.has(lastUserMessageIndex)) {
-                        messagesToProcess.push(currentContextMessages[lastUserMessageIndex]);
-                    }
-
-                } else {
-                    messagesToProcess = isRetry
-                        ? currentContextMessages.slice(0, userMessageIndex + 1)
-                        : [...currentContextMessages];
-                }
+                messagesToProcess = isRetry
+                    ? currentContextMessages.slice(0, userMessageIndex + 1)
+                    : [...currentContextMessages];
 
 
                 if (!isBackgroundProcess) {
@@ -1075,13 +968,6 @@ Object.assign(appLogic, {
                             }
                         }
 
-                        if (!isBackgroundProcess) {
-                            const currentUserTurnCountAfterSend = state.currentMessages.filter(msg => msg.role === 'user').length;
-                            const currentSummarizeAfterTurns = state.settings.twinEngineSummarizeAfterTurns || 0;
-                            if (state.settings.showTwinEngineSettings && state.settings.twinEngineEnableFullAuto && currentUserTurnCountAfterSend > currentSummarizeAfterTurns) {
-                                setTimeout(() => this.triggerTwinEngineSummaryInBackground(), 0);
-                            }
-                        }
                         if (modelResponseMetadata.finishReason === 'ABORTED' || state.abortController?.signal.aborted) {
                             throw new Error("リクエストがキャンセルされました。");
                         }
@@ -1252,13 +1138,6 @@ uiUtils.renderChatMessages(shouldMaintainScroll);
                         }
                     }
 
-                    if (!isBackgroundProcess) {
-                        const currentUserTurnCountAfterSend = state.currentMessages.filter(msg => msg.role === 'user').length;
-                        const currentSummarizeAfterTurns = state.settings.twinEngineSummarizeAfterTurns || 0;
-                        if (state.settings.showTwinEngineSettings && state.settings.twinEngineEnableFullAuto && currentUserTurnCountAfterSend > currentSummarizeAfterTurns) {
-                            setTimeout(() => this.triggerTwinEngineSummaryInBackground(), 0);
-                        }
-                    }
                 }
 
                 catch (error) {

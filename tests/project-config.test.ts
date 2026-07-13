@@ -22,6 +22,14 @@ describe('project configuration', () => {
     }
   });
 
+  it('does not ship the removed Twin-engine feature', () => {
+    expect(readFile('src/index.html')).not.toMatch(/twin[-_ ]?engine|resummarize/i);
+    expect(readFile('src/app-state.ts')).not.toMatch(/twin[-_ ]?engine|resummarize/i);
+    expect(readFile('scripts/runtime-scripts.json')).not.toMatch(/twin[-_ ]?engine/i);
+    expect(fs.readdirSync(path.join(projectRoot, 'src')).join('\n')).not.toMatch(/twin[-_ ]?engine/i);
+    expect(readFile('src/database.ts')).toContain('removedSettingKeys');
+  });
+
   it('uses a relative manifest start URL suitable for GitHub Pages', () => {
     expect(JSON.parse(readFile('manifest.json')).start_url).toBe('./index.html');
   });

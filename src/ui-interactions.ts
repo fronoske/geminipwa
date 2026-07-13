@@ -10,11 +10,6 @@ Object.assign(uiUtils, {
                     elements.clipboardStackArea.classList.add('hidden');
                     state.isClipboardStackVisible = false;
                 }
-                if (state.isTwinEngineSummaryVisible && screenName !== 'chat') {
-                    elements.twinEngineSummaryArea.classList.add('hidden');
-                    state.isTwinEngineSummaryVisible = false;
-                }
-
                 if (screenName === state.currentScreen) {
                     if (screenName === 'history') this.updateHistoryHeaderButtonVisibility();
                     if (screenName === 'settings') this.applySettingsUIDetailsOpenStates();
@@ -127,7 +122,7 @@ Object.assign(uiUtils, {
             },
 
             updateLoadingIndicator() {
-                const isProcessing = state.isAiToAiChatProcessing || state.isSummarizingForRetry || state.isProofreading || state.isSummarizing || state.isSending;
+                const isProcessing = state.isAiToAiChatProcessing || state.isProofreading || state.isSending;
 
                 if (isProcessing) {
                     elements.loadingIndicator.classList.remove('hidden');
@@ -135,9 +130,7 @@ Object.assign(uiUtils, {
 
                     let baseText = '応答中';
                     if (state.isAiToAiChatProcessing) baseText = state.aiToAiProcessingMessage;
-                    else if (state.isSummarizingForRetry) baseText = 'リトライ前の履歴を要約中...';
                     else if (state.isProofreading) baseText = '校正中...';
-                    else if (state.isSummarizing) baseText = '要約中...';
 
                     if (state.settings.showResponseTimer) {
                         if (!state.responseTimerId) {
@@ -145,13 +138,13 @@ Object.assign(uiUtils, {
                             state.responseTimerId = setInterval(() => {
                                 const now = Date.now();
                                 const elapsed = ((now - state.responseStartTime) / 1000).toFixed(1);
-                                if (state.isSending && !state.isSummarizing && !state.isProofreading && !state.isAiToAiChatProcessing && !state.isSummarizingForRetry) {
+                                if (state.isSending && !state.isProofreading && !state.isAiToAiChatProcessing) {
                                     elements.loadingIndicator.textContent = `${elapsed}s`;
                                 } else {
                                     elements.loadingIndicator.textContent = `${baseText} (${elapsed}s)`;
                                 }
                             }, 100);
-                            elements.loadingIndicator.textContent = (state.isSending && !state.isSummarizing && !state.isProofreading) ? "0.0s" : `${baseText} (0.0s)`;
+                            elements.loadingIndicator.textContent = (state.isSending && !state.isProofreading) ? "0.0s" : `${baseText} (0.0s)`;
                         }
                     } else {
                         if (state.responseTimerId) {

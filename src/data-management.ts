@@ -819,7 +819,6 @@ newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.che
                 newSettings.flatSettingsDesign = elements.flatSettingsDesignToggle.checked;
                 newSettings.showSessionLinkingSettings = elements.showSessionLinkingSettingsToggle.checked;
 
-                newSettings.showTwinEngineSettings = elements.showTwinEngineSettingsToggle.checked;
 
                 newSettings.showChatTitle = elements.showChatTitleToggle.checked;
                 newSettings.showNewChatButton = elements.showNewChatButtonToggle.checked;
@@ -841,7 +840,6 @@ newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.che
                 newSettings.memoHeight = elements.memoHeightInput.value.trim() || DEFAULT_MEMO_HEIGHT;
                 newSettings.showClipboardStackButton = elements.showClipboardStackButtonToggle.checked;
                 newSettings.clipboardStackHeight = state.settings.clipboardStackHeight;
-                newSettings.showTwinEngineSummaryButton = elements.showTwinEngineSummaryButtonToggle.checked;
                 newSettings.showUserIcon = elements.showUserIconToggle.checked;
                 newSettings.showUserName = elements.showUserNameToggle.checked;
                 newSettings.userName = elements.userNameInput.value.trim() || DEFAULT_USER_NAME;
@@ -912,7 +910,6 @@ newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.che
                     dummy: elements.apiProviderCycleDummyCheckbox.checked,
                 };
                 newSettings.dummyErrorDebugMode = elements.dummyErrorDebugModeCheckbox.checked;
-                newSettings.dummyTwinEngineDebugMode = elements.dummyTwinEngineDebugModeCheckbox.checked;
                 newSettings.dummyDummyModel = elements.dummyDummyModelInput.value.trim();
                 newSettings.dummyEnableDummyModel = elements.dummyEnableDummyModelCheckbox.checked;
                 newSettings.enableProofreading = elements.enableProofreadingCheckbox.checked;
@@ -934,20 +931,6 @@ newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.che
                         newSettings.apiProvider = enabledProvider;
                     }
                 }
-
-                newSettings.twinEngineEnableFullAuto = elements.twinEngineEnableFullAutoToggle.checked;
-                newSettings.showFooterTwinEngineToggleButton = elements.showFooterTwinEngineToggleButtonToggle.checked;
-                newSettings.showFooterResummarizeButton = elements.showFooterResummarizeButtonToggle.checked;
-                const summarizeAfter = parseInt(elements.twinEngineSummarizeAfterTurnsInput.value, 10);
-                newSettings.twinEngineSummarizeAfterTurns = isNaN(summarizeAfter) || summarizeAfter < 0 ? DEFAULT_TWIN_ENGINE_SUMMARIZE_AFTER_TURNS : summarizeAfter;
-                const initialTurnsToInclude = parseInt(document.getElementById('twin-engine-initial-turns-to-include').value, 10);
-                newSettings.twinEngineInitialTurnsToInclude = isNaN(initialTurnsToInclude) || initialTurnsToInclude < 0 ? 0 : initialTurnsToInclude;
-                newSettings.twinEngineSummaryPrompt = elements.twinEngineSummaryPromptInput.value.trim();
-                newSettings.twinEngineDummyUser = elements.twinEngineDummyUserInput.value.trim();
-                newSettings.twinEngineEnableDummyUser = elements.twinEngineEnableDummyUserCheckbox.checked;
-                newSettings.twinEngineDummyModel = elements.twinEngineDummyModelInput.value.trim();
-                newSettings.twinEngineEnableDummyModel = elements.twinEngineEnableDummyModelCheckbox.checked;
-                newSettings.twinEngineConcatDummyModel = elements.twinEngineConcatDummyModelCheckbox.checked;
 
                 newSettings.enableImageUrlReplacement = elements.enableImageUrlReplacementCheckbox.checked;
                 newSettings.imageUrlReplacementBase = elements.imageUrlReplacementBaseInput.value.trim();

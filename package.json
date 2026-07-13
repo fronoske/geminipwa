@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "baseline": "node scripts/check-baseline.mjs",
-    "audit:spec": "npm run build && node scripts/audit-spec-equivalence.mjs && node scripts/analyze-runtime-diff.mjs",
     "dev": "npm run build && vite",
     "build:pages": "node scripts/prepare-build.mjs && tsc -p tsconfig.runtime.json --outDir .build/runtime && node scripts/normalize-generated-scripts.mjs .build/runtime && node scripts/check-generated-scripts.mjs && node scripts/build-pages.mjs",
     "build": "npm run build:pages",
@@ -15,7 +14,6 @@
   },
   "devDependencies": {
     "@types/node": "latest",
-    "acorn": "^8.17.0",
     "typescript": "latest",
     "vite": "latest",
     "vitest": "latest"

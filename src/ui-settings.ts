@@ -388,22 +388,8 @@ document.body.classList.remove('dark-mode', 'light-mode-forced', 'pastel-pink-mo
             applySettingsToUI() {
                 this.toggleApiSettingsVisibility(state.settings.apiProvider);
                 elements.apiProviderSelect.value = state.settings.apiProvider;
-                twinEngineApiConfigUtils.renderList();
                 elements.commonSystemPromptDefaultTextarea.value = state.settings.commonSystemPrompt || '';
                 elements.enableCommonSystemPromptDefaultCheckbox.checked = state.settings.enableCommonSystemPromptDefault;
-                elements.twinEngineEnableFullAutoToggle.checked = state.settings.twinEngineEnableFullAuto;
-                elements.showFooterTwinEngineToggleButtonToggle.checked = state.settings.showFooterTwinEngineToggleButton;
-                elements.showFooterResummarizeButtonToggle.checked = state.settings.showFooterResummarizeButton;
-                elements.twinEngineFullAutoSettingContainer.classList.toggle('hidden', !state.settings.showTwinEngineSettings);
-                elements.twinEngineSummarizeAfterTurnsInput.value = state.settings.twinEngineSummarizeAfterTurns ?? DEFAULT_TWIN_ENGINE_SUMMARIZE_AFTER_TURNS;
-                document.getElementById('twin-engine-initial-turns-to-include').value = state.settings.twinEngineInitialTurnsToInclude ?? 1;
-                elements.twinEngineSummaryPromptInput.value = state.settings.twinEngineSummaryPrompt || '';
-                elements.twinEngineDummyUserInput.value = state.settings.twinEngineDummyUser || '';
-                elements.twinEngineEnableDummyUserCheckbox.checked = state.settings.twinEngineEnableDummyUser;
-                elements.twinEngineDummyModelInput.value = state.settings.twinEngineDummyModel || '';
-                elements.twinEngineEnableDummyModelCheckbox.checked = state.settings.twinEngineEnableDummyModel;
-                elements.twinEngineConcatDummyModelCheckbox.checked = state.settings.twinEngineConcatDummyModel;
-
                 elements.geminiApiKeyInput.value = state.settings.apiKey || '';
                 elements.geminiModelNameSelect.value = state.settings.modelName || DEFAULT_MODEL;
                 elements.geminiAdditionalModelsTextarea.value = state.settings.additionalModels || '';
@@ -660,11 +646,6 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
 
                     elements.sessionLinkingSettingsGroup.classList.toggle('hidden', !state.settings.showSessionLinkingSettings);
                 }
-                elements.showTwinEngineSettingsToggle.checked = state.settings.showTwinEngineSettings;
-                const twinEngineSettingsGroup = document.getElementById('settings-group-twin-engine');
-                if (twinEngineSettingsGroup) {
-                    twinEngineSettingsGroup.classList.toggle('hidden', !state.settings.showTwinEngineSettings);
-                }
                 elements.showChatTitleToggle.checked = state.settings.showChatTitle;
                 elements.showNewChatButtonToggle.checked = state.settings.showNewChatButton;
                 elements.showDeleteSessionButtonToggle.checked = state.settings.showDeleteSessionButton;
@@ -712,14 +693,12 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 elements.apiProviderCycleDummyCheckbox.checked = state.settings.apiProviderCycle.dummy;
                 elements.dummyDummyModelInput.value = state.settings.dummyDummyModel || '';
                 elements.dummyEnableDummyModelCheckbox.checked = state.settings.dummyEnableDummyModel;
-                elements.dummyTwinEngineDebugModeCheckbox.checked = state.settings.dummyTwinEngineDebugMode;
 
                 elements.enableProofreadingCheckbox.checked = state.settings.enableProofreading;
                 elements.proofreadingOptionsDiv.classList.toggle('hidden', !elements.enableProofreadingCheckbox.checked);
                 proofreadingApiConfigUtils.renderList();
 
                 elements.showMemoButtonToggle.checked = state.settings.showMemoButton;
-                elements.showTwinEngineSummaryButtonToggle.checked = state.settings.showTwinEngineSummaryButton;
                 elements.memoHeightInput.value = state.settings.memoHeight || '';
                 elements.showClipboardStackButtonToggle.checked = state.settings.showClipboardStackButton;
                 elements.showUserIconToggle.checked = state.settings.showUserIcon;
@@ -826,8 +805,6 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 setupModelListener(elements.llmAggregatorAdditionalModelsTextarea, 'llmAggregatorAdditionalModels', uiUtils.updateLlmAggregatorUserModelOptions);
 
                 this.updateMemoStackHeightSettingsVisibility();
-                this.updateTwinEngineModeButton();
-                this.updateTwinEngineApiKeyCycleButton();
                 const deleteConfirmCheckboxes = document.querySelectorAll('.js-disable-delete-api-key-confirmation-toggle');
                 deleteConfirmCheckboxes.forEach(checkbox => {
                     checkbox.checked = state.settings.disableDeleteApiKeyConfirmation;
