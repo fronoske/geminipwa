@@ -2136,15 +2136,6 @@ body.turf-mode {
             color: #ffffff !important;
         }
 
-        .app-header .api-provider-toggle-btn.dummy {
-            background-color: #FFD700 !important;
-            color: #ffffff !important;
-        }
-
-        .app-header .api-provider-toggle-btn.dummy:hover {
-            background-color: #FFC700 !important;
-        }
-
         body.dark-mode .app-header .api-provider-toggle-btn.gemini:hover {
             background-color: rgba(255, 255, 255, 0.9) !important;
             color: #8A75D2 !important;
@@ -2201,11 +2192,6 @@ body.turf-mode {
 
         .chat-input-area .api-provider-toggle-btn.llmaggregator {
             background-color: #e53935 !important;
-            color: #ffffff !important;
-        }
-
-        .chat-input-area .api-provider-toggle-btn.dummy {
-            background-color: #FFD700 !important;
             color: #ffffff !important;
         }
 
@@ -4645,7 +4631,6 @@ font-size: 1.142em !important;
                             <option value="openai">ChatGPT (OpenAI API)</option>
                             <option value="xai">Grok (xAI API)</option>
                             <option value="llmaggregator">LLM Aggregator</option>
-                            <option value="dummy">Dummy AI</option>
                         </select>
                     </div>
                     <details id="settings-group-common-system-prompt" style="margin-top:10px;">
@@ -4693,10 +4678,6 @@ font-size: 1.142em !important;
                             <label class="checkbox-label" style="font-size: 12px;">
                                 <input type="checkbox" id="api-provider-cycle-llmaggregator">
                                 LLM Aggregator
-                            </label>
-                            <label class="checkbox-label" style="font-size: 12px;">
-                                <input type="checkbox" id="api-provider-cycle-dummy">
-                                Dummy AI
                             </label>
                         </div>
                     </details>
@@ -5050,33 +5031,6 @@ font-size: 1.142em !important;
                             <textarea id="llmaggregator-additional-models" placeholder="例: mistralai/Mixtral-8x7B-Instruct-v0.1,another/model" aria-label="LLM Aggregator 追加モデル" style="margin-top: 5px;"></textarea>
                         </details>
                     </div>
-                </details>
-
-                <details id="dummy-settings-group" class="settings-group hidden" open>
-                    <summary
-                        style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
-                        Dummy AI 設定</summary>
-                    <div style="margin-top:15px;">
-                        <p style="font-size: 12px; color: var(--text-secondary);">このプロバイダーはセッション編成用のダミーです。</p>
-                        <p style="font-size: 12px; color: var(--text-secondary); margin-top: 5px;">
-                            APIキーは不要で、バックエンドへの接続も行いません。ユーザーがメッセージを送信すると、常に空の応答を返します。</p>
-                        <hr style="margin: 15px 0;">
-                        <label for="dummy-dummy-model">ダミー Model プロンプト:</label>
-                        <textarea id="dummy-dummy-model" placeholder="この内容は、Dummy AIの応答の先頭に付与されます。"
-                            aria-label="Dummy AI ダミー Model プロンプト"></textarea>
-                        <label class="checkbox-label" style="margin-top: -5px; margin-bottom: 15px;">
-                            <input type="checkbox" id="dummy-enable-dummy-model">
-                            このダミーModelプロンプトを有効にする
-                        </label>
-                    </div>
-                    <label class="checkbox-label" style="margin-top: 15px;">
-                        <input type="checkbox" id="dummy-error-debug-mode">
-                        エラーログを応答する (デバッグモード)
-                    </label>
-                    <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                        ※ チェック時、これまでに発生したJavaScriptエラーのログを応答します。
-                    </p>
-
                 </details>
 
 <details id="gemini-params-group" class="settings-group" open>
@@ -6991,8 +6945,7 @@ const API_PROVIDERS = [
     { value: 'claude', text: 'Claude (Anthropic API)' },
     { value: 'openai', text: 'ChatGPT (OpenAI API)' },
     { value: 'xai', text: 'Grok (xAI API)' },
-    { value: 'llmaggregator', text: 'LLM Aggregator' },
-    { value: 'dummy', text: 'Dummy AI' }
+    { value: 'llmaggregator', text: 'LLM Aggregator' }
 ];
 const DEFAULT_MODEL = 'gemini-3.5-flash';
 const DEFAULT_DEEPSEEK_MODEL = 'deepseek-reasoner';
@@ -7197,7 +7150,6 @@ const elements = {
     openaiAdvancedGroup: document.getElementById('openai-advanced-group'),
     xaiAdvancedGroup: document.getElementById('xai-advanced-group'),
     llmAggregatorAdvancedGroup: document.getElementById('llmaggregator-advanced-group'),
-    dummySettingsGroup: document.getElementById('dummy-settings-group'),
     geminiSystemPromptDefaultTextarea: document.getElementById('gemini-system-prompt-default'),
     geminiEnableSystemPromptDefaultCheckbox: document.getElementById('gemini-enable-system-prompt-default'),
     geminiTemperatureInput: document.getElementById('gemini-temperature'),
@@ -7476,15 +7428,11 @@ const elements = {
     apiProviderCycleOpenAICheckbox: document.getElementById('api-provider-cycle-openai'),
     apiProviderCycleXaiCheckbox: document.getElementById('api-provider-cycle-xai'),
     apiProviderCycleLlmAggregatorCheckbox: document.getElementById('api-provider-cycle-llmaggregator'),
-    apiProviderCycleDummyCheckbox: document.getElementById('api-provider-cycle-dummy'),
     headerCycleApiKeyBtn: document.getElementById('header-cycle-api-key-btn'),
     footerCycleApiKeyBtn: document.getElementById('footer-cycle-api-key-btn'),
     showHeaderCycleApiKeyBtnToggle: document.getElementById('show-header-cycle-api-key-btn-toggle'),
     showFooterCycleApiKeyBtnToggle: document.getElementById('show-footer-cycle-api-key-btn-toggle'),
     imagePreviewDialog: document.getElementById('imagePreviewDialog'),
-    dummyErrorDebugModeCheckbox: document.getElementById('dummy-error-debug-mode'),
-    dummyDummyModelInput: document.getElementById('dummy-dummy-model'),
-    dummyEnableDummyModelCheckbox: document.getElementById('dummy-enable-dummy-model'),
     geminiApiKeysList: document.getElementById('gemini-api-keys-list'),
     addGeminiApiKeyBtn: document.getElementById('add-gemini-api-key-btn'),
     deepseekApiKeysList: document.getElementById('deepseek-api-keys-list'),
@@ -7768,11 +7716,7 @@ const state = {
             openai: true,
             xai: true,
             llmaggregator: true,
-            dummy: true,
         },
-        dummyErrorDebugMode: false,
-        dummyDummyModel: '',
-        dummyEnableDummyModel: false,
         geminiApiKeys: [],
         geminiActiveApiKeyIndex: -1,
         deepseekApiKeys: [],
@@ -8073,9 +8017,15 @@ const dbUtils = {
                             }
                         }
                     }
+                    if (!API_PROVIDERS.some((provider) => provider.value === state.settings.apiProvider)) {
+                        state.settings.apiProvider = 'gemini';
+                    }
+                    if (state.settings.apiProviderCycle && typeof state.settings.apiProviderCycle === 'object') {
+                        delete state.settings.apiProviderCycle.dummy;
+                    }
                     const removedSettingKeys = settingsArray
                         .map((item) => item.key)
-                        .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine|enableSessionLinking|showSessionLinkingSettings|enableCryscroller|cryscroller|enableSettingsCryscroller|enableHistoryCryscroller|enableImmersiveScrolling|enableDynamicScrollMarkerColor|enableProofreading|showProofreadingSettings|proofreading|activeProofreadingConfigId|enableImageUrlReplacement|imageUrlReplacementBase|enableAutoBaseUrlDetection|enableFuzzySearchNormalization|fuzzySearchThreshold|characterNamesList|enableRomajiToKatakanaConversion)/.test(key));
+                        .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine|enableSessionLinking|showSessionLinkingSettings|enableCryscroller|cryscroller|enableSettingsCryscroller|enableHistoryCryscroller|enableImmersiveScrolling|enableDynamicScrollMarkerColor|enableProofreading|showProofreadingSettings|proofreading|activeProofreadingConfigId|enableImageUrlReplacement|imageUrlReplacementBase|enableAutoBaseUrlDetection|enableFuzzySearchNormalization|fuzzySearchThreshold|characterNamesList|enableRomajiToKatakanaConversion|dummyErrorDebugMode|dummyDummyModel|dummyEnableDummyModel)/.test(key));
                     if (removedSettingKeys.length > 0) {
                         try {
                             const cleanupStore = this._getStore(SETTINGS_STORE, 'readwrite');
@@ -9657,12 +9607,6 @@ const errorRecovery = {
             }
             return `Failed to serialize error: ${e.message}`;
         }
-    },
-    getErrorLogAsString() {
-        if (this.errorLog.length === 0) {
-            return "これまでに記録されたエラーはありません。";
-        }
-        return this.errorLog.map(log => `Timestamp: ${log.timestamp}\nType: ${log.type}\nInfo:\n${log.info}`).join('\n\n====================\n\n');
     },
     init() {
         window.addEventListener('error', (event) => {
@@ -11921,9 +11865,6 @@ Object.assign(uiUtils, {
         elements.apiProviderCycleOpenAICheckbox.checked = state.settings.apiProviderCycle.openai;
         elements.apiProviderCycleXaiCheckbox.checked = state.settings.apiProviderCycle.xai;
         elements.apiProviderCycleLlmAggregatorCheckbox.checked = state.settings.apiProviderCycle.llmaggregator;
-        elements.apiProviderCycleDummyCheckbox.checked = state.settings.apiProviderCycle.dummy;
-        elements.dummyDummyModelInput.value = state.settings.dummyDummyModel || '';
-        elements.dummyEnableDummyModelCheckbox.checked = state.settings.dummyEnableDummyModel;
         elements.showMemoButtonToggle.checked = state.settings.showMemoButton;
         elements.memoHeightInput.value = state.settings.memoHeight || '';
         elements.showClipboardStackButtonToggle.checked = state.settings.showClipboardStackButton;
@@ -12057,7 +11998,6 @@ Object.assign(uiUtils, {
         const showOpenAI = provider === 'openai';
         const showXai = provider === 'xai';
         const showLlmAggregator = provider === 'llmaggregator';
-        const showDummy = provider === 'dummy';
         elements.geminiSettingsGroup.classList.toggle('hidden', !showGemini);
         elements.geminiParamsGroup.classList.toggle('hidden', !showGemini);
         elements.geminiAdvancedGroup.classList.toggle('hidden', !showGemini);
@@ -12077,7 +12017,6 @@ Object.assign(uiUtils, {
         elements.llmAggregatorSettingsGroup.classList.toggle('hidden', !showLlmAggregator);
         elements.llmAggregatorParamsGroup.classList.toggle('hidden', !showLlmAggregator);
         elements.llmAggregatorAdvancedGroup.classList.toggle('hidden', !showLlmAggregator);
-        elements.dummySettingsGroup.classList.toggle('hidden', !showDummy);
         const paramGroups = [
             elements.geminiParamsGroup, elements.deepseekParamsGroup, elements.claudeParamsGroup,
             elements.openaiParamsGroup, elements.xaiParamsGroup, elements.llmAggregatorParamsGroup,
@@ -12174,14 +12113,13 @@ Object.assign(uiUtils, {
             openai: { text: 'OP', title: 'OpenAI', className: 'openai' },
             xai: { text: 'XA', title: 'xAI', className: 'xai' },
             llmaggregator: { text: 'LA', title: 'LLM Aggregator', className: 'llmaggregator' },
-            dummy: { text: 'DU', title: 'Dummy AI', className: 'dummy' },
         };
         const currentProviderInfo = providerMap[state.settings.apiProvider] || { text: '??', title: 'Unknown', className: '' };
         [elements.headerApiProviderToggleBtn, elements.footerApiProviderToggleBtn].forEach(button => {
             if (button) {
                 button.textContent = currentProviderInfo.text;
                 button.title = `API: ${currentProviderInfo.title}`;
-                button.classList.remove('gemini', 'deepseek', 'claude', 'openai', 'xai', 'llmaggregator', 'dummy');
+                button.classList.remove('gemini', 'deepseek', 'claude', 'openai', 'xai', 'llmaggregator');
                 if (currentProviderInfo.className) {
                     button.classList.add(currentProviderInfo.className);
                 }
@@ -12542,13 +12480,7 @@ Object.assign(uiUtils, {
         if (textarea === elements.userInput && !state.isSending) {
             const isInputEmpty = textarea.value.trim() === '';
             const hasAttachments = state.pendingAttachments.length > 0;
-            const isDummyProvider = state.settings.apiProvider === 'dummy';
-            if (isDummyProvider) {
-                elements.sendButton.disabled = false;
-            }
-            else {
-                elements.sendButton.disabled = isInputEmpty && !hasAttachments;
-            }
+            elements.sendButton.disabled = isInputEmpty && !hasAttachments;
         }
     },
     showCustomDialog(dialogElement, focusElement) {
@@ -12682,13 +12614,7 @@ Object.assign(uiUtils, {
         const hasAttachments = state.pendingAttachments.length > 0;
         elements.attachFileBtn.classList.toggle('has-attachments', hasAttachments);
         if (!state.isSending) {
-            const isDummyProvider = state.settings.apiProvider === 'dummy';
-            if (isDummyProvider) {
-                elements.sendButton.disabled = false;
-            }
-            else {
-                elements.sendButton.disabled = elements.userInput.value.trim() === '' && !hasAttachments;
-            }
+            elements.sendButton.disabled = elements.userInput.value.trim() === '' && !hasAttachments;
         }
     },
     showFileUploadDialog() {
@@ -13450,7 +13376,7 @@ Object.assign(appLogic, {
         elements.userInput.addEventListener('keypress', (e) => {
             if (state.settings.enterToSend && e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
-                const canSend = state.settings.apiProvider === 'dummy' || !(elements.userInput.value.trim() === '' && state.pendingAttachments.length === 0);
+                const canSend = !(elements.userInput.value.trim() === '' && state.pendingAttachments.length === 0);
                 if (canSend && !state.isSending) {
                     this.handleSend();
                 }
@@ -14271,10 +14197,6 @@ Object.assign(appLogic, {
         });
         elements.apiProviderCycleLlmAggregatorCheckbox.addEventListener('change', () => {
             state.settings.apiProviderCycle.llmaggregator = elements.apiProviderCycleLlmAggregatorCheckbox.checked;
-            uiUtils.updateApiProviderSelectOptions();
-        });
-        elements.apiProviderCycleDummyCheckbox.addEventListener('change', () => {
-            state.settings.apiProviderCycle.dummy = elements.apiProviderCycleDummyCheckbox.checked;
             uiUtils.updateApiProviderSelectOptions();
         });
         const llmUrlInput = elements.llmAggregatorApiBackendInput;
@@ -15215,57 +15137,10 @@ Object.assign(appLogic, {
         }
         const isInputEmpty = text.trim() === '';
         const hasAttachments = attachmentsToSend.length > 0;
-        const isDummyProvider = selectedApiProvider === 'dummy';
         if (state.isSending) {
             return;
         }
-        if (!isDummyProvider && isInputEmpty && !hasAttachments) {
-            return;
-        }
-        if (selectedApiProvider === 'dummy') {
-            uiUtils.setSendingState(true);
-            if (isRetry) {
-                if (retryUserMessageIndex + 1 < state.currentMessages.length) {
-                    state.currentMessages.splice(retryUserMessageIndex + 1);
-                }
-                uiUtils.renderChatMessages(true);
-            }
-            else {
-                const userMessage = {
-                    role: 'user', content: text, timestamp: Date.now(),
-                    attachments: attachmentsToSend, generatedByApiProvider: null
-                };
-                state.currentMessages.push(userMessage);
-                const userMessageIndex = state.currentMessages.length - 1;
-                uiUtils.appendMessage(userMessage.role, userMessage.content, userMessageIndex, false, null, userMessage.attachments);
-                elements.userInput.value = '';
-                state.pendingAttachments = [];
-                uiUtils.adjustTextareaHeight();
-                uiUtils.updateAttachmentBadgeVisibility();
-            }
-            await dbUtils.saveChat();
-            await sleep(300 + Math.random() * 400);
-            let dummyResponseContent = '';
-            if (state.settings.dummyEnableDummyModel && state.settings.dummyDummyModel) {
-                dummyResponseContent += state.settings.dummyDummyModel;
-            }
-            if (state.settings.dummyErrorDebugMode) {
-                const errorLog = errorRecovery.getErrorLogAsString();
-                if (dummyResponseContent) {
-                    dummyResponseContent += '\n\n';
-                }
-                dummyResponseContent += errorLog;
-            }
-            const modelMessage = {
-                role: 'model', content: dummyResponseContent, timestamp: Date.now(), generatedByApiProvider: 'dummy'
-            };
-            state.currentMessages.push(modelMessage);
-            const modelMessageIndex = state.currentMessages.length - 1;
-            uiUtils.appendMessage(modelMessage.role, modelMessage.content, modelMessageIndex);
-            await dbUtils.saveChat();
-            uiUtils.setSendingState(false);
-            if (state.settings.autoScrollOnNewMessage)
-                uiUtils.scrollToBottom();
+        if (isInputEmpty && !hasAttachments) {
             return;
         }
         let currentContextSessionId = state.currentChatId;
@@ -15406,7 +15281,7 @@ Object.assign(appLogic, {
             contextEnableDummyModel = state.settings.llmAggregatorEnableDummyModel;
             contextConcatDummyModel = state.settings.llmAggregatorConcatDummyModel;
         }
-        if (!apiKeyToUse && selectedApiProvider !== 'dummy') {
+        if (!apiKeyToUse) {
             await uiUtils.showCustomAlert(`${selectedApiProvider} APIキーが設定されていません。設定画面を開きます。`);
             uiUtils.showScreen('settings');
             return "APIキー未設定";
@@ -17023,11 +16898,7 @@ Object.assign(appLogic, {
             openai: elements.apiProviderCycleOpenAICheckbox.checked,
             xai: elements.apiProviderCycleXaiCheckbox.checked,
             llmaggregator: elements.apiProviderCycleLlmAggregatorCheckbox.checked,
-            dummy: elements.apiProviderCycleDummyCheckbox.checked,
         };
-        newSettings.dummyErrorDebugMode = elements.dummyErrorDebugModeCheckbox.checked;
-        newSettings.dummyDummyModel = elements.dummyDummyModelInput.value.trim();
-        newSettings.dummyEnableDummyModel = elements.dummyEnableDummyModelCheckbox.checked;
         newSettings.enableWebhookNotification = elements.enableWebhookNotificationToggle.checked;
         const firstDeleteConfirmCheckbox = document.querySelector('.js-disable-delete-api-key-confirmation-toggle');
         if (firstDeleteConfirmCheckbox) {

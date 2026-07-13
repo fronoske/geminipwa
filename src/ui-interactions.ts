@@ -146,13 +146,7 @@ Object.assign(uiUtils, {
                 if (textarea === elements.userInput && !state.isSending) {
                     const isInputEmpty = textarea.value.trim() === '';
                     const hasAttachments = state.pendingAttachments.length > 0;
-                    const isDummyProvider = state.settings.apiProvider === 'dummy';
-
-                    if (isDummyProvider) {
-                        elements.sendButton.disabled = false;
-                    } else {
-                        elements.sendButton.disabled = isInputEmpty && !hasAttachments;
-                    }
+                    elements.sendButton.disabled = isInputEmpty && !hasAttachments;
                 }
             },
             showCustomDialog(dialogElement, focusElement) {
@@ -299,12 +293,7 @@ Object.assign(uiUtils, {
                 const hasAttachments = state.pendingAttachments.length > 0;
                 elements.attachFileBtn.classList.toggle('has-attachments', hasAttachments);
                 if (!state.isSending) {
-                    const isDummyProvider = state.settings.apiProvider === 'dummy';
-                    if (isDummyProvider) {
-                        elements.sendButton.disabled = false;
-                    } else {
-                        elements.sendButton.disabled = elements.userInput.value.trim() === '' && !hasAttachments;
-                    }
+                    elements.sendButton.disabled = elements.userInput.value.trim() === '' && !hasAttachments;
                 }
             },
             showFileUploadDialog() {

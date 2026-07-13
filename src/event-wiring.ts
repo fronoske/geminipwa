@@ -41,7 +41,7 @@ Object.assign(appLogic, {
                 elements.userInput.addEventListener('keypress', (e) => {
                     if (state.settings.enterToSend && e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault();
-                        const canSend = state.settings.apiProvider === 'dummy' || !(elements.userInput.value.trim() === '' && state.pendingAttachments.length === 0);
+                        const canSend = !(elements.userInput.value.trim() === '' && state.pendingAttachments.length === 0);
                         if (canSend && !state.isSending) {
                             this.handleSend();
                         }
@@ -857,11 +857,6 @@ Object.assign(appLogic, {
                     state.settings.apiProviderCycle.llmaggregator = elements.apiProviderCycleLlmAggregatorCheckbox.checked;
                     uiUtils.updateApiProviderSelectOptions();
                 });
-                elements.apiProviderCycleDummyCheckbox.addEventListener('change', () => {
-                    state.settings.apiProviderCycle.dummy = elements.apiProviderCycleDummyCheckbox.checked;
-                    uiUtils.updateApiProviderSelectOptions();
-                });
-
                 const llmUrlInput = elements.llmAggregatorApiBackendInput;
                 const llmUrlError = elements.llmAggregatorUrlError;
 

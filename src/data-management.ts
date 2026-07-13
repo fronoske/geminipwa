@@ -888,11 +888,7 @@ newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.che
                     openai: elements.apiProviderCycleOpenAICheckbox.checked,
                     xai: elements.apiProviderCycleXaiCheckbox.checked,
                     llmaggregator: elements.apiProviderCycleLlmAggregatorCheckbox.checked,
-                    dummy: elements.apiProviderCycleDummyCheckbox.checked,
                 };
-                newSettings.dummyErrorDebugMode = elements.dummyErrorDebugModeCheckbox.checked;
-                newSettings.dummyDummyModel = elements.dummyDummyModelInput.value.trim();
-                newSettings.dummyEnableDummyModel = elements.dummyEnableDummyModelCheckbox.checked;
                 newSettings.enableWebhookNotification = elements.enableWebhookNotificationToggle.checked;
                 const firstDeleteConfirmCheckbox = document.querySelector('.js-disable-delete-api-key-confirmation-toggle');
                 if (firstDeleteConfirmCheckbox) {

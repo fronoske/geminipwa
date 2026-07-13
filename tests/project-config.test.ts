@@ -59,6 +59,12 @@ describe('project configuration', () => {
     );
   });
 
+  it('does not ship the Dummy AI provider', () => {
+    expect(readFile('src/index.html')).not.toMatch(/Dummy AI|value="dummy"/);
+    expect(readFile('src/app-config.ts')).not.toContain("value: 'dummy'");
+    expect(readFile('src/message-sending.ts')).not.toMatch(/apiProvider === 'dummy'|selectedApiProvider === 'dummy'/);
+  });
+
   it('preserves multiple API key management as a protected core feature', () => {
     expect(runtimeManifest.application).toContain('api-key-manager');
     expect(readFile('src/api-key-manager.ts')).toContain('const multiApiKeyUtils = {');

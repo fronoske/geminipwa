@@ -645,9 +645,6 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 elements.apiProviderCycleOpenAICheckbox.checked = state.settings.apiProviderCycle.openai;
                 elements.apiProviderCycleXaiCheckbox.checked = state.settings.apiProviderCycle.xai;
                 elements.apiProviderCycleLlmAggregatorCheckbox.checked = state.settings.apiProviderCycle.llmaggregator;
-                elements.apiProviderCycleDummyCheckbox.checked = state.settings.apiProviderCycle.dummy;
-                elements.dummyDummyModelInput.value = state.settings.dummyDummyModel || '';
-                elements.dummyEnableDummyModelCheckbox.checked = state.settings.dummyEnableDummyModel;
 
                 elements.showMemoButtonToggle.checked = state.settings.showMemoButton;
                 elements.memoHeightInput.value = state.settings.memoHeight || '';
@@ -793,7 +790,6 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 const showOpenAI = provider === 'openai';
                 const showXai = provider === 'xai';
                 const showLlmAggregator = provider === 'llmaggregator';
-                const showDummy = provider === 'dummy';
 
                 elements.geminiSettingsGroup.classList.toggle('hidden', !showGemini);
                 elements.geminiParamsGroup.classList.toggle('hidden', !showGemini);
@@ -819,8 +815,6 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 elements.llmAggregatorSettingsGroup.classList.toggle('hidden', !showLlmAggregator);
                 elements.llmAggregatorParamsGroup.classList.toggle('hidden', !showLlmAggregator);
                 elements.llmAggregatorAdvancedGroup.classList.toggle('hidden', !showLlmAggregator);
-
-                elements.dummySettingsGroup.classList.toggle('hidden', !showDummy);
 
                 const paramGroups = [
                     elements.geminiParamsGroup, elements.deepseekParamsGroup, elements.claudeParamsGroup,

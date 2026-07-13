@@ -11,8 +11,7 @@
             { value: 'claude', text: 'Claude (Anthropic API)' },
             { value: 'openai', text: 'ChatGPT (OpenAI API)' },
             { value: 'xai', text: 'Grok (xAI API)' },
-            { value: 'llmaggregator', text: 'LLM Aggregator' },
-            { value: 'dummy', text: 'Dummy AI' }
+            { value: 'llmaggregator', text: 'LLM Aggregator' }
         ];
         const DEFAULT_MODEL = 'gemini-3.5-flash';
         const DEFAULT_DEEPSEEK_MODEL = 'deepseek-reasoner';

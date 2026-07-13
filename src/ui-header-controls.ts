@@ -86,7 +86,6 @@ Object.assign(uiUtils, {
                     openai: { text: 'OP', title: 'OpenAI', className: 'openai' },
                     xai: { text: 'XA', title: 'xAI', className: 'xai' },
                     llmaggregator: { text: 'LA', title: 'LLM Aggregator', className: 'llmaggregator' },
-                    dummy: { text: 'DU', title: 'Dummy AI', className: 'dummy' },
                 };
                 const currentProviderInfo = providerMap[state.settings.apiProvider] || { text: '??', title: 'Unknown', className: '' };
 
@@ -94,7 +93,7 @@ Object.assign(uiUtils, {
                     if (button) {
                         button.textContent = currentProviderInfo.text;
                         button.title = `API: ${currentProviderInfo.title}`;
-                        button.classList.remove('gemini', 'deepseek', 'claude', 'openai', 'xai', 'llmaggregator', 'dummy');
+                        button.classList.remove('gemini', 'deepseek', 'claude', 'openai', 'xai', 'llmaggregator');
                         if (currentProviderInfo.className) {
                             button.classList.add(currentProviderInfo.className);
                         }

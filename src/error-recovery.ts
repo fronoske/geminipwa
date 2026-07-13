@@ -43,15 +43,6 @@
                 }
             },
 
-            getErrorLogAsString() {
-                if (this.errorLog.length === 0) {
-                    return "これまでに記録されたエラーはありません。";
-                }
-                return this.errorLog.map(log =>
-                    `Timestamp: ${log.timestamp}\nType: ${log.type}\nInfo:\n${log.info}`
-                ).join('\n\n====================\n\n');
-            },
-
             init() {
                 window.addEventListener('error', (event) => {
                     this.handleError('JavaScript Error', {

@@ -25,7 +25,7 @@ describe('application foundation scripts', () => {
     expect(new vm.Script('DB_NAME').runInContext(context)).toBe('GeminiPWA_DB');
     expect(new vm.Script('DB_VERSION').runInContext(context)).toBe(8);
     expect(new vm.Script('DEFAULT_MODEL').runInContext(context)).toBe('gemini-3.5-flash');
-    expect(new vm.Script('API_PROVIDERS.length').runInContext(context)).toBe(7);
+    expect(new vm.Script('API_PROVIDERS.length').runInContext(context)).toBe(6);
   });
 
   it('initializes state from configuration defaults', () => {

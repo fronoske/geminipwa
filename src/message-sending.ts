@@ -48,62 +48,11 @@ Object.assign(appLogic, {
 
                 const isInputEmpty = text.trim() === '';
                 const hasAttachments = attachmentsToSend.length > 0;
-                const isDummyProvider = selectedApiProvider === 'dummy';
-
                 if (state.isSending) {
                     return;
                 }
 
-                if (!isDummyProvider && isInputEmpty && !hasAttachments) {
-                    return;
-                }
-
-                if (selectedApiProvider === 'dummy') {
-                    uiUtils.setSendingState(true);
-                    if (isRetry) {
-                        if (retryUserMessageIndex + 1 < state.currentMessages.length) {
-                            state.currentMessages.splice(retryUserMessageIndex + 1);
-                        }
-                        uiUtils.renderChatMessages(true);
-                    } else {
-                        const userMessage = {
-                            role: 'user', content: text, timestamp: Date.now(),
-                            attachments: attachmentsToSend, generatedByApiProvider: null
-                        };
-                        state.currentMessages.push(userMessage);
-                        const userMessageIndex = state.currentMessages.length - 1;
-                        uiUtils.appendMessage(userMessage.role, userMessage.content, userMessageIndex, false, null, userMessage.attachments);
-
-                        elements.userInput.value = '';
-                        state.pendingAttachments = [];
-                        uiUtils.adjustTextareaHeight();
-                        uiUtils.updateAttachmentBadgeVisibility();
-                    }
-                    await dbUtils.saveChat();
-                    await sleep(300 + Math.random() * 400);
-
-                    let dummyResponseContent = '';
-
-                    if (state.settings.dummyEnableDummyModel && state.settings.dummyDummyModel) {
-                        dummyResponseContent += state.settings.dummyDummyModel;
-                    }
-                    if (state.settings.dummyErrorDebugMode) {
-                        const errorLog = errorRecovery.getErrorLogAsString();
-                        if (dummyResponseContent) {
-                            dummyResponseContent += '\n\n';
-                        }
-                        dummyResponseContent += errorLog;
-                    }
-
-                    const modelMessage = {
-                        role: 'model', content: dummyResponseContent, timestamp: Date.now(), generatedByApiProvider: 'dummy'
-                    };
-                    state.currentMessages.push(modelMessage);
-                    const modelMessageIndex = state.currentMessages.length - 1;
-                    uiUtils.appendMessage(modelMessage.role, modelMessage.content, modelMessageIndex);
-                    await dbUtils.saveChat();
-                    uiUtils.setSendingState(false);
-                    if (state.settings.autoScrollOnNewMessage) uiUtils.scrollToBottom();
+                if (isInputEmpty && !hasAttachments) {
                     return;
                 }
 
@@ -250,7 +199,7 @@ Object.assign(appLogic, {
                         contextConcatDummyModel = state.settings.llmAggregatorConcatDummyModel;
                     }
 
-                if (!apiKeyToUse && selectedApiProvider !== 'dummy') {
+                if (!apiKeyToUse) {
                     await uiUtils.showCustomAlert(`${selectedApiProvider} APIキーが設定されていません。設定画面を開きます。`);
                     uiUtils.showScreen('settings');
                     return "APIキー未設定";
