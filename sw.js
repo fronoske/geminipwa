@@ -6,6 +6,7 @@ const urlsToCache = [
   './index.html',
   './src/styles/app.css',
   './src/recovery.js',
+  './src/utilities.js',
   './src/main.js',
   './src/input-preset.js',
   './manifest.json',

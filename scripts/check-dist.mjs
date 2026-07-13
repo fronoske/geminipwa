@@ -13,6 +13,7 @@ const requiredFiles = [
   'icon-192x192.png',
   'src/styles/app.css',
   'src/recovery.js',
+  'src/utilities.js',
   'src/main.js',
   'src/input-preset.js',
 ];
@@ -42,6 +43,7 @@ if (failures.length === 0) {
     'marked.js',
     'src/styles/app.css',
     'src/recovery.js',
+    'src/utilities.js',
     'src/main.js',
     'src/input-preset.js',
   ];

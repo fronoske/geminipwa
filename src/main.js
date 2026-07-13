@@ -943,11 +943,6 @@ const state = {
     isSummarizingForRetry: false,
     isProofreading: false,
 };
-const sanitizeText = (text, maxLength = 255) => {
-    if (typeof text !== 'string')
-        return '';
-    return text.replace(/[<>'"&]/g, '').substring(0, maxLength);
-};
 function isAllowedAggregatorDomain(urlStr) {
     if (state.settings.disableLlmUrlWhitelist)
         return true;
@@ -976,30 +971,6 @@ window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(updateMessageMaxWidthVar, 150);
 });
-const sleep = (ms) => {
-    if (document.hidden)
-        return Promise.resolve();
-    return new Promise(resolve => setTimeout(resolve, ms));
-};
-function formatFileSize(bytes) {
-    if (bytes === 0)
-        return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
-function fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-            const base64String = reader.result.split(',')[1];
-            resolve(base64String);
-        };
-        reader.onerror = error => reject(error);
-        reader.readAsDataURL(file);
-    });
-}
 function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {

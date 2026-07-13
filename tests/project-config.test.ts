@@ -14,6 +14,7 @@ describe('project configuration', () => {
       'icon-192x192.png',
       'src/styles/app.css',
       'src/recovery.js',
+      'src/utilities.js',
       'src/main.js',
       'src/input-preset.js',
     ];
@@ -44,7 +45,7 @@ describe('project configuration', () => {
 
   it('pre-caches the extracted application scripts', () => {
     const serviceWorker = fs.readFileSync(path.join(projectRoot, 'sw.js'), 'utf8');
-    const scripts = ['recovery.js', 'main.js', 'input-preset.js'];
+    const scripts = ['recovery.js', 'utilities.js', 'main.js', 'input-preset.js'];
 
     for (const filename of scripts) {
       expect(serviceWorker).toContain(`'./src/${filename}'`);

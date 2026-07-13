@@ -9,6 +9,7 @@ const staticFiles = [
   'marked.js',
   'icon-192x192.png',
   'src/recovery.js',
+  'src/utilities.js',
   'src/main.js',
   'src/input-preset.js',
 ] as const;

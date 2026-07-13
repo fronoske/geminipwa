@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const generatedDirectory = path.join(projectRoot, 'dist/generated-scripts');
-const scripts = ['recovery.js', 'main.js', 'input-preset.js'];
+const scripts = ['recovery.js', 'utilities.js', 'main.js', 'input-preset.js'];
 const failures = [];
 
 for (const filename of scripts) {
