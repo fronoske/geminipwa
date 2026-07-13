@@ -5,6 +5,9 @@ const urlsToCache = [
   './', // ルートパス (index.html を指すことが多い)
   './index.html',
   './src/styles/app.css',
+  './src/recovery.js',
+  './src/main.js',
+  './src/input-preset.js',
   './manifest.json',
   './marked.js',
   // アイコンファイルもキャッシュする場合 (manifest.json で指定したもの)

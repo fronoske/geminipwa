@@ -13,6 +13,9 @@ describe('project configuration', () => {
       'marked.js',
       'icon-192x192.png',
       'src/styles/app.css',
+      'src/recovery.js',
+      'src/main.js',
+      'src/input-preset.js',
     ];
 
     for (const filename of requiredFiles) {
@@ -27,15 +30,24 @@ describe('project configuration', () => {
   });
 
   it('preserves the IndexedDB identity during the build migration', () => {
-    const html = fs.readFileSync(path.join(projectRoot, 'index.html'), 'utf8');
+    const mainScript = fs.readFileSync(path.join(projectRoot, 'src/main.js'), 'utf8');
 
-    expect(html).toContain("const DB_NAME = 'GeminiPWA_DB'");
-    expect(html).toContain('const DB_VERSION = 8');
+    expect(mainScript).toContain("const DB_NAME = 'GeminiPWA_DB'");
+    expect(mainScript).toContain('const DB_VERSION = 8');
   });
 
   it('pre-caches the extracted stylesheet', () => {
     const serviceWorker = fs.readFileSync(path.join(projectRoot, 'sw.js'), 'utf8');
 
     expect(serviceWorker).toContain("'./src/styles/app.css'");
+  });
+
+  it('pre-caches the extracted application scripts', () => {
+    const serviceWorker = fs.readFileSync(path.join(projectRoot, 'sw.js'), 'utf8');
+    const scripts = ['recovery.js', 'main.js', 'input-preset.js'];
+
+    for (const filename of scripts) {
+      expect(serviceWorker).toContain(`'./src/${filename}'`);
+    }
   });
 });

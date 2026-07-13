@@ -3,7 +3,15 @@ import { resolve } from 'node:path';
 import { defineConfig, type Plugin } from 'vite';
 
 const projectRoot = __dirname;
-const staticFiles = ['manifest.json', 'sw.js', 'marked.js', 'icon-192x192.png'] as const;
+const staticFiles = [
+  'manifest.json',
+  'sw.js',
+  'marked.js',
+  'icon-192x192.png',
+  'src/recovery.js',
+  'src/main.js',
+  'src/input-preset.js',
+] as const;
 
 function copyPwaStaticFiles(): Plugin {
   return {
@@ -28,7 +36,9 @@ function copyPwaStaticFiles(): Plugin {
       mkdirSync(outputDirectory, { recursive: true });
 
       for (const filename of staticFiles) {
-        copyFileSync(resolve(projectRoot, filename), resolve(outputDirectory, filename));
+        const destination = resolve(outputDirectory, filename);
+        mkdirSync(resolve(destination, '..'), { recursive: true });
+        copyFileSync(resolve(projectRoot, filename), destination);
       }
 
       const indexPath = resolve(outputDirectory, 'index.html');
