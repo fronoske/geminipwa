@@ -59,6 +59,24 @@ describe('project configuration', () => {
     );
   });
 
+  it('preserves multiple API key management as a protected core feature', () => {
+    expect(runtimeManifest.application).toContain('api-key-manager');
+    expect(readFile('src/api-key-manager.ts')).toContain('const multiApiKeyUtils = {');
+    expect(readFile('src/app-state.ts')).toContain('geminiApiKeys: []');
+    expect(readFile('src/index.html')).toContain('id="show-multi-api-keys-toggle"');
+    expect(readFile('docs/product-decisions.md')).toContain('Multiple API key management');
+  });
+
+  it('preserves input presets as a protected core feature', () => {
+    expect(runtimeManifest.application).toContain('input-preset');
+    expect(readFile('src/index.html')).toContain('id="input-preset-popup"');
+    const presetSource = readFile('src/input-preset.ts');
+    expect(presetSource).toContain("label: '続'");
+    expect(presetSource).toContain("label: '展'");
+    expect(presetSource).toContain('autoSend: true');
+    expect(readFile('docs/product-decisions.md')).toContain('Input presets');
+  });
+
   it('uses a relative manifest start URL suitable for GitHub Pages', () => {
     expect(JSON.parse(readFile('manifest.json')).start_url).toBe('./index.html');
   });

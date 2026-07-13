@@ -3,6 +3,7 @@
 -  自前のAPIキーを用いてChat AIとやりとりを行うためのアプリ
 ## コンセプト
 -  自非常に優れたAI Chatアプリである本家Gemini PWAを、今後の情勢変化（ご周知の通り、Chat AI界隈のモデルのパワーバランス変化は非常に速いので）が起きた場合でも持続的に使用できるよう押さえておきたい、という完全に個人的な目的（研究的な意図もあります）の元、対応APIを増やしたり等しています。
+-  削除してはならない中核機能は [Product decisions](docs/product-decisions.md) に記録しています。
 ## ■ 利用方法（PWA）
 -  当PWAはブラウザから以下のURLにて利用可能です：
 https://titan823.github.io/geminipwa/#chat
