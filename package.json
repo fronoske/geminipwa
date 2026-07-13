@@ -6,10 +6,12 @@
   "scripts": {
     "baseline": "node scripts/check-baseline.mjs",
     "dev": "vite",
+    "generate:scripts": "tsc -p tsconfig.runtime.json",
+    "check:generated": "tsc -p tsconfig.runtime.json --outDir dist/generated-scripts && node scripts/check-generated-scripts.mjs",
     "build": "npm run baseline && vite build",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "verify": "npm run baseline && npm run typecheck && npm test && npm run build && node scripts/check-dist.mjs"
+    "verify": "npm run baseline && npm run typecheck && npm run check:generated && npm test && npm run build && node scripts/check-dist.mjs"
   },
   "devDependencies": {
     "@types/node": "latest",

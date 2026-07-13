@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "allowImportingTsExtensions": false,
+    "isolatedModules": false,
+    "rootDir": "src",
+    "noEmit": false
+  },
+  "include": ["src/recovery.ts", "src/input-preset.ts"]
+}
