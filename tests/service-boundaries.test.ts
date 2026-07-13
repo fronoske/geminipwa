@@ -15,6 +15,8 @@ const serviceBoundaries = [
   ['error-recovery', 'errorRecovery'],
   ['api-key-manager', 'multiApiKeyUtils'],
   ['twin-engine-config', 'twinEngineApiConfigUtils'],
+  ['ui-controller', 'uiUtils'],
+  ['app-controller', 'appLogic'],
 ] as const;
 
 describe('application service boundaries', () => {
@@ -31,5 +33,14 @@ describe('application service boundaries', () => {
     new vm.Script(readFile(`src/${filename}.js`)).runInContext(context);
 
     expect(new vm.Script(`typeof ${globalName}`).runInContext(context)).toBe('object');
+  });
+
+  it('keeps the main entry focused on application startup', () => {
+    const mainSource = readFile('src/main.ts');
+
+    expect(mainSource.split('\n').length).toBeLessThan(20);
+    expect(mainSource).toContain('errorRecovery.init()');
+    expect(mainSource).toContain('window.errorRecovery = errorRecovery');
+    expect(mainSource).toContain('appLogic.initializeApp()');
   });
 });

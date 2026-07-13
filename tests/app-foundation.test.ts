@@ -14,6 +14,10 @@ describe('application foundation scripts', () => {
       'src/app-config.js',
       'src/dom-elements.js',
       'src/app-state.js',
+      'src/aggregator-security.js',
+      'src/layout-runtime.js',
+      'src/service-worker-registration.js',
+      'src/text-normalization.js',
       'src/database.js',
       'src/utilities.js',
       'src/webhook-manager.js',
@@ -23,6 +27,8 @@ describe('application foundation scripts', () => {
       'src/error-recovery.js',
       'src/api-key-manager.js',
       'src/twin-engine-config.js',
+      'src/ui-controller.js',
+      'src/app-controller.js',
       'src/main.js',
     ];
     const positions = orderedScripts.map((filename) => html.indexOf(filename));

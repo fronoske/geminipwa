@@ -16,6 +16,10 @@ const requiredFiles = [
   'src/app-config.js',
   'src/dom-elements.js',
   'src/app-state.js',
+  'src/aggregator-security.js',
+  'src/layout-runtime.js',
+  'src/service-worker-registration.js',
+  'src/text-normalization.js',
   'src/database.js',
   'src/utilities.js',
   'src/webhook-manager.js',
@@ -25,6 +29,8 @@ const requiredFiles = [
   'src/error-recovery.js',
   'src/api-key-manager.js',
   'src/twin-engine-config.js',
+  'src/ui-controller.js',
+  'src/app-controller.js',
   'src/main.js',
   'src/input-preset.js',
 ];
@@ -57,6 +63,10 @@ if (failures.length === 0) {
     'src/app-config.js',
     'src/dom-elements.js',
     'src/app-state.js',
+    'src/aggregator-security.js',
+    'src/layout-runtime.js',
+    'src/service-worker-registration.js',
+    'src/text-normalization.js',
     'src/database.js',
     'src/utilities.js',
     'src/webhook-manager.js',
@@ -66,6 +76,8 @@ if (failures.length === 0) {
     'src/error-recovery.js',
     'src/api-key-manager.js',
     'src/twin-engine-config.js',
+    'src/ui-controller.js',
+    'src/app-controller.js',
     'src/main.js',
     'src/input-preset.js',
   ];
@@ -73,9 +85,14 @@ if (failures.length === 0) {
     if (!html.includes(reference)) failures.push(`dist/index.htmlに参照がありません: ${reference}`);
   }
 
-  const mainScript = fs.readFileSync(path.join(distDirectory, 'src/main.js'), 'utf8');
-  if (!mainScript.includes('./sw.js')) {
-    failures.push('dist/src/main.jsにService Worker登録先の参照がありません: ./sw.js');
+  const serviceWorkerRegistration = fs.readFileSync(
+    path.join(distDirectory, 'src/service-worker-registration.js'),
+    'utf8',
+  );
+  if (!serviceWorkerRegistration.includes('./sw.js')) {
+    failures.push(
+      'dist/src/service-worker-registration.jsにService Worker登録先の参照がありません: ./sw.js',
+    );
   }
 
   for (const filename of requiredFiles.filter((filename) => filename.endsWith('.js'))) {
