@@ -307,7 +307,9 @@ Object.assign(appLogic, {
             },
             updateMessageNavigationPosition() {
                 const footerHeight = elements.chatInputArea?.offsetHeight || 60;
-                elements.messageNavigationControls.style.bottom = `${footerHeight + 12}px`;
+                const bottom = `${footerHeight + 12}px`;
+                elements.messageNavigationControls.style.bottom = bottom;
+                elements.loadingIndicator.style.bottom = bottom;
             },
             handleMessageNavigationScroll() {
                 if (state.settings.messageNavigationButtonMode !== 'scroll') return;
@@ -322,18 +324,18 @@ Object.assign(appLogic, {
                 const scrollContainer = elements.chatScreen.querySelector('.main-content');
                 elements.messageNavigationUpBtn.disabled = !scrollContainer || scrollContainer.scrollTop <= 2;
             },
-            findAdjacentMessageEnd(messageEnds, viewportEnd, direction, tolerance = 24) {
+            findAdjacentInputEnd(inputEnds, viewportEnd, direction, tolerance = 24) {
                 if (direction === 'up') {
-                    return [...messageEnds].reverse().find(end => end < viewportEnd - tolerance) ?? null;
+                    return [...inputEnds].reverse().find(end => end < viewportEnd - tolerance) ?? null;
                 }
-                return messageEnds.find(end => end > viewportEnd + tolerance) ?? null;
+                return inputEnds.find(end => end > viewportEnd + tolerance) ?? null;
             },
-            scrollToAdjacentMessageEnd(direction) {
+            scrollToAdjacentInputEnd(direction) {
                 const scrollContainer = elements.chatScreen.querySelector('.main-content');
                 if (!scrollContainer) return;
 
                 const containerRect = scrollContainer.getBoundingClientRect();
-                const messageEnds = Array.from(elements.messageContainer.querySelectorAll('.message[data-index]'))
+                const inputEnds = Array.from(elements.messageContainer.querySelectorAll('.message.user[data-index]'))
                     .filter(message => !message.classList.contains('message-hidden-by-toggle'))
                     .map(message => {
                         const rect = message.getBoundingClientRect();
@@ -341,7 +343,7 @@ Object.assign(appLogic, {
                     })
                     .filter((end, index, ends) => Number.isFinite(end) && (index === 0 || Math.abs(end - ends[index - 1]) > 1));
                 const viewportEnd = scrollContainer.scrollTop + scrollContainer.clientHeight;
-                const targetEnd = this.findAdjacentMessageEnd(messageEnds, viewportEnd, direction);
+                const targetEnd = this.findAdjacentInputEnd(inputEnds, viewportEnd, direction);
                 if (targetEnd === null) {
                     if (direction === 'up' && scrollContainer.scrollTop > 2) {
                         const behavior = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';

@@ -1226,7 +1226,7 @@
             padding: 0;
             border: 1px solid rgba(255, 255, 255, 0.35);
             border-radius: 50%;
-            background: rgba(var(--bg-button-rgb), 0.64);
+            background: var(--bg-button-action);
             color: var(--text-light);
             box-shadow: 0 4px 12px var(--shadow-secondary);
             font-size: 24px;
@@ -1238,7 +1238,7 @@
 
         .message-navigation-controls button:hover:not(:disabled),
         .message-navigation-controls button:focus-visible {
-            background: rgba(var(--bg-button-rgb), 0.82);
+            background: var(--bg-button-action-hover);
             outline: 2px solid var(--text-light);
             outline-offset: 2px;
         }
@@ -2105,9 +2105,9 @@
         }
 
         #loading-indicator {
-            position: fixed;
-            bottom: 65px;
-            right: 20px;
+            position: absolute;
+            bottom: 72px;
+            right: 14px;
             background-color: var(--bg-tertiary);
             color: var(--text-secondary);
             padding: 6px 12px;

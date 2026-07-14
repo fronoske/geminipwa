@@ -1236,7 +1236,7 @@
             padding: 0;
             border: 1px solid rgba(255, 255, 255, 0.35);
             border-radius: 50%;
-            background: rgba(var(--bg-button-rgb), 0.64);
+            background: var(--bg-button-action);
             color: var(--text-light);
             box-shadow: 0 4px 12px var(--shadow-secondary);
             font-size: 24px;
@@ -1248,7 +1248,7 @@
 
         .message-navigation-controls button:hover:not(:disabled),
         .message-navigation-controls button:focus-visible {
-            background: rgba(var(--bg-button-rgb), 0.82);
+            background: var(--bg-button-action-hover);
             outline: 2px solid var(--text-light);
             outline-offset: 2px;
         }
@@ -2115,9 +2115,9 @@
         }
 
         #loading-indicator {
-            position: fixed;
-            bottom: 65px;
-            right: 20px;
+            position: absolute;
+            bottom: 72px;
+            right: 14px;
             background-color: var(--bg-tertiary);
             color: var(--text-secondary);
             padding: 6px 12px;
@@ -4296,13 +4296,13 @@ font-size: 1.142em !important;
             <main class="main-content">
                 <div id="message-container" class="message-container">
                 </div>
-                <div id="loading-indicator" class="loading-indicator hidden" aria-live="polite">応答中</div>
             </main>
+            <div id="loading-indicator" class="loading-indicator hidden" aria-live="polite">応答中</div>
             <div id="message-navigation-controls" class="message-navigation-controls" aria-hidden="true">
-                <button id="message-navigation-up-btn" type="button" aria-label="前の入力・出力の末尾へ"
-                    title="前の入力・出力の末尾へ">↑</button>
-                <button id="message-navigation-down-btn" type="button" aria-label="次の入力・出力の末尾へ"
-                    title="次の入力・出力の末尾へ">↓</button>
+                <button id="message-navigation-up-btn" type="button" aria-label="前の入力項目の末尾へ"
+                    title="前の入力項目の末尾へ">↑</button>
+                <button id="message-navigation-down-btn" type="button" aria-label="次の入力項目の末尾へ"
+                    title="次の入力項目の末尾へ">↓</button>
             </div>
             <footer class="chat-input-area">
                 <div id="footer-secondary-actions" class="secondary-input-actions hidden">
@@ -5919,17 +5919,17 @@ font-size: 1.142em !important;
                                         </div>
                                     </details>
 
-                                    <!-- 入力・出力移動ボタン -->
+                                    <!-- 入力項目移動ボタン -->
                                     <details open id="settings-group-factor-message-navigation-buttons">
                                         <summary
                                             style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
-                                            入力・出力移動ボタン</summary>
+                                            入力項目移動ボタン</summary>
                                         <div
                                             style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
                                             <label for="message-navigation-button-mode">
                                                 フローティングボタンの表示:
                                             </label>
-                                            <select id="message-navigation-button-mode" aria-label="入力・出力移動ボタンの表示方法">
+                                            <select id="message-navigation-button-mode" aria-label="入力項目移動ボタンの表示方法">
                                                 <option value="always">常に表示</option>
                                                 <option value="hidden">非表示</option>
                                                 <option value="scroll">スクロール時のみ表示</option>
@@ -6454,7 +6454,7 @@ const LIGHT_MODE_MODEL_MESSAGE_COLOR = '#e5e5ea';
 const LIGHT_MODE_SECONDARY_COLOR = '#f0f2f5';
 const LIGHT_MODE_HEADER_COLOR = '#4a90e2';
 const LIGHT_MODE_PRIMARY_COLOR = '#ffffff';
-const APP_VERSION = "2026.07.13-fronoske";
+const APP_VERSION = "2026.07.15-fronoske";
 const SWIPE_THRESHOLD = 50;
 const ZOOM_THRESHOLD = 1.01;
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -12368,8 +12368,8 @@ Object.assign(appLogic, {
         elements.pasteClipboardStackBtn.addEventListener('click', () => this.pasteIntoClipboardStack());
         elements.scrollToTopBtn.addEventListener('click', () => this.scrollToTop());
         elements.scrollToBottomBtn.addEventListener('click', () => this.scrollToBottom());
-        elements.messageNavigationUpBtn.addEventListener('click', () => this.scrollToAdjacentMessageEnd('up'));
-        elements.messageNavigationDownBtn.addEventListener('click', () => this.scrollToAdjacentMessageEnd('down'));
+        elements.messageNavigationUpBtn.addEventListener('click', () => this.scrollToAdjacentInputEnd('up'));
+        elements.messageNavigationDownBtn.addEventListener('click', () => this.scrollToAdjacentInputEnd('down'));
         elements.chatScreen.querySelector('.main-content').addEventListener('scroll', () => {
             this.updateMessageNavigationButtonStates();
             this.handleMessageNavigationScroll();
@@ -13428,7 +13428,9 @@ Object.assign(appLogic, {
     },
     updateMessageNavigationPosition() {
         const footerHeight = elements.chatInputArea?.offsetHeight || 60;
-        elements.messageNavigationControls.style.bottom = `${footerHeight + 12}px`;
+        const bottom = `${footerHeight + 12}px`;
+        elements.messageNavigationControls.style.bottom = bottom;
+        elements.loadingIndicator.style.bottom = bottom;
     },
     handleMessageNavigationScroll() {
         if (state.settings.messageNavigationButtonMode !== 'scroll')
@@ -13444,18 +13446,18 @@ Object.assign(appLogic, {
         const scrollContainer = elements.chatScreen.querySelector('.main-content');
         elements.messageNavigationUpBtn.disabled = !scrollContainer || scrollContainer.scrollTop <= 2;
     },
-    findAdjacentMessageEnd(messageEnds, viewportEnd, direction, tolerance = 24) {
+    findAdjacentInputEnd(inputEnds, viewportEnd, direction, tolerance = 24) {
         if (direction === 'up') {
-            return [...messageEnds].reverse().find(end => end < viewportEnd - tolerance) ?? null;
+            return [...inputEnds].reverse().find(end => end < viewportEnd - tolerance) ?? null;
         }
-        return messageEnds.find(end => end > viewportEnd + tolerance) ?? null;
+        return inputEnds.find(end => end > viewportEnd + tolerance) ?? null;
     },
-    scrollToAdjacentMessageEnd(direction) {
+    scrollToAdjacentInputEnd(direction) {
         const scrollContainer = elements.chatScreen.querySelector('.main-content');
         if (!scrollContainer)
             return;
         const containerRect = scrollContainer.getBoundingClientRect();
-        const messageEnds = Array.from(elements.messageContainer.querySelectorAll('.message[data-index]'))
+        const inputEnds = Array.from(elements.messageContainer.querySelectorAll('.message.user[data-index]'))
             .filter(message => !message.classList.contains('message-hidden-by-toggle'))
             .map(message => {
             const rect = message.getBoundingClientRect();
@@ -13463,7 +13465,7 @@ Object.assign(appLogic, {
         })
             .filter((end, index, ends) => Number.isFinite(end) && (index === 0 || Math.abs(end - ends[index - 1]) > 1));
         const viewportEnd = scrollContainer.scrollTop + scrollContainer.clientHeight;
-        const targetEnd = this.findAdjacentMessageEnd(messageEnds, viewportEnd, direction);
+        const targetEnd = this.findAdjacentInputEnd(inputEnds, viewportEnd, direction);
         if (targetEnd === null) {
             if (direction === 'up' && scrollContainer.scrollTop > 2) {
                 const behavior = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';

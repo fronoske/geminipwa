@@ -14,31 +14,31 @@ const createNavigationContext = () => {
 };
 
 describe('message navigation', () => {
-  it('finds the previous message end above the viewport end', () => {
+  it('finds the previous input end above the viewport end', () => {
     const context = createNavigationContext();
     const target = new vm.Script(
-      "appLogic.findAdjacentMessageEnd([100, 240, 380], 392, 'up')",
+      "appLogic.findAdjacentInputEnd([100, 240, 380], 392, 'up')",
     ).runInContext(context);
 
     expect(target).toBe(240);
   });
 
-  it('finds the next message end below the viewport end', () => {
+  it('finds the next input end below the viewport end', () => {
     const context = createNavigationContext();
     const target = new vm.Script(
-      "appLogic.findAdjacentMessageEnd([100, 240, 380], 228, 'down')",
+      "appLogic.findAdjacentInputEnd([100, 240, 380], 228, 'down')",
     ).runInContext(context);
 
     expect(target).toBe(380);
   });
 
-  it('returns null when no adjacent message exists', () => {
+  it('returns null when no adjacent input exists', () => {
     const context = createNavigationContext();
     expect(
-      new vm.Script("appLogic.findAdjacentMessageEnd([100, 240], 270, 'down')").runInContext(context),
+      new vm.Script("appLogic.findAdjacentInputEnd([100, 240], 270, 'down')").runInContext(context),
     ).toBeNull();
     expect(
-      new vm.Script("appLogic.findAdjacentMessageEnd([100, 240], 90, 'up')").runInContext(context),
+      new vm.Script("appLogic.findAdjacentInputEnd([100, 240], 90, 'up')").runInContext(context),
     ).toBeNull();
   });
 });

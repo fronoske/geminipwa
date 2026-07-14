@@ -117,9 +117,14 @@ describe('project configuration', () => {
     expect(html).toContain('<option value="scroll">スクロール時のみ表示</option>');
     expect(readFile('src/app-state.ts')).toContain("messageNavigationButtonMode: 'scroll'");
     const navigation = readFile('src/app-navigation-panels.ts');
+    expect(navigation).toContain("querySelectorAll('.message.user[data-index]')");
     expect(navigation).toContain("direction === 'up' && scrollContainer.scrollTop > 2");
     expect(navigation).toContain("scrollContainer.scrollTo({ top: 0, behavior })");
     expect(navigation).toContain('messageNavigationUpBtn.disabled');
+    expect(navigation).toContain('elements.loadingIndicator.style.bottom = bottom');
+    const styles = readFile('src/styles/app.css');
+    expect(styles).toMatch(/\.message-navigation-controls button \{[\s\S]*?background: var\(--bg-button-action\);/);
+    expect(styles).toMatch(/#loading-indicator \{[\s\S]*?position: absolute;/);
   });
 
   it('uses a two-line input with stacked attach and send actions', () => {
@@ -266,7 +271,7 @@ describe('project configuration', () => {
   });
 
   it('uses the current release date as the application version', () => {
-    expect(readFile('src/app-config.ts')).toContain('const APP_VERSION = "2026.07.13-fronoske"');
+    expect(readFile('src/app-config.ts')).toContain('const APP_VERSION = "2026.07.15-fronoske"');
   });
 
   it('pre-caches only public runtime files', () => {

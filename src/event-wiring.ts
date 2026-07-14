@@ -18,8 +18,8 @@ Object.assign(appLogic, {
 
                 elements.scrollToTopBtn.addEventListener('click', () => this.scrollToTop());
                 elements.scrollToBottomBtn.addEventListener('click', () => this.scrollToBottom());
-                elements.messageNavigationUpBtn.addEventListener('click', () => this.scrollToAdjacentMessageEnd('up'));
-                elements.messageNavigationDownBtn.addEventListener('click', () => this.scrollToAdjacentMessageEnd('down'));
+                elements.messageNavigationUpBtn.addEventListener('click', () => this.scrollToAdjacentInputEnd('up'));
+                elements.messageNavigationDownBtn.addEventListener('click', () => this.scrollToAdjacentInputEnd('down'));
                 elements.chatScreen.querySelector('.main-content').addEventListener('scroll', () => {
                     this.updateMessageNavigationButtonStates();
                     this.handleMessageNavigationScroll();
