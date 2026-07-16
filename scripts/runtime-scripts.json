@@ -15,6 +15,7 @@
     "backend-manager",
     "error-recovery",
     "api-key-manager",
+    "openrouter-model-catalog",
     "ui-controller",
     "ui-message-rendering",
     "ui-message-tools",

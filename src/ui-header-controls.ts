@@ -223,32 +223,47 @@ Object.assign(uiUtils, {
                 }
             },
             updateOpenRouterUserModelOptions() {
-                const group = elements.openrouterUserDefinedModelsGroup;
-                group.innerHTML = '';
-                const models = (state.settings.openrouterAdditionalModels || '')
+                const selectedGroup = elements.openrouterSelectedModelsGroup;
+                const manualGroup = elements.openrouterUserDefinedModelsGroup;
+                const currentModelId = elements.openrouterModelNameSelect.value
+                    || state.settings.openrouterModelName
+                    || DEFAULT_OPENROUTER_MODEL;
+                selectedGroup.innerHTML = '';
+                manualGroup.innerHTML = '';
+                const selectedModels = Array.isArray(state.settings.openrouterSelectedModels)
+                    ? [...new Set(state.settings.openrouterSelectedModels.filter(Boolean))]
+                    : [];
+                const manualModels = (state.settings.openrouterAdditionalModels || '')
                     .split(',')
                     .map(model => model.trim())
                     .filter(Boolean);
 
-                models.forEach(modelId => {
+                selectedModels.forEach(modelId => {
+                    const option = document.createElement('option');
+                    option.value = modelId;
+                    option.textContent = typeof openRouterModelCatalog !== 'undefined'
+                        ? openRouterModelCatalog.getDisplayLabel(modelId)
+                        : modelId;
+                    selectedGroup.appendChild(option);
+                });
+                const selectedIds = new Set(selectedModels);
+                manualModels.filter((modelId) => !selectedIds.has(modelId)).forEach(modelId => {
                     const option = document.createElement('option');
                     option.value = modelId;
                     option.textContent = modelId;
-                    group.appendChild(option);
+                    manualGroup.appendChild(option);
                 });
-                if (state.settings.openrouterModelName
-                    && !Array.from(elements.openrouterModelNameSelect.options)
-                        .some(option => option.value === state.settings.openrouterModelName)) {
-                    const option = document.createElement('option');
-                    option.value = state.settings.openrouterModelName;
-                    option.textContent = state.settings.openrouterModelName;
-                    group.appendChild(option);
+                selectedGroup.disabled = selectedGroup.children.length === 0;
+                manualGroup.disabled = manualGroup.children.length === 0;
+                const availableOptions = Array.from(elements.openrouterModelNameSelect.options);
+                const nextModelId = availableOptions.some(option => option.value === currentModelId)
+                    ? currentModelId
+                    : (availableOptions[0]?.value || '');
+                elements.openrouterModelNameSelect.value = nextModelId;
+                state.settings.openrouterModelName = nextModelId;
+                if (elements.openrouterSelectedModelCount) {
+                    elements.openrouterSelectedModelCount.textContent = String(selectedModels.length);
                 }
-                group.disabled = group.children.length === 0;
-                elements.openrouterModelNameSelect.value = Array.from(elements.openrouterModelNameSelect.options)
-                    .some(option => option.value === state.settings.openrouterModelName)
-                    ? state.settings.openrouterModelName
-                    : DEFAULT_OPENROUTER_MODEL;
             },
             updateXaiUserModelOptions() {
                 const group = elements.xaiUserDefinedModelsGroup;

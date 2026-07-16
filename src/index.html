@@ -454,6 +454,11 @@
                     <div style="margin-top:15px;">
                         <label for="openrouter-api-key">OpenRouter APIキー:</label>
                         <input type="password" id="openrouter-api-key" placeholder="sk-or-..." aria-label="OpenRouter APIキー">
+                        <p style="font-size: 11px; margin-top: -5px; margin-bottom: 10px;">
+                            <a href="https://openrouter.ai/settings/credits" target="_blank" rel="noopener noreferrer">
+                                OpenRouterのクレジットをブラウザで確認 ↗
+                            </a>
+                        </p>
                         <details id="openrouter-multi-api-keys-section" class="hidden" style="margin-top: 10px;">
                             <summary
                                 style="font-size: 14px; color: var(--text-link); padding-bottom: 5px; margin-bottom: 10px; display: list-item; list-style: revert; cursor: pointer; font-weight: normal;">
@@ -482,24 +487,71 @@
                         </details>
                         <label for="openrouter-model-name">モデル名:</label>
                         <select id="openrouter-model-name" aria-label="OpenRouter モデル名">
-                            <optgroup label="OpenRouter">
-                                <option value="openrouter/auto">openrouter/auto</option>
-                                <option value="google/gemma-4-31b-it:free">google/gemma-4-31b-it:free</option>
-                                <option value="google/gemini-3.1-pro-preview">google/gemini-3.1-pro-preview</option>
-                                <option value="google/gemini-2.5-pro">google/gemini-2.5-pro</option>
-                                <option value="anthropic/claude-sonnet-5">anthropic/claude-sonnet-5</option>
-                                <option value="z-ai/glm-5.2">z-ai/glm-5.2</option>
-                                <option value="deepseek/deepseek-v4-pro">deepseek/deepseek-v4-pro</option>
-                            </optgroup>
-                            <optgroup label="ユーザー指定" id="openrouter-user-defined-models-group"></optgroup>
+                            <optgroup label="選択したモデル" id="openrouter-selected-models-group"></optgroup>
+                            <optgroup label="手動追加" id="openrouter-user-defined-models-group"></optgroup>
                         </select>
                         <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
                             ※ <code>:free</code>モデルはOpenRouter側の利用回数・混雑制限があります。429の場合は時間を置くか、別のモデルを選択してください。
                         </p>
-                        <details style="margin-top: 10px;">
-                            <summary style="font-size: 14px; color: var(--text-link); cursor: pointer; list-style: revert;">追加モデル (カンマ区切り)</summary>
-                            <textarea id="openrouter-additional-models" placeholder="例: openai/gpt-5.2,anthropic/claude-sonnet-4"
-                                aria-label="OpenRouter 追加モデル" style="margin-top: 5px;"></textarea>
+                        <details id="openrouter-model-manager" style="margin-top: 10px;">
+                            <summary style="font-size: 14px; color: var(--text-link); cursor: pointer; list-style: revert;">
+                                モデル一覧を管理（<span id="openrouter-selected-model-count">0</span>件選択）
+                            </summary>
+                            <div class="openrouter-model-manager-content">
+                                <button type="button" id="fetch-openrouter-models-btn" class="settings-action-button">
+                                    最新のモデル一覧を取得
+                                </button>
+                                <p id="openrouter-model-fetch-status" class="openrouter-model-fetch-status" role="status" aria-live="polite">
+                                    一覧はまだ取得されていません。
+                                </p>
+                                <div id="openrouter-model-catalog-controls" class="hidden">
+                                    <fieldset class="openrouter-model-provider-filter">
+                                        <legend>提供元:</legend>
+                                        <div id="openrouter-model-provider-options" class="openrouter-model-provider-options"></div>
+                                        <div class="openrouter-model-provider-actions">
+                                            <button type="button" id="select-all-openrouter-providers-btn">全選択</button>
+                                            <button type="button" id="clear-all-openrouter-providers-btn">全解除</button>
+                                        </div>
+                                    </fieldset>
+                                    <div class="openrouter-model-filter-grid">
+                                        <div>
+                                            <label for="openrouter-model-price-filter">料金:</label>
+                                            <select id="openrouter-model-price-filter">
+                                                <option value="all">すべて</option>
+                                                <option value="free">無料</option>
+                                                <option value="paid">有料</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label for="openrouter-model-context-filter">コンテキスト長:</label>
+                                            <select id="openrouter-model-context-filter">
+                                                <option value="0">指定なし</option>
+                                                <option value="32000">32K以上</option>
+                                                <option value="128000">128K以上</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="openrouter-model-capability-filters">
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" id="openrouter-model-vision-filter"> 画像入力対応
+                                        </label>
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" id="openrouter-model-reasoning-filter"> Reasoning対応
+                                        </label>
+                                    </div>
+                                    <div class="openrouter-model-bulk-actions">
+                                        <button type="button" id="select-visible-openrouter-models-btn">表示中を選択</button>
+                                        <button type="button" id="clear-visible-openrouter-models-btn">表示中を解除</button>
+                                    </div>
+                                    <div id="openrouter-model-catalog-list" class="openrouter-model-catalog-list"></div>
+                                    <p id="openrouter-model-catalog-empty" class="hidden openrouter-model-catalog-empty">
+                                        条件に一致するモデルはありません。
+                                    </p>
+                                </div>
+                                <label for="openrouter-additional-models">手動追加モデル（カンマ区切り）:</label>
+                                <textarea id="openrouter-additional-models" placeholder="例: openai/gpt-5.2,anthropic/claude-sonnet-4"
+                                    aria-label="OpenRouter 追加モデル"></textarea>
+                            </div>
                         </details>
                     </div>
                 </details>

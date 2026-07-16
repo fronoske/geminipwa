@@ -2504,6 +2504,145 @@
             resize: vertical;
         }
 
+        .openrouter-model-manager-content {
+            padding-left: 15px;
+            margin-top: 10px;
+        }
+
+        #fetch-openrouter-models-btn {
+            width: auto;
+            margin-bottom: 6px;
+        }
+
+        .openrouter-model-fetch-status,
+        .openrouter-model-catalog-empty {
+            margin: 0 0 12px;
+            color: var(--text-secondary);
+            font-size: 0.85em;
+        }
+
+        .openrouter-model-filter-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .openrouter-model-provider-filter {
+            margin: 0 0 10px;
+            padding: 8px;
+            border: 1px solid var(--border-tertiary);
+            border-radius: 5px;
+        }
+
+        .openrouter-model-provider-filter legend {
+            padding: 0 4px;
+            color: var(--text-primary);
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        .openrouter-model-provider-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 12px;
+        }
+
+        .openrouter-model-provider-option {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            width: auto;
+            margin: 0;
+            font-weight: normal;
+        }
+
+        .openrouter-model-provider-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .openrouter-model-provider-actions button {
+            width: auto;
+            padding: 4px 8px;
+            font-size: 0.8em;
+        }
+
+        .openrouter-model-capability-filters,
+        .openrouter-model-bulk-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .openrouter-model-capability-filters .checkbox-label {
+            width: auto;
+            margin: 0;
+        }
+
+        .openrouter-model-bulk-actions button {
+            width: auto;
+            padding: 6px 10px;
+            font-size: 0.85em;
+        }
+
+        .openrouter-model-catalog-list {
+            max-height: 320px;
+            overflow-y: auto;
+            margin-bottom: 12px;
+            border: 1px solid var(--border-tertiary);
+            border-radius: 5px;
+            background-color: var(--bg-primary);
+        }
+
+        .openrouter-model-catalog-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin: 0;
+            padding: 9px;
+            border-bottom: 1px solid var(--border-tertiary);
+            cursor: pointer;
+        }
+
+        .openrouter-model-catalog-item:last-child {
+            border-bottom: none;
+        }
+
+        .openrouter-model-catalog-item:hover {
+            background-color: var(--bg-secondary);
+        }
+
+        .openrouter-model-catalog-item input {
+            flex: 0 0 auto;
+            margin-top: 3px;
+        }
+
+        .openrouter-model-catalog-item-text,
+        .openrouter-model-catalog-item-cost,
+        .openrouter-model-catalog-item-meta {
+            display: block;
+            min-width: 0;
+        }
+
+        .openrouter-model-catalog-item-text {
+            overflow-wrap: anywhere;
+        }
+
+        .openrouter-model-catalog-item-cost,
+        .openrouter-model-catalog-item-meta {
+            color: var(--text-secondary);
+            font-size: 0.78em;
+            font-weight: normal;
+        }
+
+        @media (max-width: 600px) {
+            .openrouter-model-filter-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         @media (prefers-color-scheme: dark) {
     body:not(.light-mode-forced):not(.pastel-pink-mode):not(.pastel-blue-mode):not(.pastel-yellow-mode):not(.pastel-purple-mode):not(.pastel-rainbow-mode) {
                 --bg-primary: #1a1a1a;

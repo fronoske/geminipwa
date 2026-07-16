@@ -235,6 +235,18 @@ const dbUtils = {
                             if (!['light', 'dark'].includes(state.settings.theme)) {
                                 state.settings.theme = 'light';
                             }
+                            if (!Array.isArray(state.settings.openrouterSelectedModels)) {
+                                state.settings.openrouterSelectedModels = [...DEFAULT_OPENROUTER_SELECTED_MODELS];
+                            } else {
+                                state.settings.openrouterSelectedModels = [...new Set(
+                                    state.settings.openrouterSelectedModels
+                                        .filter((modelId) => typeof modelId === 'string' && modelId.trim())
+                                        .map((modelId) => modelId.trim())
+                                )];
+                            }
+                            if (state.settings.openrouterModelName === 'openrouter/auto') {
+                                state.settings.openrouterModelName = DEFAULT_OPENROUTER_MODEL;
+                            }
                             if (state.settings.apiProviderCycle && typeof state.settings.apiProviderCycle === 'object') {
                                 state.settings.apiProviderCycle = {
                                     ...defaultSettings.apiProviderCycle,

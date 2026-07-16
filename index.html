@@ -2514,6 +2514,145 @@
             resize: vertical;
         }
 
+        .openrouter-model-manager-content {
+            padding-left: 15px;
+            margin-top: 10px;
+        }
+
+        #fetch-openrouter-models-btn {
+            width: auto;
+            margin-bottom: 6px;
+        }
+
+        .openrouter-model-fetch-status,
+        .openrouter-model-catalog-empty {
+            margin: 0 0 12px;
+            color: var(--text-secondary);
+            font-size: 0.85em;
+        }
+
+        .openrouter-model-filter-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .openrouter-model-provider-filter {
+            margin: 0 0 10px;
+            padding: 8px;
+            border: 1px solid var(--border-tertiary);
+            border-radius: 5px;
+        }
+
+        .openrouter-model-provider-filter legend {
+            padding: 0 4px;
+            color: var(--text-primary);
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        .openrouter-model-provider-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 12px;
+        }
+
+        .openrouter-model-provider-option {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            width: auto;
+            margin: 0;
+            font-weight: normal;
+        }
+
+        .openrouter-model-provider-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .openrouter-model-provider-actions button {
+            width: auto;
+            padding: 4px 8px;
+            font-size: 0.8em;
+        }
+
+        .openrouter-model-capability-filters,
+        .openrouter-model-bulk-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .openrouter-model-capability-filters .checkbox-label {
+            width: auto;
+            margin: 0;
+        }
+
+        .openrouter-model-bulk-actions button {
+            width: auto;
+            padding: 6px 10px;
+            font-size: 0.85em;
+        }
+
+        .openrouter-model-catalog-list {
+            max-height: 320px;
+            overflow-y: auto;
+            margin-bottom: 12px;
+            border: 1px solid var(--border-tertiary);
+            border-radius: 5px;
+            background-color: var(--bg-primary);
+        }
+
+        .openrouter-model-catalog-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin: 0;
+            padding: 9px;
+            border-bottom: 1px solid var(--border-tertiary);
+            cursor: pointer;
+        }
+
+        .openrouter-model-catalog-item:last-child {
+            border-bottom: none;
+        }
+
+        .openrouter-model-catalog-item:hover {
+            background-color: var(--bg-secondary);
+        }
+
+        .openrouter-model-catalog-item input {
+            flex: 0 0 auto;
+            margin-top: 3px;
+        }
+
+        .openrouter-model-catalog-item-text,
+        .openrouter-model-catalog-item-cost,
+        .openrouter-model-catalog-item-meta {
+            display: block;
+            min-width: 0;
+        }
+
+        .openrouter-model-catalog-item-text {
+            overflow-wrap: anywhere;
+        }
+
+        .openrouter-model-catalog-item-cost,
+        .openrouter-model-catalog-item-meta {
+            color: var(--text-secondary);
+            font-size: 0.78em;
+            font-weight: normal;
+        }
+
+        @media (max-width: 600px) {
+            .openrouter-model-filter-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         @media (prefers-color-scheme: dark) {
     body:not(.light-mode-forced):not(.pastel-pink-mode):not(.pastel-blue-mode):not(.pastel-yellow-mode):not(.pastel-purple-mode):not(.pastel-rainbow-mode) {
                 --bg-primary: #1a1a1a;
@@ -4684,6 +4823,11 @@ font-size: 1.142em !important;
                     <div style="margin-top:15px;">
                         <label for="openrouter-api-key">OpenRouter APIキー:</label>
                         <input type="password" id="openrouter-api-key" placeholder="sk-or-..." aria-label="OpenRouter APIキー">
+                        <p style="font-size: 11px; margin-top: -5px; margin-bottom: 10px;">
+                            <a href="https://openrouter.ai/settings/credits" target="_blank" rel="noopener noreferrer">
+                                OpenRouterのクレジットをブラウザで確認 ↗
+                            </a>
+                        </p>
                         <details id="openrouter-multi-api-keys-section" class="hidden" style="margin-top: 10px;">
                             <summary
                                 style="font-size: 14px; color: var(--text-link); padding-bottom: 5px; margin-bottom: 10px; display: list-item; list-style: revert; cursor: pointer; font-weight: normal;">
@@ -4712,24 +4856,71 @@ font-size: 1.142em !important;
                         </details>
                         <label for="openrouter-model-name">モデル名:</label>
                         <select id="openrouter-model-name" aria-label="OpenRouter モデル名">
-                            <optgroup label="OpenRouter">
-                                <option value="openrouter/auto">openrouter/auto</option>
-                                <option value="google/gemma-4-31b-it:free">google/gemma-4-31b-it:free</option>
-                                <option value="google/gemini-3.1-pro-preview">google/gemini-3.1-pro-preview</option>
-                                <option value="google/gemini-2.5-pro">google/gemini-2.5-pro</option>
-                                <option value="anthropic/claude-sonnet-5">anthropic/claude-sonnet-5</option>
-                                <option value="z-ai/glm-5.2">z-ai/glm-5.2</option>
-                                <option value="deepseek/deepseek-v4-pro">deepseek/deepseek-v4-pro</option>
-                            </optgroup>
-                            <optgroup label="ユーザー指定" id="openrouter-user-defined-models-group"></optgroup>
+                            <optgroup label="選択したモデル" id="openrouter-selected-models-group"></optgroup>
+                            <optgroup label="手動追加" id="openrouter-user-defined-models-group"></optgroup>
                         </select>
                         <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
                             ※ <code>:free</code>モデルはOpenRouter側の利用回数・混雑制限があります。429の場合は時間を置くか、別のモデルを選択してください。
                         </p>
-                        <details style="margin-top: 10px;">
-                            <summary style="font-size: 14px; color: var(--text-link); cursor: pointer; list-style: revert;">追加モデル (カンマ区切り)</summary>
-                            <textarea id="openrouter-additional-models" placeholder="例: openai/gpt-5.2,anthropic/claude-sonnet-4"
-                                aria-label="OpenRouter 追加モデル" style="margin-top: 5px;"></textarea>
+                        <details id="openrouter-model-manager" style="margin-top: 10px;">
+                            <summary style="font-size: 14px; color: var(--text-link); cursor: pointer; list-style: revert;">
+                                モデル一覧を管理（<span id="openrouter-selected-model-count">0</span>件選択）
+                            </summary>
+                            <div class="openrouter-model-manager-content">
+                                <button type="button" id="fetch-openrouter-models-btn" class="settings-action-button">
+                                    最新のモデル一覧を取得
+                                </button>
+                                <p id="openrouter-model-fetch-status" class="openrouter-model-fetch-status" role="status" aria-live="polite">
+                                    一覧はまだ取得されていません。
+                                </p>
+                                <div id="openrouter-model-catalog-controls" class="hidden">
+                                    <fieldset class="openrouter-model-provider-filter">
+                                        <legend>提供元:</legend>
+                                        <div id="openrouter-model-provider-options" class="openrouter-model-provider-options"></div>
+                                        <div class="openrouter-model-provider-actions">
+                                            <button type="button" id="select-all-openrouter-providers-btn">全選択</button>
+                                            <button type="button" id="clear-all-openrouter-providers-btn">全解除</button>
+                                        </div>
+                                    </fieldset>
+                                    <div class="openrouter-model-filter-grid">
+                                        <div>
+                                            <label for="openrouter-model-price-filter">料金:</label>
+                                            <select id="openrouter-model-price-filter">
+                                                <option value="all">すべて</option>
+                                                <option value="free">無料</option>
+                                                <option value="paid">有料</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label for="openrouter-model-context-filter">コンテキスト長:</label>
+                                            <select id="openrouter-model-context-filter">
+                                                <option value="0">指定なし</option>
+                                                <option value="32000">32K以上</option>
+                                                <option value="128000">128K以上</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="openrouter-model-capability-filters">
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" id="openrouter-model-vision-filter"> 画像入力対応
+                                        </label>
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" id="openrouter-model-reasoning-filter"> Reasoning対応
+                                        </label>
+                                    </div>
+                                    <div class="openrouter-model-bulk-actions">
+                                        <button type="button" id="select-visible-openrouter-models-btn">表示中を選択</button>
+                                        <button type="button" id="clear-visible-openrouter-models-btn">表示中を解除</button>
+                                    </div>
+                                    <div id="openrouter-model-catalog-list" class="openrouter-model-catalog-list"></div>
+                                    <p id="openrouter-model-catalog-empty" class="hidden openrouter-model-catalog-empty">
+                                        条件に一致するモデルはありません。
+                                    </p>
+                                </div>
+                                <label for="openrouter-additional-models">手動追加モデル（カンマ区切り）:</label>
+                                <textarea id="openrouter-additional-models" placeholder="例: openai/gpt-5.2,anthropic/claude-sonnet-4"
+                                    aria-label="OpenRouter 追加モデル"></textarea>
+                            </div>
                         </details>
                     </div>
                 </details>
@@ -6420,6 +6611,25 @@ const DEFAULT_DEEPSEEK_MODEL = 'deepseek-reasoner';
 const DEFAULT_CLAUDE_MODEL = 'claude-3-7-sonnet-20250219';
 const DEFAULT_OPENAI_MODEL = 'gpt-3.5-turbo';
 const DEFAULT_OPENROUTER_MODEL = 'google/gemma-4-31b-it:free';
+const DEFAULT_OPENROUTER_SELECTED_MODELS = [
+    'google/gemma-4-31b-it:free',
+    'google/gemini-3.1-pro-preview',
+    'google/gemini-2.5-pro',
+    'anthropic/claude-sonnet-5',
+    'z-ai/glm-5.2',
+    'deepseek/deepseek-v4-pro',
+];
+const OPENROUTER_MODEL_CATALOG_URL = 'https://openrouter.ai/api/v1/models/user';
+const OPENROUTER_MODEL_PROVIDERS = [
+    { value: 'openai', text: 'OpenAI', prefixes: ['openai'] },
+    { value: 'anthropic', text: 'Anthropic', prefixes: ['anthropic'] },
+    { value: 'google', text: 'Google', prefixes: ['google'] },
+    { value: 'deepseek', text: 'DeepSeek', prefixes: ['deepseek'] },
+    { value: 'xai', text: 'xAI', prefixes: ['x-ai'] },
+    { value: 'qwen', text: 'Qwen', prefixes: ['qwen'] },
+    { value: 'zai', text: 'Z.ai', prefixes: ['z-ai'] },
+    { value: 'other', text: 'その他', prefixes: [] },
+];
 const DEFAULT_XAI_MODEL = 'grok-4-1-fast-non-reasoning';
 const DEFAULT_LLMAGGREGATOR_MODEL = 'google/gemma-4-31b-it:free';
 const DEFAULT_STREAMING_SPEED = 12;
@@ -6486,7 +6696,7 @@ const LIGHT_MODE_MODEL_MESSAGE_COLOR = '#e5e5ea';
 const LIGHT_MODE_SECONDARY_COLOR = '#f0f2f5';
 const LIGHT_MODE_HEADER_COLOR = '#4a90e2';
 const LIGHT_MODE_PRIMARY_COLOR = '#ffffff';
-const APP_VERSION = "2026.07.15-fronoske";
+const APP_VERSION = "2026.07.16-fronoske";
 const SWIPE_THRESHOLD = 50;
 const ZOOM_THRESHOLD = 1.01;
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -6587,8 +6797,24 @@ const elements = {
     openrouterSettingsGroup: document.getElementById('openrouter-settings-group'),
     openrouterApiKeyInput: document.getElementById('openrouter-api-key'),
     openrouterModelNameSelect: document.getElementById('openrouter-model-name'),
+    openrouterSelectedModelsGroup: document.getElementById('openrouter-selected-models-group'),
     openrouterUserDefinedModelsGroup: document.getElementById('openrouter-user-defined-models-group'),
     openrouterAdditionalModelsTextarea: document.getElementById('openrouter-additional-models'),
+    openrouterSelectedModelCount: document.getElementById('openrouter-selected-model-count'),
+    fetchOpenrouterModelsBtn: document.getElementById('fetch-openrouter-models-btn'),
+    openrouterModelFetchStatus: document.getElementById('openrouter-model-fetch-status'),
+    openrouterModelCatalogControls: document.getElementById('openrouter-model-catalog-controls'),
+    openrouterModelProviderOptions: document.getElementById('openrouter-model-provider-options'),
+    selectAllOpenrouterProvidersBtn: document.getElementById('select-all-openrouter-providers-btn'),
+    clearAllOpenrouterProvidersBtn: document.getElementById('clear-all-openrouter-providers-btn'),
+    openrouterModelPriceFilter: document.getElementById('openrouter-model-price-filter'),
+    openrouterModelContextFilter: document.getElementById('openrouter-model-context-filter'),
+    openrouterModelVisionFilter: document.getElementById('openrouter-model-vision-filter'),
+    openrouterModelReasoningFilter: document.getElementById('openrouter-model-reasoning-filter'),
+    selectVisibleOpenrouterModelsBtn: document.getElementById('select-visible-openrouter-models-btn'),
+    clearVisibleOpenrouterModelsBtn: document.getElementById('clear-visible-openrouter-models-btn'),
+    openrouterModelCatalogList: document.getElementById('openrouter-model-catalog-list'),
+    openrouterModelCatalogEmpty: document.getElementById('openrouter-model-catalog-empty'),
     xaiSettingsGroup: document.getElementById('xai-settings-group'),
     xaiApiKeyInput: document.getElementById('xai-api-key'),
     xaiModelNameSelect: document.getElementById('xai-model-name'),
@@ -6945,6 +7171,7 @@ const state = {
         openaiStreamingSpeed: DEFAULT_STREAMING_SPEED,
         openrouterApiKey: '',
         openrouterModelName: DEFAULT_OPENROUTER_MODEL,
+        openrouterSelectedModels: [...DEFAULT_OPENROUTER_SELECTED_MODELS],
         openrouterAdditionalModels: '',
         openrouterSystemPrompt: '',
         openrouterEnableSystemPromptDefault: true,
@@ -7498,6 +7725,17 @@ const dbUtils = {
                     }
                     if (!['light', 'dark'].includes(state.settings.theme)) {
                         state.settings.theme = 'light';
+                    }
+                    if (!Array.isArray(state.settings.openrouterSelectedModels)) {
+                        state.settings.openrouterSelectedModels = [...DEFAULT_OPENROUTER_SELECTED_MODELS];
+                    }
+                    else {
+                        state.settings.openrouterSelectedModels = [...new Set(state.settings.openrouterSelectedModels
+                                .filter((modelId) => typeof modelId === 'string' && modelId.trim())
+                                .map((modelId) => modelId.trim()))];
+                    }
+                    if (state.settings.openrouterModelName === 'openrouter/auto') {
+                        state.settings.openrouterModelName = DEFAULT_OPENROUTER_MODEL;
                     }
                     if (state.settings.apiProviderCycle && typeof state.settings.apiProviderCycle === 'object') {
                         state.settings.apiProviderCycle = {
@@ -9776,6 +10014,304 @@ const multiApiKeyUtils = {
     }
 };
 
+/* source: openrouter-model-catalog.ts */
+// @ts-nocheck -- Enable after shared application and DOM types are defined.
+// Bundled into the generated index.html from this TypeScript source.
+const openRouterModelCatalog = {
+    models: [],
+    visibleModelIds: [],
+    lastFetchedAt: null,
+    initialized: false,
+    classifyProvider(modelId) {
+        const author = String(modelId || '').split('/')[0].toLowerCase();
+        const provider = OPENROUTER_MODEL_PROVIDERS.find((candidate) => candidate.value !== 'other' && candidate.prefixes.includes(author));
+        return provider?.value || 'other';
+    },
+    isFreeModel(model) {
+        if (String(model.id || '').endsWith(':free'))
+            return true;
+        const promptPrice = Number(model.pricing?.prompt);
+        const completionPrice = Number(model.pricing?.completion);
+        return Number.isFinite(promptPrice)
+            && Number.isFinite(completionPrice)
+            && promptPrice === 0
+            && completionPrice === 0;
+    },
+    normalizeModel(rawModel) {
+        if (!rawModel || typeof rawModel.id !== 'string' || !rawModel.id.trim())
+            return null;
+        if (rawModel.id.trim() === 'openrouter/auto')
+            return null;
+        const outputModalities = Array.isArray(rawModel.architecture?.output_modalities)
+            ? rawModel.architecture.output_modalities
+            : [];
+        const modality = String(rawModel.architecture?.modality || '');
+        if (!outputModalities.includes('text') && !modality.endsWith('->text'))
+            return null;
+        if (rawModel.expiration_date) {
+            const expirationTime = Date.parse(rawModel.expiration_date);
+            if (Number.isFinite(expirationTime) && expirationTime <= Date.now())
+                return null;
+        }
+        const supportedParameters = Array.isArray(rawModel.supported_parameters)
+            ? rawModel.supported_parameters
+            : [];
+        const inputModalities = Array.isArray(rawModel.architecture?.input_modalities)
+            ? rawModel.architecture.input_modalities
+            : [];
+        const model = {
+            id: rawModel.id.trim(),
+            name: String(rawModel.name || rawModel.id).trim(),
+            created: Number(rawModel.created) || 0,
+            contextLength: Number(rawModel.context_length) || 0,
+            provider: this.classifyProvider(rawModel.id),
+            inputModalities,
+            supportedParameters,
+            pricing: rawModel.pricing || {},
+        };
+        model.isFree = this.isFreeModel(model);
+        model.supportsVision = inputModalities.includes('image');
+        model.supportsReasoning = supportedParameters.includes('reasoning')
+            || supportedParameters.includes('include_reasoning');
+        return model;
+    },
+    async fetchModels(apiKey, fetchImplementation = fetch) {
+        const trimmedApiKey = String(apiKey || '').trim();
+        if (!trimmedApiKey)
+            throw new Error('OpenRouter APIキーを入力してください。');
+        const response = await fetchImplementation(OPENROUTER_MODEL_CATALOG_URL, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${trimmedApiKey}`,
+                'Accept': 'application/json',
+            },
+        });
+        if (!response.ok) {
+            let detail = '';
+            try {
+                const errorData = await response.json();
+                detail = errorData?.error?.message || errorData?.message || '';
+            }
+            catch {
+                detail = '';
+            }
+            if (response.status === 401)
+                throw new Error('OpenRouter APIキーを確認してください。');
+            if (response.status === 429)
+                throw new Error('OpenRouterのレート上限に達しました。時間を置いて再実行してください。');
+            throw new Error(detail || `モデル一覧を取得できませんでした（HTTP ${response.status}）。`);
+        }
+        const payload = await response.json();
+        if (!Array.isArray(payload?.data))
+            throw new Error('OpenRouterから不正なモデル一覧が返されました。');
+        const uniqueModels = new Map();
+        payload.data.forEach((rawModel) => {
+            const model = this.normalizeModel(rawModel);
+            if (model)
+                uniqueModels.set(model.id, model);
+        });
+        this.models = [...uniqueModels.values()].sort((left, right) => right.created - left.created || left.id.localeCompare(right.id));
+        this.lastFetchedAt = new Date();
+        return this.models;
+    },
+    getModel(modelId) {
+        return this.models.find((model) => model.id === modelId) || null;
+    },
+    getDisplayLabel(modelId) {
+        const model = this.getModel(modelId);
+        if (!model)
+            return modelId;
+        if (model.isFree)
+            return `${model.name} — free`;
+        const completionPrice = this.formatPerMillionPrice(model.pricing?.completion);
+        return `${model.name} — ${completionPrice === null ? '料金不明' : `$${completionPrice}/M`}`;
+    },
+    getSelectedIds() {
+        const selected = Array.isArray(state.settings.openrouterSelectedModels)
+            ? state.settings.openrouterSelectedModels
+            : [];
+        return [...new Set(selected.filter((modelId) => typeof modelId === 'string' && modelId && modelId !== 'openrouter/auto'))];
+    },
+    setSelectedIds(modelIds) {
+        state.settings.openrouterSelectedModels = [...new Set(modelIds.filter((modelId) => typeof modelId === 'string' && modelId && modelId !== 'openrouter/auto'))];
+        uiUtils.updateOpenRouterUserModelOptions();
+        this.updateSelectedCount();
+    },
+    updateSelectedCount() {
+        elements.openrouterSelectedModelCount.textContent = String(this.getSelectedIds().length);
+    },
+    getFilteredModels() {
+        const selectedProviders = new Set([...elements.openrouterModelProviderOptions.querySelectorAll('.openrouter-model-provider-checkbox:checked')]
+            .map((checkbox) => checkbox.value));
+        const price = elements.openrouterModelPriceFilter.value;
+        const minimumContext = Number(elements.openrouterModelContextFilter.value) || 0;
+        const visionOnly = elements.openrouterModelVisionFilter.checked;
+        const reasoningOnly = elements.openrouterModelReasoningFilter.checked;
+        return this.models.filter((model) => {
+            if (!selectedProviders.has(model.provider))
+                return false;
+            if (price === 'free' && !model.isFree)
+                return false;
+            if (price === 'paid' && model.isFree)
+                return false;
+            if (minimumContext && model.contextLength < minimumContext)
+                return false;
+            if (visionOnly && !model.supportsVision)
+                return false;
+            if (reasoningOnly && !model.supportsReasoning)
+                return false;
+            return true;
+        });
+    },
+    renderProviderFilters() {
+        elements.openrouterModelProviderOptions.innerHTML = '';
+        const fragment = document.createDocumentFragment();
+        OPENROUTER_MODEL_PROVIDERS.forEach((provider) => {
+            const label = document.createElement('label');
+            label.className = 'openrouter-model-provider-option';
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = provider.value;
+            checkbox.className = 'openrouter-model-provider-checkbox';
+            checkbox.checked = provider.value !== 'other';
+            checkbox.addEventListener('change', () => this.renderModelList());
+            label.append(checkbox, document.createTextNode(provider.text));
+            fragment.appendChild(label);
+        });
+        elements.openrouterModelProviderOptions.appendChild(fragment);
+    },
+    setAllProvidersSelected(selected) {
+        elements.openrouterModelProviderOptions
+            .querySelectorAll('.openrouter-model-provider-checkbox')
+            .forEach((checkbox) => { checkbox.checked = selected; });
+        this.renderModelList();
+    },
+    formatContextLength(contextLength) {
+        if (!contextLength)
+            return '不明';
+        if (contextLength >= 1000000)
+            return `${Math.round(contextLength / 100000) / 10}M`;
+        if (contextLength >= 1000)
+            return `${Math.round(contextLength / 1000)}K`;
+        return String(contextLength);
+    },
+    formatPerMillionPrice(pricePerToken) {
+        const price = Number(pricePerToken);
+        if (!Number.isFinite(price))
+            return null;
+        const pricePerMillion = price * 1000000;
+        return new Intl.NumberFormat('en-US', {
+            minimumFractionDigits: pricePerMillion === 0 ? 0 : 2,
+            maximumFractionDigits: 4,
+        }).format(pricePerMillion);
+    },
+    formatModelCost(model) {
+        if (model.isFree)
+            return '無料';
+        const promptPrice = this.formatPerMillionPrice(model.pricing?.prompt);
+        const completionPrice = this.formatPerMillionPrice(model.pricing?.completion);
+        if (promptPrice === null && completionPrice === null)
+            return '料金不明';
+        return [
+            promptPrice === null ? '' : `入力 $${promptPrice}/M`,
+            completionPrice === null ? '' : `出力 $${completionPrice}/M`,
+        ].filter(Boolean).join(' · ');
+    },
+    renderModelList() {
+        const filteredModels = this.getFilteredModels();
+        const selectedIds = new Set(this.getSelectedIds());
+        this.visibleModelIds = filteredModels.map((model) => model.id);
+        elements.openrouterModelCatalogList.innerHTML = '';
+        elements.openrouterModelCatalogEmpty.classList.toggle('hidden', filteredModels.length > 0);
+        const fragment = document.createDocumentFragment();
+        filteredModels.forEach((model) => {
+            const label = document.createElement('label');
+            label.className = 'openrouter-model-catalog-item';
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = selectedIds.has(model.id);
+            checkbox.addEventListener('change', () => {
+                const nextSelectedIds = new Set(this.getSelectedIds());
+                if (checkbox.checked)
+                    nextSelectedIds.add(model.id);
+                else
+                    nextSelectedIds.delete(model.id);
+                this.setSelectedIds([...nextSelectedIds]);
+            });
+            const text = document.createElement('span');
+            text.className = 'openrouter-model-catalog-item-text';
+            const name = document.createElement('strong');
+            name.textContent = model.name;
+            const cost = document.createElement('span');
+            cost.className = 'openrouter-model-catalog-item-cost';
+            cost.textContent = this.formatModelCost(model);
+            const metadata = document.createElement('span');
+            metadata.className = 'openrouter-model-catalog-item-meta';
+            metadata.textContent = [
+                `Context ${this.formatContextLength(model.contextLength)}`,
+                model.supportsVision ? '画像入力' : '',
+                model.supportsReasoning ? 'Reasoning' : '',
+            ].filter(Boolean).join(' · ');
+            text.append(name, cost, metadata);
+            label.append(checkbox, text);
+            fragment.appendChild(label);
+        });
+        elements.openrouterModelCatalogList.appendChild(fragment);
+    },
+    setVisibleSelection(selected) {
+        const nextSelectedIds = new Set(this.getSelectedIds());
+        this.visibleModelIds.forEach((modelId) => {
+            if (selected)
+                nextSelectedIds.add(modelId);
+            else
+                nextSelectedIds.delete(modelId);
+        });
+        this.setSelectedIds([...nextSelectedIds]);
+        this.renderModelList();
+    },
+    async handleFetchButtonClick() {
+        const button = elements.fetchOpenrouterModelsBtn;
+        button.disabled = true;
+        const previousText = button.textContent;
+        button.textContent = '取得中…';
+        elements.openrouterModelFetchStatus.textContent = 'OpenRouterからモデル一覧を取得しています…';
+        try {
+            const models = await this.fetchModels(elements.openrouterApiKeyInput.value);
+            elements.openrouterModelCatalogControls.classList.remove('hidden');
+            elements.openrouterModelFetchStatus.textContent = `${models.length}件のTextモデルを取得しました（${this.lastFetchedAt.toLocaleString()}）。`;
+            this.renderModelList();
+            uiUtils.updateOpenRouterUserModelOptions();
+        }
+        catch (error) {
+            elements.openrouterModelFetchStatus.textContent = `取得失敗: ${error.message}`;
+        }
+        finally {
+            button.disabled = false;
+            button.textContent = previousText;
+        }
+    },
+    initialize() {
+        if (this.initialized)
+            return;
+        this.initialized = true;
+        this.updateSelectedCount();
+        this.renderProviderFilters();
+        elements.fetchOpenrouterModelsBtn.addEventListener('click', () => this.handleFetchButtonClick());
+        [
+            elements.openrouterModelPriceFilter,
+            elements.openrouterModelContextFilter,
+            elements.openrouterModelVisionFilter,
+            elements.openrouterModelReasoningFilter,
+        ].forEach((control) => {
+            control.addEventListener(control.tagName === 'INPUT' && control.type === 'search' ? 'input' : 'change', () => this.renderModelList());
+        });
+        elements.selectAllOpenrouterProvidersBtn.addEventListener('click', () => this.setAllProvidersSelected(true));
+        elements.clearAllOpenrouterProvidersBtn.addEventListener('click', () => this.setAllProvidersSelected(false));
+        elements.selectVisibleOpenrouterModelsBtn.addEventListener('click', () => this.setVisibleSelection(true));
+        elements.clearVisibleOpenrouterModelsBtn.addEventListener('click', () => this.setVisibleSelection(false));
+    },
+};
+
 /* source: ui-controller.ts */
 // Bundled into the generated index.html from this TypeScript source.
 const uiUtils = {};
@@ -11588,31 +12124,46 @@ Object.assign(uiUtils, {
         }
     },
     updateOpenRouterUserModelOptions() {
-        const group = elements.openrouterUserDefinedModelsGroup;
-        group.innerHTML = '';
-        const models = (state.settings.openrouterAdditionalModels || '')
+        const selectedGroup = elements.openrouterSelectedModelsGroup;
+        const manualGroup = elements.openrouterUserDefinedModelsGroup;
+        const currentModelId = elements.openrouterModelNameSelect.value
+            || state.settings.openrouterModelName
+            || DEFAULT_OPENROUTER_MODEL;
+        selectedGroup.innerHTML = '';
+        manualGroup.innerHTML = '';
+        const selectedModels = Array.isArray(state.settings.openrouterSelectedModels)
+            ? [...new Set(state.settings.openrouterSelectedModels.filter(Boolean))]
+            : [];
+        const manualModels = (state.settings.openrouterAdditionalModels || '')
             .split(',')
             .map(model => model.trim())
             .filter(Boolean);
-        models.forEach(modelId => {
+        selectedModels.forEach(modelId => {
+            const option = document.createElement('option');
+            option.value = modelId;
+            option.textContent = typeof openRouterModelCatalog !== 'undefined'
+                ? openRouterModelCatalog.getDisplayLabel(modelId)
+                : modelId;
+            selectedGroup.appendChild(option);
+        });
+        const selectedIds = new Set(selectedModels);
+        manualModels.filter((modelId) => !selectedIds.has(modelId)).forEach(modelId => {
             const option = document.createElement('option');
             option.value = modelId;
             option.textContent = modelId;
-            group.appendChild(option);
+            manualGroup.appendChild(option);
         });
-        if (state.settings.openrouterModelName
-            && !Array.from(elements.openrouterModelNameSelect.options)
-                .some(option => option.value === state.settings.openrouterModelName)) {
-            const option = document.createElement('option');
-            option.value = state.settings.openrouterModelName;
-            option.textContent = state.settings.openrouterModelName;
-            group.appendChild(option);
+        selectedGroup.disabled = selectedGroup.children.length === 0;
+        manualGroup.disabled = manualGroup.children.length === 0;
+        const availableOptions = Array.from(elements.openrouterModelNameSelect.options);
+        const nextModelId = availableOptions.some(option => option.value === currentModelId)
+            ? currentModelId
+            : (availableOptions[0]?.value || '');
+        elements.openrouterModelNameSelect.value = nextModelId;
+        state.settings.openrouterModelName = nextModelId;
+        if (elements.openrouterSelectedModelCount) {
+            elements.openrouterSelectedModelCount.textContent = String(selectedModels.length);
         }
-        group.disabled = group.children.length === 0;
-        elements.openrouterModelNameSelect.value = Array.from(elements.openrouterModelNameSelect.options)
-            .some(option => option.value === state.settings.openrouterModelName)
-            ? state.settings.openrouterModelName
-            : DEFAULT_OPENROUTER_MODEL;
     },
     updateXaiUserModelOptions() {
         const group = elements.xaiUserDefinedModelsGroup;
@@ -13299,6 +13850,7 @@ Object.assign(appLogic, {
         llmUrlInput.addEventListener('blur', validateLlmUrl);
         multiApiKeyUtils.initializeMultiApiKeys();
         multiBackendUtils.initialize();
+        openRouterModelCatalog.initialize();
         elements.geminiApiKeyInput.addEventListener('input', () => multiApiKeyUtils.syncMainApiKeyInput('gemini'));
         elements.deepSeekApiKeyInput.addEventListener('input', () => multiApiKeyUtils.syncMainApiKeyInput('deepseek'));
         elements.claudeApiKeyInput.addEventListener('input', () => multiApiKeyUtils.syncMainApiKeyInput('claude'));
@@ -15742,6 +16294,7 @@ Object.assign(appLogic, {
         newSettings.openaiStreamingOutput = elements.openaiStreamingOutputCheckbox.checked;
         newSettings.openaiStreamingSpeed = elements.openaiStreamingSpeedInput.value === '' ? DEFAULT_STREAMING_SPEED : parseInt(elements.openaiStreamingSpeedInput.value, 10);
         newSettings.openrouterModelName = elements.openrouterModelNameSelect.value;
+        newSettings.openrouterSelectedModels = [...state.settings.openrouterSelectedModels];
         newSettings.openrouterAdditionalModels = elements.openrouterAdditionalModelsTextarea.value.trim();
         newSettings.openrouterSystemPrompt = elements.openrouterSystemPromptDefaultTextarea.value.trim();
         newSettings.openrouterEnableSystemPromptDefault = elements.openrouterEnableSystemPromptDefaultCheckbox.checked;

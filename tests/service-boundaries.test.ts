@@ -14,6 +14,7 @@ const serviceBoundaries = [
   ['backend-manager', 'multiBackendUtils'],
   ['error-recovery', 'errorRecovery'],
   ['api-key-manager', 'multiApiKeyUtils'],
+  ['openrouter-model-catalog', 'openRouterModelCatalog'],
 ] as const;
 
 const controllerFeatures = [

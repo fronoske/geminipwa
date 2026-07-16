@@ -382,6 +382,58 @@ describe('project configuration', () => {
     expect(layout).toContain(": 'APIキーとモデル'");
   });
 
+  it('links OpenRouter credit management from the provider settings', () => {
+    const html = readFile('src/index.html');
+    const openRouterSettings = html.slice(
+      html.indexOf('id="openrouter-settings-group"'),
+      html.indexOf('id="xai-settings-group"'),
+    );
+    expect(openRouterSettings).toContain('href="https://openrouter.ai/settings/credits"');
+    expect(openRouterSettings).toContain('target="_blank"');
+    expect(openRouterSettings).toContain('rel="noopener noreferrer"');
+    expect(openRouterSettings).toContain('OpenRouterのクレジットをブラウザで確認');
+  });
+
+  it('manages OpenRouter text models only after an explicit fetch action', () => {
+    const html = readFile('src/index.html');
+    const catalog = readFile('src/openrouter-model-catalog.ts');
+    const openRouterSettings = html.slice(
+      html.indexOf('id="openrouter-settings-group"'),
+      html.indexOf('id="xai-settings-group"'),
+    );
+    expect(runtimeManifest.application).toContain('openrouter-model-catalog');
+    expect(openRouterSettings).toContain('id="openrouter-model-manager"');
+    expect(openRouterSettings).toContain('id="fetch-openrouter-models-btn"');
+    expect(openRouterSettings).toContain('最新のモデル一覧を取得');
+    expect(openRouterSettings).toContain('id="openrouter-selected-models-group"');
+    expect(openRouterSettings).toContain('id="openrouter-user-defined-models-group"');
+    expect(openRouterSettings).not.toContain('value="openrouter/auto"');
+    expect(openRouterSettings).toContain('id="openrouter-model-provider-options"');
+    expect(openRouterSettings).toContain('id="select-all-openrouter-providers-btn"');
+    expect(openRouterSettings).toContain('id="clear-all-openrouter-providers-btn"');
+    expect(openRouterSettings).not.toMatch(/openrouter-model-search|名前またはモデルID/);
+    const appConfig = readFile('src/app-config.ts');
+    for (const provider of ['OpenAI', 'Anthropic', 'Google', 'DeepSeek', 'xAI', 'Qwen', 'Z.ai', 'その他']) {
+      expect(appConfig).toContain(`text: '${provider}'`);
+    }
+    expect(appConfig).not.toMatch(/text: '(?:Meta|Mistral)'/);
+    expect(catalog).toContain("querySelectorAll('.openrouter-model-provider-checkbox:checked')");
+    expect(catalog).toContain("checkbox.checked = provider.value !== 'other';");
+    expect(catalog).toContain("cost.className = 'openrouter-model-catalog-item-cost';");
+    expect(catalog).toContain('text.append(name, cost, metadata);');
+    expect(catalog).not.toContain("id.className = 'openrouter-model-catalog-item-id';");
+    expect(catalog).toContain("elements.fetchOpenrouterModelsBtn.addEventListener('click'");
+    expect(readFile('src/app-config.ts')).toContain("const OPENROUTER_MODEL_CATALOG_URL = 'https://openrouter.ai/api/v1/models/user'");
+    expect(readFile('src/event-wiring.ts')).toContain('openRouterModelCatalog.initialize();');
+    expect(readFile('src/app-initialization.ts')).not.toMatch(/openRouterModelCatalog\.(?:fetchModels|handleFetchButtonClick)/);
+    expect(readFile('src/data-management.ts')).toContain('newSettings.openrouterSelectedModels');
+    expect(readFile('src/database.ts')).toContain("state.settings.openrouterModelName === 'openrouter/auto'");
+    const headerControls = readFile('src/ui-header-controls.ts');
+    expect(headerControls).toContain("const nextModelId = availableOptions.some(option => option.value === currentModelId)");
+    expect(headerControls).toContain("state.settings.openrouterModelName = nextModelId;");
+    expect(headerControls).not.toMatch(/manualGroup\.appendChild\(option\);\s*}\s*if \(currentModelId/);
+  });
+
   it('preserves input presets as a protected core feature', () => {
     expect(runtimeManifest.application).toContain('input-preset');
     expect(readFile('src/index.html')).toContain('id="input-preset-popup"');
@@ -459,7 +511,7 @@ describe('project configuration', () => {
   });
 
   it('uses the current release date as the application version', () => {
-    expect(readFile('src/app-config.ts')).toContain('const APP_VERSION = "2026.07.15-fronoske"');
+    expect(readFile('src/app-config.ts')).toContain('const APP_VERSION = "2026.07.16-fronoske"');
   });
 
   it('pre-caches only public runtime files', () => {

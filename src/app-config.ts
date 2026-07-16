@@ -19,6 +19,25 @@
         const DEFAULT_CLAUDE_MODEL = 'claude-3-7-sonnet-20250219';
         const DEFAULT_OPENAI_MODEL = 'gpt-3.5-turbo';
         const DEFAULT_OPENROUTER_MODEL = 'google/gemma-4-31b-it:free';
+        const DEFAULT_OPENROUTER_SELECTED_MODELS = [
+            'google/gemma-4-31b-it:free',
+            'google/gemini-3.1-pro-preview',
+            'google/gemini-2.5-pro',
+            'anthropic/claude-sonnet-5',
+            'z-ai/glm-5.2',
+            'deepseek/deepseek-v4-pro',
+        ];
+        const OPENROUTER_MODEL_CATALOG_URL = 'https://openrouter.ai/api/v1/models/user';
+        const OPENROUTER_MODEL_PROVIDERS = [
+            { value: 'openai', text: 'OpenAI', prefixes: ['openai'] },
+            { value: 'anthropic', text: 'Anthropic', prefixes: ['anthropic'] },
+            { value: 'google', text: 'Google', prefixes: ['google'] },
+            { value: 'deepseek', text: 'DeepSeek', prefixes: ['deepseek'] },
+            { value: 'xai', text: 'xAI', prefixes: ['x-ai'] },
+            { value: 'qwen', text: 'Qwen', prefixes: ['qwen'] },
+            { value: 'zai', text: 'Z.ai', prefixes: ['z-ai'] },
+            { value: 'other', text: 'その他', prefixes: [] },
+        ];
         const DEFAULT_XAI_MODEL = 'grok-4-1-fast-non-reasoning';
         const DEFAULT_LLMAGGREGATOR_MODEL = 'google/gemma-4-31b-it:free';
         const DEFAULT_STREAMING_SPEED = 12;
@@ -94,7 +113,7 @@ const PASTEL_RAINBOW_THEME_COLOR = '#ffadad';
         const LIGHT_MODE_HEADER_COLOR = '#4a90e2';
         const LIGHT_MODE_PRIMARY_COLOR = '#ffffff';
 
-        const APP_VERSION = "2026.07.15-fronoske";
+        const APP_VERSION = "2026.07.16-fronoske";
         const SWIPE_THRESHOLD = 50;
         const ZOOM_THRESHOLD = 1.01;
         const MAX_FILE_SIZE = 10 * 1024 * 1024;

@@ -3,6 +3,7 @@ const DEVTOOLS_URL = readArgument('devtools-url') || process.env.DEVTOOLS_URL ||
 const APP_URL = readArgument('app-url') || process.env.APP_URL || 'http://127.0.0.1:5173/index.html?audit=settings';
 const showFullReport = process.argv.includes('--full');
 const closeBrowser = process.argv.includes('--close-browser');
+const mockOpenRouterModels = process.argv.includes('--mock-openrouter-models');
 
 const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
@@ -192,6 +193,101 @@ try {
     throw new Error(result.result.description || 'ブラウザ監査スクリプトの評価に失敗しました');
   }
   const report = JSON.parse(result.result.value);
+  if (mockOpenRouterModels) {
+    const openRouterAuditExpression = `(async () => {
+      const originalFetch = window.fetch;
+      let requestCount = 0;
+      let authorization = null;
+      window.fetch = async (url, options = {}) => {
+        if (String(url) === 'https://openrouter.ai/api/v1/models/user') {
+          requestCount += 1;
+          authorization = options.headers?.Authorization || null;
+          return {
+            ok: true,
+            status: 200,
+            json: async () => ({ data: [
+              {
+                id: 'openai/browser-audit-model', name: 'Browser Audit Model', created: 30,
+                context_length: 128000,
+                architecture: { input_modalities: ['text'], output_modalities: ['text'] },
+                pricing: { prompt: '0.000001', completion: '0.000002' },
+                supported_parameters: ['reasoning']
+              },
+              {
+                id: 'google/browser-audit-model:free', name: 'Browser Audit Free Model', created: 20,
+                context_length: 32000,
+                architecture: { input_modalities: ['text', 'image'], output_modalities: ['text'] },
+                pricing: { prompt: '0', completion: '0' }, supported_parameters: []
+              },
+              {
+                id: 'vendor/browser-audit-image', name: 'Image Only', created: 10,
+                architecture: { input_modalities: ['text'], output_modalities: ['image'] },
+                pricing: { prompt: '0', completion: '0' }, supported_parameters: []
+              }
+            ] })
+          };
+        }
+        return originalFetch(url, options);
+      };
+
+      try {
+        const before = {
+          requestCount,
+          controlsHidden: document.querySelector('#openrouter-model-catalog-controls').classList.contains('hidden'),
+        };
+        document.querySelector('#openrouter-api-key').value = 'browser-audit-key';
+        document.querySelector('#fetch-openrouter-models-btn').click();
+        for (let index = 0; index < 50 && requestCount === 0; index += 1) {
+          await new Promise((resolve) => setTimeout(resolve, 20));
+        }
+        await new Promise((resolve) => setTimeout(resolve, 50));
+
+        document.querySelector('#clear-all-openrouter-providers-btn').click();
+        for (const provider of ['openai', 'google']) {
+          document.querySelector('.openrouter-model-provider-checkbox[value="' + provider + '"]').click();
+        }
+        const rows = [...document.querySelectorAll('#openrouter-model-catalog-list .openrouter-model-catalog-item')];
+        const googleRow = rows.find((row) => row.textContent.includes('Browser Audit Free Model'));
+        const checkbox = googleRow?.querySelector('input[type="checkbox"]');
+        if (checkbox && !checkbox.checked) checkbox.click();
+        const selectedInSettings = state.settings.openrouterSelectedModels.includes('google/browser-audit-model:free');
+        const selectedOption = [...document.querySelector('#openrouter-model-name').options]
+          .find((option) => option.value === 'google/browser-audit-model:free');
+        const optionInModelSelect = Boolean(selectedOption);
+        const selectedOptionLabel = selectedOption?.textContent || null;
+        document.querySelector('#openrouter-model-name').value = 'google/browser-audit-model:free';
+        if (checkbox?.checked) checkbox.click();
+
+        return JSON.stringify({
+          before,
+          requestCount,
+          authorization,
+          controlsHiddenAfter: document.querySelector('#openrouter-model-catalog-controls').classList.contains('hidden'),
+          fetchedModelCount: openRouterModelCatalog.models.length,
+          filteredRowCount: rows.length,
+          selectedProviders: [...document.querySelectorAll('.openrouter-model-provider-checkbox:checked')]
+            .map((providerCheckbox) => providerCheckbox.value),
+          filteredModelText: rows.map((row) => row.textContent.replace(/\\s+/g, ' ').trim()),
+          selectedInSettings,
+          optionInModelSelect,
+          selectedOptionLabel,
+          removedAfterUncheck: !state.settings.openrouterSelectedModels.includes('google/browser-audit-model:free')
+            && ![...document.querySelector('#openrouter-model-name').options]
+              .some((option) => option.value === 'google/browser-audit-model:free'),
+          currentModelAfterUncheck: document.querySelector('#openrouter-model-name').value,
+          status: document.querySelector('#openrouter-model-fetch-status').textContent.trim(),
+        });
+      } finally {
+        window.fetch = originalFetch;
+      }
+    })()`;
+    const openRouterResult = await call('Runtime.evaluate', {
+      expression: openRouterAuditExpression,
+      awaitPromise: true,
+      returnByValue: true,
+    });
+    report.openRouterModelManager = JSON.parse(openRouterResult.result.value);
+  }
   const output = showFullReport ? report : {
     controlCount: report.controlCount,
     duplicateIds: report.duplicateIds,
@@ -207,6 +303,7 @@ try {
     hierarchyClassIssues: report.hierarchyClassIssues,
     displayHierarchyMaxLevel: report.displayHierarchyMaxLevel,
     hierarchyStyleSamples: report.hierarchyStyleSamples,
+    openRouterModelManager: report.openRouterModelManager,
   };
   console.log(JSON.stringify(output, null, 2));
 } finally {

@@ -614,6 +614,7 @@ newSettings.deepSeekModelName = elements.deepSeekModelNameSelect.value;
                 newSettings.openaiStreamingSpeed = elements.openaiStreamingSpeedInput.value === '' ? DEFAULT_STREAMING_SPEED : parseInt(elements.openaiStreamingSpeedInput.value, 10);
 
                 newSettings.openrouterModelName = elements.openrouterModelNameSelect.value;
+                newSettings.openrouterSelectedModels = [...state.settings.openrouterSelectedModels];
                 newSettings.openrouterAdditionalModels = elements.openrouterAdditionalModelsTextarea.value.trim();
                 newSettings.openrouterSystemPrompt = elements.openrouterSystemPromptDefaultTextarea.value.trim();
                 newSettings.openrouterEnableSystemPromptDefault = elements.openrouterEnableSystemPromptDefaultCheckbox.checked;
