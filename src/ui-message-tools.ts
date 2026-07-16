@@ -378,6 +378,7 @@ const getCurrentMermaidTheme = () => {
                 const streamSpeed = selectedApiProvider === 'gemini' ? state.settings.geminiStreamingSpeed :
                     selectedApiProvider === 'deepseek' ? state.settings.deepSeekStreamingSpeed :
                         selectedApiProvider === 'claude' ? state.settings.claudeStreamingSpeed :
+                            selectedApiProvider === 'openrouter' ? state.settings.openrouterStreamingSpeed :
                             selectedApiProvider === 'xai' ? state.settings.xaiStreamingSpeed :
                                 selectedApiProvider === 'llmaggregator' ? state.settings.llmAggregatorStreamingSpeed :
                                     state.settings.openaiStreamingSpeed;

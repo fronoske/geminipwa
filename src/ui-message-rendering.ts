@@ -1,10 +1,6 @@
 // @ts-nocheck -- Enable after shared UI types are defined.
 // Bundled into the generated index.html from this TypeScript source.
 Object.assign(uiUtils, {
-            updateSettingsScreenElementVisibility() {
-                elements.settingsScrollToTopBtn.classList.toggle('hidden', !state.settings.showSettingsScrollToTopButton);
-                elements.settingsScrollToBottomBtn.classList.toggle('hidden', !state.settings.showSettingsScrollToBottomButton);
-            },
             _sanitizeAndParseMarkdown(content) {
                 if (typeof DOMPurify === 'undefined') {
                     const div = document.createElement('div');

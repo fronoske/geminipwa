@@ -10,6 +10,7 @@
             { value: 'deepseek', text: 'DeepSeek' },
             { value: 'claude', text: 'Claude (Anthropic API)' },
             { value: 'openai', text: 'ChatGPT (OpenAI API)' },
+            { value: 'openrouter', text: 'OpenRouter' },
             { value: 'xai', text: 'Grok (xAI API)' },
             { value: 'llmaggregator', text: 'LLM Aggregator' }
         ];
@@ -17,6 +18,7 @@
         const DEFAULT_DEEPSEEK_MODEL = 'deepseek-reasoner';
         const DEFAULT_CLAUDE_MODEL = 'claude-3-7-sonnet-20250219';
         const DEFAULT_OPENAI_MODEL = 'gpt-3.5-turbo';
+        const DEFAULT_OPENROUTER_MODEL = 'google/gemma-4-31b-it:free';
         const DEFAULT_XAI_MODEL = 'grok-4-1-fast-non-reasoning';
         const DEFAULT_LLMAGGREGATOR_MODEL = 'google/gemma-4-31b-it:free';
         const DEFAULT_STREAMING_SPEED = 12;
@@ -38,6 +40,7 @@
         const DEEPSEEK_API_DEFAULT_BASE_URL = 'https://wild-star-4b72.chi87767.workers.dev/';
         const CLAUDE_API_BASE_URL = 'https://api.anthropic.com/v1/messages';
         const OPENAI_API_BASE_URL = 'https://api.openai.com/v1/chat/completions';
+        const OPENROUTER_API_BASE_URL = 'https://openrouter.ai/api/v1/chat/completions';
         const XAI_API_BASE_URL = 'https://api.x.ai/v1/chat/completions';
         const DUPLICATE_SUFFIX = ' (コピー)';
         const IMPORT_PREFIX = '(取込) ';

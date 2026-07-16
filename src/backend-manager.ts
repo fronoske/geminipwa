@@ -262,7 +262,9 @@
                 const keyIndex = backend.apiKeys.findIndex(k => k.id === keyId);
                 if (keyIndex === -1) return;
 
-                const confirmed = state.settings.disableDeleteApiKeyConfirmation ? true : await uiUtils.showCustomConfirm(`APIキー「${backend.apiKeys[keyIndex].label}」を削除しますか？`);
+                const confirmed = state.settings.disableDeleteApiKeyConfirmation
+                    ? await uiUtils.showCustomConfirm(`APIキー「${backend.apiKeys[keyIndex].label}」を削除しますか？`)
+                    : true;
                 if (!confirmed) return;
 
                 const wasActive = backend.apiKeys[keyIndex].isActive;

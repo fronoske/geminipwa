@@ -62,9 +62,7 @@ Object.assign(appLogic, {
                 });
                 elements.toggleAllContentBtn.addEventListener('click', () => this.toggleAllMessagesVisibility());
                 elements.headerApiProviderToggleBtn.addEventListener('click', () => this.toggleApiProvider());
-                elements.footerApiProviderToggleBtn.addEventListener('click', () => this.toggleApiProvider());
                 elements.headerCycleApiKeyBtn.addEventListener('click', () => this.cycleActiveApiKey());
-                elements.footerCycleApiKeyBtn.addEventListener('click', () => this.cycleActiveApiKey());
                 elements.sendButton.addEventListener('click', () => {
                     if (state.isSending) this.abortRequest();
                     else this.handleSend();
@@ -237,6 +235,13 @@ Object.assign(appLogic, {
                 this._setupParamSlider('openai-presence-penalty', 0.0, null);
                 this._setupParamSlider('openai-frequency-penalty', 0.0, null);
 
+                // OpenRouter Params
+                this._setupParamSlider('openrouter-max-tokens', 4096, 'openrouterMaxTokensSliderMax');
+                this._setupParamSlider('openrouter-temperature', 1.0, null);
+                this._setupParamSlider('openrouter-top-p', 1.0, null);
+                this._setupParamSlider('openrouter-presence-penalty', 0.0, null);
+                this._setupParamSlider('openrouter-frequency-penalty', 0.0, null);
+
                 // xAI Params
                 this._setupParamSlider('xai-max-tokens', 4096, 'xaiMaxTokensSliderMax');
                 this._setupParamSlider('xai-temperature', 1.0, null);
@@ -291,10 +296,6 @@ Object.assign(appLogic, {
                     uiUtils.updateChatScreenElementVisibility();
                 });
 
-                elements.showPasteButtonInFooterToggle.addEventListener('change', () => {
-                    state.settings.showPasteButtonInFooter = elements.showPasteButtonInFooterToggle.checked;
-                    uiUtils.updateChatScreenElementVisibility();
-                });
                 elements.showPasteButtonInEditToggle.addEventListener('change', () => {
                     state.settings.showPasteButtonInEdit = elements.showPasteButtonInEditToggle.checked;
                 });
@@ -627,7 +628,10 @@ Object.assign(appLogic, {
 
                 window.addEventListener('popstate', this.handlePopState.bind(this));
 
-                elements.attachFileBtn.addEventListener('click', () => uiUtils.showFileUploadDialog());
+                elements.attachFileBtn.addEventListener('click', () => {
+                    uiUtils.setHeaderMenuOpen(false);
+                    uiUtils.showFileUploadDialog();
+                });
                 elements.selectFilesBtn.addEventListener('click', () => elements.fileInput.click());
                 elements.fileInput.addEventListener('change', (event) => {
                     this.handleFileSelection(event.target.files);
@@ -658,14 +662,6 @@ Object.assign(appLogic, {
     });
     elements.settingsScrollToTopBtn.addEventListener('click', () => this.scrollToSettingsTop());
     elements.settingsScrollToBottomBtn.addEventListener('click', () => this.scrollToSettingsBottom());
-    elements.showSettingsScrollToTopButtonToggle.addEventListener('change', () => {
-        state.settings.showSettingsScrollToTopButton = elements.showSettingsScrollToTopButtonToggle.checked;
-        uiUtils.updateSettingsScreenElementVisibility();
-    });
-    elements.showSettingsScrollToBottomButtonToggle.addEventListener('change', () => {
-        state.settings.showSettingsScrollToBottomButton = elements.showSettingsScrollToBottomButtonToggle.checked;
-        uiUtils.updateSettingsScreenElementVisibility();
-    });
     document.querySelectorAll('#settings-screen details[id]').forEach(details => {
                     details.addEventListener('toggle', (event) => {
                         if (details.id) {
@@ -690,6 +686,10 @@ Object.assign(appLogic, {
                 });
                 elements.apiProviderCycleOpenAICheckbox.addEventListener('change', () => {
                     state.settings.apiProviderCycle.openai = elements.apiProviderCycleOpenAICheckbox.checked;
+                    uiUtils.updateApiProviderSelectOptions();
+                });
+                elements.apiProviderCycleOpenRouterCheckbox.addEventListener('change', () => {
+                    state.settings.apiProviderCycle.openrouter = elements.apiProviderCycleOpenRouterCheckbox.checked;
                     uiUtils.updateApiProviderSelectOptions();
                 });
                 elements.apiProviderCycleXaiCheckbox.addEventListener('change', () => {
@@ -724,6 +724,7 @@ Object.assign(appLogic, {
                 elements.deepSeekApiKeyInput.addEventListener('input', () => multiApiKeyUtils.syncMainApiKeyInput('deepseek'));
                 elements.claudeApiKeyInput.addEventListener('input', () => multiApiKeyUtils.syncMainApiKeyInput('claude'));
                 elements.openaiApiKeyInput.addEventListener('input', () => multiApiKeyUtils.syncMainApiKeyInput('openai'));
+                elements.openrouterApiKeyInput.addEventListener('input', () => multiApiKeyUtils.syncMainApiKeyInput('openrouter'));
                 elements.xaiApiKeyInput.addEventListener('input', () => multiApiKeyUtils.syncMainApiKeyInput('xai'));
                 elements.llmAggregatorApiKeyInput.addEventListener('input', () => multiApiKeyUtils.syncMainApiKeyInput('llmaggregator'));
                 elements.showMultiApiKeysToggle.addEventListener('change', (e) => {
@@ -752,6 +753,7 @@ helpIcons.forEach(icon => {
                         <li><b>DeepSeek</b>: d, ds, de, deepseek</li>
                         <li><b>Claude</b>: c, cl, an, anthropic</li>
                         <li><b>OpenAI</b>: o, op, ch, chatgpt</li>
+                        <li><b>OpenRouter</b>: or, openrouter, router</li>
                         <li><b>xAI (Grok)</b>: x, gr, xa, grok</li>
                         <li>※LLM Aggregatorは適用対象外</li>
                     </ul>

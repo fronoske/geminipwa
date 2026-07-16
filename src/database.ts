@@ -108,7 +108,7 @@ const dbUtils = {
 
                             const oldGlobalParams = ['temperature', 'maxTokens', 'topP', 'presencePenalty', 'frequencyPenalty', 'systemPrompt', 'enableSystemPromptDefault'];
                             const oldGlobalAdvanced = ['streamingOutput', 'streamingSpeed'];
-                            const providerPrefixes = ['gemini', 'deepSeek', 'claude', 'openai', 'xai', 'llmaggregator'];
+                            const providerPrefixes = ['gemini', 'deepSeek', 'claude', 'openai', 'openrouter', 'xai', 'llmaggregator'];
 
                             if (loadedSettings.commonDummyUser === undefined && loadedSettings.dummyUser !== undefined) {
                                 loadedSettings.commonDummyUser = loadedSettings.dummyUser;
@@ -171,10 +171,39 @@ const dbUtils = {
                             state.settings.llmaggregatorBackends = backends;
                             state.settings.llmaggregatorActiveBackendIndex = (backends.length > 0) ? 0 : -1;
 
-                            const shouldMigrateAutoCloseDisplaySettings = typeof loadedSettings.autoCloseDisplaySettings !== 'boolean'
-                                && typeof loadedSettings.autoCloseOtherSettings === 'boolean';
-                            if (shouldMigrateAutoCloseDisplaySettings) {
-                                loadedSettings.autoCloseDisplaySettings = loadedSettings.autoCloseOtherSettings;
+                            const openRouterBackend = backends.find(backend => /(^|\.)openrouter\.ai$/i.test((() => {
+                                try { return new URL(backend.url).hostname; } catch { return ''; }
+                            })()));
+                            if (openRouterBackend) {
+                                if (!loadedSettings.hasOwnProperty('openrouterApiKeys')) {
+                                    loadedSettings.openrouterApiKeys = (openRouterBackend.apiKeys || []).map(key => ({ ...key }));
+                                }
+                                if (!loadedSettings.hasOwnProperty('openrouterActiveApiKeyIndex')) {
+                                    loadedSettings.openrouterActiveApiKeyIndex = (openRouterBackend.apiKeys || []).findIndex(key => key.isActive);
+                                }
+                                if (!loadedSettings.hasOwnProperty('openrouterApiKey')) {
+                                    loadedSettings.openrouterApiKey = (openRouterBackend.apiKeys || []).find(key => key.isActive)?.value
+                                        || loadedSettings.llmAggregatorApiKey
+                                        || '';
+                                }
+                                const migratedOpenRouterSettings = {
+                                    openrouterModelName: 'llmAggregatorModelName',
+                                    openrouterAdditionalModels: 'llmAggregatorAdditionalModels',
+                                    openrouterSystemPrompt: 'llmAggregatorSystemPrompt',
+                                    openrouterEnableSystemPromptDefault: 'llmAggregatorEnableSystemPromptDefault',
+                                    openrouterTemperature: 'llmAggregatorTemperature',
+                                    openrouterMaxTokens: 'llmAggregatorMaxTokens',
+                                    openrouterTopP: 'llmAggregatorTopP',
+                                    openrouterPresencePenalty: 'llmAggregatorPresencePenalty',
+                                    openrouterFrequencyPenalty: 'llmAggregatorFrequencyPenalty',
+                                    openrouterStreamingOutput: 'llmAggregatorStreamingOutput',
+                                    openrouterStreamingSpeed: 'llmAggregatorStreamingSpeed',
+                                };
+                                Object.entries(migratedOpenRouterSettings).forEach(([newKey, oldKey]) => {
+                                    if (!loadedSettings.hasOwnProperty(newKey) && loadedSettings.hasOwnProperty(oldKey)) {
+                                        loadedSettings[newKey] = loadedSettings[oldKey];
+                                    }
+                                });
                             }
 
                             for (const key in loadedSettings) {
@@ -203,17 +232,21 @@ const dbUtils = {
                             if (!API_PROVIDERS.some((provider) => provider.value === state.settings.apiProvider)) {
                                 state.settings.apiProvider = 'gemini';
                             }
-                            if (state.settings.theme === 'turf') {
+                            if (!['light', 'dark'].includes(state.settings.theme)) {
                                 state.settings.theme = 'light';
                             }
                             if (state.settings.apiProviderCycle && typeof state.settings.apiProviderCycle === 'object') {
+                                state.settings.apiProviderCycle = {
+                                    ...defaultSettings.apiProviderCycle,
+                                    ...state.settings.apiProviderCycle,
+                                };
                                 delete state.settings.apiProviderCycle.dummy;
                             }
 
                             const removedSettingKeys = settingsArray
                                 .map((item) => item.key)
-                                .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine|enableSessionLinking|showSessionLinkingSettings|enableCryscroller|cryscroller|enableSettingsCryscroller|enableHistoryCryscroller|enableImmersiveScrolling|enableDynamicScrollMarkerColor|enableProofreading|showProofreadingSettings|proofreading|activeProofreadingConfigId|enableImageUrlReplacement|imageUrlReplacementBase|enableAutoBaseUrlDetection|enableFuzzySearchNormalization|fuzzySearchThreshold|characterNamesList|enableRomajiToKatakanaConversion|dummyErrorDebugMode|dummyDummyModel|dummyEnableDummyModel|showDiceButton|diceMinValue|diceMaxValue|backgroundImageBlob|historyBackgroundImageBlob|settingsBackgroundImageBlob|showUserIcon|userIconBlob|showUserName|userName|showAiIcon|aiIconBlob|showAiName|aiName|iconName|messageIcon|dummyUser|enableDummyUser|dummyModel|enableDummyModel|concatDummyModel|(?:gemini|deepSeek|claude|openai|xai|llmAggregator)(?:DummyUser|EnableDummyUser|DummyModel|EnableDummyModel|ConcatDummyModel)|webhookUrl|webhookFormat|enableWebhookNotification|webhooks|showNewChatButton|showDeleteSessionButton|showCopySessionButton|disableLoadChatConfirmationWhileSending|autoCloseOtherSettings)/.test(key));
-                            if (removedSettingKeys.length > 0 || shouldMigrateAutoCloseDisplaySettings) {
+                                .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine|enableSessionLinking|showSessionLinkingSettings|enableCryscroller|cryscroller|enableSettingsCryscroller|enableHistoryCryscroller|enableImmersiveScrolling|enableDynamicScrollMarkerColor|enableProofreading|showProofreadingSettings|proofreading|activeProofreadingConfigId|enableImageUrlReplacement|imageUrlReplacementBase|enableAutoBaseUrlDetection|enableFuzzySearchNormalization|fuzzySearchThreshold|characterNamesList|enableRomajiToKatakanaConversion|dummyErrorDebugMode|dummyDummyModel|dummyEnableDummyModel|showDiceButton|diceMinValue|diceMaxValue|backgroundImageBlob|historyBackgroundImageBlob|settingsBackgroundImageBlob|showUserIcon|userIconBlob|showUserName|userName|showAiIcon|aiIconBlob|showAiName|aiName|iconName|messageIcon|dummyUser|enableDummyUser|dummyModel|enableDummyModel|concatDummyModel|(?:gemini|deepSeek|claude|openai|xai|llmAggregator)(?:DummyUser|EnableDummyUser|DummyModel|EnableDummyModel|ConcatDummyModel)|webhookUrl|webhookFormat|enableWebhookNotification|webhooks|showNewChatButton|showDeleteSessionButton|showCopySessionButton|disableLoadChatConfirmationWhileSending|autoCloseOtherSettings|autoCloseDisplaySettings|showApiProviderToggleFooter|showFooterCycleApiKeyBtn|showPasteButtonInFooter|showSettingsScrollToTopButton|showSettingsScrollToBottomButton)/.test(key));
+                            if (removedSettingKeys.length > 0) {
                                 try {
                                     const cleanupStore = this._getStore(SETTINGS_STORE, 'readwrite');
                                     const cleanupRequests = removedSettingKeys.map((key) => new Promise((resolveCleanup, rejectCleanup) => {
@@ -221,16 +254,6 @@ const dbUtils = {
                                         deleteRequest.onsuccess = () => resolveCleanup();
                                         deleteRequest.onerror = () => rejectCleanup(deleteRequest.error);
                                     }));
-                                    if (shouldMigrateAutoCloseDisplaySettings) {
-                                        cleanupRequests.push(new Promise((resolveCleanup, rejectCleanup) => {
-                                            const saveRequest = cleanupStore.put({
-                                                key: 'autoCloseDisplaySettings',
-                                                value: loadedSettings.autoCloseDisplaySettings,
-                                            });
-                                            saveRequest.onsuccess = () => resolveCleanup();
-                                            saveRequest.onerror = () => rejectCleanup(saveRequest.error);
-                                        }));
-                                    }
                                     await Promise.all(cleanupRequests);
                                 } catch (error) {
                                     console.warn('設定の移行または廃止済み設定の削除に失敗しました:', error);

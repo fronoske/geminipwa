@@ -650,6 +650,8 @@ async callDeepSeekApi(apiKey, model, messagesForApi, generationConfig, systemIns
 
                 if (provider === 'openai') {
                     baseUrl = OPENAI_API_BASE_URL;
+                } else if (provider === 'openrouter') {
+                    baseUrl = OPENROUTER_API_BASE_URL;
                 } else if (provider === 'llmaggregator') {
                     baseUrl = state.settings.llmAggregatorApiBackend;
                     if (!baseUrl) {
@@ -670,6 +672,10 @@ async callDeepSeekApi(apiKey, model, messagesForApi, generationConfig, systemIns
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${apiKey}`
                 };
+                if (provider === 'openrouter') {
+                    headers['HTTP-Referer'] = 'https://geminipwa.pages.dev/';
+                    headers['X-OpenRouter-Title'] = 'GeminiPWA';
+                }
 
                 const body = this._createOpenAICompatibleRequestBody(
                     model,
@@ -687,10 +693,19 @@ async callDeepSeekApi(apiKey, model, messagesForApi, generationConfig, systemIns
                 const response = await fetch(baseUrl, { method: "POST", headers, body: JSON.stringify(body), signal });
                 if (!response.ok) {
                     let msg = `${provider} API error ${response.status}`;
+                    let errorData = null;
                     try {
-                        const je = await response.json();
-                        msg = je.error?.message || msg;
+                        errorData = await response.json();
+                        msg = errorData.error?.message || msg;
                     } catch { }
+                    if (provider === 'openrouter' && response.status === 429) {
+                        const retryAfter = Number(response.headers?.get('Retry-After'));
+                        const retryMessage = Number.isFinite(retryAfter) && retryAfter > 0
+                            ? `${retryAfter}秒後に再試行してください。`
+                            : '時間を置くか、別のモデルを選択してください。';
+                        const errorType = errorData?.error?.metadata?.error_type;
+                        msg = `OpenRouterのレート上限に達しました。${retryMessage}${errorType ? ` (${errorType})` : ''}`;
+                    }
                     throw new Error(msg);
                 }
                 return response;
@@ -731,6 +746,14 @@ async callDeepSeekApi(apiKey, model, messagesForApi, generationConfig, systemIns
                             }
                             try {
                                 const chunk = JSON.parse(data);
+                                if (chunk.error) {
+                                    yield {
+                                        type: 'error',
+                                        error: chunk.error,
+                                        message: chunk.error.message || `${providerName}のストリーミング中にエラーが発生しました。`,
+                                    };
+                                    return;
+                                }
                                 if (chunk.choices?.[0]) {
                                     const delta = chunk.choices[0].delta;
                                     let contentText = null;

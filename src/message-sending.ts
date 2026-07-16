@@ -18,6 +18,7 @@ Object.assign(appLogic, {
                         case 'deepseek': apiKeyToUse = state.settings.deepSeekApiKey; break;
                         case 'claude': apiKeyToUse = state.settings.claudeApiKey; break;
                         case 'openai': apiKeyToUse = state.settings.openaiApiKey; break;
+                        case 'openrouter': apiKeyToUse = state.settings.openrouterApiKey; break;
                         case 'xai': apiKeyToUse = state.settings.xaiApiKey; break;
                         case 'llmaggregator': apiKeyToUse = state.settings.llmAggregatorApiKey; break;
                     }
@@ -27,6 +28,7 @@ Object.assign(appLogic, {
                     case 'deepseek': modelNameToUse = state.settings.deepSeekModelName; break;
                     case 'claude': modelNameToUse = state.settings.claudeModelName; break;
                     case 'openai': modelNameToUse = state.settings.openaiModelName; break;
+                    case 'openrouter': modelNameToUse = state.settings.openrouterModelName; break;
                     case 'xai': modelNameToUse = state.settings.xaiModelName; break;
                     case 'llmaggregator': modelNameToUse = state.settings.llmAggregatorModelName; break;
                 }
@@ -71,6 +73,8 @@ Object.assign(appLogic, {
                     individualPrompt = state.settings.claudeSystemPrompt.trim();
                 } else if (selectedApiProvider === 'openai' && state.settings.openaiEnableSystemPromptDefault) {
                     individualPrompt = state.settings.openaiSystemPrompt.trim();
+                } else if (selectedApiProvider === 'openrouter' && state.settings.openrouterEnableSystemPromptDefault) {
+                    individualPrompt = state.settings.openrouterSystemPrompt.trim();
                 } else if (selectedApiProvider === 'xai' && state.settings.xaiEnableSystemPromptDefault) {
                     individualPrompt = state.settings.xaiSystemPrompt.trim();
                 } else if (selectedApiProvider === 'llmaggregator' && state.settings.llmAggregatorEnableSystemPromptDefault) {
@@ -144,6 +148,14 @@ Object.assign(appLogic, {
                         contextFrequencyPenalty = state.settings.openaiFrequencyPenalty;
                         contextStreamingOutput = state.settings.openaiStreamingOutput;
                         contextStreamingSpeed = state.settings.openaiStreamingSpeed;
+                    } else if (selectedApiProvider === 'openrouter') {
+                        contextTemperature = state.settings.openrouterTemperature;
+                        contextMaxTokens = state.settings.openrouterMaxTokens;
+                        contextTopP = state.settings.openrouterTopP;
+                        contextPresencePenalty = state.settings.openrouterPresencePenalty;
+                        contextFrequencyPenalty = state.settings.openrouterFrequencyPenalty;
+                        contextStreamingOutput = state.settings.openrouterStreamingOutput;
+                        contextStreamingSpeed = state.settings.openrouterStreamingSpeed;
                     } else if (selectedApiProvider === 'xai') {
                         contextTemperature = state.settings.xaiTemperature;
                         contextMaxTokens = state.settings.xaiMaxTokens;
@@ -379,7 +391,7 @@ Object.assign(appLogic, {
                 if (systemPromptTextToUseForApi) {
                     if (selectedApiProvider === 'gemini') {
                         systemInstructionForProvider = { role: "system", parts: [{ text: systemPromptTextToUseForApi }] };
-                    } else if (selectedApiProvider === 'deepseek' || selectedApiProvider === 'claude' || selectedApiProvider === 'openai' || selectedApiProvider === 'xai' || selectedApiProvider === 'llmaggregator') {
+                    } else if (selectedApiProvider === 'deepseek' || selectedApiProvider === 'claude' || selectedApiProvider === 'openai' || selectedApiProvider === 'openrouter' || selectedApiProvider === 'xai' || selectedApiProvider === 'llmaggregator') {
                         systemInstructionForProvider = { content: systemPromptTextToUseForApi, parts: [{ text: systemPromptTextToUseForApi }] };
                     }
                 }
@@ -403,9 +415,9 @@ Object.assign(appLogic, {
                         apiResponseObject = await apiUtils.callDeepSeekApi(apiKeyToUse, modelNameToUse, apiMessages, commonGenerationConfig, systemInstructionForProvider, useStreamingForThisCall, selectedApiProvider);
                     } else if (selectedApiProvider === 'claude') {
                         apiResponseObject = await apiUtils.callClaudeApi(apiKeyToUse, modelNameToUse, apiMessages, commonGenerationConfig, systemInstructionForProvider, useStreamingForThisCall);
-                    } else if (selectedApiProvider === 'openai') {
+                    } else if (selectedApiProvider === 'openai' || selectedApiProvider === 'openrouter') {
                         const hasImage = apiMessages.some(m => m.parts.some(p => p.inlineData && p.inlineData.mimeType.startsWith('image/')));
-                        apiResponseObject = await apiUtils.callOpenAICompatibleApi(apiKeyToUse, modelNameToUse, 'openai', apiMessages, commonGenerationConfig, systemInstructionForProvider, useStreamingForThisCall, hasImage);
+                        apiResponseObject = await apiUtils.callOpenAICompatibleApi(apiKeyToUse, modelNameToUse, selectedApiProvider, apiMessages, commonGenerationConfig, systemInstructionForProvider, useStreamingForThisCall, hasImage);
                     } else if (selectedApiProvider === 'xai') {
                         const hasImage = apiMessages.some(m => m.parts.some(p => p.inlineData && p.inlineData.mimeType.startsWith('image/')));
                         const enableVisionForThisCall = contextXaiVisionEnable || hasImage;
@@ -462,8 +474,8 @@ Object.assign(appLogic, {
                             responseStreamIterator = apiUtils.handleDeepSeekStreamingResponse(apiResponseObject);
                         } else if (selectedApiProvider === 'claude') {
                             responseStreamIterator = apiUtils.handleClaudeStreamingResponse(apiResponseObject);
-                        } else if (selectedApiProvider === 'openai') {
-                            responseStreamIterator = apiUtils.handleOpenAICompatibleStreamingResponse(apiResponseObject, 'openai');
+                        } else if (selectedApiProvider === 'openai' || selectedApiProvider === 'openrouter') {
+                            responseStreamIterator = apiUtils.handleOpenAICompatibleStreamingResponse(apiResponseObject, selectedApiProvider);
                         } else if (selectedApiProvider === 'xai') {
                             responseStreamIterator = apiUtils.handleOpenAICompatibleStreamingResponse(apiResponseObject, 'xai');
                         }
@@ -471,6 +483,7 @@ Object.assign(appLogic, {
                         const currentContextStreamSpeed = selectedApiProvider === 'gemini' ? contextStreamingSpeed :
                             selectedApiProvider === 'deepseek' ? state.settings.deepSeekStreamingSpeed :
                                 selectedApiProvider === 'claude' ? state.settings.claudeStreamingSpeed :
+                                    selectedApiProvider === 'openrouter' ? state.settings.openrouterStreamingSpeed :
                                     selectedApiProvider === 'xai' ? state.settings.xaiStreamingSpeed :
                                         selectedApiProvider === 'llmaggregator' ? state.settings.llmAggregatorStreamingSpeed :
                                             state.settings.openaiStreamingSpeed;
@@ -527,7 +540,7 @@ Object.assign(appLogic, {
                                         modelThoughtSummaryContent = streamData.fullReasoningContent;
                                     }
                                     if (streamData.usageMetadata) finalUsageMetadataFromStream = streamData.usageMetadata;
-                                } else if (selectedApiProvider === 'claude' || selectedApiProvider === 'openai' || selectedApiProvider === 'xai') {
+                                } else if (selectedApiProvider === 'claude' || selectedApiProvider === 'openai' || selectedApiProvider === 'openrouter' || selectedApiProvider === 'xai') {
                                     if (streamData.usageMetadata) finalUsageMetadataFromStream = streamData.usageMetadata;
                                 }
                                 break;
@@ -684,7 +697,7 @@ Object.assign(appLogic, {
                             finalMetadata = { finishReason: data.stop_reason || 'stop' };
                             if (data.usage) finalUsage = { candidatesTokenCount: data.usage.output_tokens, totalTokenCount: data.usage.input_tokens + data.usage.output_tokens };
                             if (!rawContentFromApi && data.stop_reason === 'end_turn') rawContentFromApi = "(応答が空です)";
-                        } else if (selectedApiProvider === 'openai' || selectedApiProvider === 'xai') {
+                        } else if (selectedApiProvider === 'openai' || selectedApiProvider === 'openrouter' || selectedApiProvider === 'xai') {
                             if (data.choices && data.choices.length > 0) {
                                 rawContentFromApi = data.choices[0].message?.content || "";
                                 finalMetadata = { finishReason: data.choices[0].finish_reason };

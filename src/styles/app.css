@@ -1867,15 +1867,6 @@
             gap: 10px;
         }
 
-        .secondary-input-actions,
-        .primary-input-actions {
-            display: grid;
-            flex: 0 0 40px;
-            gap: 6px;
-            align-self: flex-end;
-            justify-items: center;
-        }
-
         .footer-action-button {
             height: 40px;
             width: 40px;
@@ -1902,7 +1893,8 @@
             color: #424242;
         }
 
-        .chat-input-area button#attach-file-btn {
+        #attach-file-btn,
+        .header-menu-button {
             position: relative;
         }
 
@@ -1956,6 +1948,11 @@
             color: #ffffff !important;
         }
 
+        .app-header .api-provider-toggle-btn.openrouter {
+            background-color: #6d4aff;
+            color: #fff;
+        }
+
         .app-header .api-provider-toggle-btn.xai {
             background-color: #000000 !important;
             color: #ffffff !important;
@@ -1986,6 +1983,10 @@
             color: #ffffff !important;
         }
 
+        body.dark-mode .app-header .api-provider-toggle-btn.openrouter:hover {
+            background-color: #8064ff;
+        }
+
         body.dark-mode .app-header .api-provider-toggle-btn.xai:hover {
             background-color: rgba(0, 0, 0, 0.9) !important;
             color: #ffffff !important;
@@ -1995,40 +1996,10 @@
             background-color: #c62828 !important;
         }
 
-        .chat-input-area .api-provider-toggle-btn.gemini {
-            background-color: #ffffff !important;
-            color: #8A75D2 !important;
-        }
-
-        .chat-input-area .api-provider-toggle-btn.deepseek {
-            background-color: #4D6BFF !important;
-            color: #ffffff !important;
-        }
-
-        .chat-input-area .api-provider-toggle-btn.claude {
-            background-color: #D97757 !important;
-            color: #EFEDE5 !important;
-        }
-
-        .chat-input-area .api-provider-toggle-btn.openai {
-            background-color: #10A37F !important;
-            color: #ffffff !important;
-        }
-
-        .chat-input-area .api-provider-toggle-btn.xai {
-            background-color: #000000 !important;
-            color: #ffffff !important;
-        }
-
-        .chat-input-area .api-provider-toggle-btn.llmaggregator {
-            background-color: #e53935 !important;
-            color: #ffffff !important;
-        }
-
         .attachment-badge {
             position: absolute;
-            top: -4px;
-            right: -4px;
+            top: 50%;
+            right: 10px;
             width: var(--badge-size);
             height: var(--badge-size);
             background-color: var(--badge-color);
@@ -2036,19 +2007,32 @@
             border: 1px solid var(--bg-primary);
             display: none;
             pointer-events: none;
+            transform: translateY(-50%);
         }
 
-        .chat-input-area button#attach-file-btn.has-attachments .attachment-badge {
+        #attach-file-btn.has-attachments .attachment-badge {
             display: block;
+        }
+
+        .header-menu-button.has-attachments::after {
+            content: '';
+            position: absolute;
+            top: 1px;
+            right: 1px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--badge-color);
+            border: 1px solid var(--bg-header);
         }
 
         .chat-input-area textarea {
             width: 0;
             flex: 1 1 0;
             min-width: 0;
-            min-height: 86px;
+            min-height: 40px;
             max-height: 120px;
-            height: 86px;
+            height: 40px;
             resize: none;
             margin-bottom: 0;
             padding: 8px 10px;
@@ -2364,6 +2348,30 @@
             transition: color 0.3s ease, border-color 0.3s ease;
         }
 
+        .settings-subsection {
+            margin-top: 10px;
+        }
+
+        .settings-subsection-summary {
+            display: list-item;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+            color: var(--text-link);
+            font-weight: normal;
+            list-style: revert;
+            cursor: pointer;
+        }
+
+        #settings-screen .main-content > details.settings-group > details,
+        #settings-screen .main-content > details.settings-group > div > details {
+            margin-top: 18px !important;
+        }
+
+        #settings-screen .main-content > details.settings-group > details > summary,
+        #settings-screen .main-content > details.settings-group > div > details > summary {
+            margin-bottom: 6px !important;
+        }
+
         .settings-actions {
             margin-top: 20px;
             padding-top: 20px;
@@ -2477,6 +2485,7 @@
         #deepseek-additional-models,
         #claude-additional-models,
         #openai-additional-models,
+        #openrouter-additional-models,
         #xai-additional-models,
         #llmaggregator-additional-models {
             height: 53px;
@@ -3391,8 +3400,8 @@
         }
 
         .app-container.minimized-ui .chat-input-area textarea {
-            min-height: 70px;
-            height: 70px;
+            min-height: 32px;
+            height: 32px;
             padding: 6px 8px;
             font-size: 13px;
         }
@@ -3821,6 +3830,7 @@
 #settings-group-deepseek-other-params .param-slider-container,
 #settings-group-claude-other-params .param-slider-container,
 #settings-group-openai-other-params .param-slider-container,
+#settings-group-openrouter-other-params .param-slider-container,
 #settings-group-xai-other-params .param-slider-container,
 #settings-group-llmaggregator-other-params .param-slider-container {
     margin-bottom: 8px;
@@ -3949,7 +3959,6 @@ font-size: 1em !important;
 }
 
 #settings-screen .main-content .settings-group > summary,
-#settings-screen .main-content .settings-group > details > summary,
 #settings-screen .main-content h3 {
 font-size: 1.142em !important;
 }

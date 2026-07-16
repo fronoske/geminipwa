@@ -96,9 +96,10 @@ describe('project configuration', () => {
 
   it('uses one configurable header menu for chat-wide actions', () => {
     const html = readFile('src/index.html');
-    for (const id of ['header-menu-btn', 'header-menu-new-chat-btn', 'header-menu-clear-btn', 'header-menu-copy-btn']) {
+    for (const id of ['header-menu-btn', 'attach-file-btn', 'header-menu-new-chat-btn', 'header-menu-clear-btn', 'header-menu-copy-btn']) {
       expect(html).toContain(`id="${id}"`);
     }
+    expect(html).toContain('>ファイル添付<span');
     expect(html).toContain('全削除（先頭を除く）');
     expect(html).toContain('id="show-header-menu-button-toggle"');
     expect(html).not.toMatch(/id="(?:new-chat|delete-session|copy-session)-btn"/);
@@ -127,28 +128,25 @@ describe('project configuration', () => {
     expect(styles).toMatch(/#loading-indicator \{[\s\S]*?position: absolute;/);
   });
 
-  it('uses a two-line input with stacked attach and send actions', () => {
+  it('uses a compact one-line input with persistent paste and send actions', () => {
     const html = readFile('src/index.html');
-    expect(html).toContain('id="user-input" placeholder="メッセージを入力..." rows="2"');
-    expect(html).toContain('class="primary-input-actions"');
-    const actionStack = html.slice(
-      html.indexOf('<div class="primary-input-actions">'),
-      html.indexOf('</div>', html.indexOf('<div class="primary-input-actions">')),
-    );
-    expect(actionStack.indexOf('id="attach-file-btn"')).toBeLessThan(actionStack.indexOf('id="send-button"'));
+    expect(html).toContain('id="user-input" placeholder="メッセージを入力..." rows="1"');
+    expect(html).not.toContain('class="primary-input-actions"');
+    expect(html.indexOf('id="paste-to-input-btn"')).toBeLessThan(html.indexOf('id="user-input"'));
+    expect(html.indexOf('id="user-input"')).toBeLessThan(html.indexOf('id="send-button"'));
     const styles = readFile('src/styles/app.css');
-    expect(styles).toMatch(/\.chat-input-area textarea \{[\s\S]*?min-height: 86px;[\s\S]*?height: 86px;/);
+    expect(styles).toMatch(/\.chat-input-area textarea \{[\s\S]*?min-height: 40px;[\s\S]*?height: 40px;/);
+    expect(styles).toMatch(/\.app-container\.minimized-ui \.chat-input-area textarea \{[\s\S]*?min-height: 32px;[\s\S]*?height: 32px;/);
   });
 
-  it('stacks optional footer actions vertically', () => {
+  it('does not expose provider, API key, or paste visibility options in the footer', () => {
     const html = readFile('src/index.html');
-    const footerActionsStart = html.indexOf('id="footer-secondary-actions"');
-    const footerActionsEnd = html.indexOf('</div>', footerActionsStart);
-    const footerActions = html.slice(footerActionsStart, footerActionsEnd);
-    expect(footerActions).toContain('id="footer-api-provider-toggle-btn"');
-    expect(footerActions).toContain('id="footer-cycle-api-key-btn"');
-    expect(footerActions).toContain('id="paste-to-input-btn"');
-    expect(readFile('src/styles/app.css')).toMatch(/\.secondary-input-actions,[\s\S]*?display: grid;/);
+    expect(html).not.toMatch(/id="(?:footer-secondary-actions|footer-api-provider-toggle-btn|footer-cycle-api-key-btn)"/);
+    expect(html).not.toMatch(/id="show-(?:api-provider-toggle-footer|footer-cycle-api-key-btn-toggle|paste-button-in-footer-toggle)"/);
+    const stateSource = readFile('src/app-state.ts');
+    expect(stateSource).not.toMatch(/show(?:ApiProviderToggleFooter|FooterCycleApiKeyBtn|PasteButtonInFooter)/);
+    const databaseSource = readFile('src/database.ts');
+    expect(databaseSource).toContain('showApiProviderToggleFooter|showFooterCycleApiKeyBtn|showPasteButtonInFooter');
   });
 
   it('uses an accessible SVG history icon instead of a text abbreviation', () => {
@@ -174,9 +172,12 @@ describe('project configuration', () => {
 
   it('separates behavior and display adjustment settings', () => {
     const html = readFile('src/index.html');
+    const promptIndex = html.indexOf('id="settings-group-prompts"');
     const behaviorIndex = html.indexOf('id="settings-group-behavior-adjustment"');
     const displayIndex = html.indexOf('id="settings-group-display-adjustment"');
     const inputPresetIndex = html.indexOf('id="settings-group-input-presets"');
+    expect(promptIndex).toBeGreaterThan(-1);
+    expect(promptIndex).toBeLessThan(behaviorIndex);
     expect(behaviorIndex).toBeGreaterThan(-1);
     expect(behaviorIndex).toBeLessThan(displayIndex);
     const behaviorSettings = html.slice(behaviorIndex, displayIndex);
@@ -190,6 +191,78 @@ describe('project configuration', () => {
     expect(html).not.toMatch(/ファクター[：:]/);
   });
 
+  it('groups provider-independent prompts in a top-level prompt section', () => {
+    const html = readFile('src/index.html');
+    const providerIndex = html.indexOf('id="settings-group-api-provider"');
+    const geminiIndex = html.indexOf('id="gemini-settings-group"');
+    const promptIndex = html.indexOf('id="settings-group-prompts"');
+    const behaviorIndex = html.indexOf('id="settings-group-behavior-adjustment"');
+    const providerSettings = html.slice(providerIndex, geminiIndex);
+    const promptSettings = html.slice(promptIndex, behaviorIndex);
+    expect(providerSettings).not.toContain('settings-group-common-system-prompt');
+    expect(providerSettings).not.toContain('settings-group-common-dummy-user-prompt');
+    expect(promptSettings).toContain('API共通プロンプト</summary>');
+    expect(promptSettings).toContain('id="settings-group-common-system-prompt"');
+    expect(promptSettings).toContain('id="settings-group-common-dummy-user-prompt"');
+    expect(promptSettings).toMatch(/id="settings-group-common-system-prompt" class="settings-subsection">\s*<summary class="settings-subsection-summary">/);
+    const behaviorSettings = html.slice(behaviorIndex, html.indexOf('id="settings-group-display-adjustment"'));
+    expect(behaviorSettings).toMatch(/id="settings-group-factor-operation-changes" class="settings-subsection">\s*<summary class="settings-subsection-summary">/);
+    const styles = readFile('src/styles/app.css');
+    expect(styles).toMatch(/\.settings-subsection-summary \{[\s\S]*?font-weight: normal;/);
+    expect(styles).not.toContain('#settings-screen .main-content .settings-group > details > summary');
+  });
+
+  it('uses concise settings copy and only exposes light and dark themes', () => {
+    const html = readFile('src/index.html');
+    expect(html).toContain('API設定</summary>');
+    expect(html).toContain('<label for="api-provider-select">APIプロバイダー:</label>');
+    expect(html).toContain('システムプロンプト</summary>');
+    expect(html).toContain('ダミーユーザープロンプト</summary>');
+    expect(html).not.toMatch(/<label for="common-(?:system-prompt-default|dummy-user)">/);
+    expect(html).toContain('アプリの挙動</summary>');
+    for (const label of [
+      'リトライ時の確認をスキップする',
+      'メッセージ削除時の確認をスキップする',
+      '添付ファイル削除時の確認をスキップする',
+    ]) {
+      expect(html).toContain(label);
+    }
+    const advancedStart = html.indexOf('id="settings-group-factor-advanced-options"');
+    const displayStart = html.indexOf('id="settings-group-display-adjustment"');
+    expect(html.slice(advancedStart, displayStart)).not.toMatch(/<hr|複数のAPIキーを使い分けたい場合に使用/);
+    const themeStart = html.indexOf('id="theme-select"');
+    const themeEnd = html.indexOf('</select>', themeStart);
+    const themeOptions = html.slice(themeStart, themeEnd);
+    expect(themeOptions).toContain('<option value="light">ライトモード</option>');
+    expect(themeOptions).toContain('<option value="dark">ダークモード</option>');
+    expect(themeOptions).not.toContain('pastel-');
+    expect(html).not.toContain('margin: 15px 0 15px 0; border: none; border-top: 1px solid var(--border-secondary);');
+    expect(readFile('src/database.ts')).toContain("if (!['light', 'dark'].includes(state.settings.theme))");
+  });
+
+  it('always shows both settings navigation buttons without visibility options', () => {
+    const html = readFile('src/index.html');
+    expect(html).toContain('id="settings-scroll-to-top-btn"');
+    expect(html).toContain('id="settings-scroll-to-bottom-btn"');
+    expect(html).not.toMatch(/settings-group-factor-settings-buttons|show-settings-scroll-to-(?:top|bottom)-button-toggle/);
+    expect(readFile('src/app-state.ts')).not.toMatch(/showSettingsScrollTo(?:Top|Bottom)Button/);
+    expect(readFile('src/database.ts')).toContain('showSettingsScrollToTopButton|showSettingsScrollToBottomButton');
+  });
+
+  it('expands top-level settings sections and collapses all nested sections when opening settings', () => {
+    const settingsSource = readFile('src/ui-settings.ts');
+    expect(settingsSource).toContain("document.querySelectorAll('#settings-screen .main-content > details.settings-group')");
+    expect(settingsSource).toContain('topLevelDetails.open = true');
+    expect(settingsSource).toContain("topLevelDetails.querySelectorAll('details')");
+    expect(settingsSource).toContain('nestedDetails.open = false');
+  });
+
+  it('spaces second-level settings headings closer to their content than to the previous section', () => {
+    const styles = readFile('src/styles/app.css');
+    expect(styles).toMatch(/#settings-screen \.main-content > details\.settings-group > details,[\s\S]*?margin-top: 18px !important;/);
+    expect(styles).toMatch(/#settings-screen \.main-content > details\.settings-group > details > summary,[\s\S]*?margin-bottom: 6px !important;/);
+  });
+
   it('keeps the first message when clearing the current chat', () => {
     const sessions = readFile('src/chat-sessions.ts');
     expect(sessions).toContain('state.currentMessages.slice(0, 1)');
@@ -198,10 +271,20 @@ describe('project configuration', () => {
   });
 
   it('preserves multiple API key management as a protected core feature', () => {
+    const html = readFile('src/index.html');
+    const apiSettings = html.slice(
+      html.indexOf('id="settings-group-api-provider"'),
+      html.indexOf('id="gemini-settings-group"'),
+    );
+    const behaviorSettings = html.slice(
+      html.indexOf('id="settings-group-behavior-adjustment"'),
+      html.indexOf('id="settings-group-display-adjustment"'),
+    );
     expect(runtimeManifest.application).toContain('api-key-manager');
     expect(readFile('src/api-key-manager.ts')).toContain('const multiApiKeyUtils = {');
     expect(readFile('src/app-state.ts')).toContain('geminiApiKeys: []');
-    expect(readFile('src/index.html')).toContain('id="show-multi-api-keys-toggle"');
+    expect(apiSettings).toContain('id="show-multi-api-keys-toggle"');
+    expect(behaviorSettings).not.toContain('id="show-multi-api-keys-toggle"');
     expect(readFile('docs/product-decisions.md')).toContain('Multiple API key management');
   });
 
@@ -218,16 +301,27 @@ describe('project configuration', () => {
     const presetSource = readFile('src/input-preset.ts');
     expect(presetSource).toContain("const INPUT_PRESET_CURSOR_MARKER = '{|}'");
     expect(presetSource).toContain("document.createElement('textarea')");
+    expect(presetSource).toContain("this.textareaResizeObserver.observe(elements.userInput)");
     expect(readFile('src/app-state.ts')).toContain('inputPresets: DEFAULT_INPUT_PRESETS');
     expect(readFile('docs/product-decisions.md')).toContain('Input presets');
   });
 
   it('preserves the common Dummy User prompt as a protected core feature', () => {
-    expect(readFile('src/index.html')).toContain('id="common-dummy-user"');
+    const html = readFile('src/index.html');
+    expect(html).toContain('id="common-dummy-user"');
+    expect(html).toContain('ダミーユーザープロンプト</summary>');
+    expect(html).not.toContain('Dummy User');
     expect(readFile('src/app-state.ts')).toContain("commonDummyUser: ''");
     const sending = readFile('src/message-sending.ts');
     expect(sending).toContain("role: 'user', parts: [{ text: commonDummyUser }]");
     expect(readFile('docs/product-decisions.md')).toContain('Common Dummy User prompt');
+  });
+
+  it('does not auto-close display adjustment settings', () => {
+    expect(readFile('src/index.html')).not.toMatch(/auto-close-display-settings|表示の調整』を自動で閉じる/);
+    expect(readFile('src/app-state.ts')).not.toContain('autoCloseDisplaySettings');
+    expect(readFile('src/ui-settings.ts')).not.toContain('autoCloseDisplaySettings');
+    expect(readFile('src/database.ts')).toContain('autoCloseOtherSettings|autoCloseDisplaySettings');
   });
 
   it('preserves memo and clipboard stack as protected core features', () => {

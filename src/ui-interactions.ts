@@ -232,7 +232,7 @@ Object.assign(uiUtils, {
                 }
 
                 const isEnabled = state.settings.showMultiApiKeys && keys.length > 1;
-                const buttons = [elements.headerCycleApiKeyBtn, elements.footerCycleApiKeyBtn];
+                const buttons = [elements.headerCycleApiKeyBtn];
 
                 buttons.forEach(button => {
                     if (!button) return;
@@ -292,6 +292,7 @@ Object.assign(uiUtils, {
             updateAttachmentBadgeVisibility() {
                 const hasAttachments = state.pendingAttachments.length > 0;
                 elements.attachFileBtn.classList.toggle('has-attachments', hasAttachments);
+                elements.headerMenuBtn.classList.toggle('has-attachments', hasAttachments);
                 if (!state.isSending) {
                     elements.sendButton.disabled = elements.userInput.value.trim() === '' && !hasAttachments;
                 }
@@ -524,7 +525,7 @@ Object.assign(uiUtils, {
                 });
             },
             toggleMultiApiKeysVisibility(show) {
-                const providers = ['gemini', 'deepseek', 'claude', 'openai', 'xai'];
+                const providers = ['gemini', 'deepseek', 'claude', 'openai', 'openrouter', 'xai'];
 
                 providers.forEach(provider => {
                     const multiKeySection = document.getElementById(`${provider}-multi-api-keys-section`);
@@ -549,6 +550,7 @@ Object.assign(uiUtils, {
                                 case 'deepseek': singleKeyValue = state.settings.deepSeekApiKey; break;
                                 case 'claude': singleKeyValue = state.settings.claudeApiKey; break;
                                 case 'openai': singleKeyValue = state.settings.openaiApiKey; break;
+                                case 'openrouter': singleKeyValue = state.settings.openrouterApiKey; break;
                                 case 'xai': singleKeyValue = state.settings.xaiApiKey; break;
                                 case 'llmaggregator': singleKeyValue = state.settings.llmAggregatorApiKey; break;
                             }
@@ -556,13 +558,16 @@ Object.assign(uiUtils, {
                         }
                     }
                 });
+
+                multiBackendUtils.toggleMultiBackendsVisibility(show);
             },
             updateApiKeyInputType() {
                 const isUnmasked = state.settings.unmaskApiKeys;
                 const type = isUnmasked ? 'text' : 'password';
                 const mainInputIds = [
                     'gemini-api-key', 'deepseek-api-key', 'claude-api-key',
-                    'openai-api-key', 'xai-api-key', 'llmaggregator-api-key'
+                    'openai-api-key', 'openrouter-api-key', 'xai-api-key',
+                    'llmaggregator-api-key'
                 ];
                 mainInputIds.forEach(id => {
                     const el = document.getElementById(id);

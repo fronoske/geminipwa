@@ -4,6 +4,7 @@ const INPUT_PRESET_CURSOR_MARKER = '{|}';
 
 const inputPresetUtils = {
   initialized: false,
+  textareaResizeObserver: null,
 
   createId() {
     if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
@@ -66,6 +67,18 @@ const inputPresetUtils = {
     window.addEventListener('resize', () => {
       if (!elements.inputPresetPopup.classList.contains('hidden')) this.positionPopup();
     });
+    if (typeof ResizeObserver !== 'undefined') {
+      this.textareaResizeObserver = new ResizeObserver(() => {
+        if (!elements.inputPresetPopup.classList.contains('hidden')) this.positionPopup();
+      });
+      this.textareaResizeObserver.observe(elements.userInput);
+    } else {
+      elements.userInput.addEventListener('input', () => {
+        requestAnimationFrame(() => {
+          if (!elements.inputPresetPopup.classList.contains('hidden')) this.positionPopup();
+        });
+      });
+    }
 
     this.refresh();
   },

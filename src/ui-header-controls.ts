@@ -29,23 +29,6 @@ Object.assign(uiUtils, {
                         this.setHeaderMenuOpen(false);
                     }
 
-                    if (elements.pasteToInputBtn) {
-                        elements.pasteToInputBtn.classList.toggle('hidden', !state.settings.showPasteButtonInFooter);
-                    }
-                    if (elements.footerApiProviderToggleBtn) {
-                        elements.footerApiProviderToggleBtn.classList.toggle('hidden', !state.settings.showApiProviderToggleFooter);
-                    }
-                    if (elements.footerCycleApiKeyBtn) {
-                        elements.footerCycleApiKeyBtn.classList.toggle('hidden', !state.settings.showFooterCycleApiKeyBtn);
-                    }
-                    if (elements.footerSecondaryActions) {
-                        const hasVisibleFooterAction = [
-                            elements.footerApiProviderToggleBtn,
-                            elements.footerCycleApiKeyBtn,
-                            elements.pasteToInputBtn,
-                        ].some((button) => button && !button.classList.contains('hidden'));
-                        elements.footerSecondaryActions.classList.toggle('hidden', !hasVisibleFooterAction);
-                    }
                     this.adjustHeaderLayout();
                     this.updateProviderToggleButtons();
                 };
@@ -88,7 +71,7 @@ Object.assign(uiUtils, {
                 elements.headerSubmenu.classList.toggle('hidden', !isOpen);
                 elements.headerMenuBtn.setAttribute('aria-expanded', String(isOpen));
                 if (isOpen) {
-                    elements.headerMenuNewChatBtn.focus();
+                    elements.headerSubmenu.querySelector('[role="menuitem"]')?.focus();
                 }
             },
             toggleHeaderMenu() {
@@ -100,16 +83,17 @@ Object.assign(uiUtils, {
                     deepseek: { text: 'DS', title: 'DeepSeek', className: 'deepseek' },
                     claude: { text: 'AN', title: 'Anthropic', className: 'claude' },
                     openai: { text: 'OP', title: 'OpenAI', className: 'openai' },
+                    openrouter: { text: 'OR', title: 'OpenRouter', className: 'openrouter' },
                     xai: { text: 'XA', title: 'xAI', className: 'xai' },
                     llmaggregator: { text: 'LA', title: 'LLM Aggregator', className: 'llmaggregator' },
                 };
                 const currentProviderInfo = providerMap[state.settings.apiProvider] || { text: '??', title: 'Unknown', className: '' };
 
-                [elements.headerApiProviderToggleBtn, elements.footerApiProviderToggleBtn].forEach(button => {
+                [elements.headerApiProviderToggleBtn].forEach(button => {
                     if (button) {
                         button.textContent = currentProviderInfo.text;
                         button.title = `API: ${currentProviderInfo.title}`;
-                        button.classList.remove('gemini', 'deepseek', 'claude', 'openai', 'xai', 'llmaggregator');
+                        button.classList.remove('gemini', 'deepseek', 'claude', 'openai', 'openrouter', 'xai', 'llmaggregator');
                         if (currentProviderInfo.className) {
                             button.classList.add(currentProviderInfo.className);
                         }
@@ -237,6 +221,34 @@ Object.assign(uiUtils, {
                 } else {
                     select.value = DEFAULT_OPENAI_MODEL;
                 }
+            },
+            updateOpenRouterUserModelOptions() {
+                const group = elements.openrouterUserDefinedModelsGroup;
+                group.innerHTML = '';
+                const models = (state.settings.openrouterAdditionalModels || '')
+                    .split(',')
+                    .map(model => model.trim())
+                    .filter(Boolean);
+
+                models.forEach(modelId => {
+                    const option = document.createElement('option');
+                    option.value = modelId;
+                    option.textContent = modelId;
+                    group.appendChild(option);
+                });
+                if (state.settings.openrouterModelName
+                    && !Array.from(elements.openrouterModelNameSelect.options)
+                        .some(option => option.value === state.settings.openrouterModelName)) {
+                    const option = document.createElement('option');
+                    option.value = state.settings.openrouterModelName;
+                    option.textContent = state.settings.openrouterModelName;
+                    group.appendChild(option);
+                }
+                group.disabled = group.children.length === 0;
+                elements.openrouterModelNameSelect.value = Array.from(elements.openrouterModelNameSelect.options)
+                    .some(option => option.value === state.settings.openrouterModelName)
+                    ? state.settings.openrouterModelName
+                    : DEFAULT_OPENROUTER_MODEL;
             },
             updateXaiUserModelOptions() {
                 const group = elements.xaiUserDefinedModelsGroup;

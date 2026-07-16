@@ -669,6 +669,159 @@ Object.assign(appLogic, {
                     }
                 }
             },
+            async _createAttachmentFromFile(file) {
+                const fileName = file.name;
+                const fileExtension = fileName.slice(((fileName.lastIndexOf('.') - 1) >>> 0) + 2).toLowerCase();
+                const guessedMimeType = extensionToMimeTypeMap[fileExtension] || file.type || 'application/octet-stream';
+                let textData = null;
+                let base64Data = null;
+
+                if (guessedMimeType.startsWith('text/')) {
+                    textData = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = () => resolve(reader.result);
+                        reader.onerror = () => reject(reader.error || new Error('ファイルの読み込みに失敗しました。'));
+                        reader.readAsText(file);
+                    });
+                } else {
+                    base64Data = await fileToBase64(file);
+                }
+
+                return {
+                    file,
+                    name: fileName,
+                    mimeType: guessedMimeType,
+                    base64Data,
+                    textData,
+                };
+            },
+            async removeAttachment(messageIndex, attachmentIndex) {
+                const message = state.currentMessages[messageIndex];
+                const attachment = message?.attachments?.[attachmentIndex];
+                if (!attachment) return;
+
+                if (!state.settings.disableAttachmentConfirmation) {
+                    const confirmed = await uiUtils.showCustomConfirm(`添付ファイル「${attachment.name}」を削除しますか？`);
+                    if (!confirmed) return;
+                }
+
+                message.attachments.splice(attachmentIndex, 1);
+                uiUtils.renderChatMessages(true);
+                try {
+                    await dbUtils.saveChat();
+                } catch (error) {
+                    await uiUtils.showCustomAlert('添付ファイルの削除状態の保存に失敗しました。');
+                }
+            },
+            editAttachment(messageIndex, attachmentIndex) {
+                const message = state.currentMessages[messageIndex];
+                if (!message?.attachments?.[attachmentIndex]) return;
+
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'file';
+                hiddenInput.accept = elements.fileInput.accept;
+                hiddenInput.classList.add('hidden');
+                hiddenInput.addEventListener('cancel', () => hiddenInput.remove(), { once: true });
+                hiddenInput.addEventListener('change', async () => {
+                    const file = hiddenInput.files?.[0];
+                    if (!file) {
+                        hiddenInput.remove();
+                        return;
+                    }
+
+                    if (file.size > MAX_FILE_SIZE) {
+                        await uiUtils.showCustomAlert(`ファイルサイズが大きすぎます (${formatFileSize(MAX_FILE_SIZE)}以下)。`);
+                        hiddenInput.remove();
+                        return;
+                    }
+
+                    const otherAttachmentsSize = message.attachments.reduce((total, attachment, index) => {
+                        if (index === attachmentIndex) return total;
+                        if (attachment.file?.size) return total + attachment.file.size;
+                        if (attachment.textData) return total + new Blob([attachment.textData]).size;
+                        if (attachment.base64Data) return total + Math.floor(attachment.base64Data.length * 3 / 4);
+                        return total;
+                    }, 0);
+                    if (otherAttachmentsSize + file.size > MAX_TOTAL_ATTACHMENT_SIZE) {
+                        await uiUtils.showCustomAlert(`合計ファイルサイズの上限 (${formatFileSize(MAX_TOTAL_ATTACHMENT_SIZE)}) を超えます。`);
+                        hiddenInput.remove();
+                        return;
+                    }
+
+                    try {
+                        message.attachments[attachmentIndex] = await this._createAttachmentFromFile(file);
+                        uiUtils.renderChatMessages(true);
+                        await dbUtils.saveChat();
+                    } catch (error) {
+                        await uiUtils.showCustomAlert(`ファイルの処理中にエラーが発生しました: ${error.message || error}`);
+                    } finally {
+                        hiddenInput.remove();
+                    }
+                }, { once: true });
+                document.body.appendChild(hiddenInput);
+                hiddenInput.click();
+            },
+            addMoreAttachments(messageIndex) {
+                const message = state.currentMessages[messageIndex];
+                if (!message) return;
+                if (!Array.isArray(message.attachments)) message.attachments = [];
+
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'file';
+                hiddenInput.multiple = true;
+                hiddenInput.accept = elements.fileInput.accept;
+                hiddenInput.classList.add('hidden');
+                hiddenInput.addEventListener('cancel', () => hiddenInput.remove(), { once: true });
+                hiddenInput.addEventListener('change', async () => {
+                    const files = Array.from(hiddenInput.files || []);
+                    let currentTotalSize = message.attachments.reduce((total, attachment) => {
+                        if (attachment.file?.size) return total + attachment.file.size;
+                        if (attachment.textData) return total + new Blob([attachment.textData]).size;
+                        if (attachment.base64Data) return total + Math.floor(attachment.base64Data.length * 3 / 4);
+                        return total;
+                    }, 0);
+                    let addedCount = 0;
+
+                    try {
+                        for (const file of files) {
+                            if (file.size > MAX_FILE_SIZE) {
+                                await uiUtils.showCustomAlert(`ファイル「${file.name}」はサイズが大きすぎます (${formatFileSize(MAX_FILE_SIZE)}以下)。`);
+                                continue;
+                            }
+                            if (currentTotalSize + file.size > MAX_TOTAL_ATTACHMENT_SIZE) {
+                                await uiUtils.showCustomAlert(`合計ファイルサイズの上限 (${formatFileSize(MAX_TOTAL_ATTACHMENT_SIZE)}) を超えるため、残りのファイルは追加されませんでした。`);
+                                break;
+                            }
+                            if (message.attachments.some(attachment => attachment.name === file.name)) continue;
+
+                            message.attachments.push(await this._createAttachmentFromFile(file));
+                            currentTotalSize += file.size;
+                            addedCount++;
+                        }
+
+                        if (addedCount > 0) {
+                            uiUtils.renderChatMessages(true);
+                            await dbUtils.saveChat();
+                        }
+                    } catch (error) {
+                        await uiUtils.showCustomAlert(`ファイルの処理中にエラーが発生しました: ${error.message || error}`);
+                    } finally {
+                        hiddenInput.remove();
+                    }
+                }, { once: true });
+                document.body.appendChild(hiddenInput);
+                hiddenInput.click();
+            },
+            previewAttachment(messageIndex, attachmentIndex) {
+                const attachment = state.currentMessages[messageIndex]?.attachments?.[attachmentIndex];
+                if (!attachment?.mimeType?.startsWith('image/') || !attachment.base64Data) return;
+
+                const image = elements.imagePreviewDialog.querySelector('img');
+                image.src = `data:${attachment.mimeType};base64,${attachment.base64Data}`;
+                image.alt = attachment.name;
+                elements.imagePreviewDialog.querySelector('.dialog-ok-btn').onclick = () => elements.imagePreviewDialog.close();
+                elements.imagePreviewDialog.showModal();
+            },
             async handleFileSelection(fileList) {
                 if (!fileList || fileList.length === 0) return;
                 const newFiles = Array.from(fileList);

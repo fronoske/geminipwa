@@ -7,6 +7,7 @@ const multiApiKeyUtils = {
             'd': 'deepseek', 'ds': 'deepseek', 'deepseek': 'deepseek', 'de': 'deepseek',
             'c': 'claude', 'cl': 'claude', 'claude': 'claude', 'a': 'claude', 'an': 'claude', 'anthropic': 'claude',
             'o': 'openai', 'op': 'openai', 'openai': 'openai', 'ch': 'openai', 'chatgpt': 'openai',
+            'or': 'openrouter', 'openrouter': 'openrouter', 'router': 'openrouter',
             'x': 'xai', 'xa': 'xai', 'xai': 'xai', 'gr': 'xai', 'grok': 'xai'
         },
 
@@ -89,6 +90,7 @@ const multiApiKeyUtils = {
                 elements.addDeepseekApiKeyBtn.addEventListener('click', () => this.addApiKey('deepseek'));
                 elements.addClaudeApiKeyBtn.addEventListener('click', () => this.addApiKey('claude'));
                 elements.addOpenaiApiKeyBtn.addEventListener('click', () => this.addApiKey('openai'));
+                elements.addOpenrouterApiKeyBtn.addEventListener('click', () => this.addApiKey('openrouter'));
                 elements.addXaiApiKeyBtn.addEventListener('click', () => this.addApiKey('xai'));
 
                 this.renderAllApiKeyLists();
@@ -168,7 +170,7 @@ const multiApiKeyUtils = {
             },
 
             clearAllNewKeyTextareas() {
-                const providers = ['gemini', 'deepseek', 'claude', 'openai', 'xai', 'llmaggregator'];
+                const providers = ['gemini', 'deepseek', 'claude', 'openai', 'openrouter', 'xai', 'llmaggregator'];
                 providers.forEach(provider => {
                     const inputElement = document.getElementById(`${provider}-new-api-keys-input`);
                     if (inputElement) {
@@ -254,6 +256,7 @@ if (state.settings.disableDeleteApiKeyConfirmation) {
                     case 'deepseek': return state.settings.deepseekApiKeys;
                     case 'claude': return state.settings.claudeApiKeys;
                     case 'openai': return state.settings.openaiApiKeys;
+                    case 'openrouter': return state.settings.openrouterApiKeys;
                     case 'xai': return state.settings.xaiApiKeys;
                     default: return [];
                 }
@@ -265,6 +268,7 @@ if (state.settings.disableDeleteApiKeyConfirmation) {
                     case 'deepseek': state.settings.deepseekActiveApiKeyIndex = index; break;
                     case 'claude': state.settings.claudeActiveApiKeyIndex = index; break;
                     case 'openai': state.settings.openaiActiveApiKeyIndex = index; break;
+                    case 'openrouter': state.settings.openrouterActiveApiKeyIndex = index; break;
                     case 'xai': state.settings.xaiActiveApiKeyIndex = index; break;
                 }
             },
@@ -292,6 +296,9 @@ if (state.settings.disableDeleteApiKeyConfirmation) {
                         break;
                     case 'openai':
                         elements.openaiApiKeyInput.value = activeKey;
+                        break;
+                    case 'openrouter':
+                        elements.openrouterApiKeyInput.value = activeKey;
                         break;
                     case 'xai':
                         elements.xaiApiKeyInput.value = activeKey;
@@ -390,6 +397,7 @@ if (state.settings.disableDeleteApiKeyConfirmation) {
                     case 'deepseek': return elements.deepseekApiKeysList;
                     case 'claude': return elements.claudeApiKeysList;
                     case 'openai': return elements.openaiApiKeysList;
+                    case 'openrouter': return elements.openrouterApiKeysList;
                     case 'xai': return elements.xaiApiKeysList;
                     default: return null;
                 }
@@ -401,6 +409,7 @@ if (state.settings.disableDeleteApiKeyConfirmation) {
                     case 'deepseek': return elements.addDeepseekApiKeyBtn;
                     case 'claude': return elements.addClaudeApiKeyBtn;
                     case 'openai': return elements.addOpenaiApiKeyBtn;
+                    case 'openrouter': return elements.addOpenrouterApiKeyBtn;
                     case 'xai': return elements.addXaiApiKeyBtn;
 
                     default: return null;
@@ -412,6 +421,7 @@ if (state.settings.disableDeleteApiKeyConfirmation) {
                 this.renderApiKeyList('deepseek');
                 this.renderApiKeyList('claude');
                 this.renderApiKeyList('openai');
+                this.renderApiKeyList('openrouter');
                 this.renderApiKeyList('xai');
 
             },
@@ -426,6 +436,7 @@ if (state.settings.disableDeleteApiKeyConfirmation) {
                     case 'deepseek': mainValue = elements.deepSeekApiKeyInput.value.trim(); break;
                     case 'claude': mainValue = elements.claudeApiKeyInput.value.trim(); break;
                     case 'openai': mainValue = elements.openaiApiKeyInput.value.trim(); break;
+                    case 'openrouter': mainValue = elements.openrouterApiKeyInput.value.trim(); break;
                     case 'xai': mainValue = elements.xaiApiKeyInput.value.trim(); break;
 
                 }

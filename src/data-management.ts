@@ -535,6 +535,7 @@ Object.assign(appLogic, {
                     newSettings.deepSeekApiKey = elements.deepSeekApiKeyInput.value.trim();
                     newSettings.claudeApiKey = elements.claudeApiKeyInput.value.trim();
                     newSettings.openaiApiKey = elements.openaiApiKeyInput.value.trim();
+                    newSettings.openrouterApiKey = elements.openrouterApiKeyInput.value.trim();
                     newSettings.xaiApiKey = elements.xaiApiKeyInput.value.trim();
                     newSettings.llmAggregatorApiKey = elements.llmAggregatorApiKeyInput.value.trim();
                 }
@@ -577,6 +578,7 @@ newSettings.deepSeekModelName = elements.deepSeekModelNameSelect.value;
                 newSettings.deepSeekTopP = getParamValue('deepseek-top-p', false, 0, 1);
                 newSettings.deepSeekPresencePenalty = getParamValue('deepseek-presence-penalty', false, -2.0, 2.0);
                 newSettings.deepSeekFrequencyPenalty = getParamValue('deepseek-frequency-penalty', false, -2.0, 2.0);
+                newSettings.deepseekMaxTokensSliderMax = getSliderMaxValue('deepseek-max-tokens');
                 newSettings.deepSeekIncludeDeepSeekThoughts = elements.deepSeekIncludeThoughtsToggle.checked;
                 newSettings.deepSeekExpandThoughtsByDefault = elements.deepSeekExpandThoughtsByDefaultToggle.checked;
                 newSettings.deepSeekStreamingOutput = elements.deepSeekStreamingOutputCheckbox.checked;
@@ -591,6 +593,9 @@ newSettings.deepSeekModelName = elements.deepSeekModelNameSelect.value;
                 newSettings.claudeTopK = getParamValue('claude-top-k', true, 1);
                 newSettings.claudeTopP = getParamValue('claude-top-p', false, 0, 1);
                 newSettings.claudeThinkingBudget = getParamValue('claude-thinking-budget', true, 1024);
+                newSettings.claudeMaxTokensSliderMax = getSliderMaxValue('claude-max-tokens');
+                newSettings.claudeTopKSliderMax = getSliderMaxValue('claude-top-k');
+                newSettings.claudeThinkingBudgetSliderMax = getSliderMaxValue('claude-thinking-budget');
                 newSettings.claudeIncludeThoughts = elements.claudeIncludeThoughtsToggle.checked;
                 newSettings.claudeExpandThoughtsByDefault = elements.claudeExpandThoughtsByDefaultToggle.checked;
                 newSettings.claudeStreamingOutput = elements.claudeStreamingOutputCheckbox.checked;
@@ -605,8 +610,22 @@ newSettings.deepSeekModelName = elements.deepSeekModelNameSelect.value;
                 newSettings.openaiTopP = getParamValue('openai-top-p', false, 0, 1);
                 newSettings.openaiPresencePenalty = getParamValue('openai-presence-penalty', false, -2.0, 2.0);
                 newSettings.openaiFrequencyPenalty = getParamValue('openai-frequency-penalty', false, -2.0, 2.0);
+                newSettings.openaiMaxTokensSliderMax = getSliderMaxValue('openai-max-tokens');
                 newSettings.openaiStreamingOutput = elements.openaiStreamingOutputCheckbox.checked;
                 newSettings.openaiStreamingSpeed = elements.openaiStreamingSpeedInput.value === '' ? DEFAULT_STREAMING_SPEED : parseInt(elements.openaiStreamingSpeedInput.value, 10);
+
+                newSettings.openrouterModelName = elements.openrouterModelNameSelect.value;
+                newSettings.openrouterAdditionalModels = elements.openrouterAdditionalModelsTextarea.value.trim();
+                newSettings.openrouterSystemPrompt = elements.openrouterSystemPromptDefaultTextarea.value.trim();
+                newSettings.openrouterEnableSystemPromptDefault = elements.openrouterEnableSystemPromptDefaultCheckbox.checked;
+                newSettings.openrouterMaxTokens = getParamValue('openrouter-max-tokens', true, 1);
+                newSettings.openrouterTemperature = getParamValue('openrouter-temperature', false, 0, 2);
+                newSettings.openrouterTopP = getParamValue('openrouter-top-p', false, 0, 1);
+                newSettings.openrouterPresencePenalty = getParamValue('openrouter-presence-penalty', false, -2.0, 2.0);
+                newSettings.openrouterFrequencyPenalty = getParamValue('openrouter-frequency-penalty', false, -2.0, 2.0);
+                newSettings.openrouterMaxTokensSliderMax = getSliderMaxValue('openrouter-max-tokens');
+                newSettings.openrouterStreamingOutput = elements.openrouterStreamingOutputCheckbox.checked;
+                newSettings.openrouterStreamingSpeed = elements.openrouterStreamingSpeedInput.value === '' ? DEFAULT_STREAMING_SPEED : parseInt(elements.openrouterStreamingSpeedInput.value, 10);
 
                 newSettings.xaiModelName = elements.xaiModelNameSelect.value;
                 newSettings.xaiAdditionalModels = elements.xaiAdditionalModelsTextarea.value.trim();
@@ -617,6 +636,7 @@ newSettings.deepSeekModelName = elements.deepSeekModelNameSelect.value;
                 newSettings.xaiTopP = getParamValue('xai-top-p', false, 0, 1);
                 newSettings.xaiPresencePenalty = getParamValue('xai-presence-penalty', false, -2.0, 2.0);
                 newSettings.xaiFrequencyPenalty = getParamValue('xai-frequency-penalty', false, -2.0, 2.0);
+                newSettings.xaiMaxTokensSliderMax = getSliderMaxValue('xai-max-tokens');
                 newSettings.xaiIncludeThoughts = elements.xaiIncludeThoughtsToggle.checked;
                 newSettings.xaiExpandThoughtsByDefault = elements.xaiExpandThoughtsByDefaultToggle.checked;
                 newSettings.xaiReasoningEffort = elements.xaiReasoningEffortSelect.value;
@@ -635,6 +655,8 @@ newSettings.deepSeekModelName = elements.deepSeekModelNameSelect.value;
                 newSettings.llmAggregatorTopK = getParamValue('llmaggregator-top-k', true, 0);
                 newSettings.llmAggregatorPresencePenalty = getParamValue('llmaggregator-presence-penalty', false, -2.0, 2.0);
                 newSettings.llmAggregatorFrequencyPenalty = getParamValue('llmaggregator-frequency-penalty', false, -2.0, 2.0);
+                newSettings.llmaggregatorMaxTokensSliderMax = getSliderMaxValue('llmaggregator-max-tokens');
+                newSettings.llmaggregatorTopKSliderMax = getSliderMaxValue('llmaggregator-top-k');
                 newSettings.llmAggregatorIncludeThoughts = elements.llmAggregatorIncludeThoughtsToggle.checked;
                 newSettings.llmAggregatorExpandThoughtsByDefault = elements.llmAggregatorExpandThoughtsByDefaultToggle.checked;
                 newSettings.llmAggregatorStreamingOutput = elements.llmAggregatorStreamingOutputCheckbox.checked;
@@ -680,7 +702,6 @@ newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.che
                 newSettings.showBulkHistoryActions = elements.showBulkHistoryActionsToggle.checked;
                 newSettings.showHistoryPreviewBubble = elements.showHistoryPreviewBubbleToggle.checked;
                 newSettings.stripedHistoryList = elements.stripedHistoryListToggle.checked;
-                newSettings.showPasteButtonInFooter = elements.showPasteButtonInFooterToggle.checked;
                 newSettings.showPasteButtonInEdit = elements.showPasteButtonInEditToggle.checked;
                 newSettings.showMemoButton = elements.showMemoButtonToggle.checked;
                 newSettings.memoHeight = elements.memoHeightInput.value.trim() || DEFAULT_MEMO_HEIGHT;
@@ -710,18 +731,14 @@ newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.che
 
                 newSettings.enableElevation = elements.enableElevationToggle.checked;
                 newSettings.enableElevationHover = elements.enableElevationHoverToggle.checked;
-                newSettings.autoCloseDisplaySettings = elements.autoCloseDisplaySettingsToggle.checked;
-                newSettings.showSettingsScrollToTopButton = elements.showSettingsScrollToTopButtonToggle.checked;
-                newSettings.showSettingsScrollToBottomButton = elements.showSettingsScrollToBottomButtonToggle.checked;
                 newSettings.showApiProviderToggleHeader = elements.showApiProviderToggleHeaderCheckbox.checked;
-                newSettings.showApiProviderToggleFooter = elements.showApiProviderToggleFooterCheckbox.checked;
                 newSettings.showHeaderCycleApiKeyBtn = elements.showHeaderCycleApiKeyBtnToggle.checked;
-                newSettings.showFooterCycleApiKeyBtn = elements.showFooterCycleApiKeyBtnToggle.checked;
                 newSettings.apiProviderCycle = {
                     gemini: elements.apiProviderCycleGeminiCheckbox.checked,
                     deepseek: elements.apiProviderCycleDeepSeekCheckbox.checked,
                     claude: elements.apiProviderCycleClaudeCheckbox.checked,
                     openai: elements.apiProviderCycleOpenAICheckbox.checked,
+                    openrouter: elements.apiProviderCycleOpenRouterCheckbox.checked,
                     xai: elements.apiProviderCycleXaiCheckbox.checked,
                     llmaggregator: elements.apiProviderCycleLlmAggregatorCheckbox.checked,
                 };

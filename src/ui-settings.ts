@@ -233,6 +233,9 @@ elements.deepSeekModelNameSelect.value = state.settings.deepSeekModelName || DEF
                 elements.openaiApiKeyInput.value = state.settings.openaiApiKey || '';
                 elements.openaiModelNameSelect.value = state.settings.openaiModelName || DEFAULT_OPENAI_MODEL;
                 elements.openaiAdditionalModelsTextarea.value = state.settings.openaiAdditionalModels || '';
+                elements.openrouterApiKeyInput.value = state.settings.openrouterApiKey || '';
+                elements.openrouterModelNameSelect.value = state.settings.openrouterModelName || DEFAULT_OPENROUTER_MODEL;
+                elements.openrouterAdditionalModelsTextarea.value = state.settings.openrouterAdditionalModels || '';
                 elements.xaiApiKeyInput.value = state.settings.xaiApiKey || '';
                 elements.xaiModelNameSelect.value = state.settings.xaiModelName || DEFAULT_XAI_MODEL;
                 elements.xaiAdditionalModelsTextarea.value = state.settings.xaiAdditionalModels || '';
@@ -241,11 +244,6 @@ elements.deepSeekModelNameSelect.value = state.settings.deepSeekModelName || DEF
                 elements.llmAggregatorModelNameSelect.value = state.settings.llmAggregatorModelName || DEFAULT_LLMAGGREGATOR_MODEL;
                 elements.llmAggregatorAdditionalModelsTextarea.value = state.settings.llmAggregatorAdditionalModels || '';
 
-                multiBackendUtils.toggleMultiBackendsVisibility(true);
-                elements.showSettingsScrollToTopButtonToggle.checked = state.settings.showSettingsScrollToTopButton;
-                elements.showSettingsScrollToBottomButtonToggle.checked = state.settings.showSettingsScrollToBottomButton;
-    this.updateSettingsScreenElementVisibility();
-
                 multiBackendUtils.renderList();
 
                 multiApiKeyUtils.renderAllApiKeyLists();
@@ -253,6 +251,7 @@ elements.deepSeekModelNameSelect.value = state.settings.deepSeekModelName || DEF
                 multiApiKeyUtils.updateMainApiKeyInput('deepseek');
                 multiApiKeyUtils.updateMainApiKeyInput('claude');
                 multiApiKeyUtils.updateMainApiKeyInput('openai');
+                multiApiKeyUtils.updateMainApiKeyInput('openrouter');
                 multiApiKeyUtils.updateMainApiKeyInput('xai');
                 multiApiKeyUtils.updateMainApiKeyInput('llmaggregator');
 
@@ -346,6 +345,16 @@ elements.deepSeekModelNameSelect.value = state.settings.deepSeekModelName || DEF
                 elements.openaiStreamingOutputCheckbox.checked = state.settings.openaiStreamingOutput;
                 elements.openaiStreamingSpeedInput.value = state.settings.openaiStreamingSpeed ?? DEFAULT_STREAMING_SPEED;
 
+                elements.openrouterSystemPromptDefaultTextarea.value = state.settings.openrouterSystemPrompt || '';
+                elements.openrouterEnableSystemPromptDefaultCheckbox.checked = state.settings.openrouterEnableSystemPromptDefault;
+                setupParamUI('openrouter-max-tokens', 'openrouterMaxTokensSliderMax');
+                setupParamUI('openrouter-temperature');
+                setupParamUI('openrouter-top-p');
+                setupParamUI('openrouter-presence-penalty');
+                setupParamUI('openrouter-frequency-penalty');
+                elements.openrouterStreamingOutputCheckbox.checked = state.settings.openrouterStreamingOutput;
+                elements.openrouterStreamingSpeedInput.value = state.settings.openrouterStreamingSpeed ?? DEFAULT_STREAMING_SPEED;
+
                 elements.xaiSystemPromptDefaultTextarea.value = state.settings.xaiSystemPrompt || '';
                 elements.xaiEnableSystemPromptDefaultCheckbox.checked = state.settings.xaiEnableSystemPromptDefault;
                 setupParamUI('xai-max-tokens', 'xaiMaxTokensSliderMax');
@@ -417,7 +426,6 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 elements.showScrollToBottomButtonToggle.checked = state.settings.showScrollToBottomButton;
                 elements.showToggleAllContentButtonToggle.checked = state.settings.showToggleAllContentButton;
                 elements.showBulkHistoryActionsToggle.checked = state.settings.showBulkHistoryActions;
-                elements.showPasteButtonInFooterToggle.checked = state.settings.showPasteButtonInFooter;
                 elements.showPasteButtonInEditToggle.checked = state.settings.showPasteButtonInEdit;
                elements.messageBubbleOpacityInput.value = state.settings.messageBubbleOpacity ?? DEFAULT_MESSAGE_BUBBLE_OPACITY;
                 elements.chatOverlayOpacityInput.value = state.settings.chatOverlayOpacity ?? DEFAULT_CHAT_OVERLAY_OPACITY;
@@ -428,7 +436,6 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
     elements.enableElevationToggle.checked = state.settings.enableElevation;
     elements.enableElevationHoverToggle.checked = state.settings.enableElevationHover;
     elements.elevationHoverOption.classList.toggle('hidden', !state.settings.enableElevation);
-    elements.autoCloseDisplaySettingsToggle.checked = state.settings.autoCloseDisplaySettings;
     this.applyElevationSetting();
 
                 document.getElementById('message-bubble-opacity-slider').value = elements.messageBubbleOpacityInput.value;
@@ -438,13 +445,12 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 document.getElementById('toggle-button-top-opacity-slider').value = elements.toggleButtonTopOpacityInput.value;
                 document.getElementById('thought-summary-opacity-slider').value = elements.thoughtSummaryOpacityInput.value;
                 elements.showApiProviderToggleHeaderCheckbox.checked = state.settings.showApiProviderToggleHeader;
-                elements.showApiProviderToggleFooterCheckbox.checked = state.settings.showApiProviderToggleFooter;
                 elements.showHeaderCycleApiKeyBtnToggle.checked = state.settings.showHeaderCycleApiKeyBtn;
-                elements.showFooterCycleApiKeyBtnToggle.checked = state.settings.showFooterCycleApiKeyBtn;
                 elements.apiProviderCycleGeminiCheckbox.checked = state.settings.apiProviderCycle.gemini;
                 elements.apiProviderCycleDeepSeekCheckbox.checked = state.settings.apiProviderCycle.deepseek;
                 elements.apiProviderCycleClaudeCheckbox.checked = state.settings.apiProviderCycle.claude;
                 elements.apiProviderCycleOpenAICheckbox.checked = state.settings.apiProviderCycle.openai;
+                elements.apiProviderCycleOpenRouterCheckbox.checked = state.settings.apiProviderCycle.openrouter;
                 elements.apiProviderCycleXaiCheckbox.checked = state.settings.apiProviderCycle.xai;
                 elements.apiProviderCycleLlmAggregatorCheckbox.checked = state.settings.apiProviderCycle.llmaggregator;
 
@@ -487,10 +493,6 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 document.documentElement.style.setProperty('--thought-summary-opacity', state.settings.thoughtSummaryOpacity || DEFAULT_THOUGHT_SUMMARY_OPACITY);
 
                 this.applySettingsUIDetailsOpenStates();
-                if (state.settings.autoCloseDisplaySettings) {
-                    const displaySettings = document.getElementById('settings-group-display-adjustment');
-                    if (displaySettings) displaySettings.open = false;
-                }
                 this.updateChatScreenElementVisibility();
                 appLogic.applyMessageNavigationMode();
                 this.updateHistoryHeaderButtonVisibility();
@@ -498,6 +500,7 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 this.updateDeepSeekUserModelOptions();
                 this.updateClaudeUserModelOptions();
                 this.updateOpenAIUserModelOptions();
+                this.updateOpenRouterUserModelOptions();
                 this.updateXaiUserModelOptions();
                 this.updateLlmAggregatorUserModelOptions();
                 this.applyTheme();
@@ -524,6 +527,7 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 setupModelListener(elements.deepSeekAdditionalModelsTextarea, 'deepSeekAdditionalModels', uiUtils.updateDeepSeekUserModelOptions);
                 setupModelListener(elements.claudeAdditionalModelsTextarea, 'claudeAdditionalModels', uiUtils.updateClaudeUserModelOptions);
                 setupModelListener(elements.openaiAdditionalModelsTextarea, 'openaiAdditionalModels', uiUtils.updateOpenAIUserModelOptions);
+                setupModelListener(elements.openrouterAdditionalModelsTextarea, 'openrouterAdditionalModels', uiUtils.updateOpenRouterUserModelOptions);
                 setupModelListener(elements.xaiAdditionalModelsTextarea, 'xaiAdditionalModels', uiUtils.updateXaiUserModelOptions);
                 setupModelListener(elements.llmAggregatorAdditionalModelsTextarea, 'llmAggregatorAdditionalModels', uiUtils.updateLlmAggregatorUserModelOptions);
 
@@ -562,12 +566,19 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                         detailsEl.open = false;
                     }
                 });
+                document.querySelectorAll('#settings-screen .main-content > details.settings-group').forEach(topLevelDetails => {
+                    topLevelDetails.open = true;
+                    topLevelDetails.querySelectorAll('details').forEach(nestedDetails => {
+                        nestedDetails.open = false;
+                    });
+                });
             },
             toggleApiSettingsVisibility(provider) {
                 const showGemini = provider === 'gemini';
                 const showDeepSeek = provider === 'deepseek';
                 const showClaude = provider === 'claude';
                 const showOpenAI = provider === 'openai';
+                const showOpenRouter = provider === 'openrouter';
                 const showXai = provider === 'xai';
                 const showLlmAggregator = provider === 'llmaggregator';
 
@@ -587,6 +598,10 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 elements.openaiSettingsGroup.classList.toggle('hidden', !showOpenAI);
                 elements.openaiParamsGroup.classList.toggle('hidden', !showOpenAI);
                 elements.openaiAdvancedGroup.classList.toggle('hidden', !showOpenAI);
+
+                elements.openrouterSettingsGroup.classList.toggle('hidden', !showOpenRouter);
+                elements.openrouterParamsGroup.classList.toggle('hidden', !showOpenRouter);
+                elements.openrouterAdvancedGroup.classList.toggle('hidden', !showOpenRouter);
 
                 elements.xaiSettingsGroup.classList.toggle('hidden', !showXai);
                 elements.xaiParamsGroup.classList.toggle('hidden', !showXai);

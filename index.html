@@ -1877,15 +1877,6 @@
             gap: 10px;
         }
 
-        .secondary-input-actions,
-        .primary-input-actions {
-            display: grid;
-            flex: 0 0 40px;
-            gap: 6px;
-            align-self: flex-end;
-            justify-items: center;
-        }
-
         .footer-action-button {
             height: 40px;
             width: 40px;
@@ -1912,7 +1903,8 @@
             color: #424242;
         }
 
-        .chat-input-area button#attach-file-btn {
+        #attach-file-btn,
+        .header-menu-button {
             position: relative;
         }
 
@@ -1966,6 +1958,11 @@
             color: #ffffff !important;
         }
 
+        .app-header .api-provider-toggle-btn.openrouter {
+            background-color: #6d4aff;
+            color: #fff;
+        }
+
         .app-header .api-provider-toggle-btn.xai {
             background-color: #000000 !important;
             color: #ffffff !important;
@@ -1996,6 +1993,10 @@
             color: #ffffff !important;
         }
 
+        body.dark-mode .app-header .api-provider-toggle-btn.openrouter:hover {
+            background-color: #8064ff;
+        }
+
         body.dark-mode .app-header .api-provider-toggle-btn.xai:hover {
             background-color: rgba(0, 0, 0, 0.9) !important;
             color: #ffffff !important;
@@ -2005,40 +2006,10 @@
             background-color: #c62828 !important;
         }
 
-        .chat-input-area .api-provider-toggle-btn.gemini {
-            background-color: #ffffff !important;
-            color: #8A75D2 !important;
-        }
-
-        .chat-input-area .api-provider-toggle-btn.deepseek {
-            background-color: #4D6BFF !important;
-            color: #ffffff !important;
-        }
-
-        .chat-input-area .api-provider-toggle-btn.claude {
-            background-color: #D97757 !important;
-            color: #EFEDE5 !important;
-        }
-
-        .chat-input-area .api-provider-toggle-btn.openai {
-            background-color: #10A37F !important;
-            color: #ffffff !important;
-        }
-
-        .chat-input-area .api-provider-toggle-btn.xai {
-            background-color: #000000 !important;
-            color: #ffffff !important;
-        }
-
-        .chat-input-area .api-provider-toggle-btn.llmaggregator {
-            background-color: #e53935 !important;
-            color: #ffffff !important;
-        }
-
         .attachment-badge {
             position: absolute;
-            top: -4px;
-            right: -4px;
+            top: 50%;
+            right: 10px;
             width: var(--badge-size);
             height: var(--badge-size);
             background-color: var(--badge-color);
@@ -2046,19 +2017,32 @@
             border: 1px solid var(--bg-primary);
             display: none;
             pointer-events: none;
+            transform: translateY(-50%);
         }
 
-        .chat-input-area button#attach-file-btn.has-attachments .attachment-badge {
+        #attach-file-btn.has-attachments .attachment-badge {
             display: block;
+        }
+
+        .header-menu-button.has-attachments::after {
+            content: '';
+            position: absolute;
+            top: 1px;
+            right: 1px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--badge-color);
+            border: 1px solid var(--bg-header);
         }
 
         .chat-input-area textarea {
             width: 0;
             flex: 1 1 0;
             min-width: 0;
-            min-height: 86px;
+            min-height: 40px;
             max-height: 120px;
-            height: 86px;
+            height: 40px;
             resize: none;
             margin-bottom: 0;
             padding: 8px 10px;
@@ -2374,6 +2358,30 @@
             transition: color 0.3s ease, border-color 0.3s ease;
         }
 
+        .settings-subsection {
+            margin-top: 10px;
+        }
+
+        .settings-subsection-summary {
+            display: list-item;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+            color: var(--text-link);
+            font-weight: normal;
+            list-style: revert;
+            cursor: pointer;
+        }
+
+        #settings-screen .main-content > details.settings-group > details,
+        #settings-screen .main-content > details.settings-group > div > details {
+            margin-top: 18px !important;
+        }
+
+        #settings-screen .main-content > details.settings-group > details > summary,
+        #settings-screen .main-content > details.settings-group > div > details > summary {
+            margin-bottom: 6px !important;
+        }
+
         .settings-actions {
             margin-top: 20px;
             padding-top: 20px;
@@ -2487,6 +2495,7 @@
         #deepseek-additional-models,
         #claude-additional-models,
         #openai-additional-models,
+        #openrouter-additional-models,
         #xai-additional-models,
         #llmaggregator-additional-models {
             height: 53px;
@@ -3401,8 +3410,8 @@
         }
 
         .app-container.minimized-ui .chat-input-area textarea {
-            min-height: 70px;
-            height: 70px;
+            min-height: 32px;
+            height: 32px;
             padding: 6px 8px;
             font-size: 13px;
         }
@@ -3831,6 +3840,7 @@
 #settings-group-deepseek-other-params .param-slider-container,
 #settings-group-claude-other-params .param-slider-container,
 #settings-group-openai-other-params .param-slider-container,
+#settings-group-openrouter-other-params .param-slider-container,
 #settings-group-xai-other-params .param-slider-container,
 #settings-group-llmaggregator-other-params .param-slider-container {
     margin-bottom: 8px;
@@ -3959,7 +3969,6 @@ font-size: 1em !important;
 }
 
 #settings-screen .main-content .settings-group > summary,
-#settings-screen .main-content .settings-group > details > summary,
 #settings-screen .main-content h3 {
 font-size: 1.142em !important;
 }
@@ -4252,6 +4261,8 @@ font-size: 1.142em !important;
                         aria-label="チャットメニュー" aria-haspopup="menu" aria-expanded="false"
                         aria-controls="header-submenu" title="チャットメニュー">☰</button>
                     <div id="header-submenu" class="header-submenu hidden" role="menu">
+                        <button id="attach-file-btn" type="button" role="menuitem">ファイル添付<span
+                                class="attachment-badge" aria-hidden="true"></span></button>
                         <button id="header-menu-new-chat-btn" type="button" role="menuitem">新規チャット</button>
                         <button id="header-menu-clear-btn" type="button" role="menuitem" class="danger-menu-item">全削除（先頭を除く）</button>
                         <button id="header-menu-copy-btn" type="button" role="menuitem">全コピー</button>
@@ -4305,19 +4316,9 @@ font-size: 1.142em !important;
                     title="次の入力項目の末尾へ">↓</button>
             </div>
             <footer class="chat-input-area">
-                <div id="footer-secondary-actions" class="secondary-input-actions hidden">
-                    <button id="footer-api-provider-toggle-btn" class="footer-action-button api-provider-toggle-btn"
-                        title="APIプロバイダー切替"></button>
-                    <button id="footer-cycle-api-key-btn" class="footer-action-button api-provider-toggle-btn"
-                        title="APIキー切替" style="font-weight: bold;"></button>
-                    <button id="paste-to-input-btn" title="入力欄に貼り付け" class="footer-action-button">貼</button>
-                </div>
-                <textarea id="user-input" placeholder="メッセージを入力..." rows="2" aria-label="メッセージ入力"></textarea>
-                <div class="primary-input-actions">
-                    <button id="attach-file-btn" title="ファイルを添付" class="footer-action-button">+<span
-                            class="attachment-badge"></span></button>
-                    <button id="send-button" title="送信">送</button>
-                </div>
+                <button id="paste-to-input-btn" title="入力欄に貼り付け" class="footer-action-button">貼</button>
+                <textarea id="user-input" placeholder="メッセージを入力..." rows="1" aria-label="メッセージ入力"></textarea>
+                <button id="send-button" title="送信">送</button>
             </footer>
         </div>
 
@@ -4374,55 +4375,26 @@ font-size: 1.142em !important;
                 <details open class="settings-group" id="settings-group-api-provider">
                     <summary
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
-                        基礎設定</summary>
+                        API設定</summary>
                     <div style="margin-top:10px;">
-                        <label for="api-provider-select">使用するAPIプロバイダー:</label>
+                        <label for="api-provider-select">APIプロバイダー:</label>
                         <select id="api-provider-select" aria-label="APIプロバイダー選択">
                             <option value="gemini">Gemini (Google)</option>
                             <option value="deepseek">DeepSeek</option>
                             <option value="claude">Claude (Anthropic API)</option>
                             <option value="openai">ChatGPT (OpenAI API)</option>
+                            <option value="openrouter">OpenRouter</option>
                             <option value="xai">Grok (xAI API)</option>
                             <option value="llmaggregator">LLM Aggregator</option>
                         </select>
                     </div>
-                    <details id="settings-group-common-system-prompt" style="margin-top:10px;">
-                        <summary
-                            style="font-size: 14px; color: var(--text-link); padding-bottom: 5px; margin-bottom: 10px; display: list-item; list-style: revert; cursor:pointer; font-weight: normal;">
-                            共通システムプロンプト設定</summary>
-                        <div style="padding-top:10px; padding-left:15px;">
-                            <label for="common-system-prompt-default">共通システムプロンプト (全API共通):</label>
-                            <textarea id="common-system-prompt-default"
-                                placeholder="例: あなたは優秀なアシスタントです。ここに設定した内容は、APIごとの設定より優先されます。"
-                                aria-label="共通システムプロンプト (デフォルト)"></textarea>
-                            <label class="checkbox-label" style="margin-top: -5px; margin-bottom: 15px;">
-                                <input type="checkbox" id="enable-common-system-prompt-default">
-                                この共通システムプロンプトを有効にする (API別システムプロンプトより優先度低)
-                            </label>
-                        </div>
-                    </details>
-                    <details id="settings-group-common-dummy-user-prompt" style="margin-top:10px;">
-                        <summary
-                            style="font-size: 14px; color: var(--text-link); padding-bottom: 5px; margin-bottom: 10px; display: list-item; list-style: revert; cursor:pointer; font-weight: normal;">
-                            共通Dummy Userプロンプト設定</summary>
-                        <div style="padding-top:10px; padding-left:15px;">
-                            <label for="common-dummy-user">共通Dummy Userプロンプト (全API共通):</label>
-                            <textarea id="common-dummy-user"
-                                placeholder="API送信直前にuserロールとして履歴末尾へ一時的に追加されます"
-                                aria-label="共通Dummy Userプロンプト"></textarea>
-                            <label class="checkbox-label" style="margin-top: -5px; margin-bottom: 15px;">
-                                <input type="checkbox" id="enable-common-dummy-user">
-                                この共通Dummy Userプロンプトを有効にする
-                            </label>
-                        </div>
-                    </details>
                     <details id="api-provider-cycle-settings-group" style="margin-top: 10px;">
                         <summary
                             style="font-size: 14px; color: var(--text-link); padding-bottom: 5px; margin-bottom: 10px; display: list-item; list-style: revert; cursor:pointer; font-weight: normal;">
-                            使用するAPIプロバイダーの選択</summary>
+                            APIプロバイダーの選択</summary>
                         <div id="api-provider-cycle-settings" style="padding-left: 15px; margin-top: 10px;">
                             <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 5px;">
-                                使用するAPIプロバイダーの候補およびAPI切替ボタンで巡回させるAPIプロバイダーを選択:</p>
+                                APIプロバイダーの候補およびAPI切替ボタンで巡回させるAPIプロバイダーを選択:</p>
                             <label class="checkbox-label" style="font-size: 12px;">
                                 <input type="checkbox" id="api-provider-cycle-gemini">
                                 Gemini (Google)
@@ -4440,6 +4412,10 @@ font-size: 1.142em !important;
                                 OpenAI
                             </label>
                             <label class="checkbox-label" style="font-size: 12px;">
+                                <input type="checkbox" id="api-provider-cycle-openrouter">
+                                OpenRouter
+                            </label>
+                            <label class="checkbox-label" style="font-size: 12px;">
                                 <input type="checkbox" id="api-provider-cycle-xai">
                                 Grok (xAI API)
                             </label>
@@ -4449,6 +4425,10 @@ font-size: 1.142em !important;
                             </label>
                         </div>
                     </details>
+                    <label class="checkbox-label" style="margin-top: 10px;">
+                        <input type="checkbox" id="show-multi-api-keys-toggle">
+                        複数APIキー管理機能を使用する
+                    </label>
                 </details>
 
                 <details id="gemini-settings-group" class="settings-group" open>
@@ -4474,7 +4454,7 @@ font-size: 1.142em !important;
                                 </p>
                                 <label class="checkbox-label" style="font-size: 12px; margin-top: -5px;">
                                     <input type="checkbox" class="js-remove-duplicate-api-keys-toggle">
-                                    重複登録されたAPIキーを削除
+                                    重複するAPIキーを登録しない
                                 </label>
                                 <label class="checkbox-label" style="font-size: 12px; margin-top: -5px;">
                                     <input type="checkbox" class="js-disable-delete-api-key-confirmation-toggle">
@@ -4528,7 +4508,7 @@ font-size: 1.142em !important;
                                 </p>
                                 <label class="checkbox-label" style="font-size: 12px; margin-top: -5px;">
                                 <input type="checkbox" class="js-remove-duplicate-api-keys-toggle">
-                                    重複登録されたAPIキーを削除
+                                    重複するAPIキーを登録しない
                                 </label>
                                 <label class="checkbox-label" style="font-size: 12px; margin-top: -5px;">
                                     <input type="checkbox" class="js-disable-delete-api-key-confirmation-toggle">
@@ -4582,7 +4562,7 @@ font-size: 1.142em !important;
                                 </p>
                                 <label class="checkbox-label" style="font-size: 12px; margin-top: -5px;">
                                 <input type="checkbox" class="js-remove-duplicate-api-keys-toggle">
-                                    重複登録されたAPIキーを削除
+                                    重複するAPIキーを登録しない
                                 </label>
                                 <label class="checkbox-label" style="font-size: 12px; margin-top: -5px;">
                                     <input type="checkbox" class="js-disable-delete-api-key-confirmation-toggle">
@@ -4651,7 +4631,7 @@ font-size: 1.142em !important;
                                 </p>
                                 <label class="checkbox-label" style="font-size: 12px; margin-top: -5px;">
                                 <input type="checkbox" class="js-remove-duplicate-api-keys-toggle">
-                                    重複登録されたAPIキーを削除
+                                    重複するAPIキーを登録しない
                                 </label>
                                 <label class="checkbox-label" style="font-size: 12px; margin-top: -5px;">
                                     <input type="checkbox" class="js-disable-delete-api-key-confirmation-toggle">
@@ -4694,6 +4674,63 @@ font-size: 1.142em !important;
                     </div>
                 </details>
 
+                <details id="openrouter-settings-group" class="settings-group hidden" open>
+                    <summary
+                        style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
+                        OpenRouter API 設定</summary>
+                    <div style="margin-top:15px;">
+                        <label for="openrouter-api-key">OpenRouter APIキー:</label>
+                        <input type="password" id="openrouter-api-key" placeholder="sk-or-..." aria-label="OpenRouter APIキー">
+                        <details id="openrouter-multi-api-keys-section" class="hidden" style="margin-top: 10px;">
+                            <summary
+                                style="font-size: 14px; color: var(--text-link); padding-bottom: 5px; margin-bottom: 10px; display: list-item; list-style: revert; cursor: pointer; font-weight: normal;">
+                                複数APIキー管理 (OpenRouter)</summary>
+                            <div style="padding-left: 15px; margin-top: 10px;">
+                                <div id="openrouter-api-keys-list" class="api-keys-list"></div>
+                                <div style="margin-top: -5px; display: flex; gap: 5px; align-items: center;">
+                                    <textarea id="openrouter-new-api-keys-input" class="api-key-item-input"
+                                        placeholder="新しいAPIキーを入力..."
+                                        style="flex-grow: 1; margin-bottom: 0; height: 38px; resize: vertical; min-height: 0; padding-top: 10px;"></textarea>
+                                    <button type="button" id="add-openrouter-api-key-btn" class="add-api-key-btn"
+                                        style="width: auto; padding: 8px 15px; min-width: 84px;">追加</button>
+                                </div>
+                                <p style="font-size: 11px; color: var(--text-secondary); margin-top: 5px; margin-bottom: 15px;">
+                                    ※ カンマ(,)区切りで複数のAPIキーを一括追加<span class="api-key-help-icon" title="一括登録コマンドの使い方">?</span>
+                                </p>
+                                <label class="checkbox-label" style="font-size: 12px; margin-top: -5px;">
+                                    <input type="checkbox" class="js-remove-duplicate-api-keys-toggle">
+                                    重複するAPIキーを登録しない
+                                </label>
+                                <label class="checkbox-label" style="font-size: 12px; margin-top: -5px;">
+                                    <input type="checkbox" class="js-disable-delete-api-key-confirmation-toggle">
+                                    APIキー削除時の確認ダイアログ
+                                </label>
+                            </div>
+                        </details>
+                        <label for="openrouter-model-name">モデル名:</label>
+                        <select id="openrouter-model-name" aria-label="OpenRouter モデル名">
+                            <optgroup label="OpenRouter">
+                                <option value="openrouter/auto">openrouter/auto</option>
+                                <option value="google/gemma-4-31b-it:free">google/gemma-4-31b-it:free</option>
+                                <option value="google/gemini-3.1-pro-preview">google/gemini-3.1-pro-preview</option>
+                                <option value="google/gemini-2.5-pro">google/gemini-2.5-pro</option>
+                                <option value="anthropic/claude-sonnet-5">anthropic/claude-sonnet-5</option>
+                                <option value="z-ai/glm-5.2">z-ai/glm-5.2</option>
+                                <option value="deepseek/deepseek-v4-pro">deepseek/deepseek-v4-pro</option>
+                            </optgroup>
+                            <optgroup label="ユーザー指定" id="openrouter-user-defined-models-group"></optgroup>
+                        </select>
+                        <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
+                            ※ <code>:free</code>モデルはOpenRouter側の利用回数・混雑制限があります。429の場合は時間を置くか、別のモデルを選択してください。
+                        </p>
+                        <details style="margin-top: 10px;">
+                            <summary style="font-size: 14px; color: var(--text-link); cursor: pointer; list-style: revert;">追加モデル (カンマ区切り)</summary>
+                            <textarea id="openrouter-additional-models" placeholder="例: openai/gpt-5.2,anthropic/claude-sonnet-4"
+                                aria-label="OpenRouter 追加モデル" style="margin-top: 5px;"></textarea>
+                        </details>
+                    </div>
+                </details>
+
                 <details id="xai-settings-group" class="settings-group hidden" open>
                     <summary
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
@@ -4717,7 +4754,7 @@ font-size: 1.142em !important;
                                 </p>
                                 <label class="checkbox-label" style="font-size: 12px; margin-top: -5px;">
                                 <input type="checkbox" class="js-remove-duplicate-api-keys-toggle">
-                                    重複登録されたAPIキーを削除
+                                    重複するAPIキーを登録しない
                                 </label>
                                 <label class="checkbox-label" style="font-size: 12px; margin-top: -5px;">
                                     <input type="checkbox" class="js-disable-delete-api-key-confirmation-toggle">
@@ -5261,6 +5298,69 @@ font-size: 1.142em !important;
                     </div>
                 </details>
 
+<details id="openrouter-params-group" class="settings-group hidden" open>
+                    <summary
+                        style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
+                        パラメータ (OpenRouter)</summary>
+                    <div style="margin-top:15px;">
+                        <label for="openrouter-system-prompt-default">固有システムプロンプト (OpenRouter):</label>
+                        <textarea id="openrouter-system-prompt-default" placeholder="例: You are a helpful assistant."
+                            aria-label="OpenRouter 固有システムプロンプト"></textarea>
+                        <label class="checkbox-label" style="margin-top: -5px; margin-bottom: 15px;">
+                            <input type="checkbox" id="openrouter-enable-system-prompt-default">
+                            このシステムプロンプトを有効にする (共通システムプロンプトより優先度高)
+                        </label>
+                        <details id="settings-group-openrouter-other-params" style="margin-top: 15px;" open>
+                            <summary
+                                style="cursor: pointer; font-weight: normal; font-size: 14px; color: var(--text-link); margin-bottom: 10px; list-style: revert;">
+                                その他パラメータ (OpenRouter)</summary>
+                            <div class="param-grid" style="padding-left: 15px;">
+                                <div class="param-slider-container">
+                                    <label for="openrouter-max-tokens">Max Tokens:</label>
+                                    <div class="param-slider-wrapper">
+                                        <input type="number" id="openrouter-max-tokens" step="1" min="1" placeholder="例:4096" aria-label="OpenRouter Max Tokens">
+                                        <input type="number" class="param-slider-max-input" data-target-id="openrouter-max-tokens" placeholder="上限指定" title="スライダーの最大値を指定">
+                                        <label class="param-default-checkbox-label"><input type="checkbox" class="param-default-checkbox" data-target-id="openrouter-max-tokens"></label>
+                                    </div>
+                                    <div class="param-slider-wrapper" style="margin-top: 5px;"><input type="range" id="openrouter-max-tokens-slider" step="1" min="1"></div>
+                                </div>
+                                <div class="param-slider-container">
+                                    <label for="openrouter-temperature">Temperature:</label>
+                                    <div class="param-slider-wrapper">
+                                        <input type="number" id="openrouter-temperature" step="0.01" min="0" max="2" placeholder="例:1.0" aria-label="OpenRouter Temperature">
+                                        <label class="param-default-checkbox-label"><input type="checkbox" class="param-default-checkbox" data-target-id="openrouter-temperature"></label>
+                                    </div>
+                                    <div class="param-slider-wrapper" style="margin-top: 5px;"><input type="range" id="openrouter-temperature-slider" step="0.01" min="0" max="2"></div>
+                                </div>
+                                <div class="param-slider-container">
+                                    <label for="openrouter-top-p">Top P:</label>
+                                    <div class="param-slider-wrapper">
+                                        <input type="number" id="openrouter-top-p" step="0.01" min="0" max="1" placeholder="例:1.0" aria-label="OpenRouter Top P">
+                                        <label class="param-default-checkbox-label"><input type="checkbox" class="param-default-checkbox" data-target-id="openrouter-top-p"></label>
+                                    </div>
+                                    <div class="param-slider-wrapper" style="margin-top: 5px;"><input type="range" id="openrouter-top-p-slider" step="0.01" min="0" max="1"></div>
+                                </div>
+                                <div class="param-slider-container">
+                                    <label for="openrouter-presence-penalty">Presence Penalty:</label>
+                                    <div class="param-slider-wrapper">
+                                        <input type="number" id="openrouter-presence-penalty" step="0.1" min="-2" max="2" placeholder="例:0.0" aria-label="OpenRouter Presence Penalty">
+                                        <label class="param-default-checkbox-label"><input type="checkbox" class="param-default-checkbox" data-target-id="openrouter-presence-penalty"></label>
+                                    </div>
+                                    <div class="param-slider-wrapper" style="margin-top: 5px;"><input type="range" id="openrouter-presence-penalty-slider" step="0.1" min="-2" max="2"></div>
+                                </div>
+                                <div class="param-slider-container">
+                                    <label for="openrouter-frequency-penalty">Frequency Penalty:</label>
+                                    <div class="param-slider-wrapper">
+                                        <input type="number" id="openrouter-frequency-penalty" step="0.1" min="-2" max="2" placeholder="例:0.0" aria-label="OpenRouter Frequency Penalty">
+                                        <label class="param-default-checkbox-label"><input type="checkbox" class="param-default-checkbox" data-target-id="openrouter-frequency-penalty"></label>
+                                    </div>
+                                    <div class="param-slider-wrapper" style="margin-top: 5px;"><input type="range" id="openrouter-frequency-penalty-slider" step="0.1" min="-2" max="2"></div>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+                </details>
+
 <details id="xai-params-group" class="settings-group hidden" open>
                     <summary
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
@@ -5580,6 +5680,21 @@ font-size: 1.142em !important;
                     </div>
                 </details>
 
+                <details id="openrouter-advanced-group" class="settings-group hidden" open>
+                    <summary
+                        style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
+                        アドバンスド (OpenRouter)</summary>
+                    <div style="margin-top:15px;">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="openrouter-streaming-output">
+                            ストリーミング出力を使用する
+                        </label>
+                        <label for="openrouter-streaming-speed">文字送り速度 (ミリ秒/文字):</label>
+                        <input type="number" id="openrouter-streaming-speed" min="0" step="1" placeholder="例: 30 (0で無効)"
+                            aria-label="OpenRouter 文字送り速度">
+                    </div>
+                </details>
+
                 <details id="xai-advanced-group" class="settings-group hidden" open>
                     <summary
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
@@ -5631,16 +5746,47 @@ font-size: 1.142em !important;
                     </p>
                 </div>
 
+                <details open class="settings-group" id="settings-group-prompts">
+                    <summary
+                        style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
+                        API共通プロンプト</summary>
+                    <details id="settings-group-common-system-prompt" class="settings-subsection">
+                        <summary class="settings-subsection-summary">
+                            システムプロンプト</summary>
+                        <div style="padding-top:10px; padding-left:15px;">
+                            <textarea id="common-system-prompt-default"
+                                placeholder="例: あなたは優秀なアシスタントです。"
+                                aria-label="共通システムプロンプト"></textarea>
+                            <label class="checkbox-label" style="margin-top: -5px; margin-bottom: 15px;">
+                                <input type="checkbox" id="enable-common-system-prompt-default">
+                                この共通システムプロンプトを有効にする (ただしAPI別システムプロンプトが常に優先されます)
+                            </label>
+                        </div>
+                    </details>
+                    <details id="settings-group-common-dummy-user-prompt" class="settings-subsection">
+                        <summary class="settings-subsection-summary">
+                            ダミーユーザープロンプト</summary>
+                        <div style="padding-top:10px; padding-left:15px;">
+                            <textarea id="common-dummy-user"
+                                placeholder="API送信直前にuserロールとして履歴末尾へ一時的に追加されます"
+                                aria-label="共通ダミーユーザープロンプト"></textarea>
+                            <label class="checkbox-label" style="margin-top: -5px; margin-bottom: 15px;">
+                                <input type="checkbox" id="enable-common-dummy-user">
+                                この共通ダミーユーザープロンプトを有効にする
+                            </label>
+                        </div>
+                    </details>
+                </details>
+
                 <details class="settings-group" id="settings-group-behavior-adjustment" open>
                     <summary
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
-                        アプリの挙動を調整</summary>
+                        アプリの挙動</summary>
                     <div style="margin-top: 10px;">
 
                                     <!-- 操作の変更 -->
-                                    <details id="settings-group-factor-operation-changes">
-                                        <summary
-                                            style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
+                                    <details id="settings-group-factor-operation-changes" class="settings-subsection">
+                                        <summary class="settings-subsection-summary">
                                             操作の変更</summary>
                                         <div
                                             style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
@@ -5692,32 +5838,30 @@ font-size: 1.142em !important;
                                         </div>
                                     </details>
 
-                                    <!-- 確認ダイアログのスキップ -->
-                                    <details id="settings-group-factor-skip-dialogs">
-                                        <summary
-                                            style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
-                                            確認ダイアログのスキップ</summary>
+                                    <!-- 確認ダイアログ -->
+                                    <details id="settings-group-factor-skip-dialogs" class="settings-subsection">
+                                        <summary class="settings-subsection-summary">
+                                            確認ダイアログ</summary>
                                         <div
                                             style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="disable-retry-confirmation-toggle">
-                                                リトライ時の確認を無効にする
+                                                リトライ時の確認をスキップする
                                             </label>
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="disable-delete-message-confirmation-toggle">
-                                                メッセージ削除時の確認を無効にする
+                                                メッセージ削除時の確認をスキップする
                                             </label>
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="disable-attachment-confirmation-toggle">
-                                                添付ファイル削除時の確認を無効にする
+                                                添付ファイル削除時の確認をスキップする
                                             </label>
                                         </div>
                                     </details>
 
                                     <!-- 上級ユーザー向けオプション -->
-                                    <details id="settings-group-factor-advanced-options">
-                                        <summary
-                                            style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
+                                    <details id="settings-group-factor-advanced-options" class="settings-subsection">
+                                        <summary class="settings-subsection-summary">
                                             上級ユーザー向けオプション</summary>
                                         <div
                                             style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
@@ -5725,16 +5869,6 @@ font-size: 1.142em !important;
                                                 <input type="checkbox" id="add-prefix-on-import-toggle">
                                                 履歴インポート時にタイトルへ接頭辞を付与する
                                             </label>
-                                            <hr style="margin: 10px 0; border-top: 1px solid var(--border-tertiary);">
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="show-multi-api-keys-toggle">
-                                                複数APIキー管理機能を使用する
-                                            </label>
-                                            <p
-                                                style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                                                ※ 複数のAPIキーを使い分けたい場合に使用。
-                                            </p>
-
                                         </div>
                                     </details>
                     </div>
@@ -5750,11 +5884,6 @@ font-size: 1.142em !important;
                             <select id="theme-select" aria-label="表示テーマ">
                                 <option value="light">ライトモード</option>
                                 <option value="dark">ダークモード</option>
-                                <option value="pastel-pink">パステルモード🩷</option>
-                                <option value="pastel-blue">パステルモード🩵</option>
-                                <option value="pastel-yellow">パステルモード🟡</option>
-                                <option value="pastel-purple">パステルモード🟣</option>
-                                <option value="pastel-rainbow">パステルモード🌈</option>
                             </select>
                             <p style="height:10px"></p>
 
@@ -5826,20 +5955,17 @@ font-size: 1.142em !important;
                                 </div>
                             </details>
 
-                            <hr
-                                style="margin: 15px 0 15px 0; border: none; border-top: 1px solid var(--border-secondary);">
-
                             <details id="settings-group-header-footer-buttons">
                                 <summary
                                     style="font-size: 14px; color: var(--text-link); padding-bottom: 5px; margin-bottom: 10px; display: list-item; list-style: revert; cursor:pointer; font-weight: normal;">
                                     ボタン類の表示/非表示切替</summary>
                                 <div style="padding-left: 15px; margin-top: 10px;">
 
-                                    <!-- 履歴画面のボタン -->
+                                    <!-- 履歴画面 -->
                                     <details open id="settings-group-factor-history-buttons">
                                         <summary
                                             style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
-                                            履歴画面のボタン</summary>
+                                            履歴画面</summary>
                                         <div
                                             style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
                                             <label class="checkbox-label">
@@ -5858,11 +5984,11 @@ font-size: 1.142em !important;
                                         </div>
                                     </details>
 
-                                    <!-- ヘッダーのボタン -->
+                                    <!-- ヘッダー -->
                                     <details open id="settings-group-factor-header-buttons">
                                         <summary
                                             style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
-                                            ヘッダーのボタン</summary>
+                                            ヘッダー</summary>
                                         <div
                                             style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
                                             <label class="checkbox-label">
@@ -5937,29 +6063,6 @@ font-size: 1.142em !important;
                                         </div>
                                     </details>
 
-                                    <!-- フッターのボタン -->
-                                    <details open id="settings-group-factor-footer-buttons">
-                                        <summary
-                                            style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
-                                            フッターのボタン</summary>
-                                        <div
-                                            style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="show-api-provider-toggle-footer">
-                                                フッターにAPI切替ボタンを表示する
-                                            </label>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="show-footer-cycle-api-key-btn-toggle">
-                                                フッターにAPIキー切替ボタンを表示する
-                                            </label>
-                                            <hr style="margin: 10px 0; border-top: 1px solid var(--border-tertiary);">
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="show-paste-button-in-footer-toggle">
-                                                「貼付け」ボタンを表示する
-                                            </label>
-                                        </div>
-                                    </details>
-
                                     <!-- メッセージ要素のボタン -->
                                     <details open id="settings-group-factor-message-buttons">
                                         <summary
@@ -6027,21 +6130,6 @@ font-size: 1.142em !important;
                                         </div>
 </details>
 
-                                    <details open id="settings-group-factor-settings-buttons">
-                                        <summary style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
-                                            設定パネルのボタン
-                                        </summary>
-                                        <div style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="show-settings-scroll-to-top-button-toggle">
-                                                設定パネルに「最上部へ(🔼)」ボタンを表示する
-                                            </label>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="show-settings-scroll-to-bottom-button-toggle" checked>
-                                                設定パネルに「最下部へ(🔽)」ボタンを表示する
-                                            </label>
-                                        </div>
-                                    </details>
                                 </div>
                             </details>
 
@@ -6191,12 +6279,6 @@ font-size: 1.142em !important;
                         </p>
                     </div>
                 </details>
-                        <div id="settings-group-display-auto-close" style="padding-left: 15px; margin-top: 10px;">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="auto-close-display-settings-toggle">
-                                『表示の調整』を自動で閉じる
-                            </label>
-                        </div>
                     </div>
                 </details>
                 <details class="settings-group" id="settings-group-input-presets">
@@ -6382,6 +6464,7 @@ const API_PROVIDERS = [
     { value: 'deepseek', text: 'DeepSeek' },
     { value: 'claude', text: 'Claude (Anthropic API)' },
     { value: 'openai', text: 'ChatGPT (OpenAI API)' },
+    { value: 'openrouter', text: 'OpenRouter' },
     { value: 'xai', text: 'Grok (xAI API)' },
     { value: 'llmaggregator', text: 'LLM Aggregator' }
 ];
@@ -6389,6 +6472,7 @@ const DEFAULT_MODEL = 'gemini-3.5-flash';
 const DEFAULT_DEEPSEEK_MODEL = 'deepseek-reasoner';
 const DEFAULT_CLAUDE_MODEL = 'claude-3-7-sonnet-20250219';
 const DEFAULT_OPENAI_MODEL = 'gpt-3.5-turbo';
+const DEFAULT_OPENROUTER_MODEL = 'google/gemma-4-31b-it:free';
 const DEFAULT_XAI_MODEL = 'grok-4-1-fast-non-reasoning';
 const DEFAULT_LLMAGGREGATOR_MODEL = 'google/gemma-4-31b-it:free';
 const DEFAULT_STREAMING_SPEED = 12;
@@ -6410,6 +6494,7 @@ const GEMINI_API_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/mo
 const DEEPSEEK_API_DEFAULT_BASE_URL = 'https://wild-star-4b72.chi87767.workers.dev/';
 const CLAUDE_API_BASE_URL = 'https://api.anthropic.com/v1/messages';
 const OPENAI_API_BASE_URL = 'https://api.openai.com/v1/chat/completions';
+const OPENROUTER_API_BASE_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const XAI_API_BASE_URL = 'https://api.x.ai/v1/chat/completions';
 const DUPLICATE_SUFFIX = ' (コピー)';
 const IMPORT_PREFIX = '(取込) ';
@@ -6552,6 +6637,11 @@ const elements = {
     openaiApiKeyInput: document.getElementById('openai-api-key'),
     openaiModelNameSelect: document.getElementById('openai-model-name'),
     openaiAdditionalModelsTextarea: document.getElementById('openai-additional-models'),
+    openrouterSettingsGroup: document.getElementById('openrouter-settings-group'),
+    openrouterApiKeyInput: document.getElementById('openrouter-api-key'),
+    openrouterModelNameSelect: document.getElementById('openrouter-model-name'),
+    openrouterUserDefinedModelsGroup: document.getElementById('openrouter-user-defined-models-group'),
+    openrouterAdditionalModelsTextarea: document.getElementById('openrouter-additional-models'),
     xaiSettingsGroup: document.getElementById('xai-settings-group'),
     xaiApiKeyInput: document.getElementById('xai-api-key'),
     xaiModelNameSelect: document.getElementById('xai-model-name'),
@@ -6568,12 +6658,14 @@ const elements = {
     deepseekParamsGroup: document.getElementById('deepseek-params-group'),
     claudeParamsGroup: document.getElementById('claude-params-group'),
     openaiParamsGroup: document.getElementById('openai-params-group'),
+    openrouterParamsGroup: document.getElementById('openrouter-params-group'),
     xaiParamsGroup: document.getElementById('xai-params-group'),
     llmAggregatorParamsGroup: document.getElementById('llmaggregator-params-group'),
     geminiAdvancedGroup: document.getElementById('gemini-advanced-group'),
     deepseekAdvancedGroup: document.getElementById('deepseek-advanced-group'),
     claudeAdvancedGroup: document.getElementById('claude-advanced-group'),
     openaiAdvancedGroup: document.getElementById('openai-advanced-group'),
+    openrouterAdvancedGroup: document.getElementById('openrouter-advanced-group'),
     xaiAdvancedGroup: document.getElementById('xai-advanced-group'),
     llmAggregatorAdvancedGroup: document.getElementById('llmaggregator-advanced-group'),
     geminiSystemPromptDefaultTextarea: document.getElementById('gemini-system-prompt-default'),
@@ -6622,6 +6714,15 @@ const elements = {
     openaiFrequencyPenaltyInput: document.getElementById('openai-frequency-penalty'),
     openaiStreamingOutputCheckbox: document.getElementById('openai-streaming-output'),
     openaiStreamingSpeedInput: document.getElementById('openai-streaming-speed'),
+    openrouterSystemPromptDefaultTextarea: document.getElementById('openrouter-system-prompt-default'),
+    openrouterEnableSystemPromptDefaultCheckbox: document.getElementById('openrouter-enable-system-prompt-default'),
+    openrouterMaxTokensInput: document.getElementById('openrouter-max-tokens'),
+    openrouterTemperatureInput: document.getElementById('openrouter-temperature'),
+    openrouterTopPInput: document.getElementById('openrouter-top-p'),
+    openrouterPresencePenaltyInput: document.getElementById('openrouter-presence-penalty'),
+    openrouterFrequencyPenaltyInput: document.getElementById('openrouter-frequency-penalty'),
+    openrouterStreamingOutputCheckbox: document.getElementById('openrouter-streaming-output'),
+    openrouterStreamingSpeedInput: document.getElementById('openrouter-streaming-speed'),
     xaiSystemPromptDefaultTextarea: document.getElementById('xai-system-prompt-default'),
     xaiEnableSystemPromptDefaultCheckbox: document.getElementById('xai-enable-system-prompt-default'),
     xaiMaxTokensInput: document.getElementById('xai-max-tokens'),
@@ -6676,7 +6777,6 @@ const elements = {
     showScrollToBottomButtonToggle: document.getElementById('show-scroll-to-bottom-button-toggle'),
     showToggleAllContentButtonToggle: document.getElementById('show-toggle-all-content-button-toggle'),
     showBulkHistoryActionsToggle: document.getElementById('show-bulk-history-actions-toggle'),
-    showPasteButtonInFooterToggle: document.getElementById('show-paste-button-in-footer-toggle'),
     showPasteButtonInEditToggle: document.getElementById('show-paste-button-in-edit-toggle'),
     messageBubbleOpacityInput: document.getElementById('message-bubble-opacity'),
     chatOverlayOpacityInput: document.getElementById('chat-overlay-opacity'),
@@ -6686,11 +6786,8 @@ const elements = {
     enableElevationToggle: document.getElementById('enable-elevation-toggle'),
     enableElevationHoverToggle: document.getElementById('enable-elevation-hover-toggle'),
     elevationHoverOption: document.getElementById('elevation-hover-option'),
-    autoCloseDisplaySettingsToggle: document.getElementById('auto-close-display-settings-toggle'),
     settingsScrollToTopBtn: document.getElementById('settings-scroll-to-top-btn'),
     settingsScrollToBottomBtn: document.getElementById('settings-scroll-to-bottom-btn'),
-    showSettingsScrollToTopButtonToggle: document.getElementById('show-settings-scroll-to-top-button-toggle'),
-    showSettingsScrollToBottomButtonToggle: document.getElementById('show-settings-scroll-to-bottom-button-toggle'),
     appVersionSpan: document.getElementById('app-version'),
     gotoHistoryBtn: document.getElementById('goto-history-btn'),
     gotoSettingsBtn: document.getElementById('goto-settings-btn'),
@@ -6736,7 +6833,6 @@ const elements = {
     promptCancelBtn: getRequiredDomElement('promptDialog').querySelector('.dialog-cancel-btn'),
     attachFileBtn: document.getElementById('attach-file-btn'),
     pasteToInputBtn: document.getElementById('paste-to-input-btn'),
-    footerSecondaryActions: document.getElementById('footer-secondary-actions'),
     fileUploadDialog: document.getElementById('fileUploadDialog'),
     fileInput: document.getElementById('file-input'),
     selectFilesBtn: document.getElementById('select-files-btn'),
@@ -6787,19 +6883,16 @@ const elements = {
     unmaskApiKeysToggle: document.getElementById('unmask-api-keys-toggle'),
     disableLlmUrlWhitelistToggle: document.getElementById('disable-llm-url-whitelist-toggle'),
     headerApiProviderToggleBtn: document.getElementById('header-api-provider-toggle-btn'),
-    footerApiProviderToggleBtn: document.getElementById('footer-api-provider-toggle-btn'),
     showApiProviderToggleHeaderCheckbox: document.getElementById('show-api-provider-toggle-header'),
-    showApiProviderToggleFooterCheckbox: document.getElementById('show-api-provider-toggle-footer'),
     apiProviderCycleGeminiCheckbox: document.getElementById('api-provider-cycle-gemini'),
     apiProviderCycleDeepSeekCheckbox: document.getElementById('api-provider-cycle-deepseek'),
     apiProviderCycleClaudeCheckbox: document.getElementById('api-provider-cycle-claude'),
     apiProviderCycleOpenAICheckbox: document.getElementById('api-provider-cycle-openai'),
+    apiProviderCycleOpenRouterCheckbox: document.getElementById('api-provider-cycle-openrouter'),
     apiProviderCycleXaiCheckbox: document.getElementById('api-provider-cycle-xai'),
     apiProviderCycleLlmAggregatorCheckbox: document.getElementById('api-provider-cycle-llmaggregator'),
     headerCycleApiKeyBtn: document.getElementById('header-cycle-api-key-btn'),
-    footerCycleApiKeyBtn: document.getElementById('footer-cycle-api-key-btn'),
     showHeaderCycleApiKeyBtnToggle: document.getElementById('show-header-cycle-api-key-btn-toggle'),
-    showFooterCycleApiKeyBtnToggle: document.getElementById('show-footer-cycle-api-key-btn-toggle'),
     imagePreviewDialog: document.getElementById('imagePreviewDialog'),
     geminiApiKeysList: document.getElementById('gemini-api-keys-list'),
     addGeminiApiKeyBtn: document.getElementById('add-gemini-api-key-btn'),
@@ -6809,6 +6902,8 @@ const elements = {
     addClaudeApiKeyBtn: document.getElementById('add-claude-api-key-btn'),
     openaiApiKeysList: document.getElementById('openai-api-keys-list'),
     addOpenaiApiKeyBtn: document.getElementById('add-openai-api-key-btn'),
+    openrouterApiKeysList: document.getElementById('openrouter-api-keys-list'),
+    addOpenrouterApiKeyBtn: document.getElementById('add-openrouter-api-key-btn'),
     xaiApiKeysList: document.getElementById('xai-api-keys-list'),
     addXaiApiKeyBtn: document.getElementById('add-xai-api-key-btn'),
     llmaggregatorBackendsList: document.getElementById('llmaggregator-backends-list'),
@@ -6869,6 +6964,7 @@ const state = {
         deepSeekTopP: null,
         deepSeekPresencePenalty: null,
         deepSeekFrequencyPenalty: null,
+        deepseekMaxTokensSliderMax: null,
         deepSeekIncludeDeepSeekThoughts: false,
         deepSeekExpandThoughtsByDefault: false,
         deepSeekStreamingOutput: true,
@@ -6882,6 +6978,9 @@ const state = {
         claudeMaxTokens: null,
         claudeTopK: null,
         claudeTopP: null,
+        claudeMaxTokensSliderMax: null,
+        claudeTopKSliderMax: null,
+        claudeThinkingBudgetSliderMax: null,
         claudeStreamingOutput: true,
         claudeStreamingSpeed: DEFAULT_STREAMING_SPEED,
         claudeIncludeThoughts: false,
@@ -6897,8 +6996,22 @@ const state = {
         openaiTopP: null,
         openaiPresencePenalty: null,
         openaiFrequencyPenalty: null,
+        openaiMaxTokensSliderMax: null,
         openaiStreamingOutput: true,
         openaiStreamingSpeed: DEFAULT_STREAMING_SPEED,
+        openrouterApiKey: '',
+        openrouterModelName: DEFAULT_OPENROUTER_MODEL,
+        openrouterAdditionalModels: '',
+        openrouterSystemPrompt: '',
+        openrouterEnableSystemPromptDefault: true,
+        openrouterTemperature: null,
+        openrouterMaxTokens: null,
+        openrouterTopP: null,
+        openrouterPresencePenalty: null,
+        openrouterFrequencyPenalty: null,
+        openrouterMaxTokensSliderMax: null,
+        openrouterStreamingOutput: true,
+        openrouterStreamingSpeed: DEFAULT_STREAMING_SPEED,
         xaiApiKey: '',
         xaiModelName: DEFAULT_XAI_MODEL,
         xaiAdditionalModels: '',
@@ -6909,6 +7022,7 @@ const state = {
         xaiTopP: null,
         xaiPresencePenalty: null,
         xaiFrequencyPenalty: null,
+        xaiMaxTokensSliderMax: null,
         xaiStreamingOutput: true,
         xaiStreamingSpeed: DEFAULT_STREAMING_SPEED,
         xaiVisionEnable: false,
@@ -6929,6 +7043,8 @@ const state = {
         llmAggregatorTopK: null,
         llmAggregatorPresencePenalty: null,
         llmAggregatorFrequencyPenalty: null,
+        llmaggregatorMaxTokensSliderMax: null,
+        llmaggregatorTopKSliderMax: null,
         llmAggregatorIncludeThoughts: false,
         llmAggregatorExpandThoughtsByDefault: false,
         llmAggregatorStreamingOutput: true,
@@ -6961,7 +7077,6 @@ const state = {
         showScrollToBottomButton: true,
         showToggleAllContentButton: false,
         showBulkHistoryActions: true,
-        showPasteButtonInFooter: false,
         showPasteButtonInEdit: false,
         showMemoButton: false,
         memoHeight: DEFAULT_MEMO_HEIGHT,
@@ -6997,7 +7112,6 @@ const state = {
         chatUiScale: 1.0,
         settingsUiScale: 1.0,
         historyUiScale: 1.0,
-        autoCloseDisplaySettings: true,
         enableMessageBubbleOpacity: true,
         enableChatOverlayOpacity: true,
         enableHeaderFooterOpacity: true,
@@ -7006,18 +7120,15 @@ const state = {
         enableThoughtSummaryOpacity: true,
         enableElevation: true,
         enableElevationHover: false,
-        showSettingsScrollToTopButton: false,
-        showSettingsScrollToBottomButton: true,
         settingsUIDetailsOpenStates: {},
         showApiProviderToggleHeader: false,
-        showApiProviderToggleFooter: true,
         showHeaderCycleApiKeyBtn: false,
-        showFooterCycleApiKeyBtn: false,
         apiProviderCycle: {
             gemini: true,
             deepseek: true,
             claude: true,
             openai: true,
+            openrouter: true,
             xai: true,
             llmaggregator: true,
         },
@@ -7029,6 +7140,8 @@ const state = {
         claudeActiveApiKeyIndex: -1,
         openaiApiKeys: [],
         openaiActiveApiKeyIndex: -1,
+        openrouterApiKeys: [],
+        openrouterActiveApiKeyIndex: -1,
         xaiApiKeys: [],
         xaiActiveApiKeyIndex: -1,
         disableDeleteApiKeyConfirmation: true,
@@ -7223,7 +7336,7 @@ const dbUtils = {
                     }
                     const oldGlobalParams = ['temperature', 'maxTokens', 'topP', 'presencePenalty', 'frequencyPenalty', 'systemPrompt', 'enableSystemPromptDefault'];
                     const oldGlobalAdvanced = ['streamingOutput', 'streamingSpeed'];
-                    const providerPrefixes = ['gemini', 'deepSeek', 'claude', 'openai', 'xai', 'llmaggregator'];
+                    const providerPrefixes = ['gemini', 'deepSeek', 'claude', 'openai', 'openrouter', 'xai', 'llmaggregator'];
                     if (loadedSettings.commonDummyUser === undefined && loadedSettings.dummyUser !== undefined) {
                         loadedSettings.commonDummyUser = loadedSettings.dummyUser;
                     }
@@ -7287,10 +7400,44 @@ const dbUtils = {
                     }
                     state.settings.llmaggregatorBackends = backends;
                     state.settings.llmaggregatorActiveBackendIndex = (backends.length > 0) ? 0 : -1;
-                    const shouldMigrateAutoCloseDisplaySettings = typeof loadedSettings.autoCloseDisplaySettings !== 'boolean'
-                        && typeof loadedSettings.autoCloseOtherSettings === 'boolean';
-                    if (shouldMigrateAutoCloseDisplaySettings) {
-                        loadedSettings.autoCloseDisplaySettings = loadedSettings.autoCloseOtherSettings;
+                    const openRouterBackend = backends.find(backend => /(^|\.)openrouter\.ai$/i.test((() => {
+                        try {
+                            return new URL(backend.url).hostname;
+                        }
+                        catch {
+                            return '';
+                        }
+                    })()));
+                    if (openRouterBackend) {
+                        if (!loadedSettings.hasOwnProperty('openrouterApiKeys')) {
+                            loadedSettings.openrouterApiKeys = (openRouterBackend.apiKeys || []).map(key => ({ ...key }));
+                        }
+                        if (!loadedSettings.hasOwnProperty('openrouterActiveApiKeyIndex')) {
+                            loadedSettings.openrouterActiveApiKeyIndex = (openRouterBackend.apiKeys || []).findIndex(key => key.isActive);
+                        }
+                        if (!loadedSettings.hasOwnProperty('openrouterApiKey')) {
+                            loadedSettings.openrouterApiKey = (openRouterBackend.apiKeys || []).find(key => key.isActive)?.value
+                                || loadedSettings.llmAggregatorApiKey
+                                || '';
+                        }
+                        const migratedOpenRouterSettings = {
+                            openrouterModelName: 'llmAggregatorModelName',
+                            openrouterAdditionalModels: 'llmAggregatorAdditionalModels',
+                            openrouterSystemPrompt: 'llmAggregatorSystemPrompt',
+                            openrouterEnableSystemPromptDefault: 'llmAggregatorEnableSystemPromptDefault',
+                            openrouterTemperature: 'llmAggregatorTemperature',
+                            openrouterMaxTokens: 'llmAggregatorMaxTokens',
+                            openrouterTopP: 'llmAggregatorTopP',
+                            openrouterPresencePenalty: 'llmAggregatorPresencePenalty',
+                            openrouterFrequencyPenalty: 'llmAggregatorFrequencyPenalty',
+                            openrouterStreamingOutput: 'llmAggregatorStreamingOutput',
+                            openrouterStreamingSpeed: 'llmAggregatorStreamingSpeed',
+                        };
+                        Object.entries(migratedOpenRouterSettings).forEach(([newKey, oldKey]) => {
+                            if (!loadedSettings.hasOwnProperty(newKey) && loadedSettings.hasOwnProperty(oldKey)) {
+                                loadedSettings[newKey] = loadedSettings[oldKey];
+                            }
+                        });
                     }
                     for (const key in loadedSettings) {
                         if (key === 'darkMode' || key === 'memoWidth' || key === 'showCollapseButtons')
@@ -7318,16 +7465,20 @@ const dbUtils = {
                     if (!API_PROVIDERS.some((provider) => provider.value === state.settings.apiProvider)) {
                         state.settings.apiProvider = 'gemini';
                     }
-                    if (state.settings.theme === 'turf') {
+                    if (!['light', 'dark'].includes(state.settings.theme)) {
                         state.settings.theme = 'light';
                     }
                     if (state.settings.apiProviderCycle && typeof state.settings.apiProviderCycle === 'object') {
+                        state.settings.apiProviderCycle = {
+                            ...defaultSettings.apiProviderCycle,
+                            ...state.settings.apiProviderCycle,
+                        };
                         delete state.settings.apiProviderCycle.dummy;
                     }
                     const removedSettingKeys = settingsArray
                         .map((item) => item.key)
-                        .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine|enableSessionLinking|showSessionLinkingSettings|enableCryscroller|cryscroller|enableSettingsCryscroller|enableHistoryCryscroller|enableImmersiveScrolling|enableDynamicScrollMarkerColor|enableProofreading|showProofreadingSettings|proofreading|activeProofreadingConfigId|enableImageUrlReplacement|imageUrlReplacementBase|enableAutoBaseUrlDetection|enableFuzzySearchNormalization|fuzzySearchThreshold|characterNamesList|enableRomajiToKatakanaConversion|dummyErrorDebugMode|dummyDummyModel|dummyEnableDummyModel|showDiceButton|diceMinValue|diceMaxValue|backgroundImageBlob|historyBackgroundImageBlob|settingsBackgroundImageBlob|showUserIcon|userIconBlob|showUserName|userName|showAiIcon|aiIconBlob|showAiName|aiName|iconName|messageIcon|dummyUser|enableDummyUser|dummyModel|enableDummyModel|concatDummyModel|(?:gemini|deepSeek|claude|openai|xai|llmAggregator)(?:DummyUser|EnableDummyUser|DummyModel|EnableDummyModel|ConcatDummyModel)|webhookUrl|webhookFormat|enableWebhookNotification|webhooks|showNewChatButton|showDeleteSessionButton|showCopySessionButton|disableLoadChatConfirmationWhileSending|autoCloseOtherSettings)/.test(key));
-                    if (removedSettingKeys.length > 0 || shouldMigrateAutoCloseDisplaySettings) {
+                        .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine|enableSessionLinking|showSessionLinkingSettings|enableCryscroller|cryscroller|enableSettingsCryscroller|enableHistoryCryscroller|enableImmersiveScrolling|enableDynamicScrollMarkerColor|enableProofreading|showProofreadingSettings|proofreading|activeProofreadingConfigId|enableImageUrlReplacement|imageUrlReplacementBase|enableAutoBaseUrlDetection|enableFuzzySearchNormalization|fuzzySearchThreshold|characterNamesList|enableRomajiToKatakanaConversion|dummyErrorDebugMode|dummyDummyModel|dummyEnableDummyModel|showDiceButton|diceMinValue|diceMaxValue|backgroundImageBlob|historyBackgroundImageBlob|settingsBackgroundImageBlob|showUserIcon|userIconBlob|showUserName|userName|showAiIcon|aiIconBlob|showAiName|aiName|iconName|messageIcon|dummyUser|enableDummyUser|dummyModel|enableDummyModel|concatDummyModel|(?:gemini|deepSeek|claude|openai|xai|llmAggregator)(?:DummyUser|EnableDummyUser|DummyModel|EnableDummyModel|ConcatDummyModel)|webhookUrl|webhookFormat|enableWebhookNotification|webhooks|showNewChatButton|showDeleteSessionButton|showCopySessionButton|disableLoadChatConfirmationWhileSending|autoCloseOtherSettings|autoCloseDisplaySettings|showApiProviderToggleFooter|showFooterCycleApiKeyBtn|showPasteButtonInFooter|showSettingsScrollToTopButton|showSettingsScrollToBottomButton)/.test(key));
+                    if (removedSettingKeys.length > 0) {
                         try {
                             const cleanupStore = this._getStore(SETTINGS_STORE, 'readwrite');
                             const cleanupRequests = removedSettingKeys.map((key) => new Promise((resolveCleanup, rejectCleanup) => {
@@ -7335,16 +7486,6 @@ const dbUtils = {
                                 deleteRequest.onsuccess = () => resolveCleanup();
                                 deleteRequest.onerror = () => rejectCleanup(deleteRequest.error);
                             }));
-                            if (shouldMigrateAutoCloseDisplaySettings) {
-                                cleanupRequests.push(new Promise((resolveCleanup, rejectCleanup) => {
-                                    const saveRequest = cleanupStore.put({
-                                        key: 'autoCloseDisplaySettings',
-                                        value: loadedSettings.autoCloseDisplaySettings,
-                                    });
-                                    saveRequest.onsuccess = () => resolveCleanup();
-                                    saveRequest.onerror = () => rejectCleanup(saveRequest.error);
-                                }));
-                            }
                             await Promise.all(cleanupRequests);
                         }
                         catch (error) {
@@ -7624,6 +7765,7 @@ function interruptibleSleep(ms, signal) {
 const INPUT_PRESET_CURSOR_MARKER = '{|}';
 const inputPresetUtils = {
     initialized: false,
+    textareaResizeObserver: null,
     createId() {
         if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
             return crypto.randomUUID();
@@ -7684,6 +7826,21 @@ const inputPresetUtils = {
             if (!elements.inputPresetPopup.classList.contains('hidden'))
                 this.positionPopup();
         });
+        if (typeof ResizeObserver !== 'undefined') {
+            this.textareaResizeObserver = new ResizeObserver(() => {
+                if (!elements.inputPresetPopup.classList.contains('hidden'))
+                    this.positionPopup();
+            });
+            this.textareaResizeObserver.observe(elements.userInput);
+        }
+        else {
+            elements.userInput.addEventListener('input', () => {
+                requestAnimationFrame(() => {
+                    if (!elements.inputPresetPopup.classList.contains('hidden'))
+                        this.positionPopup();
+                });
+            });
+        }
         this.refresh();
     },
     refresh() {
@@ -8451,6 +8608,9 @@ const apiUtils = {
         if (provider === 'openai') {
             baseUrl = OPENAI_API_BASE_URL;
         }
+        else if (provider === 'openrouter') {
+            baseUrl = OPENROUTER_API_BASE_URL;
+        }
         else if (provider === 'llmaggregator') {
             baseUrl = state.settings.llmAggregatorApiBackend;
             if (!baseUrl) {
@@ -8469,6 +8629,10 @@ const apiUtils = {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${apiKey}`
         };
+        if (provider === 'openrouter') {
+            headers['HTTP-Referer'] = 'https://geminipwa.pages.dev/';
+            headers['X-OpenRouter-Title'] = 'GeminiPWA';
+        }
         const body = this._createOpenAICompatibleRequestBody(model, messagesForApi, systemInstruction, useStreaming, enableVision, generationConfig);
         if (provider === 'llmaggregator' && generationConfig.topK !== null) {
             body.top_k = generationConfig.topK;
@@ -8476,11 +8640,20 @@ const apiUtils = {
         const response = await fetch(baseUrl, { method: "POST", headers, body: JSON.stringify(body), signal });
         if (!response.ok) {
             let msg = `${provider} API error ${response.status}`;
+            let errorData = null;
             try {
-                const je = await response.json();
-                msg = je.error?.message || msg;
+                errorData = await response.json();
+                msg = errorData.error?.message || msg;
             }
             catch { }
+            if (provider === 'openrouter' && response.status === 429) {
+                const retryAfter = Number(response.headers?.get('Retry-After'));
+                const retryMessage = Number.isFinite(retryAfter) && retryAfter > 0
+                    ? `${retryAfter}秒後に再試行してください。`
+                    : '時間を置くか、別のモデルを選択してください。';
+                const errorType = errorData?.error?.metadata?.error_type;
+                msg = `OpenRouterのレート上限に達しました。${retryMessage}${errorType ? ` (${errorType})` : ''}`;
+            }
             throw new Error(msg);
         }
         return response;
@@ -8518,6 +8691,14 @@ const apiUtils = {
                     }
                     try {
                         const chunk = JSON.parse(data);
+                        if (chunk.error) {
+                            yield {
+                                type: 'error',
+                                error: chunk.error,
+                                message: chunk.error.message || `${providerName}のストリーミング中にエラーが発生しました。`,
+                            };
+                            return;
+                        }
                         if (chunk.choices?.[0]) {
                             const delta = chunk.choices[0].delta;
                             let contentText = null;
@@ -8857,7 +9038,9 @@ const multiBackendUtils = {
         const keyIndex = backend.apiKeys.findIndex(k => k.id === keyId);
         if (keyIndex === -1)
             return;
-        const confirmed = state.settings.disableDeleteApiKeyConfirmation ? true : await uiUtils.showCustomConfirm(`APIキー「${backend.apiKeys[keyIndex].label}」を削除しますか？`);
+        const confirmed = state.settings.disableDeleteApiKeyConfirmation
+            ? await uiUtils.showCustomConfirm(`APIキー「${backend.apiKeys[keyIndex].label}」を削除しますか？`)
+            : true;
         if (!confirmed)
             return;
         const wasActive = backend.apiKeys[keyIndex].isActive;
@@ -9153,6 +9336,7 @@ const multiApiKeyUtils = {
         'd': 'deepseek', 'ds': 'deepseek', 'deepseek': 'deepseek', 'de': 'deepseek',
         'c': 'claude', 'cl': 'claude', 'claude': 'claude', 'a': 'claude', 'an': 'claude', 'anthropic': 'claude',
         'o': 'openai', 'op': 'openai', 'openai': 'openai', 'ch': 'openai', 'chatgpt': 'openai',
+        'or': 'openrouter', 'openrouter': 'openrouter', 'router': 'openrouter',
         'x': 'xai', 'xa': 'xai', 'xai': 'xai', 'gr': 'xai', 'grok': 'xai'
     },
     async handleBatchAddApiKeys(inputText) {
@@ -9228,6 +9412,7 @@ const multiApiKeyUtils = {
         elements.addDeepseekApiKeyBtn.addEventListener('click', () => this.addApiKey('deepseek'));
         elements.addClaudeApiKeyBtn.addEventListener('click', () => this.addApiKey('claude'));
         elements.addOpenaiApiKeyBtn.addEventListener('click', () => this.addApiKey('openai'));
+        elements.addOpenrouterApiKeyBtn.addEventListener('click', () => this.addApiKey('openrouter'));
         elements.addXaiApiKeyBtn.addEventListener('click', () => this.addApiKey('xai'));
         this.renderAllApiKeyLists();
     },
@@ -9289,7 +9474,7 @@ const multiApiKeyUtils = {
         uiUtils.updateApiKeyCycleButtons();
     },
     clearAllNewKeyTextareas() {
-        const providers = ['gemini', 'deepseek', 'claude', 'openai', 'xai', 'llmaggregator'];
+        const providers = ['gemini', 'deepseek', 'claude', 'openai', 'openrouter', 'xai', 'llmaggregator'];
         providers.forEach(provider => {
             const inputElement = document.getElementById(`${provider}-new-api-keys-input`);
             if (inputElement) {
@@ -9366,6 +9551,7 @@ const multiApiKeyUtils = {
             case 'deepseek': return state.settings.deepseekApiKeys;
             case 'claude': return state.settings.claudeApiKeys;
             case 'openai': return state.settings.openaiApiKeys;
+            case 'openrouter': return state.settings.openrouterApiKeys;
             case 'xai': return state.settings.xaiApiKeys;
             default: return [];
         }
@@ -9383,6 +9569,9 @@ const multiApiKeyUtils = {
                 break;
             case 'openai':
                 state.settings.openaiActiveApiKeyIndex = index;
+                break;
+            case 'openrouter':
+                state.settings.openrouterActiveApiKeyIndex = index;
                 break;
             case 'xai':
                 state.settings.xaiActiveApiKeyIndex = index;
@@ -9411,6 +9600,9 @@ const multiApiKeyUtils = {
                 break;
             case 'openai':
                 elements.openaiApiKeyInput.value = activeKey;
+                break;
+            case 'openrouter':
+                elements.openrouterApiKeyInput.value = activeKey;
                 break;
             case 'xai':
                 elements.xaiApiKeyInput.value = activeKey;
@@ -9495,6 +9687,7 @@ const multiApiKeyUtils = {
             case 'deepseek': return elements.deepseekApiKeysList;
             case 'claude': return elements.claudeApiKeysList;
             case 'openai': return elements.openaiApiKeysList;
+            case 'openrouter': return elements.openrouterApiKeysList;
             case 'xai': return elements.xaiApiKeysList;
             default: return null;
         }
@@ -9505,6 +9698,7 @@ const multiApiKeyUtils = {
             case 'deepseek': return elements.addDeepseekApiKeyBtn;
             case 'claude': return elements.addClaudeApiKeyBtn;
             case 'openai': return elements.addOpenaiApiKeyBtn;
+            case 'openrouter': return elements.addOpenrouterApiKeyBtn;
             case 'xai': return elements.addXaiApiKeyBtn;
             default: return null;
         }
@@ -9514,6 +9708,7 @@ const multiApiKeyUtils = {
         this.renderApiKeyList('deepseek');
         this.renderApiKeyList('claude');
         this.renderApiKeyList('openai');
+        this.renderApiKeyList('openrouter');
         this.renderApiKeyList('xai');
     },
     syncMainApiKeyInput(provider) {
@@ -9533,6 +9728,9 @@ const multiApiKeyUtils = {
                 break;
             case 'openai':
                 mainValue = elements.openaiApiKeyInput.value.trim();
+                break;
+            case 'openrouter':
+                mainValue = elements.openrouterApiKeyInput.value.trim();
                 break;
             case 'xai':
                 mainValue = elements.xaiApiKeyInput.value.trim();
@@ -9555,10 +9753,6 @@ const uiUtils = {};
 // @ts-nocheck -- Enable after shared UI types are defined.
 // Bundled into the generated index.html from this TypeScript source.
 Object.assign(uiUtils, {
-    updateSettingsScreenElementVisibility() {
-        elements.settingsScrollToTopBtn.classList.toggle('hidden', !state.settings.showSettingsScrollToTopButton);
-        elements.settingsScrollToBottomBtn.classList.toggle('hidden', !state.settings.showSettingsScrollToBottomButton);
-    },
     _sanitizeAndParseMarkdown(content) {
         if (typeof DOMPurify === 'undefined') {
             const div = document.createElement('div');
@@ -10307,9 +10501,10 @@ Object.assign(uiUtils, {
         const streamSpeed = selectedApiProvider === 'gemini' ? state.settings.geminiStreamingSpeed :
             selectedApiProvider === 'deepseek' ? state.settings.deepSeekStreamingSpeed :
                 selectedApiProvider === 'claude' ? state.settings.claudeStreamingSpeed :
-                    selectedApiProvider === 'xai' ? state.settings.xaiStreamingSpeed :
-                        selectedApiProvider === 'llmaggregator' ? state.settings.llmAggregatorStreamingSpeed :
-                            state.settings.openaiStreamingSpeed;
+                    selectedApiProvider === 'openrouter' ? state.settings.openrouterStreamingSpeed :
+                        selectedApiProvider === 'xai' ? state.settings.xaiStreamingSpeed :
+                            selectedApiProvider === 'llmaggregator' ? state.settings.llmAggregatorStreamingSpeed :
+                                state.settings.openaiStreamingSpeed;
         if (isThoughtSummary) {
             if ((selectedApiProvider === 'gemini' && state.settings.geminiIncludeThoughts) ||
                 (selectedApiProvider === 'deepseek' && state.settings.deepSeekIncludeDeepSeekThoughts) ||
@@ -10806,6 +11001,9 @@ Object.assign(uiUtils, {
         elements.openaiApiKeyInput.value = state.settings.openaiApiKey || '';
         elements.openaiModelNameSelect.value = state.settings.openaiModelName || DEFAULT_OPENAI_MODEL;
         elements.openaiAdditionalModelsTextarea.value = state.settings.openaiAdditionalModels || '';
+        elements.openrouterApiKeyInput.value = state.settings.openrouterApiKey || '';
+        elements.openrouterModelNameSelect.value = state.settings.openrouterModelName || DEFAULT_OPENROUTER_MODEL;
+        elements.openrouterAdditionalModelsTextarea.value = state.settings.openrouterAdditionalModels || '';
         elements.xaiApiKeyInput.value = state.settings.xaiApiKey || '';
         elements.xaiModelNameSelect.value = state.settings.xaiModelName || DEFAULT_XAI_MODEL;
         elements.xaiAdditionalModelsTextarea.value = state.settings.xaiAdditionalModels || '';
@@ -10813,16 +11011,13 @@ Object.assign(uiUtils, {
         elements.llmAggregatorApiKeyInput.value = state.settings.llmAggregatorApiKey || '';
         elements.llmAggregatorModelNameSelect.value = state.settings.llmAggregatorModelName || DEFAULT_LLMAGGREGATOR_MODEL;
         elements.llmAggregatorAdditionalModelsTextarea.value = state.settings.llmAggregatorAdditionalModels || '';
-        multiBackendUtils.toggleMultiBackendsVisibility(true);
-        elements.showSettingsScrollToTopButtonToggle.checked = state.settings.showSettingsScrollToTopButton;
-        elements.showSettingsScrollToBottomButtonToggle.checked = state.settings.showSettingsScrollToBottomButton;
-        this.updateSettingsScreenElementVisibility();
         multiBackendUtils.renderList();
         multiApiKeyUtils.renderAllApiKeyLists();
         multiApiKeyUtils.updateMainApiKeyInput('gemini');
         multiApiKeyUtils.updateMainApiKeyInput('deepseek');
         multiApiKeyUtils.updateMainApiKeyInput('claude');
         multiApiKeyUtils.updateMainApiKeyInput('openai');
+        multiApiKeyUtils.updateMainApiKeyInput('openrouter');
         multiApiKeyUtils.updateMainApiKeyInput('xai');
         multiApiKeyUtils.updateMainApiKeyInput('llmaggregator');
         const setupParamUI = (paramId, storageKey) => {
@@ -10909,6 +11104,15 @@ Object.assign(uiUtils, {
         setupParamUI('openai-frequency-penalty');
         elements.openaiStreamingOutputCheckbox.checked = state.settings.openaiStreamingOutput;
         elements.openaiStreamingSpeedInput.value = state.settings.openaiStreamingSpeed ?? DEFAULT_STREAMING_SPEED;
+        elements.openrouterSystemPromptDefaultTextarea.value = state.settings.openrouterSystemPrompt || '';
+        elements.openrouterEnableSystemPromptDefaultCheckbox.checked = state.settings.openrouterEnableSystemPromptDefault;
+        setupParamUI('openrouter-max-tokens', 'openrouterMaxTokensSliderMax');
+        setupParamUI('openrouter-temperature');
+        setupParamUI('openrouter-top-p');
+        setupParamUI('openrouter-presence-penalty');
+        setupParamUI('openrouter-frequency-penalty');
+        elements.openrouterStreamingOutputCheckbox.checked = state.settings.openrouterStreamingOutput;
+        elements.openrouterStreamingSpeedInput.value = state.settings.openrouterStreamingSpeed ?? DEFAULT_STREAMING_SPEED;
         elements.xaiSystemPromptDefaultTextarea.value = state.settings.xaiSystemPrompt || '';
         elements.xaiEnableSystemPromptDefaultCheckbox.checked = state.settings.xaiEnableSystemPromptDefault;
         setupParamUI('xai-max-tokens', 'xaiMaxTokensSliderMax');
@@ -10979,7 +11183,6 @@ Object.assign(uiUtils, {
         elements.showScrollToBottomButtonToggle.checked = state.settings.showScrollToBottomButton;
         elements.showToggleAllContentButtonToggle.checked = state.settings.showToggleAllContentButton;
         elements.showBulkHistoryActionsToggle.checked = state.settings.showBulkHistoryActions;
-        elements.showPasteButtonInFooterToggle.checked = state.settings.showPasteButtonInFooter;
         elements.showPasteButtonInEditToggle.checked = state.settings.showPasteButtonInEdit;
         elements.messageBubbleOpacityInput.value = state.settings.messageBubbleOpacity ?? DEFAULT_MESSAGE_BUBBLE_OPACITY;
         elements.chatOverlayOpacityInput.value = state.settings.chatOverlayOpacity ?? DEFAULT_CHAT_OVERLAY_OPACITY;
@@ -10990,7 +11193,6 @@ Object.assign(uiUtils, {
         elements.enableElevationToggle.checked = state.settings.enableElevation;
         elements.enableElevationHoverToggle.checked = state.settings.enableElevationHover;
         elements.elevationHoverOption.classList.toggle('hidden', !state.settings.enableElevation);
-        elements.autoCloseDisplaySettingsToggle.checked = state.settings.autoCloseDisplaySettings;
         this.applyElevationSetting();
         document.getElementById('message-bubble-opacity-slider').value = elements.messageBubbleOpacityInput.value;
         document.getElementById('chat-overlay-opacity-slider').value = elements.chatOverlayOpacityInput.value;
@@ -10999,13 +11201,12 @@ Object.assign(uiUtils, {
         document.getElementById('toggle-button-top-opacity-slider').value = elements.toggleButtonTopOpacityInput.value;
         document.getElementById('thought-summary-opacity-slider').value = elements.thoughtSummaryOpacityInput.value;
         elements.showApiProviderToggleHeaderCheckbox.checked = state.settings.showApiProviderToggleHeader;
-        elements.showApiProviderToggleFooterCheckbox.checked = state.settings.showApiProviderToggleFooter;
         elements.showHeaderCycleApiKeyBtnToggle.checked = state.settings.showHeaderCycleApiKeyBtn;
-        elements.showFooterCycleApiKeyBtnToggle.checked = state.settings.showFooterCycleApiKeyBtn;
         elements.apiProviderCycleGeminiCheckbox.checked = state.settings.apiProviderCycle.gemini;
         elements.apiProviderCycleDeepSeekCheckbox.checked = state.settings.apiProviderCycle.deepseek;
         elements.apiProviderCycleClaudeCheckbox.checked = state.settings.apiProviderCycle.claude;
         elements.apiProviderCycleOpenAICheckbox.checked = state.settings.apiProviderCycle.openai;
+        elements.apiProviderCycleOpenRouterCheckbox.checked = state.settings.apiProviderCycle.openrouter;
         elements.apiProviderCycleXaiCheckbox.checked = state.settings.apiProviderCycle.xai;
         elements.apiProviderCycleLlmAggregatorCheckbox.checked = state.settings.apiProviderCycle.llmaggregator;
         elements.showMemoButtonToggle.checked = state.settings.showMemoButton;
@@ -11043,11 +11244,6 @@ Object.assign(uiUtils, {
         document.documentElement.style.setProperty('--message-toggle-button-bottom-font-size', `${state.settings.toggleButtonBottomFontSize || DEFAULT_TOGGLE_BUTTON_BOTTOM_FONT_SIZE}px`);
         document.documentElement.style.setProperty('--thought-summary-opacity', state.settings.thoughtSummaryOpacity || DEFAULT_THOUGHT_SUMMARY_OPACITY);
         this.applySettingsUIDetailsOpenStates();
-        if (state.settings.autoCloseDisplaySettings) {
-            const displaySettings = document.getElementById('settings-group-display-adjustment');
-            if (displaySettings)
-                displaySettings.open = false;
-        }
         this.updateChatScreenElementVisibility();
         appLogic.applyMessageNavigationMode();
         this.updateHistoryHeaderButtonVisibility();
@@ -11055,6 +11251,7 @@ Object.assign(uiUtils, {
         this.updateDeepSeekUserModelOptions();
         this.updateClaudeUserModelOptions();
         this.updateOpenAIUserModelOptions();
+        this.updateOpenRouterUserModelOptions();
         this.updateXaiUserModelOptions();
         this.updateLlmAggregatorUserModelOptions();
         this.applyTheme();
@@ -11076,6 +11273,7 @@ Object.assign(uiUtils, {
         setupModelListener(elements.deepSeekAdditionalModelsTextarea, 'deepSeekAdditionalModels', uiUtils.updateDeepSeekUserModelOptions);
         setupModelListener(elements.claudeAdditionalModelsTextarea, 'claudeAdditionalModels', uiUtils.updateClaudeUserModelOptions);
         setupModelListener(elements.openaiAdditionalModelsTextarea, 'openaiAdditionalModels', uiUtils.updateOpenAIUserModelOptions);
+        setupModelListener(elements.openrouterAdditionalModelsTextarea, 'openrouterAdditionalModels', uiUtils.updateOpenRouterUserModelOptions);
         setupModelListener(elements.xaiAdditionalModelsTextarea, 'xaiAdditionalModels', uiUtils.updateXaiUserModelOptions);
         setupModelListener(elements.llmAggregatorAdditionalModelsTextarea, 'llmAggregatorAdditionalModels', uiUtils.updateLlmAggregatorUserModelOptions);
         this.updateMemoStackHeightSettingsVisibility();
@@ -11113,12 +11311,19 @@ Object.assign(uiUtils, {
                 detailsEl.open = false;
             }
         });
+        document.querySelectorAll('#settings-screen .main-content > details.settings-group').forEach(topLevelDetails => {
+            topLevelDetails.open = true;
+            topLevelDetails.querySelectorAll('details').forEach(nestedDetails => {
+                nestedDetails.open = false;
+            });
+        });
     },
     toggleApiSettingsVisibility(provider) {
         const showGemini = provider === 'gemini';
         const showDeepSeek = provider === 'deepseek';
         const showClaude = provider === 'claude';
         const showOpenAI = provider === 'openai';
+        const showOpenRouter = provider === 'openrouter';
         const showXai = provider === 'xai';
         const showLlmAggregator = provider === 'llmaggregator';
         elements.geminiSettingsGroup.classList.toggle('hidden', !showGemini);
@@ -11134,6 +11339,9 @@ Object.assign(uiUtils, {
         elements.openaiSettingsGroup.classList.toggle('hidden', !showOpenAI);
         elements.openaiParamsGroup.classList.toggle('hidden', !showOpenAI);
         elements.openaiAdvancedGroup.classList.toggle('hidden', !showOpenAI);
+        elements.openrouterSettingsGroup.classList.toggle('hidden', !showOpenRouter);
+        elements.openrouterParamsGroup.classList.toggle('hidden', !showOpenRouter);
+        elements.openrouterAdvancedGroup.classList.toggle('hidden', !showOpenRouter);
         elements.xaiSettingsGroup.classList.toggle('hidden', !showXai);
         elements.xaiParamsGroup.classList.toggle('hidden', !showXai);
         elements.xaiAdvancedGroup.classList.toggle('hidden', !showXai);
@@ -11171,23 +11379,6 @@ Object.assign(uiUtils, {
             });
             if (!state.settings.showHeaderMenuButton) {
                 this.setHeaderMenuOpen(false);
-            }
-            if (elements.pasteToInputBtn) {
-                elements.pasteToInputBtn.classList.toggle('hidden', !state.settings.showPasteButtonInFooter);
-            }
-            if (elements.footerApiProviderToggleBtn) {
-                elements.footerApiProviderToggleBtn.classList.toggle('hidden', !state.settings.showApiProviderToggleFooter);
-            }
-            if (elements.footerCycleApiKeyBtn) {
-                elements.footerCycleApiKeyBtn.classList.toggle('hidden', !state.settings.showFooterCycleApiKeyBtn);
-            }
-            if (elements.footerSecondaryActions) {
-                const hasVisibleFooterAction = [
-                    elements.footerApiProviderToggleBtn,
-                    elements.footerCycleApiKeyBtn,
-                    elements.pasteToInputBtn,
-                ].some((button) => button && !button.classList.contains('hidden'));
-                elements.footerSecondaryActions.classList.toggle('hidden', !hasVisibleFooterAction);
             }
             this.adjustHeaderLayout();
             this.updateProviderToggleButtons();
@@ -11228,7 +11419,7 @@ Object.assign(uiUtils, {
         elements.headerSubmenu.classList.toggle('hidden', !isOpen);
         elements.headerMenuBtn.setAttribute('aria-expanded', String(isOpen));
         if (isOpen) {
-            elements.headerMenuNewChatBtn.focus();
+            elements.headerSubmenu.querySelector('[role="menuitem"]')?.focus();
         }
     },
     toggleHeaderMenu() {
@@ -11240,15 +11431,16 @@ Object.assign(uiUtils, {
             deepseek: { text: 'DS', title: 'DeepSeek', className: 'deepseek' },
             claude: { text: 'AN', title: 'Anthropic', className: 'claude' },
             openai: { text: 'OP', title: 'OpenAI', className: 'openai' },
+            openrouter: { text: 'OR', title: 'OpenRouter', className: 'openrouter' },
             xai: { text: 'XA', title: 'xAI', className: 'xai' },
             llmaggregator: { text: 'LA', title: 'LLM Aggregator', className: 'llmaggregator' },
         };
         const currentProviderInfo = providerMap[state.settings.apiProvider] || { text: '??', title: 'Unknown', className: '' };
-        [elements.headerApiProviderToggleBtn, elements.footerApiProviderToggleBtn].forEach(button => {
+        [elements.headerApiProviderToggleBtn].forEach(button => {
             if (button) {
                 button.textContent = currentProviderInfo.text;
                 button.title = `API: ${currentProviderInfo.title}`;
-                button.classList.remove('gemini', 'deepseek', 'claude', 'openai', 'xai', 'llmaggregator');
+                button.classList.remove('gemini', 'deepseek', 'claude', 'openai', 'openrouter', 'xai', 'llmaggregator');
                 if (currentProviderInfo.className) {
                     button.classList.add(currentProviderInfo.className);
                 }
@@ -11373,6 +11565,33 @@ Object.assign(uiUtils, {
         else {
             select.value = DEFAULT_OPENAI_MODEL;
         }
+    },
+    updateOpenRouterUserModelOptions() {
+        const group = elements.openrouterUserDefinedModelsGroup;
+        group.innerHTML = '';
+        const models = (state.settings.openrouterAdditionalModels || '')
+            .split(',')
+            .map(model => model.trim())
+            .filter(Boolean);
+        models.forEach(modelId => {
+            const option = document.createElement('option');
+            option.value = modelId;
+            option.textContent = modelId;
+            group.appendChild(option);
+        });
+        if (state.settings.openrouterModelName
+            && !Array.from(elements.openrouterModelNameSelect.options)
+                .some(option => option.value === state.settings.openrouterModelName)) {
+            const option = document.createElement('option');
+            option.value = state.settings.openrouterModelName;
+            option.textContent = state.settings.openrouterModelName;
+            group.appendChild(option);
+        }
+        group.disabled = group.children.length === 0;
+        elements.openrouterModelNameSelect.value = Array.from(elements.openrouterModelNameSelect.options)
+            .some(option => option.value === state.settings.openrouterModelName)
+            ? state.settings.openrouterModelName
+            : DEFAULT_OPENROUTER_MODEL;
     },
     updateXaiUserModelOptions() {
         const group = elements.xaiUserDefinedModelsGroup;
@@ -11688,7 +11907,7 @@ Object.assign(uiUtils, {
             keys = multiApiKeyUtils.getApiKeysArray(provider);
         }
         const isEnabled = state.settings.showMultiApiKeys && keys.length > 1;
-        const buttons = [elements.headerCycleApiKeyBtn, elements.footerCycleApiKeyBtn];
+        const buttons = [elements.headerCycleApiKeyBtn];
         buttons.forEach(button => {
             if (!button)
                 return;
@@ -11742,6 +11961,7 @@ Object.assign(uiUtils, {
     updateAttachmentBadgeVisibility() {
         const hasAttachments = state.pendingAttachments.length > 0;
         elements.attachFileBtn.classList.toggle('has-attachments', hasAttachments);
+        elements.headerMenuBtn.classList.toggle('has-attachments', hasAttachments);
         if (!state.isSending) {
             elements.sendButton.disabled = elements.userInput.value.trim() === '' && !hasAttachments;
         }
@@ -11953,7 +12173,7 @@ Object.assign(uiUtils, {
         });
     },
     toggleMultiApiKeysVisibility(show) {
-        const providers = ['gemini', 'deepseek', 'claude', 'openai', 'xai'];
+        const providers = ['gemini', 'deepseek', 'claude', 'openai', 'openrouter', 'xai'];
         providers.forEach(provider => {
             const multiKeySection = document.getElementById(`${provider}-multi-api-keys-section`);
             if (multiKeySection) {
@@ -11982,6 +12202,9 @@ Object.assign(uiUtils, {
                         case 'openai':
                             singleKeyValue = state.settings.openaiApiKey;
                             break;
+                        case 'openrouter':
+                            singleKeyValue = state.settings.openrouterApiKey;
+                            break;
                         case 'xai':
                             singleKeyValue = state.settings.xaiApiKey;
                             break;
@@ -11993,13 +12216,15 @@ Object.assign(uiUtils, {
                 }
             }
         });
+        multiBackendUtils.toggleMultiBackendsVisibility(show);
     },
     updateApiKeyInputType() {
         const isUnmasked = state.settings.unmaskApiKeys;
         const type = isUnmasked ? 'text' : 'password';
         const mainInputIds = [
             'gemini-api-key', 'deepseek-api-key', 'claude-api-key',
-            'openai-api-key', 'xai-api-key', 'llmaggregator-api-key'
+            'openai-api-key', 'openrouter-api-key', 'xai-api-key',
+            'llmaggregator-api-key'
         ];
         mainInputIds.forEach(id => {
             const el = document.getElementById(id);
@@ -12413,9 +12638,7 @@ Object.assign(appLogic, {
         });
         elements.toggleAllContentBtn.addEventListener('click', () => this.toggleAllMessagesVisibility());
         elements.headerApiProviderToggleBtn.addEventListener('click', () => this.toggleApiProvider());
-        elements.footerApiProviderToggleBtn.addEventListener('click', () => this.toggleApiProvider());
         elements.headerCycleApiKeyBtn.addEventListener('click', () => this.cycleActiveApiKey());
-        elements.footerCycleApiKeyBtn.addEventListener('click', () => this.cycleActiveApiKey());
         elements.sendButton.addEventListener('click', () => {
             if (state.isSending)
                 this.abortRequest();
@@ -12584,6 +12807,12 @@ Object.assign(appLogic, {
         this._setupParamSlider('openai-top-p', 1.0, null);
         this._setupParamSlider('openai-presence-penalty', 0.0, null);
         this._setupParamSlider('openai-frequency-penalty', 0.0, null);
+        // OpenRouter Params
+        this._setupParamSlider('openrouter-max-tokens', 4096, 'openrouterMaxTokensSliderMax');
+        this._setupParamSlider('openrouter-temperature', 1.0, null);
+        this._setupParamSlider('openrouter-top-p', 1.0, null);
+        this._setupParamSlider('openrouter-presence-penalty', 0.0, null);
+        this._setupParamSlider('openrouter-frequency-penalty', 0.0, null);
         // xAI Params
         this._setupParamSlider('xai-max-tokens', 4096, 'xaiMaxTokensSliderMax');
         this._setupParamSlider('xai-temperature', 1.0, null);
@@ -12632,10 +12861,6 @@ Object.assign(appLogic, {
         });
         elements.showToggleAllContentButtonToggle.addEventListener('change', () => {
             state.settings.showToggleAllContentButton = elements.showToggleAllContentButtonToggle.checked;
-            uiUtils.updateChatScreenElementVisibility();
-        });
-        elements.showPasteButtonInFooterToggle.addEventListener('change', () => {
-            state.settings.showPasteButtonInFooter = elements.showPasteButtonInFooterToggle.checked;
             uiUtils.updateChatScreenElementVisibility();
         });
         elements.showPasteButtonInEditToggle.addEventListener('change', () => {
@@ -12977,7 +13202,10 @@ Object.assign(appLogic, {
             });
         }
         window.addEventListener('popstate', this.handlePopState.bind(this));
-        elements.attachFileBtn.addEventListener('click', () => uiUtils.showFileUploadDialog());
+        elements.attachFileBtn.addEventListener('click', () => {
+            uiUtils.setHeaderMenuOpen(false);
+            uiUtils.showFileUploadDialog();
+        });
         elements.selectFilesBtn.addEventListener('click', () => elements.fileInput.click());
         elements.fileInput.addEventListener('change', (event) => {
             this.handleFileSelection(event.target.files);
@@ -13008,14 +13236,6 @@ Object.assign(appLogic, {
         });
         elements.settingsScrollToTopBtn.addEventListener('click', () => this.scrollToSettingsTop());
         elements.settingsScrollToBottomBtn.addEventListener('click', () => this.scrollToSettingsBottom());
-        elements.showSettingsScrollToTopButtonToggle.addEventListener('change', () => {
-            state.settings.showSettingsScrollToTopButton = elements.showSettingsScrollToTopButtonToggle.checked;
-            uiUtils.updateSettingsScreenElementVisibility();
-        });
-        elements.showSettingsScrollToBottomButtonToggle.addEventListener('change', () => {
-            state.settings.showSettingsScrollToBottomButton = elements.showSettingsScrollToBottomButtonToggle.checked;
-            uiUtils.updateSettingsScreenElementVisibility();
-        });
         document.querySelectorAll('#settings-screen details[id]').forEach(details => {
             details.addEventListener('toggle', (event) => {
                 if (details.id) {
@@ -13039,6 +13259,10 @@ Object.assign(appLogic, {
         });
         elements.apiProviderCycleOpenAICheckbox.addEventListener('change', () => {
             state.settings.apiProviderCycle.openai = elements.apiProviderCycleOpenAICheckbox.checked;
+            uiUtils.updateApiProviderSelectOptions();
+        });
+        elements.apiProviderCycleOpenRouterCheckbox.addEventListener('change', () => {
+            state.settings.apiProviderCycle.openrouter = elements.apiProviderCycleOpenRouterCheckbox.checked;
             uiUtils.updateApiProviderSelectOptions();
         });
         elements.apiProviderCycleXaiCheckbox.addEventListener('change', () => {
@@ -13071,6 +13295,7 @@ Object.assign(appLogic, {
         elements.deepSeekApiKeyInput.addEventListener('input', () => multiApiKeyUtils.syncMainApiKeyInput('deepseek'));
         elements.claudeApiKeyInput.addEventListener('input', () => multiApiKeyUtils.syncMainApiKeyInput('claude'));
         elements.openaiApiKeyInput.addEventListener('input', () => multiApiKeyUtils.syncMainApiKeyInput('openai'));
+        elements.openrouterApiKeyInput.addEventListener('input', () => multiApiKeyUtils.syncMainApiKeyInput('openrouter'));
         elements.xaiApiKeyInput.addEventListener('input', () => multiApiKeyUtils.syncMainApiKeyInput('xai'));
         elements.llmAggregatorApiKeyInput.addEventListener('input', () => multiApiKeyUtils.syncMainApiKeyInput('llmaggregator'));
         elements.showMultiApiKeysToggle.addEventListener('change', (e) => {
@@ -13099,6 +13324,7 @@ Object.assign(appLogic, {
                         <li><b>DeepSeek</b>: d, ds, de, deepseek</li>
                         <li><b>Claude</b>: c, cl, an, anthropic</li>
                         <li><b>OpenAI</b>: o, op, ch, chatgpt</li>
+                        <li><b>OpenRouter</b>: or, openrouter, router</li>
                         <li><b>xAI (Grok)</b>: x, gr, xa, grok</li>
                         <li>※LLM Aggregatorは適用対象外</li>
                     </ul>
@@ -13993,6 +14219,9 @@ Object.assign(appLogic, {
                 case 'openai':
                     apiKeyToUse = state.settings.openaiApiKey;
                     break;
+                case 'openrouter':
+                    apiKeyToUse = state.settings.openrouterApiKey;
+                    break;
                 case 'xai':
                     apiKeyToUse = state.settings.xaiApiKey;
                     break;
@@ -14013,6 +14242,9 @@ Object.assign(appLogic, {
                 break;
             case 'openai':
                 modelNameToUse = state.settings.openaiModelName;
+                break;
+            case 'openrouter':
+                modelNameToUse = state.settings.openrouterModelName;
                 break;
             case 'xai':
                 modelNameToUse = state.settings.xaiModelName;
@@ -14060,6 +14292,9 @@ Object.assign(appLogic, {
         }
         else if (selectedApiProvider === 'openai' && state.settings.openaiEnableSystemPromptDefault) {
             individualPrompt = state.settings.openaiSystemPrompt.trim();
+        }
+        else if (selectedApiProvider === 'openrouter' && state.settings.openrouterEnableSystemPromptDefault) {
+            individualPrompt = state.settings.openrouterSystemPrompt.trim();
         }
         else if (selectedApiProvider === 'xai' && state.settings.xaiEnableSystemPromptDefault) {
             individualPrompt = state.settings.xaiSystemPrompt.trim();
@@ -14128,6 +14363,15 @@ Object.assign(appLogic, {
             contextFrequencyPenalty = state.settings.openaiFrequencyPenalty;
             contextStreamingOutput = state.settings.openaiStreamingOutput;
             contextStreamingSpeed = state.settings.openaiStreamingSpeed;
+        }
+        else if (selectedApiProvider === 'openrouter') {
+            contextTemperature = state.settings.openrouterTemperature;
+            contextMaxTokens = state.settings.openrouterMaxTokens;
+            contextTopP = state.settings.openrouterTopP;
+            contextPresencePenalty = state.settings.openrouterPresencePenalty;
+            contextFrequencyPenalty = state.settings.openrouterFrequencyPenalty;
+            contextStreamingOutput = state.settings.openrouterStreamingOutput;
+            contextStreamingSpeed = state.settings.openrouterStreamingSpeed;
         }
         else if (selectedApiProvider === 'xai') {
             contextTemperature = state.settings.xaiTemperature;
@@ -14367,7 +14611,7 @@ Object.assign(appLogic, {
             if (selectedApiProvider === 'gemini') {
                 systemInstructionForProvider = { role: "system", parts: [{ text: systemPromptTextToUseForApi }] };
             }
-            else if (selectedApiProvider === 'deepseek' || selectedApiProvider === 'claude' || selectedApiProvider === 'openai' || selectedApiProvider === 'xai' || selectedApiProvider === 'llmaggregator') {
+            else if (selectedApiProvider === 'deepseek' || selectedApiProvider === 'claude' || selectedApiProvider === 'openai' || selectedApiProvider === 'openrouter' || selectedApiProvider === 'xai' || selectedApiProvider === 'llmaggregator') {
                 systemInstructionForProvider = { content: systemPromptTextToUseForApi, parts: [{ text: systemPromptTextToUseForApi }] };
             }
         }
@@ -14390,9 +14634,9 @@ Object.assign(appLogic, {
             else if (selectedApiProvider === 'claude') {
                 apiResponseObject = await apiUtils.callClaudeApi(apiKeyToUse, modelNameToUse, apiMessages, commonGenerationConfig, systemInstructionForProvider, useStreamingForThisCall);
             }
-            else if (selectedApiProvider === 'openai') {
+            else if (selectedApiProvider === 'openai' || selectedApiProvider === 'openrouter') {
                 const hasImage = apiMessages.some(m => m.parts.some(p => p.inlineData && p.inlineData.mimeType.startsWith('image/')));
-                apiResponseObject = await apiUtils.callOpenAICompatibleApi(apiKeyToUse, modelNameToUse, 'openai', apiMessages, commonGenerationConfig, systemInstructionForProvider, useStreamingForThisCall, hasImage);
+                apiResponseObject = await apiUtils.callOpenAICompatibleApi(apiKeyToUse, modelNameToUse, selectedApiProvider, apiMessages, commonGenerationConfig, systemInstructionForProvider, useStreamingForThisCall, hasImage);
             }
             else if (selectedApiProvider === 'xai') {
                 const hasImage = apiMessages.some(m => m.parts.some(p => p.inlineData && p.inlineData.mimeType.startsWith('image/')));
@@ -14448,8 +14692,8 @@ Object.assign(appLogic, {
                 else if (selectedApiProvider === 'claude') {
                     responseStreamIterator = apiUtils.handleClaudeStreamingResponse(apiResponseObject);
                 }
-                else if (selectedApiProvider === 'openai') {
-                    responseStreamIterator = apiUtils.handleOpenAICompatibleStreamingResponse(apiResponseObject, 'openai');
+                else if (selectedApiProvider === 'openai' || selectedApiProvider === 'openrouter') {
+                    responseStreamIterator = apiUtils.handleOpenAICompatibleStreamingResponse(apiResponseObject, selectedApiProvider);
                 }
                 else if (selectedApiProvider === 'xai') {
                     responseStreamIterator = apiUtils.handleOpenAICompatibleStreamingResponse(apiResponseObject, 'xai');
@@ -14457,9 +14701,10 @@ Object.assign(appLogic, {
                 const currentContextStreamSpeed = selectedApiProvider === 'gemini' ? contextStreamingSpeed :
                     selectedApiProvider === 'deepseek' ? state.settings.deepSeekStreamingSpeed :
                         selectedApiProvider === 'claude' ? state.settings.claudeStreamingSpeed :
-                            selectedApiProvider === 'xai' ? state.settings.xaiStreamingSpeed :
-                                selectedApiProvider === 'llmaggregator' ? state.settings.llmAggregatorStreamingSpeed :
-                                    state.settings.openaiStreamingSpeed;
+                            selectedApiProvider === 'openrouter' ? state.settings.openrouterStreamingSpeed :
+                                selectedApiProvider === 'xai' ? state.settings.xaiStreamingSpeed :
+                                    selectedApiProvider === 'llmaggregator' ? state.settings.llmAggregatorStreamingSpeed :
+                                        state.settings.openaiStreamingSpeed;
                 const messageIndexForDisplay = modelMessageObjectForStream ? state.currentMessages.indexOf(modelMessageObjectForStream) : -1;
                 for await (const streamData of responseStreamIterator) {
                     if (state.abortController?.signal.aborted) {
@@ -14521,7 +14766,7 @@ Object.assign(appLogic, {
                             if (streamData.usageMetadata)
                                 finalUsageMetadataFromStream = streamData.usageMetadata;
                         }
-                        else if (selectedApiProvider === 'claude' || selectedApiProvider === 'openai' || selectedApiProvider === 'xai') {
+                        else if (selectedApiProvider === 'claude' || selectedApiProvider === 'openai' || selectedApiProvider === 'openrouter' || selectedApiProvider === 'xai') {
                             if (streamData.usageMetadata)
                                 finalUsageMetadataFromStream = streamData.usageMetadata;
                         }
@@ -14698,7 +14943,7 @@ Object.assign(appLogic, {
                     if (!rawContentFromApi && data.stop_reason === 'end_turn')
                         rawContentFromApi = "(応答が空です)";
                 }
-                else if (selectedApiProvider === 'openai' || selectedApiProvider === 'xai') {
+                else if (selectedApiProvider === 'openai' || selectedApiProvider === 'openrouter' || selectedApiProvider === 'xai') {
                     if (data.choices && data.choices.length > 0) {
                         rawContentFromApi = data.choices[0].message?.content || "";
                         finalMetadata = { finishReason: data.choices[0].finish_reason };
@@ -15416,6 +15661,7 @@ Object.assign(appLogic, {
             newSettings.deepSeekApiKey = elements.deepSeekApiKeyInput.value.trim();
             newSettings.claudeApiKey = elements.claudeApiKeyInput.value.trim();
             newSettings.openaiApiKey = elements.openaiApiKeyInput.value.trim();
+            newSettings.openrouterApiKey = elements.openrouterApiKeyInput.value.trim();
             newSettings.xaiApiKey = elements.xaiApiKeyInput.value.trim();
             newSettings.llmAggregatorApiKey = elements.llmAggregatorApiKeyInput.value.trim();
         }
@@ -15455,6 +15701,7 @@ Object.assign(appLogic, {
         newSettings.deepSeekTopP = getParamValue('deepseek-top-p', false, 0, 1);
         newSettings.deepSeekPresencePenalty = getParamValue('deepseek-presence-penalty', false, -2.0, 2.0);
         newSettings.deepSeekFrequencyPenalty = getParamValue('deepseek-frequency-penalty', false, -2.0, 2.0);
+        newSettings.deepseekMaxTokensSliderMax = getSliderMaxValue('deepseek-max-tokens');
         newSettings.deepSeekIncludeDeepSeekThoughts = elements.deepSeekIncludeThoughtsToggle.checked;
         newSettings.deepSeekExpandThoughtsByDefault = elements.deepSeekExpandThoughtsByDefaultToggle.checked;
         newSettings.deepSeekStreamingOutput = elements.deepSeekStreamingOutputCheckbox.checked;
@@ -15468,6 +15715,9 @@ Object.assign(appLogic, {
         newSettings.claudeTopK = getParamValue('claude-top-k', true, 1);
         newSettings.claudeTopP = getParamValue('claude-top-p', false, 0, 1);
         newSettings.claudeThinkingBudget = getParamValue('claude-thinking-budget', true, 1024);
+        newSettings.claudeMaxTokensSliderMax = getSliderMaxValue('claude-max-tokens');
+        newSettings.claudeTopKSliderMax = getSliderMaxValue('claude-top-k');
+        newSettings.claudeThinkingBudgetSliderMax = getSliderMaxValue('claude-thinking-budget');
         newSettings.claudeIncludeThoughts = elements.claudeIncludeThoughtsToggle.checked;
         newSettings.claudeExpandThoughtsByDefault = elements.claudeExpandThoughtsByDefaultToggle.checked;
         newSettings.claudeStreamingOutput = elements.claudeStreamingOutputCheckbox.checked;
@@ -15481,8 +15731,21 @@ Object.assign(appLogic, {
         newSettings.openaiTopP = getParamValue('openai-top-p', false, 0, 1);
         newSettings.openaiPresencePenalty = getParamValue('openai-presence-penalty', false, -2.0, 2.0);
         newSettings.openaiFrequencyPenalty = getParamValue('openai-frequency-penalty', false, -2.0, 2.0);
+        newSettings.openaiMaxTokensSliderMax = getSliderMaxValue('openai-max-tokens');
         newSettings.openaiStreamingOutput = elements.openaiStreamingOutputCheckbox.checked;
         newSettings.openaiStreamingSpeed = elements.openaiStreamingSpeedInput.value === '' ? DEFAULT_STREAMING_SPEED : parseInt(elements.openaiStreamingSpeedInput.value, 10);
+        newSettings.openrouterModelName = elements.openrouterModelNameSelect.value;
+        newSettings.openrouterAdditionalModels = elements.openrouterAdditionalModelsTextarea.value.trim();
+        newSettings.openrouterSystemPrompt = elements.openrouterSystemPromptDefaultTextarea.value.trim();
+        newSettings.openrouterEnableSystemPromptDefault = elements.openrouterEnableSystemPromptDefaultCheckbox.checked;
+        newSettings.openrouterMaxTokens = getParamValue('openrouter-max-tokens', true, 1);
+        newSettings.openrouterTemperature = getParamValue('openrouter-temperature', false, 0, 2);
+        newSettings.openrouterTopP = getParamValue('openrouter-top-p', false, 0, 1);
+        newSettings.openrouterPresencePenalty = getParamValue('openrouter-presence-penalty', false, -2.0, 2.0);
+        newSettings.openrouterFrequencyPenalty = getParamValue('openrouter-frequency-penalty', false, -2.0, 2.0);
+        newSettings.openrouterMaxTokensSliderMax = getSliderMaxValue('openrouter-max-tokens');
+        newSettings.openrouterStreamingOutput = elements.openrouterStreamingOutputCheckbox.checked;
+        newSettings.openrouterStreamingSpeed = elements.openrouterStreamingSpeedInput.value === '' ? DEFAULT_STREAMING_SPEED : parseInt(elements.openrouterStreamingSpeedInput.value, 10);
         newSettings.xaiModelName = elements.xaiModelNameSelect.value;
         newSettings.xaiAdditionalModels = elements.xaiAdditionalModelsTextarea.value.trim();
         newSettings.xaiSystemPrompt = elements.xaiSystemPromptDefaultTextarea.value.trim();
@@ -15492,6 +15755,7 @@ Object.assign(appLogic, {
         newSettings.xaiTopP = getParamValue('xai-top-p', false, 0, 1);
         newSettings.xaiPresencePenalty = getParamValue('xai-presence-penalty', false, -2.0, 2.0);
         newSettings.xaiFrequencyPenalty = getParamValue('xai-frequency-penalty', false, -2.0, 2.0);
+        newSettings.xaiMaxTokensSliderMax = getSliderMaxValue('xai-max-tokens');
         newSettings.xaiIncludeThoughts = elements.xaiIncludeThoughtsToggle.checked;
         newSettings.xaiExpandThoughtsByDefault = elements.xaiExpandThoughtsByDefaultToggle.checked;
         newSettings.xaiReasoningEffort = elements.xaiReasoningEffortSelect.value;
@@ -15508,6 +15772,8 @@ Object.assign(appLogic, {
         newSettings.llmAggregatorTopK = getParamValue('llmaggregator-top-k', true, 0);
         newSettings.llmAggregatorPresencePenalty = getParamValue('llmaggregator-presence-penalty', false, -2.0, 2.0);
         newSettings.llmAggregatorFrequencyPenalty = getParamValue('llmaggregator-frequency-penalty', false, -2.0, 2.0);
+        newSettings.llmaggregatorMaxTokensSliderMax = getSliderMaxValue('llmaggregator-max-tokens');
+        newSettings.llmaggregatorTopKSliderMax = getSliderMaxValue('llmaggregator-top-k');
         newSettings.llmAggregatorIncludeThoughts = elements.llmAggregatorIncludeThoughtsToggle.checked;
         newSettings.llmAggregatorExpandThoughtsByDefault = elements.llmAggregatorExpandThoughtsByDefaultToggle.checked;
         newSettings.llmAggregatorStreamingOutput = elements.llmAggregatorStreamingOutputCheckbox.checked;
@@ -15549,7 +15815,6 @@ Object.assign(appLogic, {
         newSettings.showBulkHistoryActions = elements.showBulkHistoryActionsToggle.checked;
         newSettings.showHistoryPreviewBubble = elements.showHistoryPreviewBubbleToggle.checked;
         newSettings.stripedHistoryList = elements.stripedHistoryListToggle.checked;
-        newSettings.showPasteButtonInFooter = elements.showPasteButtonInFooterToggle.checked;
         newSettings.showPasteButtonInEdit = elements.showPasteButtonInEditToggle.checked;
         newSettings.showMemoButton = elements.showMemoButtonToggle.checked;
         newSettings.memoHeight = elements.memoHeightInput.value.trim() || DEFAULT_MEMO_HEIGHT;
@@ -15578,18 +15843,14 @@ Object.assign(appLogic, {
         newSettings.thoughtSummaryOpacity = elements.thoughtSummaryOpacityInput.value === '' ? DEFAULT_THOUGHT_SUMMARY_OPACITY : parseFloat(elements.thoughtSummaryOpacityInput.value);
         newSettings.enableElevation = elements.enableElevationToggle.checked;
         newSettings.enableElevationHover = elements.enableElevationHoverToggle.checked;
-        newSettings.autoCloseDisplaySettings = elements.autoCloseDisplaySettingsToggle.checked;
-        newSettings.showSettingsScrollToTopButton = elements.showSettingsScrollToTopButtonToggle.checked;
-        newSettings.showSettingsScrollToBottomButton = elements.showSettingsScrollToBottomButtonToggle.checked;
         newSettings.showApiProviderToggleHeader = elements.showApiProviderToggleHeaderCheckbox.checked;
-        newSettings.showApiProviderToggleFooter = elements.showApiProviderToggleFooterCheckbox.checked;
         newSettings.showHeaderCycleApiKeyBtn = elements.showHeaderCycleApiKeyBtnToggle.checked;
-        newSettings.showFooterCycleApiKeyBtn = elements.showFooterCycleApiKeyBtnToggle.checked;
         newSettings.apiProviderCycle = {
             gemini: elements.apiProviderCycleGeminiCheckbox.checked,
             deepseek: elements.apiProviderCycleDeepSeekCheckbox.checked,
             claude: elements.apiProviderCycleClaudeCheckbox.checked,
             openai: elements.apiProviderCycleOpenAICheckbox.checked,
+            openrouter: elements.apiProviderCycleOpenRouterCheckbox.checked,
             xai: elements.apiProviderCycleXaiCheckbox.checked,
             llmaggregator: elements.apiProviderCycleLlmAggregatorCheckbox.checked,
         };
@@ -16319,6 +16580,166 @@ Object.assign(appLogic, {
                 await uiUtils.showCustomAlert("応答削除後のチャット状態の保存に失敗しました。");
             }
         }
+    },
+    async _createAttachmentFromFile(file) {
+        const fileName = file.name;
+        const fileExtension = fileName.slice(((fileName.lastIndexOf('.') - 1) >>> 0) + 2).toLowerCase();
+        const guessedMimeType = extensionToMimeTypeMap[fileExtension] || file.type || 'application/octet-stream';
+        let textData = null;
+        let base64Data = null;
+        if (guessedMimeType.startsWith('text/')) {
+            textData = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = () => reject(reader.error || new Error('ファイルの読み込みに失敗しました。'));
+                reader.readAsText(file);
+            });
+        }
+        else {
+            base64Data = await fileToBase64(file);
+        }
+        return {
+            file,
+            name: fileName,
+            mimeType: guessedMimeType,
+            base64Data,
+            textData,
+        };
+    },
+    async removeAttachment(messageIndex, attachmentIndex) {
+        const message = state.currentMessages[messageIndex];
+        const attachment = message?.attachments?.[attachmentIndex];
+        if (!attachment)
+            return;
+        if (!state.settings.disableAttachmentConfirmation) {
+            const confirmed = await uiUtils.showCustomConfirm(`添付ファイル「${attachment.name}」を削除しますか？`);
+            if (!confirmed)
+                return;
+        }
+        message.attachments.splice(attachmentIndex, 1);
+        uiUtils.renderChatMessages(true);
+        try {
+            await dbUtils.saveChat();
+        }
+        catch (error) {
+            await uiUtils.showCustomAlert('添付ファイルの削除状態の保存に失敗しました。');
+        }
+    },
+    editAttachment(messageIndex, attachmentIndex) {
+        const message = state.currentMessages[messageIndex];
+        if (!message?.attachments?.[attachmentIndex])
+            return;
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'file';
+        hiddenInput.accept = elements.fileInput.accept;
+        hiddenInput.classList.add('hidden');
+        hiddenInput.addEventListener('cancel', () => hiddenInput.remove(), { once: true });
+        hiddenInput.addEventListener('change', async () => {
+            const file = hiddenInput.files?.[0];
+            if (!file) {
+                hiddenInput.remove();
+                return;
+            }
+            if (file.size > MAX_FILE_SIZE) {
+                await uiUtils.showCustomAlert(`ファイルサイズが大きすぎます (${formatFileSize(MAX_FILE_SIZE)}以下)。`);
+                hiddenInput.remove();
+                return;
+            }
+            const otherAttachmentsSize = message.attachments.reduce((total, attachment, index) => {
+                if (index === attachmentIndex)
+                    return total;
+                if (attachment.file?.size)
+                    return total + attachment.file.size;
+                if (attachment.textData)
+                    return total + new Blob([attachment.textData]).size;
+                if (attachment.base64Data)
+                    return total + Math.floor(attachment.base64Data.length * 3 / 4);
+                return total;
+            }, 0);
+            if (otherAttachmentsSize + file.size > MAX_TOTAL_ATTACHMENT_SIZE) {
+                await uiUtils.showCustomAlert(`合計ファイルサイズの上限 (${formatFileSize(MAX_TOTAL_ATTACHMENT_SIZE)}) を超えます。`);
+                hiddenInput.remove();
+                return;
+            }
+            try {
+                message.attachments[attachmentIndex] = await this._createAttachmentFromFile(file);
+                uiUtils.renderChatMessages(true);
+                await dbUtils.saveChat();
+            }
+            catch (error) {
+                await uiUtils.showCustomAlert(`ファイルの処理中にエラーが発生しました: ${error.message || error}`);
+            }
+            finally {
+                hiddenInput.remove();
+            }
+        }, { once: true });
+        document.body.appendChild(hiddenInput);
+        hiddenInput.click();
+    },
+    addMoreAttachments(messageIndex) {
+        const message = state.currentMessages[messageIndex];
+        if (!message)
+            return;
+        if (!Array.isArray(message.attachments))
+            message.attachments = [];
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'file';
+        hiddenInput.multiple = true;
+        hiddenInput.accept = elements.fileInput.accept;
+        hiddenInput.classList.add('hidden');
+        hiddenInput.addEventListener('cancel', () => hiddenInput.remove(), { once: true });
+        hiddenInput.addEventListener('change', async () => {
+            const files = Array.from(hiddenInput.files || []);
+            let currentTotalSize = message.attachments.reduce((total, attachment) => {
+                if (attachment.file?.size)
+                    return total + attachment.file.size;
+                if (attachment.textData)
+                    return total + new Blob([attachment.textData]).size;
+                if (attachment.base64Data)
+                    return total + Math.floor(attachment.base64Data.length * 3 / 4);
+                return total;
+            }, 0);
+            let addedCount = 0;
+            try {
+                for (const file of files) {
+                    if (file.size > MAX_FILE_SIZE) {
+                        await uiUtils.showCustomAlert(`ファイル「${file.name}」はサイズが大きすぎます (${formatFileSize(MAX_FILE_SIZE)}以下)。`);
+                        continue;
+                    }
+                    if (currentTotalSize + file.size > MAX_TOTAL_ATTACHMENT_SIZE) {
+                        await uiUtils.showCustomAlert(`合計ファイルサイズの上限 (${formatFileSize(MAX_TOTAL_ATTACHMENT_SIZE)}) を超えるため、残りのファイルは追加されませんでした。`);
+                        break;
+                    }
+                    if (message.attachments.some(attachment => attachment.name === file.name))
+                        continue;
+                    message.attachments.push(await this._createAttachmentFromFile(file));
+                    currentTotalSize += file.size;
+                    addedCount++;
+                }
+                if (addedCount > 0) {
+                    uiUtils.renderChatMessages(true);
+                    await dbUtils.saveChat();
+                }
+            }
+            catch (error) {
+                await uiUtils.showCustomAlert(`ファイルの処理中にエラーが発生しました: ${error.message || error}`);
+            }
+            finally {
+                hiddenInput.remove();
+            }
+        }, { once: true });
+        document.body.appendChild(hiddenInput);
+        hiddenInput.click();
+    },
+    previewAttachment(messageIndex, attachmentIndex) {
+        const attachment = state.currentMessages[messageIndex]?.attachments?.[attachmentIndex];
+        if (!attachment?.mimeType?.startsWith('image/') || !attachment.base64Data)
+            return;
+        const image = elements.imagePreviewDialog.querySelector('img');
+        image.src = `data:${attachment.mimeType};base64,${attachment.base64Data}`;
+        image.alt = attachment.name;
+        elements.imagePreviewDialog.querySelector('.dialog-ok-btn').onclick = () => elements.imagePreviewDialog.close();
+        elements.imagePreviewDialog.showModal();
     },
     async handleFileSelection(fileList) {
         if (!fileList || fileList.length === 0)
