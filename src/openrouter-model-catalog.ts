@@ -107,9 +107,10 @@ const openRouterModelCatalog = {
     getDisplayLabel(modelId) {
         const model = this.getModel(modelId);
         if (!model) return modelId;
-        if (model.isFree) return `${model.name} — free`;
+        const displayName = model.name.replace(/^[^:：]+[:：]\s*/, '');
+        if (model.isFree) return `${displayName} — free`;
         const completionPrice = this.formatPerMillionPrice(model.pricing?.completion);
-        return `${model.name} — ${completionPrice === null ? '料金不明' : `$${completionPrice}/M`}`;
+        return `${displayName} — ${completionPrice === null ? '料金不明' : `$${completionPrice}/M`}`;
     },
 
     getSelectedIds() {
@@ -190,7 +191,7 @@ const openRouterModelCatalog = {
         const pricePerMillion = price * 1000000;
         return new Intl.NumberFormat('en-US', {
             minimumFractionDigits: pricePerMillion === 0 ? 0 : 2,
-            maximumFractionDigits: 4,
+            maximumFractionDigits: 2,
         }).format(pricePerMillion);
     },
 

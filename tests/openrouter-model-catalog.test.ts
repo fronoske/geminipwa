@@ -91,6 +91,7 @@ describe('OpenRouter model catalog', () => {
     ).runInContext(context);
     expect(paidCost).toBe('入力 $2.50/M · 出力 $10.00/M');
     expect(freeCost).toBe('無料');
+    expect(new vm.Script("openRouterModelCatalog.formatPerMillionPrice('0.000000123456')").runInContext(context)).toBe('0.12');
     const source = readFile('src/openrouter-model-catalog.ts');
     expect(source).not.toContain('getProviderLabel');
   });
@@ -98,8 +99,8 @@ describe('OpenRouter model catalog', () => {
   it('shows the fetched display name and output cost while retaining the model ID internally', () => {
     const context = createContext();
     new vm.Script("openRouterModelCatalog.models = [{ id: 'google/model-id', name: 'Google: Display Name', isFree: false, pricing: { completion: '0.00001' } }, { id: 'google/free-id', name: 'Google: Free Name', isFree: true, pricing: { completion: '0' } }]").runInContext(context);
-    expect(new vm.Script("openRouterModelCatalog.getDisplayLabel('google/model-id')").runInContext(context)).toBe('Google: Display Name — $10.00/M');
-    expect(new vm.Script("openRouterModelCatalog.getDisplayLabel('google/free-id')").runInContext(context)).toBe('Google: Free Name — free');
+    expect(new vm.Script("openRouterModelCatalog.getDisplayLabel('google/model-id')").runInContext(context)).toBe('Display Name — $10.00/M');
+    expect(new vm.Script("openRouterModelCatalog.getDisplayLabel('google/free-id')").runInContext(context)).toBe('Free Name — free');
     expect(new vm.Script("openRouterModelCatalog.getDisplayLabel('manual/model-id')").runInContext(context)).toBe('manual/model-id');
   });
 
