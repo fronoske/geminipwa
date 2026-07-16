@@ -2372,6 +2372,23 @@
             cursor: pointer;
         }
 
+        #settings-screen .main-content details.settings-level-3 > summary.settings-summary-level-3 {
+            display: list-item !important;
+            margin-bottom: 5px !important;
+            padding-bottom: 0 !important;
+            border-bottom: none !important;
+            color: var(--text-primary) !important;
+            font-size: 1em !important;
+            font-weight: bold !important;
+            list-style: revert !important;
+            cursor: pointer;
+        }
+
+        #settings-screen .main-content details[id$="-multi-api-keys-section"],
+        #settings-screen .main-content #llmaggregator-multi-backends-section {
+            margin-bottom: 15px !important;
+        }
+
         #settings-screen .main-content > details.settings-group > details,
         #settings-screen .main-content > details.settings-group > div > details {
             margin-top: 18px !important;
@@ -3928,9 +3945,9 @@ body.elevation-enabled .custom-dialog {
 body.pastel-yellow-mode .api-key-help-icon {
     color: #424242;
 }
-                body.slim-settings-headers details.settings-group > summary,
-        body.slim-settings-headers div.settings-group > h3,
-        body.slim-settings-headers div.settings-group > details > summary {
+        body.slim-settings-headers #settings-screen details.settings-level-1 > summary,
+        body.slim-settings-headers #settings-screen details.settings-level-2 > summary,
+        body.slim-settings-headers #settings-screen div.settings-group > h3 {
             margin-bottom: 0 !important;
             border-bottom: none !important;
             padding-bottom: 0 !important;
@@ -4375,7 +4392,7 @@ font-size: 1.142em !important;
                 <details open class="settings-group" id="settings-group-api-provider">
                     <summary
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
-                        API設定</summary>
+                        APIプロバイダー</summary>
                     <div style="margin-top:10px;">
                         <label for="api-provider-select">APIプロバイダー:</label>
                         <select id="api-provider-select" aria-label="APIプロバイダー選択">
@@ -4434,7 +4451,7 @@ font-size: 1.142em !important;
                 <details id="gemini-settings-group" class="settings-group" open>
                     <summary
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
-                        Gemini API 設定</summary>
+                        Gemini設定</summary>
                     <div style="margin-top:15px;">
                         <label for="gemini-api-key">Gemini APIキー:</label>
                         <input type="password" id="gemini-api-key" placeholder="APIキーを入力" aria-label="Gemini APIキー">
@@ -4487,7 +4504,7 @@ font-size: 1.142em !important;
                 <details id="deepseek-settings-group" class="settings-group hidden" open>
                     <summary
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
-                        DeepSeek API 設定</summary>
+                        DeepSeek設定</summary>
                     <div style="margin-top:15px;">
                         <label for="deepseek-api-key">DeepSeek APIキー:</label>
                         <input type="password" id="deepseek-api-key" placeholder="DeepSeek APIキーを入力"
@@ -4542,7 +4559,7 @@ font-size: 1.142em !important;
                 <details id="claude-settings-group" class="settings-group hidden" open>
                     <summary
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
-                        Claude API 設定</summary>
+                        Claude設定</summary>
                     <div style="margin-top:15px;">
                         <label for="claude-api-key">Claude APIキー:</label>
                         <input type="password" id="claude-api-key" placeholder="APIキーを入力" aria-label="Claude APIキー">
@@ -4611,7 +4628,7 @@ font-size: 1.142em !important;
                 <details id="openai-settings-group" class="settings-group hidden" open>
                     <summary
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
-                        ChatGPT API 設定</summary>
+                        ChatGPT設定</summary>
                     <div style="margin-top:15px;">
                         <label for="openai-api-key">ChatGPT APIキー:</label>
                         <input type="password" id="openai-api-key" placeholder="sk-..." aria-label="ChatGPT APIキー">
@@ -4677,7 +4694,7 @@ font-size: 1.142em !important;
                 <details id="openrouter-settings-group" class="settings-group hidden" open>
                     <summary
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
-                        OpenRouter API 設定</summary>
+                        OpenRouter設定</summary>
                     <div style="margin-top:15px;">
                         <label for="openrouter-api-key">OpenRouter APIキー:</label>
                         <input type="password" id="openrouter-api-key" placeholder="sk-or-..." aria-label="OpenRouter APIキー">
@@ -4734,7 +4751,7 @@ font-size: 1.142em !important;
                 <details id="xai-settings-group" class="settings-group hidden" open>
                     <summary
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
-                        Grok (xAI API) 設定</summary>
+                        Grok (xAI)設定</summary>
                     <div style="margin-top:15px;">
                         <label for="xai-api-key">xAI APIキー:</label>
                         <input type="password" id="xai-api-key" placeholder="xai-..." aria-label="xAI APIキー">
@@ -4789,7 +4806,7 @@ font-size: 1.142em !important;
                 <details id="llmaggregator-settings-group" class="settings-group hidden" open>
                     <summary
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
-                        LLM Aggregator 設定</summary>
+                        LLM Aggregator設定</summary>
                     <div style="margin-top:15px;">
                         <label for="llmaggregator-api-backend">API バックエンド URL:</label>
                         <input type="text" id="llmaggregator-api-backend" placeholder="例: https://api.openrouter.ai/v1"
@@ -5879,19 +5896,16 @@ font-size: 1.142em !important;
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
                         表示の調整</summary>
                     <div style="margin-top:10px;">
-                            <p style="height:10px"></p>
-                            <label for="theme-select">表示テーマ:</label>
-                            <select id="theme-select" aria-label="表示テーマ">
-                                <option value="light">ライトモード</option>
-                                <option value="dark">ダークモード</option>
-                            </select>
-                            <p style="height:10px"></p>
-
                             <details id="settings-group-factor-style-changes">
                                 <summary
                                     style="font-size: 14px; color: var(--text-link); padding-bottom: 5px; margin-bottom: 10px; display: list-item; list-style: revert; cursor:pointer; font-weight: normal;">
-                                    レイアウトと装飾</summary>
+                                    外観とレイアウト</summary>
                                 <div style="padding-left: 15px; margin-top: 10px;">
+                                    <label for="theme-select">表示テーマ:</label>
+                                    <select id="theme-select" aria-label="表示テーマ">
+                                        <option value="light">ライトモード</option>
+                                        <option value="dark">ダークモード</option>
+                                    </select>
                                     <label class="checkbox-label">
                                         <input type="checkbox" id="minimize-header-footer-toggle">
                                         ヘッダー/フッターの縦幅を最小化する
@@ -5922,10 +5936,10 @@ font-size: 1.142em !important;
                                     </p>
                                     <label class="checkbox-label">
                                         <input type="checkbox" id="compact-settings-spacing-toggle">
-                                        設定画面の項目間隔を詰める
+                                        設定セクション間の余白を詰める
                                     </label>
                                     <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                                        ※ 設定画面の各項目の上下余白を小さくします。
+                                        ※ 設定画面の第1階層セクション間の余白を小さくします。
                                     </p>
                                     <label class="checkbox-label">
                                         <input type="checkbox" id="slim-settings-headers-toggle">
@@ -5958,7 +5972,7 @@ font-size: 1.142em !important;
                             <details id="settings-group-header-footer-buttons">
                                 <summary
                                     style="font-size: 14px; color: var(--text-link); padding-bottom: 5px; margin-bottom: 10px; display: list-item; list-style: revert; cursor:pointer; font-weight: normal;">
-                                    ボタン類の表示/非表示切替</summary>
+                                    画面別の表示</summary>
                                 <div style="padding-left: 15px; margin-top: 10px;">
 
                                     <!-- 履歴画面 -->
@@ -6063,18 +6077,27 @@ font-size: 1.142em !important;
                                         </div>
                                     </details>
 
-                                    <!-- メッセージ要素のボタン -->
-                                    <details open id="settings-group-factor-message-buttons">
+                                    <!-- メッセージ編集ツールバー -->
+                                    <details open id="settings-group-factor-message-edit-toolbar">
                                         <summary
                                             style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
-                                            メッセージ要素のボタン</summary>
+                                            メッセージ編集ツールバー</summary>
                                         <div
                                             style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="show-paste-button-in-edit-toggle">
-                                                メッセージ編集ツールバーに「貼付け」ボタンを表示する
+                                                「貼付け」ボタンを表示する
                                             </label>
-                                            <hr style="margin: 10px 0; border-top: 1px solid var(--border-tertiary);">
+                                        </div>
+                                    </details>
+
+                                    <!-- 折りたたみボタン -->
+                                    <details open id="settings-group-factor-collapse-buttons">
+                                        <summary
+                                            style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
+                                            折りたたみボタン</summary>
+                                        <div
+                                            style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="show-top-collapse-button-toggle">
                                                 メッセージ右上に折りたたみボタンを表示する
@@ -6083,52 +6106,44 @@ font-size: 1.142em !important;
                                                 <input type="checkbox" id="show-bottom-collapse-button-toggle">
                                                 メッセージツールバーに折りたたみボタンを表示する
                                             </label>
-                                            <details id="settings-group-collapse-button-details"
-                                                style="margin-bottom: 15px;">
-                                                <summary
-                                                    style="cursor: pointer; font-weight: normal; font-size: 14px; color: var(--text-link); list-style: revert;">
-                                                    折りたたみボタン詳細設定</summary>
-                                                <div style="padding-left: 15px; margin-top: 10px;">
-                                                    <label class="checkbox-label"
-                                                        style="margin-top: 10px; margin-bottom: 15px;">
-                                                        <input type="checkbox" id="persist-message-collapse-state">
-                                                        メッセージの折り畳み状態を記憶する
-                                                    </label>
-                                                    <hr style="margin-bottom: 15px;">
-                                                    <label for="toggle-button-top-width">右上ボタン 横幅 (px):</label>
-                                                    <input type="number" id="toggle-button-top-width" min="1" max="100"
-                                                        step="1" placeholder="例: 6">
-                                                    <label for="toggle-button-top-height">右上ボタン 縦幅 (px):</label>
-                                                    <input type="number" id="toggle-button-top-height" min="1" max="100"
-                                                        step="1" placeholder="例: 40">
-                                                    <label for="toggle-button-top-font-size">右上ボタン フォントサイズ (px):</label>
-                                                    <input type="number" id="toggle-button-top-font-size" min="1"
-                                                        max="50" step="1" placeholder="例: 12">
-                                                    <label for="toggle-button-top-text-collapse">右上ボタン
-                                                        折りたたみ時テキスト:</label>
-                                                    <input type="text" id="toggle-button-top-text-collapse"
-                                                        placeholder="例: -">
-                                                    <label for="toggle-button-top-text-expand">右上ボタン 展開時テキスト:</label>
-                                                    <input type="text" id="toggle-button-top-text-expand"
-                                                        placeholder="例: □">
+                                            <label class="checkbox-label"
+                                                style="margin-top: 10px; margin-bottom: 15px;">
+                                                <input type="checkbox" id="persist-message-collapse-state">
+                                                メッセージの折り畳み状態を記憶する
+                                            </label>
+                                            <hr style="margin-bottom: 15px;">
+                                            <label for="toggle-button-top-width">右上ボタン 横幅 (px):</label>
+                                            <input type="number" id="toggle-button-top-width" min="1" max="100"
+                                                step="1" placeholder="例: 6">
+                                            <label for="toggle-button-top-height">右上ボタン 縦幅 (px):</label>
+                                            <input type="number" id="toggle-button-top-height" min="1" max="100"
+                                                step="1" placeholder="例: 40">
+                                            <label for="toggle-button-top-font-size">右上ボタン フォントサイズ (px):</label>
+                                            <input type="number" id="toggle-button-top-font-size" min="1"
+                                                max="50" step="1" placeholder="例: 12">
+                                            <label for="toggle-button-top-text-collapse">右上ボタン
+                                                折りたたみ時テキスト:</label>
+                                            <input type="text" id="toggle-button-top-text-collapse"
+                                                placeholder="例: -">
+                                            <label for="toggle-button-top-text-expand">右上ボタン 展開時テキスト:</label>
+                                            <input type="text" id="toggle-button-top-text-expand"
+                                                placeholder="例: □">
 
-                                                    <hr style="margin: 15px 0;">
+                                            <hr style="margin: 15px 0;">
 
-                                                    <label for="toggle-button-bottom-font-size">下部ボタン フォントサイズ
-                                                        (px):</label>
-                                                    <input type="number" id="toggle-button-bottom-font-size" min="1"
-                                                        max="34" step="1" placeholder="例: 14">
-                                                    <label for="toggle-button-bottom-text-collapse">下部ボタン
-                                                        折りたたみ時テキスト:</label>
-                                                    <input type="text" id="toggle-button-bottom-text-collapse"
-                                                        placeholder="例: 非表示">
-                                                    <label for="toggle-button-bottom-text-expand">下部ボタン 展開時テキスト:</label>
-                                                    <input type="text" id="toggle-button-bottom-text-expand"
-                                                        placeholder="例: 表示">
-                                                </div>
-                                            </details>
+                                            <label for="toggle-button-bottom-font-size">下部ボタン フォントサイズ
+                                                (px):</label>
+                                            <input type="number" id="toggle-button-bottom-font-size" min="1"
+                                                max="34" step="1" placeholder="例: 14">
+                                            <label for="toggle-button-bottom-text-collapse">下部ボタン
+                                                折りたたみ時テキスト:</label>
+                                            <input type="text" id="toggle-button-bottom-text-collapse"
+                                                placeholder="例: 非表示">
+                                            <label for="toggle-button-bottom-text-expand">下部ボタン 展開時テキスト:</label>
+                                            <input type="text" id="toggle-button-bottom-text-expand"
+                                                placeholder="例: 表示">
                                         </div>
-</details>
+                                    </details>
 
                                 </div>
                             </details>
@@ -6136,7 +6151,7 @@ font-size: 1.142em !important;
 <details id="settings-group-font">
                                 <summary
                                     style="font-size: 14px; color: var(--text-link); padding-bottom: 5px; margin-bottom: 10px; display: list-item; list-style: revert; cursor:pointer; font-weight: normal;">
-                                    フォント設定</summary>
+                                    フォント</summary>
                                 <div style="padding-left: 15px; margin-top: 10px;">
                                     <label for="font-family-input">アプリのフォント:</label>
                                     <input type="text" id="font-family-input" placeholder="例: 'Meiryo', sans-serif"
@@ -6217,58 +6232,58 @@ font-size: 1.142em !important;
 <details id="settings-group-opacity">
                     <summary
                         style="font-size: 14px; color: var(--text-link); padding-bottom: 5px; margin-bottom: 10px; display: list-item; list-style: revert; cursor:pointer; font-weight: normal;">
-                        各種透明度設定</summary>
+                        透明度</summary>
                     <div style="padding-left: 15px; margin-top: 10px;">
 
                         <div class="opacity-slider-container">
-                            <label for="message-bubble-opacity">メッセージバブルの透明度 (0.0-1.0):</label>
+                            <label for="message-bubble-opacity">メッセージバブル (0.0-1.0):</label>
                             <div class="input-slider-wrapper">
-                                <input type="number" id="message-bubble-opacity" min="0" max="1" step="0.05" placeholder="例: 0.8" aria-label="メッセージバブルの透明度">
+                                <input type="number" id="message-bubble-opacity" min="0" max="1" step="0.05" placeholder="例: 0.8" aria-label="メッセージバブル">
                                 <input type="range" id="message-bubble-opacity-slider" min="0" max="1" step="0.05">
                                 <label class="opacity-disable-label"><input type="checkbox" class="opacity-disable-checkbox" data-target-id="message-bubble-opacity"> ON</label>
                             </div>
                         </div>
 
                         <div class="opacity-slider-container">
-                            <label for="message-actions-background-opacity">メッセージツールバーの透明度（除ボタン） (0.0-1.0):</label>
+                            <label for="message-actions-background-opacity">メッセージツールバー（除ボタン） (0.0-1.0):</label>
                             <div class="input-slider-wrapper">
-                                <input type="number" id="message-actions-background-opacity" min="0" max="1" step="0.05" placeholder="例: 0.8" aria-label="メッセージツールバーの透明度（除ボタン）">
+                                <input type="number" id="message-actions-background-opacity" min="0" max="1" step="0.05" placeholder="例: 0.8" aria-label="メッセージツールバー（除ボタン）">
                                 <input type="range" id="message-actions-background-opacity-slider" min="0" max="1" step="0.05">
                                 <label class="opacity-disable-label"><input type="checkbox" class="opacity-disable-checkbox" data-target-id="message-actions-background-opacity"> ON</label>
                             </div>
                         </div>
 
                         <div class="opacity-slider-container">
-                            <label for="chat-overlay-opacity">チャット背景オーバーレイの透明度 (0.0-1.0):</label>
+                            <label for="chat-overlay-opacity">チャット背景オーバーレイ (0.0-1.0):</label>
                             <div class="input-slider-wrapper">
-                                <input type="number" id="chat-overlay-opacity" min="0" max="1" step="0.05" placeholder="例: 0.6" aria-label="チャット背景オーバーレイの透明度">
+                                <input type="number" id="chat-overlay-opacity" min="0" max="1" step="0.05" placeholder="例: 0.6" aria-label="チャット背景オーバーレイ">
                                 <input type="range" id="chat-overlay-opacity-slider" min="0" max="1" step="0.05">
                                  <label class="opacity-disable-label"><input type="checkbox" class="opacity-disable-checkbox" data-target-id="chat-overlay-opacity"> ON</label>
                             </div>
                         </div>
 
                         <div class="opacity-slider-container">
-                            <label for="header-footer-opacity">ヘッダー/フッターの透明度 (0.0-1.0):</label>
+                            <label for="header-footer-opacity">ヘッダー/フッター (0.0-1.0):</label>
                             <div class="input-slider-wrapper">
-                                <input type="number" id="header-footer-opacity" min="0" max="1" step="0.05" placeholder="例: 0.9" aria-label="ヘッダー/フッターの透明度">
+                                <input type="number" id="header-footer-opacity" min="0" max="1" step="0.05" placeholder="例: 0.9" aria-label="ヘッダー/フッター">
                                 <input type="range" id="header-footer-opacity-slider" min="0" max="1" step="0.05">
                                 <label class="opacity-disable-label"><input type="checkbox" class="opacity-disable-checkbox" data-target-id="header-footer-opacity"> ON</label>
                             </div>
                         </div>
 
                         <div class="opacity-slider-container">
-                            <label for="toggle-button-top-opacity">右上折りたたみボタンの透明度 (0.0-1.0):</label>
+                            <label for="toggle-button-top-opacity">右上折りたたみボタン (0.0-1.0):</label>
                             <div class="input-slider-wrapper">
-                                <input type="number" id="toggle-button-top-opacity" min="0" max="1" step="0.05" placeholder="例: 0.6" aria-label="右上折りたたみボタンの透明度">
+                                <input type="number" id="toggle-button-top-opacity" min="0" max="1" step="0.05" placeholder="例: 0.6" aria-label="右上折りたたみボタン">
                                 <input type="range" id="toggle-button-top-opacity-slider" min="0" max="1" step="0.05">
                                 <label class="opacity-disable-label"><input type="checkbox" class="opacity-disable-checkbox" data-target-id="toggle-button-top-opacity"> ON</label>
                             </div>
                         </div>
 
                         <div class="opacity-slider-container">
-                            <label for="thought-summary-opacity" style="margin-top:10px;">思考プロセス背景の透明度 (0.0-1.0):</label>
+                            <label for="thought-summary-opacity" style="margin-top:10px;">思考プロセス背景 (0.0-1.0):</label>
                             <div class="input-slider-wrapper">
-                                <input type="number" id="thought-summary-opacity" min="0" max="1" step="0.05" placeholder="例: 0.85" aria-label="思考プロセス背景の透明度">
+                                <input type="number" id="thought-summary-opacity" min="0" max="1" step="0.05" placeholder="例: 0.85" aria-label="思考プロセス背景">
                                 <input type="range" id="thought-summary-opacity-slider" min="0" max="1" step="0.05">
                                 <label class="opacity-disable-label"><input type="checkbox" class="opacity-disable-checkbox" data-target-id="thought-summary-opacity"> ON</label>
                             </div>
@@ -7208,6 +7223,96 @@ window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(updateMessageMaxWidthVar, 150);
 });
+function organizeApiSettingsHierarchy() {
+    const layouts = [
+        { provider: 'gemini', rootId: 'gemini-settings-group', paramsId: 'gemini-params-group', advancedId: 'gemini-advanced-group', featureId: 'gemini-grounding-param' },
+        { provider: 'deepseek', rootId: 'deepseek-settings-group', paramsId: 'deepseek-params-group', advancedId: 'deepseek-advanced-group' },
+        { provider: 'claude', rootId: 'claude-settings-group', paramsId: 'claude-params-group', advancedId: 'claude-advanced-group' },
+        { provider: 'openai', rootId: 'openai-settings-group', paramsId: 'openai-params-group', advancedId: 'openai-advanced-group' },
+        { provider: 'openrouter', rootId: 'openrouter-settings-group', paramsId: 'openrouter-params-group', advancedId: 'openrouter-advanced-group' },
+        { provider: 'xai', rootId: 'xai-settings-group', paramsId: 'xai-params-group', advancedId: 'xai-advanced-group' },
+        { provider: 'llmaggregator', rootId: 'llmaggregator-settings-group', paramsId: 'llmaggregator-params-group', advancedId: 'llmaggregator-advanced-group' },
+    ];
+    const prepareNestedDetails = (details, title) => {
+        details.classList.remove('settings-group');
+        details.classList.add('settings-subsection');
+        details.open = false;
+        const summary = details.querySelector(':scope > summary');
+        if (summary) {
+            summary.className = 'settings-subsection-summary';
+            summary.removeAttribute('style');
+            summary.textContent = title;
+        }
+    };
+    layouts.forEach(({ provider, rootId, paramsId, advancedId, featureId }) => {
+        const root = document.getElementById(rootId);
+        const params = document.getElementById(paramsId);
+        const advanced = document.getElementById(advancedId);
+        if (!root || !params || !advanced)
+            return;
+        const connectionContent = Array.from(root.children)
+            .find(child => child.tagName === 'DIV');
+        if (connectionContent) {
+            const connection = document.createElement('details');
+            connection.id = `${provider}-connection-settings`;
+            connection.className = 'settings-subsection';
+            const summary = document.createElement('summary');
+            summary.className = 'settings-subsection-summary';
+            summary.textContent = provider === 'llmaggregator'
+                ? 'バックエンド・APIキーとモデル'
+                : 'APIキーとモデル';
+            connection.append(summary, connectionContent);
+            root.appendChild(connection);
+        }
+        prepareNestedDetails(params, 'プロンプトと生成パラメータ');
+        root.appendChild(params);
+        if (featureId) {
+            const featureContent = document.getElementById(featureId);
+            if (featureContent) {
+                featureContent.classList.remove('settings-group');
+                featureContent.querySelector(':scope > h3')?.remove();
+                const feature = document.createElement('details');
+                feature.id = `${provider}-feature-settings`;
+                feature.className = 'settings-subsection';
+                const summary = document.createElement('summary');
+                summary.className = 'settings-subsection-summary';
+                summary.textContent = '検索機能';
+                feature.append(summary, featureContent);
+                root.appendChild(feature);
+            }
+        }
+        prepareNestedDetails(advanced, '出力と機能');
+        root.appendChild(advanced);
+    });
+}
+organizeApiSettingsHierarchy();
+function markSettingsHierarchyLevels() {
+    const main = document.querySelector('#settings-screen .main-content');
+    if (!main)
+        return;
+    main.querySelectorAll('details').forEach((details) => {
+        details.classList.remove('settings-level-1', 'settings-level-2', 'settings-level-3');
+        details.querySelector(':scope > summary')?.classList.remove('settings-summary-level-1', 'settings-summary-level-2', 'settings-summary-level-3');
+    });
+    main.querySelectorAll(':scope > details.settings-group').forEach((topLevelDetails) => {
+        topLevelDetails.classList.add('settings-level-1');
+        topLevelDetails.querySelector(':scope > summary')?.classList.add('settings-summary-level-1');
+        topLevelDetails.querySelectorAll('details').forEach((details) => {
+            let level = 1;
+            let ancestor = details.parentElement?.closest('details');
+            while (ancestor && topLevelDetails.contains(ancestor)) {
+                level += 1;
+                if (ancestor === topLevelDetails)
+                    break;
+                ancestor = ancestor.parentElement?.closest('details');
+            }
+            const visualLevel = Math.min(level, 3);
+            details.classList.add(`settings-level-${visualLevel}`);
+            details.querySelector(':scope > summary')?.classList.add(`settings-summary-level-${visualLevel}`);
+        });
+    });
+}
+markSettingsHierarchyLevels();
 
 /* source: service-worker-registration.ts */
 // Bundled into the generated index.html from this TypeScript source.
@@ -15819,7 +15924,7 @@ Object.assign(appLogic, {
         newSettings.showMemoButton = elements.showMemoButtonToggle.checked;
         newSettings.memoHeight = elements.memoHeightInput.value.trim() || DEFAULT_MEMO_HEIGHT;
         newSettings.showClipboardStackButton = elements.showClipboardStackButtonToggle.checked;
-        newSettings.clipboardStackHeight = state.settings.clipboardStackHeight;
+        newSettings.clipboardStackHeight = newSettings.memoHeight;
         newSettings.disableRetryConfirmation = elements.disableRetryConfirmationToggle.checked;
         newSettings.disableDeleteMessageConfirmation = elements.disableDeleteMessageConfirmationToggle.checked;
         newSettings.disableAttachmentConfirmation = elements.disableAttachmentConfirmationToggle.checked;

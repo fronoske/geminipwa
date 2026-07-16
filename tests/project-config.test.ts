@@ -187,6 +187,17 @@ describe('project configuration', () => {
     expect(displaySettings).toContain('settings-group-header-footer-buttons');
     expect(displaySettings).toContain('settings-group-font');
     expect(displaySettings).toContain('settings-group-opacity');
+    expect(displaySettings).toContain('外観とレイアウト</summary>');
+    expect(displaySettings).toContain('画面別の表示</summary>');
+    expect(displaySettings).toContain('メッセージ編集ツールバー</summary>');
+    expect(displaySettings).toContain('折りたたみボタン</summary>');
+    expect(displaySettings).toContain('id="settings-group-factor-message-edit-toolbar"');
+    expect(displaySettings).toContain('id="settings-group-factor-collapse-buttons"');
+    expect(displaySettings).not.toContain('id="settings-group-collapse-button-details"');
+    const appearanceStart = displaySettings.indexOf('id="settings-group-factor-style-changes"');
+    const screenDisplayStart = displaySettings.indexOf('id="settings-group-header-footer-buttons"');
+    expect(displaySettings.slice(0, appearanceStart)).not.toContain('id="theme-select"');
+    expect(displaySettings.slice(appearanceStart, screenDisplayStart)).toContain('id="theme-select"');
     expect(html).not.toContain('id="settings-group-other"');
     expect(html).not.toMatch(/ファクター[：:]/);
   });
@@ -214,7 +225,7 @@ describe('project configuration', () => {
 
   it('uses concise settings copy and only exposes light and dark themes', () => {
     const html = readFile('src/index.html');
-    expect(html).toContain('API設定</summary>');
+    expect(html).toContain('APIプロバイダー</summary>');
     expect(html).toContain('<label for="api-provider-select">APIプロバイダー:</label>');
     expect(html).toContain('システムプロンプト</summary>');
     expect(html).toContain('ダミーユーザープロンプト</summary>');
@@ -263,6 +274,44 @@ describe('project configuration', () => {
     expect(styles).toMatch(/#settings-screen \.main-content > details\.settings-group > details > summary,[\s\S]*?margin-bottom: 6px !important;/);
   });
 
+  it('styles third-level settings summaries as field labels', () => {
+    const runtime = readFile('src/layout-runtime.ts');
+    const styles = readFile('src/styles/app.css');
+    expect(runtime).toContain('function markSettingsHierarchyLevels(): void');
+    expect(runtime).toContain('const visualLevel = Math.min(level, 3)');
+    expect(runtime).toContain("details.classList.add(`settings-level-${visualLevel}`)");
+    expect(runtime).toContain("details.querySelector(':scope > summary')?.classList.add(`settings-summary-level-${visualLevel}`)");
+    expect(styles).toMatch(/details\.settings-level-3 > summary\.settings-summary-level-3 \{[\s\S]*?color: var\(--text-primary\) !important;[\s\S]*?font-size: 1em !important;[\s\S]*?font-weight: bold !important;/);
+  });
+
+  it('separates multi API key management from the model field and uses concise display labels', () => {
+    const html = readFile('src/index.html');
+    const styles = readFile('src/styles/app.css');
+    expect(styles).toMatch(/details\[id\$="-multi-api-keys-section"\],[\s\S]*?#llmaggregator-multi-backends-section \{[\s\S]*?margin-bottom: 15px !important;/);
+    expect(html).toContain('フォント</summary>');
+    expect(html).toContain('透明度</summary>');
+    expect(html).not.toContain('フォント設定</summary>');
+    expect(html).not.toContain('各種透明度設定</summary>');
+    const opacitySection = html.slice(
+      html.indexOf('id="settings-group-opacity"'),
+      html.indexOf('</details>', html.indexOf('id="settings-group-opacity"')),
+    );
+    expect(opacitySection).not.toContain('の透明度');
+  });
+
+  it('keeps display adjustment wording and persistence aligned with behavior', () => {
+    const html = readFile('src/index.html');
+    const styles = readFile('src/styles/app.css');
+    const persistence = readFile('src/data-management.ts');
+    expect(html).toContain('設定セクション間の余白を詰める');
+    expect(html).toContain('設定画面の第1階層セクション間の余白を小さくします。');
+    expect(styles).toContain('body.compact-settings-mode .settings-group');
+    expect(styles).toContain('body.slim-settings-headers #settings-screen details.settings-level-1 > summary');
+    expect(styles).toContain('body.slim-settings-headers #settings-screen details.settings-level-2 > summary');
+    expect(persistence).toContain('newSettings.clipboardStackHeight = newSettings.memoHeight;');
+    expect(persistence).not.toContain('newSettings.clipboardStackHeight = state.settings.clipboardStackHeight;');
+  });
+
   it('keeps the first message when clearing the current chat', () => {
     const sessions = readFile('src/chat-sessions.ts');
     expect(sessions).toContain('state.currentMessages.slice(0, 1)');
@@ -286,6 +335,20 @@ describe('project configuration', () => {
     expect(apiSettings).toContain('id="show-multi-api-keys-toggle"');
     expect(behaviorSettings).not.toContain('id="show-multi-api-keys-toggle"');
     expect(readFile('docs/product-decisions.md')).toContain('Multiple API key management');
+  });
+
+  it('groups each provider into one top-level settings section at runtime', () => {
+    const layout = readFile('src/layout-runtime.ts');
+    for (const provider of ['gemini', 'deepseek', 'claude', 'openai', 'openrouter', 'xai', 'llmaggregator']) {
+      expect(layout).toContain(`provider: '${provider}'`);
+      expect(layout).toContain(`rootId: '${provider}-settings-group'`);
+      expect(layout).toContain(`paramsId: '${provider}-params-group'`);
+      expect(layout).toContain(`advancedId: '${provider}-advanced-group'`);
+    }
+    expect(layout).toContain("prepareNestedDetails(params, 'プロンプトと生成パラメータ')");
+    expect(layout).toContain("prepareNestedDetails(advanced, '出力と機能')");
+    expect(layout).toContain("? 'バックエンド・APIキーとモデル'");
+    expect(layout).toContain(": 'APIキーとモデル'");
   });
 
   it('preserves input presets as a protected core feature', () => {

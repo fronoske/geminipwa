@@ -2362,6 +2362,23 @@
             cursor: pointer;
         }
 
+        #settings-screen .main-content details.settings-level-3 > summary.settings-summary-level-3 {
+            display: list-item !important;
+            margin-bottom: 5px !important;
+            padding-bottom: 0 !important;
+            border-bottom: none !important;
+            color: var(--text-primary) !important;
+            font-size: 1em !important;
+            font-weight: bold !important;
+            list-style: revert !important;
+            cursor: pointer;
+        }
+
+        #settings-screen .main-content details[id$="-multi-api-keys-section"],
+        #settings-screen .main-content #llmaggregator-multi-backends-section {
+            margin-bottom: 15px !important;
+        }
+
         #settings-screen .main-content > details.settings-group > details,
         #settings-screen .main-content > details.settings-group > div > details {
             margin-top: 18px !important;
@@ -3918,9 +3935,9 @@ body.elevation-enabled .custom-dialog {
 body.pastel-yellow-mode .api-key-help-icon {
     color: #424242;
 }
-                body.slim-settings-headers details.settings-group > summary,
-        body.slim-settings-headers div.settings-group > h3,
-        body.slim-settings-headers div.settings-group > details > summary {
+        body.slim-settings-headers #settings-screen details.settings-level-1 > summary,
+        body.slim-settings-headers #settings-screen details.settings-level-2 > summary,
+        body.slim-settings-headers #settings-screen div.settings-group > h3 {
             margin-bottom: 0 !important;
             border-bottom: none !important;
             padding-bottom: 0 !important;

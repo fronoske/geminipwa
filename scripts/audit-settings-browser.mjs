@@ -1,5 +1,6 @@
-const DEVTOOLS_URL = process.env.DEVTOOLS_URL || 'http://127.0.0.1:9222';
-const APP_URL = process.env.APP_URL || 'http://127.0.0.1:5173/index.html?audit=settings';
+const readArgument = (name) => process.argv.find((argument) => argument.startsWith(`--${name}=`))?.slice(name.length + 3);
+const DEVTOOLS_URL = readArgument('devtools-url') || process.env.DEVTOOLS_URL || 'http://127.0.0.1:9222';
+const APP_URL = readArgument('app-url') || process.env.APP_URL || 'http://127.0.0.1:5173/index.html?audit=settings';
 const showFullReport = process.argv.includes('--full');
 const closeBrowser = process.argv.includes('--close-browser');
 
@@ -110,6 +111,55 @@ try {
         }];
       }),
     );
+    uiUtils.showScreen('settings');
+    const settingsOpenState = [...main.querySelectorAll(':scope > details.settings-group')].map((group) => ({
+      id: group.id,
+      open: group.open,
+      openNestedIds: [...group.querySelectorAll('details[open]')].map((details) => details.id || null),
+    }));
+    const hierarchyRows = [...main.querySelectorAll(':scope > details.settings-group, :scope > details.settings-group details')]
+      .map((details) => {
+        const topLevel = details.matches(':scope > details.settings-group')
+          ? details
+          : details.closest('details.settings-group');
+        let level = 1;
+        let ancestor = details.parentElement?.closest('details');
+        while (ancestor && topLevel?.contains(ancestor)) {
+          level += 1;
+          if (ancestor === topLevel) break;
+          ancestor = ancestor.parentElement?.closest('details');
+        }
+        const visualLevel = Math.min(level, 3);
+        return {
+          id: details.id || null,
+          title: normalize(directHeading(details)?.textContent),
+          topLevelId: topLevel?.id || null,
+          level,
+          visualLevel,
+          detailsClass: details.classList.contains('settings-level-' + visualLevel),
+          summaryClass: directHeading(details)?.classList.contains('settings-summary-level-' + visualLevel) ?? false,
+        };
+      });
+    const readStyle = (selector) => {
+      const element = root.querySelector(selector);
+      if (!element) return null;
+      const style = getComputedStyle(element);
+      return {
+        color: style.color,
+        fontSize: style.fontSize,
+        fontWeight: style.fontWeight,
+        marginBottom: style.marginBottom,
+        paddingBottom: style.paddingBottom,
+        borderBottomWidth: style.borderBottomWidth,
+      };
+    };
+    const hierarchyStyleSamples = {
+      secondLevel: readStyle('#gemini-connection-settings > summary'),
+      thirdLevel: readStyle('#gemini-multi-api-keys-section > summary'),
+      fieldLabel: readStyle('label[for="gemini-model-name"]'),
+      displayThirdLevel: readStyle('#settings-group-factor-history-buttons > summary'),
+      collapseButtonThirdLevel: readStyle('#settings-group-factor-collapse-buttons > summary'),
+    };
 
     return {
       sections: [...main.children]
@@ -126,6 +176,14 @@ try {
       })),
       visibleGroupsByProvider,
       multiApiKeyVisibility,
+      settingsOpenState,
+      hierarchyClassIssues: hierarchyRows.filter((row) => !row.detailsClass || !row.summaryClass),
+      displayHierarchyMaxLevel: Math.max(
+        ...hierarchyRows
+          .filter((row) => row.topLevelId === 'settings-group-display-adjustment')
+          .map((row) => row.level),
+      ),
+      hierarchyStyleSamples,
     };
   })())`;
 
@@ -142,8 +200,13 @@ try {
       title,
       children: children.map((child) => child.title),
     })),
+    displaySection: report.sections.find((section) => section.id === 'settings-group-display-adjustment'),
     visibleGroupsByProvider: report.visibleGroupsByProvider,
     multiApiKeyVisibility: report.multiApiKeyVisibility,
+    settingsOpenState: report.settingsOpenState,
+    hierarchyClassIssues: report.hierarchyClassIssues,
+    displayHierarchyMaxLevel: report.displayHierarchyMaxLevel,
+    hierarchyStyleSamples: report.hierarchyStyleSamples,
   };
   console.log(JSON.stringify(output, null, 2));
 } finally {
