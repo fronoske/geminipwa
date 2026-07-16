@@ -184,20 +184,34 @@ describe('project configuration', () => {
     const displaySettings = html.slice(displayIndex, inputPresetIndex);
     expect(behaviorSettings).not.toContain('settings-group-factor-style-changes');
     expect(displaySettings).toContain('settings-group-factor-style-changes');
-    expect(displaySettings).toContain('settings-group-header-footer-buttons');
     expect(displaySettings).toContain('settings-group-font');
     expect(displaySettings).toContain('settings-group-opacity');
     expect(displaySettings).toContain('外観とレイアウト</summary>');
-    expect(displaySettings).toContain('画面別の表示</summary>');
     expect(displaySettings).toContain('メッセージ編集ツールバー</summary>');
     expect(displaySettings).toContain('折りたたみボタン</summary>');
+    expect(displaySettings).not.toContain('画面別の表示</summary>');
+    expect(displaySettings).not.toContain('id="settings-group-header-footer-buttons"');
     expect(displaySettings).toContain('id="settings-group-factor-message-edit-toolbar"');
     expect(displaySettings).toContain('id="settings-group-factor-collapse-buttons"');
     expect(displaySettings).not.toContain('id="settings-group-collapse-button-details"');
+    expect(displaySettings).not.toMatch(/<hr[^>]*>\s*<label class="checkbox-label">\s*<input type="checkbox" id="enable-elevation-toggle">/);
     const appearanceStart = displaySettings.indexOf('id="settings-group-factor-style-changes"');
-    const screenDisplayStart = displaySettings.indexOf('id="settings-group-header-footer-buttons"');
+    const historyDisplayStart = displaySettings.indexOf('id="settings-group-factor-history-buttons"');
     expect(displaySettings.slice(0, appearanceStart)).not.toContain('id="theme-select"');
-    expect(displaySettings.slice(appearanceStart, screenDisplayStart)).toContain('id="theme-select"');
+    expect(displaySettings.slice(appearanceStart, historyDisplayStart)).toContain('id="theme-select"');
+    for (const id of [
+      'settings-group-factor-history-buttons',
+      'settings-group-factor-header-buttons',
+      'settings-group-factor-message-navigation-buttons',
+      'settings-group-factor-message-edit-toolbar',
+      'settings-group-factor-collapse-buttons',
+    ]) {
+      expect(displaySettings).toMatch(new RegExp(`id="${id}" class="settings-subsection"\\s*>\\s*<summary class="settings-subsection-summary">`));
+    }
+    const promotedSections = displaySettings.slice(historyDisplayStart, displaySettings.indexOf('id="settings-group-font"'));
+    expect(promotedSections).not.toContain('border-left: 1px solid var(--border-secondary)');
+    expect(promotedSections).not.toContain('padding-top: 5px');
+    expect(displaySettings).not.toContain('<hr');
     expect(html).not.toContain('id="settings-group-other"');
     expect(html).not.toMatch(/ファクター[：:]/);
   });
@@ -299,15 +313,32 @@ describe('project configuration', () => {
     expect(opacitySection).not.toContain('の透明度');
   });
 
-  it('keeps display adjustment wording and persistence aligned with behavior', () => {
+  it('uses the standard settings layout without obsolete layout toggles', () => {
     const html = readFile('src/index.html');
     const styles = readFile('src/styles/app.css');
+    for (const id of [
+      'compact-settings-spacing-toggle',
+      'slim-settings-headers-toggle',
+      'flat-settings-design-toggle',
+    ]) {
+      expect(html).not.toContain(`id="${id}"`);
+    }
+    expect(styles).toMatch(/\.settings-group \{[\s\S]*?margin-bottom: 8px;/);
+    expect(styles).toMatch(/\.danger-zone \{[\s\S]*?margin-top: 15px;/);
+    expect(styles).toContain('#settings-screen details.settings-level-1 > summary');
+    expect(styles).toContain('#settings-screen details.settings-level-2 > summary');
+    expect(styles).not.toMatch(/compact-settings-mode|slim-settings-headers|flat-settings-mode/);
+    for (const source of [
+      'src/app-state.ts',
+      'src/dom-elements.ts',
+      'src/event-wiring.ts',
+      'src/ui-settings.ts',
+      'src/data-management.ts',
+      'src/app-initialization.ts',
+    ]) {
+      expect(readFile(source)).not.toMatch(/compactSettingsSpacing|slimSettingsHeaders|flatSettingsDesign|applyCompactSettingsSpacing/);
+    }
     const persistence = readFile('src/data-management.ts');
-    expect(html).toContain('設定セクション間の余白を詰める');
-    expect(html).toContain('設定画面の第1階層セクション間の余白を小さくします。');
-    expect(styles).toContain('body.compact-settings-mode .settings-group');
-    expect(styles).toContain('body.slim-settings-headers #settings-screen details.settings-level-1 > summary');
-    expect(styles).toContain('body.slim-settings-headers #settings-screen details.settings-level-2 > summary');
     expect(persistence).toContain('newSettings.clipboardStackHeight = newSettings.memoHeight;');
     expect(persistence).not.toContain('newSettings.clipboardStackHeight = state.settings.clipboardStackHeight;');
   });

@@ -445,7 +445,6 @@ Object.assign(appLogic, {
                         uiUtils.applyAiBubbleWidthSetting();
                         uiUtils.applyUserBubbleWidthSetting();
                         uiUtils.applyMessageSpacingSetting();
-                        uiUtils.applyCompactSettingsSpacing();
                         uiUtils.applySettingsToUI();
                         inputPresetUtils.refresh();
                         await uiUtils.showCustomAlert(`${Object.keys(settingsToImport).length}件の設定をインポートしました。`);
@@ -688,9 +687,6 @@ newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.che
                 newSettings.extendAiBubbleWidth = elements.extendAiBubbleWidthToggle.checked;
                                 newSettings.extendUserBubbleWidth = elements.extendUserBubbleWidthToggle.checked;
                                 newSettings.reduceMessageSpacing = elements.reduceMessageSpacingToggle.checked;
-                newSettings.compactSettingsSpacing = elements.compactSettingsSpacingToggle.checked;
-                newSettings.slimSettingsHeaders = elements.slimSettingsHeadersToggle.checked;
-                newSettings.flatSettingsDesign = elements.flatSettingsDesignToggle.checked;
 
 
                 newSettings.showChatTitle = elements.showChatTitleToggle.checked;

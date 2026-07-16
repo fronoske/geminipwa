@@ -1561,8 +1561,7 @@
                                     <details id="settings-group-factor-operation-changes" class="settings-subsection">
                                         <summary class="settings-subsection-summary">
                                             操作の変更</summary>
-                                        <div
-                                            style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
+                                        <div style="padding-left: 15px; margin-top: 10px;">
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="enter-to-send">
                                                 Enterキーで送信する
@@ -1615,8 +1614,7 @@
                                     <details id="settings-group-factor-skip-dialogs" class="settings-subsection">
                                         <summary class="settings-subsection-summary">
                                             確認ダイアログ</summary>
-                                        <div
-                                            style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
+                                        <div style="padding-left: 15px; margin-top: 10px;">
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="disable-retry-confirmation-toggle">
                                                 リトライ時の確認をスキップする
@@ -1636,8 +1634,7 @@
                                     <details id="settings-group-factor-advanced-options" class="settings-subsection">
                                         <summary class="settings-subsection-summary">
                                             上級ユーザー向けオプション</summary>
-                                        <div
-                                            style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
+                                        <div style="padding-left: 15px; margin-top: 10px;">
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="add-prefix-on-import-toggle">
                                                 履歴インポート時にタイトルへ接頭辞を付与する
@@ -1691,28 +1688,6 @@
                                         ※ チャット画面のメッセージ間の縦の空白を切り詰めます。
                                     </p>
                                     <label class="checkbox-label">
-                                        <input type="checkbox" id="compact-settings-spacing-toggle">
-                                        設定セクション間の余白を詰める
-                                    </label>
-                                    <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                                        ※ 設定画面の第1階層セクション間の余白を小さくします。
-                                    </p>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="slim-settings-headers-toggle">
-                                        設定項目のタイトル下余白を削減する
-                                    </label>
-                                    <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                                        ※ 設定画面の各グループのタイトル下にある余白や線を削除します。
-                                    </p>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="flat-settings-design-toggle">
-                                        設定項目のバブル表示（枠線・背景）を無効にする
-                                    </label>
-                                    <p style="font-size: 11px; color: var(--text-secondary); margin-top: -5px; margin-bottom: 10px;">
-                                        ※ 設定画面の各グループを囲む枠と背景色を取り除き、フラットな表示にします。
-                                    </p>
-                                    <hr style="margin: 10px 0; border-top: 1px solid var(--border-tertiary);">
-                                    <label class="checkbox-label">
                                         <input type="checkbox" id="enable-elevation-toggle">
                                         UIを立体的にする
                                     </label>
@@ -1725,19 +1700,11 @@
                                 </div>
                             </details>
 
-                            <details id="settings-group-header-footer-buttons">
-                                <summary
-                                    style="font-size: 14px; color: var(--text-link); padding-bottom: 5px; margin-bottom: 10px; display: list-item; list-style: revert; cursor:pointer; font-weight: normal;">
-                                    画面別の表示</summary>
-                                <div style="padding-left: 15px; margin-top: 10px;">
-
                                     <!-- 履歴画面 -->
-                                    <details open id="settings-group-factor-history-buttons">
-                                        <summary
-                                            style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
+                                    <details id="settings-group-factor-history-buttons" class="settings-subsection">
+                                        <summary class="settings-subsection-summary">
                                             履歴画面</summary>
-                                        <div
-                                            style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
+                                        <div style="padding-left: 15px; margin-top: 10px;">
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="show-history-preview-bubble-toggle">
                                                 履歴リストの背景に会話内容をうっすら表示する
@@ -1746,7 +1713,6 @@
                                                 <input type="checkbox" id="striped-history-list-toggle">
                                                 履歴リストを縞模様（ストライプ）にする
                                             </label>
-                                            <hr style="margin: 5px 0; border-top: 1px solid var(--border-tertiary);">
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="show-bulk-history-actions-toggle">
                                                 履歴画面に「全出力」「全取込」ボタンを表示する
@@ -1755,22 +1721,18 @@
                                     </details>
 
                                     <!-- ヘッダー -->
-                                    <details open id="settings-group-factor-header-buttons">
-                                        <summary
-                                            style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
+                                    <details id="settings-group-factor-header-buttons" class="settings-subsection">
+                                        <summary class="settings-subsection-summary">
                                             ヘッダー</summary>
-                                        <div
-                                            style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
+                                        <div style="padding-left: 15px; margin-top: 10px;">
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="show-chat-title-toggle">
                                                 チャットタイトルを表示する
                                             </label>
-                                            <hr style="margin: 10px 0; border-top: 1px solid var(--border-tertiary);">
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="show-header-menu-button-toggle">
                                                 ハンバーガーメニューボタンを表示する
                                             </label>
-                                            <hr style="margin: 10px 0; border-top: 1px solid var(--border-tertiary);">
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="show-api-provider-toggle-header">
                                                 ヘッダーにAPI切替ボタンを表示する
@@ -1779,7 +1741,6 @@
                                                 <input type="checkbox" id="show-header-cycle-api-key-btn-toggle">
                                                 ヘッダーにAPIキー切替ボタンを表示する
                                             </label>
-                                            <hr style="margin: 10px 0; border-top: 1px solid var(--border-tertiary);">
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="show-scroll-to-top-button-toggle">
                                                 「最上部へ(🔼)」ボタンを表示する
@@ -1792,7 +1753,6 @@
                                                 <input type="checkbox" id="show-toggle-all-content-button-toggle">
                                                 「全表示/非表示(🖼️)」ボタンを表示する
                                             </label>
-                                            <hr style="margin: 10px 0; border-top: 1px solid var(--border-tertiary);">
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="show-memo-button-toggle">
                                                 メモボタン(📝)を表示する
@@ -1816,12 +1776,10 @@
                                     </details>
 
                                     <!-- 入力項目移動ボタン -->
-                                    <details open id="settings-group-factor-message-navigation-buttons">
-                                        <summary
-                                            style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
+                                    <details id="settings-group-factor-message-navigation-buttons" class="settings-subsection">
+                                        <summary class="settings-subsection-summary">
                                             入力項目移動ボタン</summary>
-                                        <div
-                                            style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
+                                        <div style="padding-left: 15px; margin-top: 10px;">
                                             <label for="message-navigation-button-mode">
                                                 フローティングボタンの表示:
                                             </label>
@@ -1834,12 +1792,10 @@
                                     </details>
 
                                     <!-- メッセージ編集ツールバー -->
-                                    <details open id="settings-group-factor-message-edit-toolbar">
-                                        <summary
-                                            style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
+                                    <details id="settings-group-factor-message-edit-toolbar" class="settings-subsection">
+                                        <summary class="settings-subsection-summary">
                                             メッセージ編集ツールバー</summary>
-                                        <div
-                                            style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
+                                        <div style="padding-left: 15px; margin-top: 10px;">
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="show-paste-button-in-edit-toggle">
                                                 「貼付け」ボタンを表示する
@@ -1848,12 +1804,10 @@
                                     </details>
 
                                     <!-- 折りたたみボタン -->
-                                    <details open id="settings-group-factor-collapse-buttons">
-                                        <summary
-                                            style="font-size: 13px; color: var(--text-secondary); cursor: pointer; font-weight: bold; margin-top: 15px; list-style: revert;">
+                                    <details id="settings-group-factor-collapse-buttons" class="settings-subsection">
+                                        <summary class="settings-subsection-summary">
                                             折りたたみボタン</summary>
-                                        <div
-                                            style="padding-left: 15px; margin-top: 10px; border-left: 1px solid var(--border-secondary); padding-top: 5px;">
+                                        <div style="padding-left: 15px; margin-top: 10px;">
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="show-top-collapse-button-toggle">
                                                 メッセージ右上に折りたたみボタンを表示する
@@ -1867,7 +1821,6 @@
                                                 <input type="checkbox" id="persist-message-collapse-state">
                                                 メッセージの折り畳み状態を記憶する
                                             </label>
-                                            <hr style="margin-bottom: 15px;">
                                             <label for="toggle-button-top-width">右上ボタン 横幅 (px):</label>
                                             <input type="number" id="toggle-button-top-width" min="1" max="100"
                                                 step="1" placeholder="例: 6">
@@ -1885,9 +1838,7 @@
                                             <input type="text" id="toggle-button-top-text-expand"
                                                 placeholder="例: □">
 
-                                            <hr style="margin: 15px 0;">
-
-                                            <label for="toggle-button-bottom-font-size">下部ボタン フォントサイズ
+                                            <label for="toggle-button-bottom-font-size" style="margin-top: 15px;">下部ボタン フォントサイズ
                                                 (px):</label>
                                             <input type="number" id="toggle-button-bottom-font-size" min="1"
                                                 max="34" step="1" placeholder="例: 14">
@@ -1900,9 +1851,6 @@
                                                 placeholder="例: 表示">
                                         </div>
                                     </details>
-
-                                </div>
-                            </details>
 
 <details id="settings-group-font">
                                 <summary
@@ -1950,9 +1898,7 @@
                                         </p>
                                     </div>
 
-                                    <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--border-secondary);">
-
-                                    <div class="font-slider-container">
+                                    <div class="font-slider-container" style="margin-top: 20px;">
                                         <label for="chat-ui-scale-input">チャット画面の文字サイズ倍率 (0.5 - 2.0):</label>
                                         <div class="input-slider-wrapper">
                                             <input type="number" id="chat-ui-scale-input" min="0.5" max="2.0" step="0.05" placeholder="1.0" aria-label="チャット画面の文字サイズ倍率">

@@ -186,9 +186,6 @@ footerTapScrollToBottomToggle: document.getElementById('footer-tap-scroll-to-bot
             extendAiBubbleWidthToggle: document.getElementById('extend-ai-bubble-width-toggle'),
             extendUserBubbleWidthToggle: document.getElementById('extend-user-bubble-width-toggle'),
                         reduceMessageSpacingToggle: document.getElementById('reduce-message-spacing-toggle'),
-                        compactSettingsSpacingToggle: document.getElementById('compact-settings-spacing-toggle'),
-            slimSettingsHeadersToggle: document.getElementById('slim-settings-headers-toggle'),
-            flatSettingsDesignToggle: document.getElementById('flat-settings-design-toggle'),
 
             showChatTitleToggle: document.getElementById('show-chat-title-toggle'),
             showHeaderMenuButtonToggle: document.getElementById('show-header-menu-button-toggle'),

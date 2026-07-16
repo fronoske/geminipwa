@@ -204,7 +204,6 @@ _setupParamSlider(paramId, defaultValue, storageKey) {
                     uiUtils.applyAiBubbleWidthSetting();
                 uiUtils.applyUserBubbleWidthSetting();
                 uiUtils.applyMessageSpacingSetting();
-                uiUtils.applyCompactSettingsSpacing();
 
 
                     uiUtils.applySettingsToUI();

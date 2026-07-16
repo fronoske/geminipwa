@@ -319,18 +319,6 @@ Object.assign(appLogic, {
                     state.settings.reduceMessageSpacing = e.target.checked;
                     uiUtils.applyMessageSpacingSetting();
                 });
-                                elements.compactSettingsSpacingToggle.addEventListener('change', (e) => {
-                    state.settings.compactSettingsSpacing = e.target.checked;
-                    uiUtils.applyCompactSettingsSpacing();
-                });
-                                elements.slimSettingsHeadersToggle.addEventListener('change', (e) => {
-                    state.settings.slimSettingsHeaders = e.target.checked;
-                    document.body.classList.toggle('slim-settings-headers', e.target.checked);
-                });
-                elements.flatSettingsDesignToggle.addEventListener('change', (e) => {
-                    state.settings.flatSettingsDesign = e.target.checked;
-                    document.body.classList.toggle('flat-settings-mode', e.target.checked);
-                });
                 elements.memoHeightInput.addEventListener('input', () => {
                     const newHeight = elements.memoHeightInput.value.trim();
                     if (newHeight) {

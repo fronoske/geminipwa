@@ -410,12 +410,6 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 elements.extendAiBubbleWidthToggle.checked = state.settings.extendAiBubbleWidth;
                 elements.extendUserBubbleWidthToggle.checked = state.settings.extendUserBubbleWidth;
                                 elements.reduceMessageSpacingToggle.checked = state.settings.reduceMessageSpacing;
-                elements.compactSettingsSpacingToggle.checked = state.settings.compactSettingsSpacing;
-                if (state.settings.slimSettingsHeaders === undefined) state.settings.slimSettingsHeaders = true;
-                                elements.slimSettingsHeadersToggle.checked = state.settings.slimSettingsHeaders;
-                document.body.classList.toggle('slim-settings-headers', state.settings.slimSettingsHeaders);
-                elements.flatSettingsDesignToggle.checked = state.settings.flatSettingsDesign;
-                document.body.classList.toggle('flat-settings-mode', state.settings.flatSettingsDesign);
                 elements.showChatTitleToggle.checked = state.settings.showChatTitle;
                 elements.showHeaderMenuButtonToggle.checked = state.settings.showHeaderMenuButton;
                 if (!['always', 'hidden', 'scroll'].includes(state.settings.messageNavigationButtonMode)) {
@@ -547,9 +541,6 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
             },
             applyMessageSpacingSetting() {
                 elements.appContainer.classList.toggle('reduced-message-spacing', state.settings.reduceMessageSpacing);
-            },
-            applyCompactSettingsSpacing() {
-                document.body.classList.toggle('compact-settings-mode', state.settings.compactSettingsSpacing);
             },
             applyAiBubbleWidthSetting() {
                 document.body.classList.toggle('ai-bubble-extended', state.settings.extendAiBubbleWidth);
