@@ -71,6 +71,67 @@ describe('Lorebook retrieval', () => {
     expect(schema.$defs.exactAddressingRule.required).toEqual(['speakerId', 'targetId', 'forms']);
   });
 
+  it('ships two public school Lorebooks with the requested eleven-character balance', () => {
+    const context = createLorebookContext([]);
+    const lorebooks = evaluate<Array<{ id: string; name: string; characters: Array<{ core: string }> }>>(
+      context,
+      'JSON.parse(JSON.stringify(BUILTIN_LOREBOOKS))',
+    );
+
+    expect(lorebooks.map(lorebook => [lorebook.id, lorebook.name])).toEqual([
+      ['tokyo-yunagi-high-v1', '放課後、夕凪高校で'],
+      ['seirei-boarding-school-v1', '星嶺学園・寮生活日誌'],
+    ]);
+    lorebooks.forEach(lorebook => {
+      expect(lorebook.characters).toHaveLength(11);
+      expect(lorebook.characters.filter(character => character.core.includes('女子高校生'))).toHaveLength(6);
+      expect(lorebook.characters.filter(character => character.core.includes('男子高校生'))).toHaveLength(3);
+      expect(lorebook.characters.filter(character => character.core.includes('若い女性'))).toHaveLength(2);
+    });
+  });
+
+  it('keeps every public Lorebook identifier and character reference consistent', () => {
+    const context = createLorebookContext([]);
+    const lorebooks = evaluate<Array<{
+      id: string;
+      characters: Array<{ id: string; aliases: string[] }>;
+      addressing: {
+        exactRules: Array<{ speakerId: string; targetId: string; forms: Array<{ context: string }> }>;
+        fallbackRules: Array<{ speakerId: string }>;
+      };
+      conditionalMemories: Array<{
+        id: string;
+        characters?: string[];
+        allCharacters?: string[];
+        anyCharacters?: string[];
+      }>;
+    }>>(context, 'JSON.parse(JSON.stringify(BUILTIN_LOREBOOKS))');
+
+    expect(new Set(lorebooks.map(lorebook => lorebook.id)).size).toBe(lorebooks.length);
+    lorebooks.forEach(lorebook => {
+      const characterIds = lorebook.characters.map(character => character.id);
+      const memoryIds = lorebook.conditionalMemories.map(memory => memory.id);
+      expect(new Set(characterIds).size).toBe(characterIds.length);
+      expect(new Set(memoryIds).size).toBe(memoryIds.length);
+      lorebook.characters.forEach(character => expect(character.aliases.length).toBeGreaterThan(1));
+      lorebook.conditionalMemories.forEach(memory => {
+        [memory.characters, memory.allCharacters, memory.anyCharacters]
+          .filter(Boolean)
+          .flat()
+          .forEach(characterId => expect(characterIds).toContain(characterId));
+      });
+      lorebook.addressing.exactRules.forEach(rule => {
+        expect(characterIds).toContain(rule.speakerId);
+        expect(characterIds).toContain(rule.targetId);
+      });
+      lorebook.addressing.fallbackRules.forEach(rule => expect(characterIds).toContain(rule.speakerId));
+      const addressingKeys = lorebook.addressing.exactRules.flatMap(rule =>
+        rule.forms.map(form => `${rule.speakerId}:${rule.targetId}:${form.context}`),
+      );
+      expect(new Set(addressingKeys).size).toBe(addressingKeys.length);
+    });
+  });
+
   it('exposes locally supplied Lorebooks without exposing full data through the selector', () => {
     const context = createLorebookContext();
     const summaries = evaluate<Array<Record<string, string>>>(
@@ -80,19 +141,61 @@ describe('Lorebook retrieval', () => {
 
     expect(summaries).toEqual([
       {
+        id: 'tokyo-yunagi-high-v1',
+        name: '放課後、夕凪高校で',
+        description: '都内のごく普通の公立高校で交差する、友情・恋愛・進路の青春群像',
+      },
+      {
+        id: 'seirei-boarding-school-v1',
+        name: '星嶺学園・寮生活日誌',
+        description: '湖畔の全寮制私立高校で紡がれる、友情・恋愛・秘密の青春群像',
+      },
+      {
         id: 'test-lorebook',
         name: 'テスト用Lorebook',
         description: '自動テスト専用の架空データ',
       },
     ]);
-    expect(summaries[0]).not.toHaveProperty('storyCore');
-    expect(summaries[0]).not.toHaveProperty('addressing');
-    expect(summaries[0]).not.toHaveProperty('conditionalMemories');
+    summaries.forEach(summary => {
+      expect(summary).not.toHaveProperty('storyCore');
+      expect(summary).not.toHaveProperty('addressing');
+      expect(summary).not.toHaveProperty('conditionalMemories');
+    });
   });
 
-  it('starts with no available Lorebooks when local data is absent', () => {
+  it('keeps the two public Lorebooks available when local data is absent', () => {
     const context = createLorebookContext([]);
-    expect(evaluate(context, 'lorebookUtils.getAvailableLorebooks()')).toEqual([]);
+    expect(evaluate<Array<{ id: string }>>(context, 'lorebookUtils.getAvailableLorebooks()')
+      .map(lorebook => lorebook.id)).toEqual([
+        'tokyo-yunagi-high-v1',
+        'seirei-boarding-school-v1',
+      ]);
+  });
+
+  it('injects the public-high-school relationship and directional forms of address', () => {
+    const context = createLorebookContext([]);
+    const prompt = evaluate<string>(
+      context,
+      "lorebookUtils.buildPrompt('tokyo-yunagi-high-v1', [{ role: 'user', content: 'ひなたと蓮司が屋上で話す。' }])",
+    );
+
+    expect(prompt).toContain('東京都立夕凪高等学校');
+    expect(prompt).toContain('朝倉ひなた → 神谷蓮司: 発話では「蓮司」');
+    expect(prompt).toContain('神谷蓮司 → 朝倉ひなた: 発話では「ひなた」');
+    expect(prompt).toContain('小学生以来の幼なじみ');
+  });
+
+  it('injects the boarding-school relationship and public/private forms of address', () => {
+    const context = createLorebookContext([]);
+    const prompt = evaluate<string>(
+      context,
+      "lorebookUtils.buildPrompt('seirei-boarding-school-v1', [{ role: 'user', content: '環奈と律希が生徒会室に残っている。' }])",
+    );
+
+    expect(prompt).toContain('私立星嶺学園高等部');
+    expect(prompt).toContain('一ノ瀬環奈 → 鷹司律希: 人前では「鷹司会長」、二人きりでは「律希」');
+    expect(prompt).toContain('鷹司律希 → 一ノ瀬環奈: 人前では「一ノ瀬書記」、二人きりでは「環奈」');
+    expect(prompt).toContain('生徒会で毎週衝突');
   });
 
   it('returns no injection when the session has no Lorebook', () => {
