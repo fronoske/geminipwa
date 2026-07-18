@@ -41,6 +41,7 @@
         const DEFAULT_XAI_MODEL = 'grok-4-1-fast-non-reasoning';
         const DEFAULT_LLMAGGREGATOR_MODEL = 'google/gemma-4-31b-it:free';
         const DEFAULT_STREAMING_SPEED = 12;
+        const CONTEXT_PRESSURE_THRESHOLD_PERCENT = 90;
         const DEFAULT_TEMPERATURE = 0.5;
         const DEFAULT_MAX_TOKENS = 4000;
         const DEFAULT_TOP_K = 40;

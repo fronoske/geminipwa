@@ -33,6 +33,7 @@ Object.assign(appLogic, {
             },
             startNewChat() {
                 state.currentChatId = null;
+                state.currentLorebookId = null;
                 state.currentMessages = [];
                 if (state.settings.commonSystemPrompt && state.settings.commonSystemPrompt.trim() !== '') {
                 }
@@ -53,6 +54,7 @@ Object.assign(appLogic, {
                 elements.userInput.value = '';
                 uiUtils.adjustTextareaHeight();
                 uiUtils.setSendingState(false);
+                uiUtils.updateLorebookMenuItem();
                 uiUtils.updateAttachmentBadgeVisibility();
                 if (state.settings.autoScrollOnNewMessage) {
                     uiUtils.scrollToBottom();
@@ -81,6 +83,7 @@ Object.assign(appLogic, {
                     const chat = await dbUtils.getChat(id);
                     if (chat) {
                         state.currentChatId = chat.id;
+                        state.currentLorebookId = lorebookUtils.normalizeLorebookId(chat.lorebookId);
                         state.currentMessages = chat.messages?.map(msg => ({
                             ...msg,
                             attachments: msg.attachments || [],
@@ -121,6 +124,7 @@ Object.assign(appLogic, {
                         elements.userInput.value = '';
                         uiUtils.adjustTextareaHeight();
                         uiUtils.setSendingState(false);
+                        uiUtils.updateLorebookMenuItem();
                         uiUtils.updateAttachmentBadgeVisibility();
                         elements.memoEditor.value = '';
                         if (needsSave) {
@@ -141,6 +145,31 @@ Object.assign(appLogic, {
                     this.startNewChat();
                     uiUtils.showScreen('chat');
                 }
+            },
+            async changeCurrentSessionLorebook() {
+                if (state.isSending) return false;
+
+                const previousLorebookId = lorebookUtils.normalizeLorebookId(state.currentLorebookId);
+                const selectedLorebookId = await uiUtils.showLorebookSelectionDialog(previousLorebookId);
+                if (selectedLorebookId === undefined) return false;
+
+                const normalizedLorebookId = lorebookUtils.normalizeLorebookId(selectedLorebookId);
+                if (normalizedLorebookId === previousLorebookId) return false;
+
+                state.currentLorebookId = normalizedLorebookId;
+                uiUtils.updateLorebookMenuItem();
+
+                if (state.currentChatId && state.currentMessages.length > 0) {
+                    try {
+                        await dbUtils.saveChat();
+                    } catch (error) {
+                        state.currentLorebookId = previousLorebookId;
+                        uiUtils.updateLorebookMenuItem();
+                        await uiUtils.showCustomAlert(`Lorebookの変更を保存できませんでした: ${error}`);
+                        return false;
+                    }
+                }
+                return true;
             },
             async duplicateChat(id) {
                 if (state.isSending) { const conf = await uiUtils.showCustomConfirm("送信中です。中断してチャットを複製しますか？"); if (!conf) return; this.abortRequest(); }
@@ -191,7 +220,8 @@ Object.assign(appLogic, {
                             messages: duplicatedMessages,
                             updatedAt: Date.now(),
                             createdAt: Date.now(),
-                            title: newTitle
+                            title: newTitle,
+                            lorebookId: lorebookUtils.normalizeLorebookId(chat.lorebookId)
                         };
 
                         if (state.settings.persistMessageCollapseState && chat.collapsedStates) {

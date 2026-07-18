@@ -297,6 +297,8 @@ const dbUtils = {
                             deepSeekThoughtSummary: msg.deepSeekThoughtSummary || null,
                             xaiThoughtSummary: msg.xaiThoughtSummary || null,
                             generatedByApiProvider: msg.generatedByApiProvider || null,
+                            generatedByModel: msg.generatedByModel || null,
+                            contextWindowTokens: Number(msg.contextWindowTokens) || null,
                             finishReason: msg.finishReason, safetyRatings: msg.safetyRatings, error: msg.error,
                             isCascaded: msg.isCascaded, isSelected: msg.isSelected, siblingGroupId: msg.siblingGroupId,
                             groundingMetadata: msg.groundingMetadata, attachments: msg.attachments,
@@ -318,6 +320,7 @@ const dbUtils = {
                                 updatedAt: now,
                                 createdAt: existingData ? existingData.createdAt : now,
                                 title: title,
+                                lorebookId: lorebookUtils.normalizeLorebookId(state.currentLorebookId),
                             };
 
                             if (state.settings.persistMessageCollapseState) {

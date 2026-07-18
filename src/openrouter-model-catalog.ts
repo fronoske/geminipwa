@@ -180,9 +180,7 @@ const openRouterModelCatalog = {
 
     formatContextLength(contextLength) {
         if (!contextLength) return '不明';
-        if (contextLength >= 1000000) return `${Math.round(contextLength / 100000) / 10}M`;
-        if (contextLength >= 1000) return `${Math.round(contextLength / 1000)}K`;
-        return String(contextLength);
+        return formatCompactTokenCount(contextLength);
     },
 
     formatPerMillionPrice(pricePerToken) {

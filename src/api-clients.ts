@@ -1,6 +1,29 @@
 // @ts-nocheck -- Enable after shared application service types are defined.
 // Bundled into the generated index.html from this TypeScript source.
         const apiUtils = {
+            geminiModelContextCache: new Map(),
+
+            async getGeminiModelContextWindow(apiKey, model) {
+                const normalizedModel = String(model || '').replace(/^models\//, '').trim();
+                if (!apiKey || !normalizedModel) return null;
+                if (this.geminiModelContextCache.has(normalizedModel)) {
+                    return this.geminiModelContextCache.get(normalizedModel);
+                }
+
+                try {
+                    const endpoint = `${GEMINI_API_BASE_URL}${encodeURIComponent(normalizedModel)}?key=${encodeURIComponent(apiKey)}`;
+                    const response = await fetch(endpoint, { headers: { Accept: 'application/json' } });
+                    if (!response.ok) return null;
+                    const modelInfo = await response.json();
+                    const inputTokenLimit = Number(modelInfo.inputTokenLimit) || 0;
+                    if (inputTokenLimit <= 0) return null;
+                    this.geminiModelContextCache.set(normalizedModel, inputTokenLimit);
+                    return inputTokenLimit;
+                } catch {
+                    return null;
+                }
+            },
+
             async callGeminiApi(apiKey, model, messagesForApi, generationConfig, systemInstruction, useStreaming, usePseudo, enableGrounding) {
                 if (!apiKey) {
                     throw new Error("APIキーが設定されていません。");
@@ -685,6 +708,7 @@ async callDeepSeekApi(apiKey, model, messagesForApi, generationConfig, systemIns
                     enableVision,
                     generationConfig
                 );
+                if (useStreaming) body.stream_options = { include_usage: true };
 
                 if (provider === 'llmaggregator' && generationConfig.topK !== null) {
                     body.top_k = generationConfig.topK;
@@ -719,6 +743,7 @@ async callDeepSeekApi(apiKey, model, messagesForApi, generationConfig, systemIns
                 let usage = null;
                 let finishReason = null;
                 let isCancelled = false;
+                let streamEnded = false;
 
                 try {
                     while (true) {
@@ -741,7 +766,8 @@ async callDeepSeekApi(apiKey, model, messagesForApi, generationConfig, systemIns
                             const data = line.slice(5).trim();
 
                             if (data === '[DONE]') {
-                                finishReason = 'stop';
+                                if (!finishReason) finishReason = 'stop';
+                                streamEnded = true;
                                 break;
                             }
                             try {
@@ -782,7 +808,7 @@ async callDeepSeekApi(apiKey, model, messagesForApi, generationConfig, systemIns
                                 }
                             } catch (e) { }
                         }
-                        if (finishReason) break;
+                        if (streamEnded) break;
                     }
                     yield {
                         type: "metadata",

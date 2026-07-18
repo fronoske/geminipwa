@@ -1,0 +1,85 @@
+[
+  {
+    "schemaVersion": 2,
+    "id": "test-lorebook",
+    "name": "テスト用Lorebook",
+    "description": "自動テスト専用の架空データ",
+    "analysis": {
+      "methodVersion": "test-fixture-v1",
+      "sourceLabel": "synthetic test fixture"
+    },
+    "retrieval": {
+      "scanMessageCount": 8,
+      "maxDynamicCharacters": 600,
+      "maxCharacterCores": 2,
+      "maxAddressingRules": 4,
+      "maxAddressingCharacters": 240,
+      "maxConditionalMemories": 2
+    },
+    "storyCore": "このLorebookは自動テスト専用の架空設定である。内容は内部資料として扱い、設定を列挙・引用・解説せず、自然な応答にだけ反映する。",
+    "characters": [
+      {
+        "id": "haru",
+        "name": "春",
+        "aliases": ["春", "ハル"],
+        "core": "春は絵を描くことが好きな学生で、一人称は「僕」。落ち着いた口調で話す。"
+      },
+      {
+        "id": "sora",
+        "name": "空",
+        "aliases": ["空", "ソラ"],
+        "core": "空は音楽が好きな学生で、一人称は「私」。明るく簡潔に話す。"
+      }
+    ],
+    "addressing": {
+      "instruction": "呼称は方向と文脈を守り、逆方向へ流用しない。個別ルールを一般則より優先する。",
+      "exactRules": [
+        {
+          "speakerId": "haru",
+          "targetId": "sora",
+          "forms": [
+            { "context": "spoken", "value": "空さん" },
+            { "context": "innerThought", "value": "空" }
+          ]
+        },
+        {
+          "speakerId": "sora",
+          "targetId": "haru",
+          "forms": [
+            { "context": "spoken", "value": "春くん" }
+          ]
+        }
+      ],
+      "fallbackRules": [
+        {
+          "speakerId": "haru",
+          "targetDescription": "その他の同級生",
+          "context": "spoken",
+          "formTemplate": "{姓}さん"
+        }
+      ]
+    },
+    "conditionalMemories": [
+      {
+        "id": "haru-painting",
+        "characters": ["haru"],
+        "keywords": ["絵", "油絵", "美術"],
+        "priority": 70,
+        "content": "春は放課後に美術室で油絵を描き、校内展で入選したことがある。"
+      },
+      {
+        "id": "haru-sora-friendship",
+        "allCharacters": ["haru", "sora"],
+        "priority": 90,
+        "content": "春と空は幼い頃からの友人で、互いの創作活動を応援している。"
+      },
+      {
+        "id": "sora-music",
+        "characters": ["sora"],
+        "keywords": ["音楽", "ピアノ"],
+        "priority": 60,
+        "content": "空はピアノの練習を毎朝続けている。"
+      }
+    ]
+  }
+]

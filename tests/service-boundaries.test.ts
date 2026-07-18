@@ -10,6 +10,7 @@ const readRuntime = (name: string): string => readFile(`.build/runtime/${name}.j
 
 const serviceBoundaries = [
   ['input-preset', 'inputPresetUtils'],
+  ['lorebook', 'lorebookUtils'],
   ['api-clients', 'apiUtils'],
   ['backend-manager', 'multiBackendUtils'],
   ['error-recovery', 'errorRecovery'],
@@ -69,7 +70,7 @@ describe('application service boundaries', () => {
   it.each([
     [
       'uiUtils',
-      65,
+      67,
       [
         'ui-message-rendering',
         'ui-message-tools',
@@ -80,7 +81,7 @@ describe('application service boundaries', () => {
     ],
     [
       'appLogic',
-      84,
+      85,
       [
         'app-initialization',
         'event-wiring',

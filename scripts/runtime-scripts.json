@@ -11,6 +11,8 @@
     "utilities",
     "interruptible-sleep",
     "input-preset",
+    "lorebook-data",
+    "lorebook",
     "api-clients",
     "backend-manager",
     "error-recovery",

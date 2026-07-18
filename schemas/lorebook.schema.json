@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://geminipwa.local/schemas/lorebook.schema.json",
+  "title": "GeminiPWA Lorebook",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "name",
+    "description",
+    "analysis",
+    "retrieval",
+    "storyCore",
+    "characters",
+    "addressing",
+    "conditionalMemories"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 2 },
+    "id": { "type": "string", "minLength": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "description": { "type": "string" },
+    "analysis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["methodVersion", "sourceLabel"],
+      "properties": {
+        "methodVersion": { "type": "string", "minLength": 1 },
+        "sourceLabel": { "type": "string", "minLength": 1 }
+      }
+    },
+    "retrieval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scanMessageCount",
+        "maxDynamicCharacters",
+        "maxCharacterCores",
+        "maxAddressingRules",
+        "maxAddressingCharacters",
+        "maxConditionalMemories"
+      ],
+      "properties": {
+        "scanMessageCount": { "type": "integer", "minimum": 1 },
+        "maxDynamicCharacters": { "type": "integer", "minimum": 1 },
+        "maxCharacterCores": { "type": "integer", "minimum": 1 },
+        "maxAddressingRules": { "type": "integer", "minimum": 1 },
+        "maxAddressingCharacters": { "type": "integer", "minimum": 1 },
+        "maxConditionalMemories": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "storyCore": { "type": "string", "minLength": 1 },
+    "characters": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/character" }
+    },
+    "addressing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["instruction", "exactRules", "fallbackRules"],
+      "properties": {
+        "instruction": { "type": "string", "minLength": 1 },
+        "exactRules": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/exactAddressingRule" }
+        },
+        "fallbackRules": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/fallbackAddressingRule" }
+        }
+      }
+    },
+    "conditionalMemories": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/conditionalMemory" }
+    }
+  },
+  "$defs": {
+    "characterId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "addressContext": {
+      "enum": ["spoken", "innerThought", "public", "private"]
+    },
+    "character": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "aliases", "core"],
+      "properties": {
+        "id": { "$ref": "#/$defs/characterId" },
+        "name": { "type": "string", "minLength": 1 },
+        "aliases": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "core": { "type": "string", "minLength": 1 }
+      }
+    },
+    "addressForm": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["context", "value"],
+      "properties": {
+        "context": { "$ref": "#/$defs/addressContext" },
+        "value": { "type": "string", "minLength": 1 }
+      }
+    },
+    "exactAddressingRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["speakerId", "targetId", "forms"],
+      "properties": {
+        "speakerId": { "$ref": "#/$defs/characterId" },
+        "targetId": { "$ref": "#/$defs/characterId" },
+        "forms": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/addressForm" }
+        }
+      }
+    },
+    "fallbackAddressingRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["speakerId", "targetDescription", "context", "formTemplate"],
+      "properties": {
+        "speakerId": { "$ref": "#/$defs/characterId" },
+        "targetDescription": { "type": "string", "minLength": 1 },
+        "context": { "$ref": "#/$defs/addressContext" },
+        "formTemplate": { "type": "string", "minLength": 1 }
+      }
+    },
+    "conditionalMemory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "priority", "content"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "characters": { "$ref": "#/$defs/characterIdList" },
+        "allCharacters": { "$ref": "#/$defs/characterIdList" },
+        "anyCharacters": { "$ref": "#/$defs/characterIdList" },
+        "keywords": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "priority": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "content": { "type": "string", "minLength": 1 }
+      }
+    },
+    "characterIdList": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/characterId" }
+    }
+  }
+}

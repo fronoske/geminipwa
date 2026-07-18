@@ -12,6 +12,8 @@
     <script src="marked.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.5/dist/purify.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <!-- Optional local-only Lorebook data. The app works normally when this file is absent. -->
+    <script src="lorebook.local.js" onerror="this.remove()"></script>
 </head>
 
 <body>
@@ -34,11 +36,13 @@
                         aria-label="チャットメニュー" aria-haspopup="menu" aria-expanded="false"
                         aria-controls="header-submenu" title="チャットメニュー">☰</button>
                     <div id="header-submenu" class="header-submenu hidden" role="menu">
-                        <button id="attach-file-btn" type="button" role="menuitem">ファイル添付<span
-                                class="attachment-badge" aria-hidden="true"></span></button>
+                        <button id="header-menu-lorebook-btn" type="button" role="menuitem">Lorebook：<span
+                                id="header-menu-lorebook-name">使用しない</span></button>
                         <button id="header-menu-new-chat-btn" type="button" role="menuitem">新規チャット</button>
                         <button id="header-menu-clear-btn" type="button" role="menuitem" class="danger-menu-item">全削除（先頭を除く）</button>
                         <button id="header-menu-copy-btn" type="button" role="menuitem">全コピー</button>
+                        <button id="attach-file-btn" type="button" role="menuitem">ファイル添付<span
+                                class="attachment-badge" aria-hidden="true"></span></button>
                     </div>
                 </div>
                 <button id="header-api-provider-toggle-btn" class="header-button api-provider-toggle-btn"
@@ -2179,6 +2183,19 @@
         <div class="dialog-actions">
             <button value="cancel" class="dialog-cancel-btn">キャンセル</button>
             <button value="ok" class="dialog-ok-btn">OK</button>
+        </div>
+    </dialog>
+
+    <dialog id="lorebookDialog" class="custom-dialog lorebook-selection-dialog">
+        <h2>Lorebookを選択</h2>
+        <p class="dialog-message">現在のセッションで使用するLorebookを選んでください。次の送信から反映されます。</p>
+        <select id="lorebookSelect" class="dialog-input" aria-label="使用するLorebook">
+            <option value="">使用しない</option>
+        </select>
+        <p id="lorebookDescription" class="lorebook-description">このセッションではLorebookを使用しません。</p>
+        <div class="dialog-actions">
+            <button value="cancel" class="dialog-cancel-btn">キャンセル</button>
+            <button value="ok" class="dialog-ok-btn">決定</button>
         </div>
     </dialog>
 

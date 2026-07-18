@@ -44,6 +44,10 @@ Object.assign(appLogic, {
                         if (confirmed) this.confirmStartNewChat();
                     });
                 });
+                elements.headerMenuLorebookBtn.addEventListener('click', () => {
+                    uiUtils.setHeaderMenuOpen(false);
+                    this.changeCurrentSessionLorebook();
+                });
                 elements.headerMenuClearBtn.addEventListener('click', () => {
                     uiUtils.setHeaderMenuOpen(false);
                     this.confirmClearCurrentSession();

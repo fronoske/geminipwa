@@ -19,6 +19,22 @@ function formatFileSize(bytes: number): string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
+function formatCompactTokenCount(value: number): string {
+  const count = Number(value);
+  if (!Number.isFinite(count)) return '0';
+
+  const units = [
+    { threshold: 1_000_000_000, suffix: 'G' },
+    { threshold: 1_000_000, suffix: 'M' },
+    { threshold: 1_000, suffix: 'K' },
+  ];
+  const unit = units.find(candidate => Math.abs(count) >= candidate.threshold);
+  if (!unit) return Math.round(count).toLocaleString('en-US');
+
+  const compactValue = count / unit.threshold;
+  return `${compactValue.toLocaleString('en-US', { maximumFractionDigits: 1 })}${unit.suffix}`;
+}
+
 function fileToBase64(file: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();

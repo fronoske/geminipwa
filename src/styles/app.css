@@ -2968,6 +2968,11 @@
             white-space: nowrap;
         }
 
+        .message-actions .token-count-display.context-usage-critical {
+            color: var(--text-error);
+            font-weight: 700;
+        }
+
         .custom-dialog {
             border: 1px solid var(--border-secondary);
             border-radius: 8px;
@@ -3038,6 +3043,27 @@
             font-size: 14px;
             background-color: var(--bg-input);
             color: var(--text-primary);
+        }
+
+        .lorebook-selection-dialog {
+            width: min(420px, calc(100vw - 32px));
+        }
+
+        .lorebook-selection-dialog h2 {
+            margin: 0 0 10px;
+            font-size: 18px;
+        }
+
+        .lorebook-selection-dialog select.dialog-input {
+            width: 100%;
+        }
+
+        .lorebook-description {
+            min-height: 2.8em;
+            margin: 8px 0 0;
+            color: var(--text-secondary);
+            font-size: 12px;
+            line-height: 1.4;
         }
 
         .custom-dialog .dialog-actions {

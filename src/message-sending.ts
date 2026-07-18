@@ -32,7 +32,6 @@ Object.assign(appLogic, {
                     case 'xai': modelNameToUse = state.settings.xaiModelName; break;
                     case 'llmaggregator': modelNameToUse = state.settings.llmAggregatorModelName; break;
                 }
-
                 let text = '';
                 let attachmentsToSend = [];
                 if (isRetry) {
@@ -203,6 +202,18 @@ Object.assign(appLogic, {
                 state.partialStreamContent = '';
                 state.partialThoughtStreamContent = '';
 
+                let contextWindowTokensForResponse = null;
+                if (selectedApiProvider === 'gemini') {
+                    contextWindowTokensForResponse = await apiUtils.getGeminiModelContextWindow(apiKeyToUse, modelNameToUse);
+                } else if (selectedApiProvider === 'openrouter') {
+                    contextWindowTokensForResponse = Number(openRouterModelCatalog.getModel(modelNameToUse)?.contextLength) || null;
+                }
+                const responseModelMetadata = {
+                    generatedByApiProvider: selectedApiProvider,
+                    generatedByModel: modelNameToUse || null,
+                    contextWindowTokens: contextWindowTokensForResponse,
+                };
+
                 let userMessageIndex = isRetry ? retryUserMessageIndex : -1;
                 let existingSiblingGroupId = null;
                 let firstResponseIndexForRetry = -1;
@@ -249,6 +260,13 @@ Object.assign(appLogic, {
                     ? currentContextMessages.slice(0, userMessageIndex + 1)
                     : [...currentContextMessages];
 
+                const lorebookPrompt = lorebookUtils.buildPrompt(
+                    state.currentLorebookId,
+                    messagesToProcess,
+                    currentContextSystemPrompt
+                );
+                currentContextSystemPrompt = lorebookUtils.appendToSystemPrompt(currentContextSystemPrompt, lorebookPrompt);
+
 
                 try {
                         let titleToSave = null;
@@ -279,6 +297,8 @@ Object.assign(appLogic, {
                                 deepSeekThoughtSummary: msg.deepSeekThoughtSummary || null,
                                 xaiThoughtSummary: msg.xaiThoughtSummary || null,
                                 generatedByApiProvider: msg.generatedByApiProvider || null,
+                                generatedByModel: msg.generatedByModel || null,
+                                contextWindowTokens: Number(msg.contextWindowTokens) || null,
                                 ...(msg.finishReason && { finishReason: msg.finishReason }),
                                 ...(msg.safetyRatings && { safetyRatings: msg.safetyRatings }),
                                 ...(msg.error && { error: msg.error }),
@@ -291,7 +311,8 @@ Object.assign(appLogic, {
                                 ...(msg.thoughtSummaryOpen !== undefined && { thoughtSummaryOpen: msg.thoughtSummaryOpen }),
                             })),
                             updatedAt: Date.now(),
-                            title: titleToSave
+                            title: titleToSave,
+                            lorebookId: lorebookUtils.normalizeLorebookId(state.currentLorebookId)
                         };
 
                         if (isNewChatForDBSave) {
@@ -438,7 +459,7 @@ Object.assign(appLogic, {
                             deepSeekThoughtSummary: null,
                             xaiThoughtSummary: null,
                             timestamp: Date.now(),
-                            generatedByApiProvider: selectedApiProvider,
+                            ...responseModelMetadata,
                             thoughtSummaryOpen: (selectedApiProvider === 'gemini' && contextGeminiIncludeThoughts && state.settings.geminiExpandThoughtsByDefault) ||
                                 (selectedApiProvider === 'deepseek' && contextDeepSeekIncludeThoughts && state.settings.deepSeekExpandThoughtsByDefault) ||
                                 (selectedApiProvider === 'claude' && contextClaudeIncludeThoughts && state.settings.claudeExpandThoughtsByDefault) ||
@@ -587,7 +608,7 @@ Object.assign(appLogic, {
                                     timestamp: Date.now(),
                                     ...modelResponseMetadata,
                                     usageMetadata: finalUsageMetadataFromStream,
-                                    generatedByApiProvider: selectedApiProvider
+                                    ...responseModelMetadata
                                 };
                                 if (selectedApiProvider === 'gemini' && contextGeminiIncludeThoughts) {
                                     newModelMessage.thoughtSummary = modelThoughtSummaryContent || null;
@@ -718,7 +739,7 @@ Object.assign(appLogic, {
                         if (useStreamingForThisCall && modelMessageObjectForStream) {
                             finalModelMessageIndex = state.currentMessages.indexOf(modelMessageObjectForStream);
                         } else {
-                            const newModelMessage = { role: 'model', content: '', timestamp: Date.now(), ...finalMetadata, usageMetadata: finalUsage, generatedByApiProvider: selectedApiProvider };
+                            const newModelMessage = { role: 'model', content: '', timestamp: Date.now(), ...finalMetadata, usageMetadata: finalUsage, ...responseModelMetadata };
                             const targetUserIndexForCascade = userMessageIndex;
                             if (targetUserIndexForCascade !== -1) {
                                 if (siblingGroupIdToUse === null) siblingGroupIdToUse = `gid-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
@@ -742,6 +763,7 @@ Object.assign(appLogic, {
                             msgToUpdate.finishReason = finalMetadata.finishReason;
                             msgToUpdate.safetyRatings = finalMetadata.safetyRatings;
                             msgToUpdate.usageMetadata = finalUsage;
+                            Object.assign(msgToUpdate, responseModelMetadata);
 
                             if (selectedApiProvider === 'gemini' && contextGeminiIncludeThoughts) { msgToUpdate.thoughtSummary = finalThoughtSummary || null; msgToUpdate.groundingMetadata = finalGrounding; }
                             else if ((selectedApiProvider === 'deepseek' || selectedApiProvider === 'llmaggregator') && contextDeepSeekIncludeThoughts) { msgToUpdate.deepSeekThoughtSummary = finalThoughtSummary || null; }
@@ -800,7 +822,7 @@ uiUtils.renderChatMessages(shouldMaintainScroll);
                             msgToUpdate.finishReason = 'STOP';
                             msgToUpdate.safetyRatings = modelResponseMetadata.safetyRatings;
                             msgToUpdate.usageMetadata = finalUsageMetadataFromStream;
-                            msgToUpdate.generatedByApiProvider = selectedApiProvider;
+                            Object.assign(msgToUpdate, responseModelMetadata);
 
                             if (selectedApiProvider === 'gemini') {
                                 msgToUpdate.thoughtSummary = finalPartialThoughtValue;

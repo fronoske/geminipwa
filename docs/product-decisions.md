@@ -18,6 +18,20 @@ The following features are essential product requirements. They must not be remo
 - Preserve settings-based addition, editing, deletion, multiline content, and automatic submission.
 - Preserve `{|}` as the editable insertion-cursor marker; without it, place the cursor at the end.
 
+### Lorebooks
+
+- Preserve optional Lorebook selection for each chat session.
+- Start new sessions with no Lorebook and allow selection, switching, or removal for the current session from the header menu.
+- Preserve the session's Lorebook assignment across save, load, duplication, and bulk export/import.
+- Keep fixed story context, directional forms of address, character cores, and deterministic conditional memories structurally separate.
+- Treat directional and context-dependent forms of address as critical data, and allocate their prompt budget before character cores and conditional memories.
+- For future Lorebook registration, use the LLM for semantic extraction and compression, but require programmatic schema and referential-integrity validation plus editable user confirmation before persistence.
+- Preserve the original source separately from the generated runtime Lorebook so editing can rerun analysis without information loss.
+- Use the complete original Lorebook source as an early full-context seed and add structured, relevant Lorebook reminders near the current turn.
+- After a response reaches 90% of the model's context window, stop including the full-context seed for the remainder of that session; keep the fixed core and selective reminders.
+- If the selected model's context-window limit is unknown, keep the full-context seed enabled; do not infer a percentage or automatically switch injection modes.
+- Never require embeddings for the baseline Lorebook retrieval path.
+
 ### Common Dummy User prompt
 
 - Preserve one shared Dummy User prompt for all API providers.

@@ -2,3 +2,7 @@ node_modules/
 dist/
 .build/
 *.tsbuildinfo
+
+# Private local Lorebook source and generated runtime data
+story-settings.md
+lorebook.local.js

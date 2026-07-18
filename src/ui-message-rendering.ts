@@ -388,16 +388,25 @@ appendMessage(role, content, index, isStreamingPlaceholder = false, cascadeInfo 
                         const tokenSpan = document.createElement('span');
                         tokenSpan.classList.add('token-count-display');
 
-                        let finalTotalTokenCount = usage.totalTokenCount;
-                        if (typeof messageData.usageMetadata.thoughtsTokenCount === 'number' && messageApiProvider === 'gemini') {
-                            finalTotalTokenCount -= messageData.usageMetadata.thoughtsTokenCount;
+                        const totalTokenCount = usage.totalTokenCount;
+                        const storedContextWindow = Number(messageData.contextWindowTokens) || 0;
+                        const catalogContextWindow = messageApiProvider === 'openrouter' && messageData.generatedByModel
+                            ? Number(openRouterModelCatalog.getModel(messageData.generatedByModel)?.contextLength) || 0
+                            : 0;
+                        const contextWindowTokens = storedContextWindow || catalogContextWindow;
+                        const formattedTotal = formatCompactTokenCount(totalTokenCount);
+
+                        if (contextWindowTokens > 0) {
+                            const usagePercentage = Math.round((totalTokenCount / contextWindowTokens) * 100);
+                            tokenSpan.textContent = `${formattedTotal} / ${formatCompactTokenCount(contextWindowTokens)} (${usagePercentage} %)`;
+                            tokenSpan.title = `合計トークン数 / ${messageData.generatedByModel || '使用モデル'}のコンテキスト上限`;
+                            tokenSpan.classList.toggle('context-usage-critical', usagePercentage >= CONTEXT_PRESSURE_THRESHOLD_PERCENT);
+                        } else {
+                            tokenSpan.textContent = `${formattedTotal} / 上限不明`;
+                            tokenSpan.title = messageData.generatedByModel
+                                ? `${messageData.generatedByModel}のコンテキスト上限を取得できていません`
+                                : '使用モデルのコンテキスト上限を取得できていません';
                         }
-
-                        const formattedCandidates = usage.candidatesTokenCount.toLocaleString('en-US');
-                        const formattedTotal = finalTotalTokenCount.toLocaleString('en-US');
-
-                        tokenSpan.textContent = `${formattedCandidates} / ${formattedTotal}`;
-                        tokenSpan.title = `Candidate Tokens / Total Tokens`;
                         actionsDiv.appendChild(tokenSpan);
                     }
                     messageDiv.appendChild(actionsDiv);

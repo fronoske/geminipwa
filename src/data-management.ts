@@ -58,7 +58,8 @@ Object.assign(appLogic, {
                             messages: importedMessages,
                             updatedAt: Date.now(),
                             createdAt: Date.now(),
-                            title: newTitle.substring(0, 100)
+                            title: newTitle.substring(0, 100),
+                            lorebookId: null
                         };
                         const newChatId = await new Promise((resolve, reject) => {
                             const store = dbUtils._getStore(CHATS_STORE, 'readwrite');
@@ -143,12 +144,15 @@ Object.assign(appLogic, {
 
                     const exportableChats = chats.map(chat => ({
                         title: chat.title,
+                        lorebookId: lorebookUtils.normalizeLorebookId(chat.lorebookId),
                         messages: chat.messages.map(msg => {
                             const messageExport = {
                                 role: msg.role,
                                 content: msg.content,
                                 timestamp: msg.timestamp,
                                 generatedByApiProvider: msg.generatedByApiProvider || null,
+                                generatedByModel: msg.generatedByModel || null,
+                                contextWindowTokens: Number(msg.contextWindowTokens) || null,
                             };
                             if (msg.isCascaded !== undefined) messageExport.isCascaded = msg.isCascaded;
                             if (msg.isSelected !== undefined) messageExport.isSelected = msg.isSelected;
@@ -226,6 +230,7 @@ Object.assign(appLogic, {
                             const titlePrefix = state.settings.addPrefixOnImport ? `${IMPORT_PREFIX}(全) ` : '';
                             const newChat = {
                                 title: `${titlePrefix}${chatData.title}`.substring(0, 100),
+                                lorebookId: lorebookUtils.normalizeLorebookId(chatData.lorebookId),
                                 messages: (chatData.messages || []).map(msg => ({
                                     role: msg.role,
                                     content: msg.content || '',
@@ -237,6 +242,8 @@ Object.assign(appLogic, {
                                     deepSeekThoughtSummary: msg.deepSeekThoughtSummary || undefined,
                                     thoughtSummaryOpen: msg.thoughtSummaryOpen || false,
                                     generatedByApiProvider: msg.generatedByApiProvider || undefined,
+                                    generatedByModel: msg.generatedByModel || undefined,
+                                    contextWindowTokens: Number(msg.contextWindowTokens) || undefined,
                                     attachments: (msg.attachments || []).map(att => ({
                                         name: att.name || 'imported_file',
                                         mimeType: att.mimeType || 'application/octet-stream',

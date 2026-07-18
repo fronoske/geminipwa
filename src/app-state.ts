@@ -2,6 +2,7 @@
         const state = {
             db: null,
             currentChatId: null,
+            currentLorebookId: null,
             currentMessages: [],
             settings: {
                 apiKey: '',

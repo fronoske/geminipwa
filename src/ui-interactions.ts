@@ -90,6 +90,7 @@ Object.assign(uiUtils, {
                     elements.sendButton.title = "送信";
                     this.adjustTextareaHeight();
                 }
+                this.updateLorebookMenuItem();
                 this.updateLoadingIndicator();
             },
 
@@ -217,6 +218,53 @@ Object.assign(uiUtils, {
 
                 const result = await this.showCustomDialog(elements.promptDialog, elements.promptInput);
                 return result;
+            },
+            async showLorebookSelectionDialog(defaultLorebookId = null) {
+                const lorebooks = lorebookUtils.getAvailableLorebooks();
+                elements.lorebookSelect.innerHTML = '';
+
+                const noneOption = document.createElement('option');
+                noneOption.value = '';
+                noneOption.textContent = '使用しない';
+                elements.lorebookSelect.appendChild(noneOption);
+
+                lorebooks.forEach(lorebook => {
+                    const option = document.createElement('option');
+                    option.value = lorebook.id;
+                    option.textContent = lorebook.name;
+                    elements.lorebookSelect.appendChild(option);
+                });
+
+                elements.lorebookSelect.value = lorebookUtils.normalizeLorebookId(defaultLorebookId) || '';
+                const updateDescription = () => {
+                    const selected = lorebooks.find(lorebook => lorebook.id === elements.lorebookSelect.value);
+                    elements.lorebookDescription.textContent = selected
+                        ? selected.description
+                        : 'このセッションではLorebookを使用しません。';
+                };
+                elements.lorebookSelect.onchange = updateDescription;
+                updateDescription();
+
+                const newOkBtn = elements.lorebookOkBtn.cloneNode(true);
+                elements.lorebookOkBtn.parentNode.replaceChild(newOkBtn, elements.lorebookOkBtn);
+                elements.lorebookOkBtn = newOkBtn;
+                const newCancelBtn = elements.lorebookCancelBtn.cloneNode(true);
+                elements.lorebookCancelBtn.parentNode.replaceChild(newCancelBtn, elements.lorebookCancelBtn);
+                elements.lorebookCancelBtn = newCancelBtn;
+
+                elements.lorebookOkBtn.onclick = () => {
+                    const value = lorebookUtils.normalizeLorebookId(elements.lorebookSelect.value);
+                    elements.lorebookDialog.close(value ? `lorebook:${value}` : 'none');
+                };
+                elements.lorebookCancelBtn.onclick = () => elements.lorebookDialog.close('cancel');
+
+                elements.lorebookDialog.returnValue = '';
+                const result = await this.showCustomDialog(elements.lorebookDialog, elements.lorebookSelect);
+                if (result === 'none') return null;
+                if (result && result.startsWith('lorebook:')) {
+                    return lorebookUtils.normalizeLorebookId(result.substring('lorebook:'.length));
+                }
+                return undefined;
             },
             updateApiKeyCycleButtons() {
                 const provider = state.settings.apiProvider;

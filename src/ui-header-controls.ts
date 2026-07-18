@@ -68,6 +68,7 @@ Object.assign(uiUtils, {
                 });
             },
             setHeaderMenuOpen(isOpen) {
+                this.updateLorebookMenuItem();
                 elements.headerSubmenu.classList.toggle('hidden', !isOpen);
                 elements.headerMenuBtn.setAttribute('aria-expanded', String(isOpen));
                 if (isOpen) {
@@ -76,6 +77,15 @@ Object.assign(uiUtils, {
             },
             toggleHeaderMenu() {
                 this.setHeaderMenuOpen(elements.headerSubmenu.classList.contains('hidden'));
+            },
+            updateLorebookMenuItem() {
+                const lorebook = lorebookUtils.getLorebook(state.currentLorebookId);
+                const name = lorebook?.name || '使用しない';
+                elements.headerMenuLorebookName.textContent = name;
+                elements.headerMenuLorebookBtn.disabled = state.isSending;
+                elements.headerMenuLorebookBtn.title = state.isSending
+                    ? '応答中はLorebookを変更できません'
+                    : `現在のLorebook: ${name}`;
             },
             updateProviderToggleButtons() {
                 const providerMap = {
