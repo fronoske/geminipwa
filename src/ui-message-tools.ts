@@ -480,6 +480,7 @@ const getCurrentMermaidTheme = () => {
                     } else if (contentDiv) {
                         contentDiv.textContent = finalRawContent;
                     }
+                    this._renderEmptyModelResponseDiagnostic(contentDiv, finalMessageData, messageApiProvider);
                     if (contentDiv) contentDiv.removeAttribute('id');
 
                     const citationContainer = messageDiv.querySelector(`#streaming-citations-${index}`);

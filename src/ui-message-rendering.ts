@@ -15,6 +15,14 @@ Object.assign(uiUtils, {
                 });
                 return cleanHtml;
             },
+            _renderEmptyModelResponseDiagnostic(contentDiv, messageData, apiProvider) {
+                if (!contentDiv || apiProvider !== 'gemini' || String(messageData?.content || '').trim() !== '') return;
+                const diagnostic = document.createElement('p');
+                diagnostic.classList.add('empty-model-response-diagnostic');
+                diagnostic.setAttribute('role', 'status');
+                diagnostic.textContent = apiUtils.formatGeminiEmptyResponse(messageData || {});
+                contentDiv.appendChild(diagnostic);
+            },
 renderChatMessages(maintainScroll = false) {
                 const mainContent = elements.chatScreen.querySelector('.main-content');
                 const oldScrollTop = maintainScroll ? mainContent.scrollTop : null;
@@ -292,6 +300,9 @@ appendMessage(role, content, index, isStreamingPlaceholder = false, cascadeInfo 
                     } catch (e) {
                         const pre = document.createElement('pre'); pre.textContent = content; contentDiv.innerHTML = ''; contentDiv.appendChild(pre);
                     }
+                }
+                if (role === 'model' && !isStreamingPlaceholder) {
+                    this._renderEmptyModelResponseDiagnostic(contentDiv, messageData, messageApiProvider);
                 }
                 messageDiv.appendChild(contentDiv);
 

@@ -300,7 +300,9 @@ Object.assign(appLogic, {
                                 generatedByModel: msg.generatedByModel || null,
                                 contextWindowTokens: Number(msg.contextWindowTokens) || null,
                                 ...(msg.finishReason && { finishReason: msg.finishReason }),
+                                ...(msg.finishMessage && { finishMessage: msg.finishMessage }),
                                 ...(msg.safetyRatings && { safetyRatings: msg.safetyRatings }),
+                                ...(msg.promptFeedback && { promptFeedback: msg.promptFeedback }),
                                 ...(msg.error && { error: msg.error }),
                                 ...(msg.isCascaded !== undefined && { isCascaded: msg.isCascaded }),
                                 ...(msg.isSelected !== undefined && { isSelected: msg.isSelected }),
@@ -551,7 +553,9 @@ Object.assign(appLogic, {
                             } else if (streamData.type === 'metadata') {
                                 modelResponseMetadata = {
                                     finishReason: streamData.finishReason,
+                                    finishMessage: streamData.finishMessage,
                                     safetyRatings: streamData.safetyRatings,
+                                    promptFeedback: streamData.promptFeedback,
                                 };
                                 if (selectedApiProvider === 'gemini') {
                                     if (streamData.groundingMetadata) currentGroundingMetadata = streamData.groundingMetadata;
@@ -576,6 +580,10 @@ Object.assign(appLogic, {
                         modelResponseRawContent = state.partialStreamContent;
 
                         let finalContent = modelResponseRawContent;
+                        if (selectedApiProvider === 'gemini' && !finalContent && !modelThoughtSummaryContent && !modelResponseMetadata.finishReason) {
+                            modelResponseMetadata.finishReason = 'EMPTY_RESPONSE';
+                            modelResponseMetadata.finishMessage = '本文、思考要約、終了理由のいずれも返されませんでした。';
+                        }
                         if (finalContent || modelThoughtSummaryContent || modelResponseMetadata.finishReason) {
                             if (useStreamingForThisCall && modelMessageObjectForStream) {
                                 const finalModelMessageIndex = state.currentMessages.indexOf(modelMessageObjectForStream);
@@ -584,7 +592,9 @@ Object.assign(appLogic, {
                                     msgToUpdate.content = finalContent;
                                     msgToUpdate.timestamp = Date.now();
                                     msgToUpdate.finishReason = modelResponseMetadata.finishReason;
+                                    msgToUpdate.finishMessage = modelResponseMetadata.finishMessage;
                                     msgToUpdate.safetyRatings = modelResponseMetadata.safetyRatings;
+                                    msgToUpdate.promptFeedback = modelResponseMetadata.promptFeedback;
                                     msgToUpdate.usageMetadata = finalUsageMetadataFromStream;
                                     if (selectedApiProvider === 'gemini' && contextGeminiIncludeThoughts) {
                                         if (modelThoughtSummaryContent) {
@@ -674,7 +684,11 @@ Object.assign(appLogic, {
                         if (selectedApiProvider === 'gemini') {
                             const candidate = data.candidates?.[0];
                             if (candidate) {
-                                finalMetadata = { finishReason: candidate.finishReason, safetyRatings: candidate.safetyRatings };
+                                finalMetadata = {
+                                    finishReason: candidate.finishReason,
+                                    finishMessage: candidate.finishMessage || null,
+                                    safetyRatings: candidate.safetyRatings,
+                                };
                                 candidate.content?.parts?.forEach(part => {
                                     if (part.thought === true && contextGeminiIncludeThoughts) finalThoughtSummary += (part.text || "") + "\n\n";
                                     else if (part.thought !== true) rawContentFromApi += (part.text || "") + "\n\n";
@@ -683,13 +697,15 @@ Object.assign(appLogic, {
                                 rawContentFromApi = rawContentFromApi.trim();
                                 finalGrounding = candidate.groundingMetadata || null;
                                 finalUsage = data.usageMetadata || null;
-                                if (candidate.finishReason && candidate.finishReason !== "STOP" && candidate.finishReason !== "MAX_TOKENS") rawContentFromApi += `\n\n(理由: ${candidate.finishReason})`;
-                                if (!rawContentFromApi && candidate.finishReason === "STOP" && !finalThoughtSummary) rawContentFromApi = "(応答が空です)";
+                                if (rawContentFromApi && candidate.finishReason && candidate.finishReason !== "STOP" && candidate.finishReason !== "MAX_TOKENS") rawContentFromApi += `\n\n(理由: ${candidate.finishReason})`;
                             } else {
-                                rawContentFromApi = "応答候補がありません";
                                 if (data.promptFeedback) {
-                                    rawContentFromApi += ` (理由: ${data.promptFeedback.blockReason || '不明'})`;
-                                    finalMetadata = { promptFeedback: data.promptFeedback, finishReason: data.promptFeedback.blockReason || 'ERROR' };
+                                    finalMetadata = {
+                                        promptFeedback: data.promptFeedback,
+                                        finishReason: data.promptFeedback.blockReason || 'ERROR',
+                                        finishMessage: data.promptFeedback.blockReasonMessage || null,
+                                        safetyRatings: data.promptFeedback.safetyRatings,
+                                    };
                                 } else {
                                     finalMetadata.finishReason = 'ERROR';
                                 }
@@ -761,7 +777,9 @@ Object.assign(appLogic, {
                             msgToUpdate.content = finalContent;
                             msgToUpdate.timestamp = Date.now();
                             msgToUpdate.finishReason = finalMetadata.finishReason;
+                            msgToUpdate.finishMessage = finalMetadata.finishMessage;
                             msgToUpdate.safetyRatings = finalMetadata.safetyRatings;
+                            msgToUpdate.promptFeedback = finalMetadata.promptFeedback;
                             msgToUpdate.usageMetadata = finalUsage;
                             Object.assign(msgToUpdate, responseModelMetadata);
 

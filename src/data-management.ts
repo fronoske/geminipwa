@@ -159,6 +159,10 @@ Object.assign(appLogic, {
                             if (msg.siblingGroupId !== undefined) messageExport.siblingGroupId = msg.siblingGroupId;
                             if (msg.groundingMetadata) messageExport.groundingMetadata = msg.groundingMetadata;
                             if (msg.usageMetadata) messageExport.usageMetadata = msg.usageMetadata;
+                            if (msg.finishReason) messageExport.finishReason = msg.finishReason;
+                            if (msg.finishMessage) messageExport.finishMessage = msg.finishMessage;
+                            if (msg.safetyRatings) messageExport.safetyRatings = msg.safetyRatings;
+                            if (msg.promptFeedback) messageExport.promptFeedback = msg.promptFeedback;
                             if (msg.thoughtSummary) messageExport.thoughtSummary = msg.thoughtSummary;
                             if (msg.deepSeekThoughtSummary) messageExport.deepSeekThoughtSummary = msg.deepSeekThoughtSummary;
                             if (msg.thoughtSummaryOpen !== undefined) messageExport.thoughtSummaryOpen = msg.thoughtSummaryOpen;
@@ -252,6 +256,10 @@ Object.assign(appLogic, {
                                     })),
                                     groundingMetadata: msg.groundingMetadata || undefined,
                                     usageMetadata: msg.usageMetadata || undefined,
+                                    finishReason: msg.finishReason || undefined,
+                                    finishMessage: msg.finishMessage || undefined,
+                                    safetyRatings: msg.safetyRatings || undefined,
+                                    promptFeedback: msg.promptFeedback || undefined,
                                     error: msg.error || undefined,
                                 })),
                                 createdAt: typeof chatData.createdAt === 'number' ? chatData.createdAt : importTimestamp,

@@ -2668,6 +2668,16 @@
             margin-bottom: 0;
         }
 
+        .empty-model-response-diagnostic {
+            padding: 8px 10px;
+            border: 1px solid color-mix(in srgb, var(--text-error) 45%, transparent);
+            border-radius: 6px;
+            background: color-mix(in srgb, var(--bg-error-message) 70%, transparent);
+            color: var(--text-error);
+            font-size: 0.9em;
+            white-space: pre-wrap;
+        }
+
         .message-content h1,
         .message-content h2,
         .message-content h3,

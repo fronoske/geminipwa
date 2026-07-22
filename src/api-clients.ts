@@ -3,6 +3,34 @@
         const apiUtils = {
             geminiModelContextCache: new Map(),
 
+            formatGeminiEmptyResponse(messageData = {}) {
+                const promptFeedback = messageData.promptFeedback || null;
+                const finishReason = promptFeedback?.blockReason || messageData.finishReason || '不明';
+                const finishMessage = messageData.finishMessage || promptFeedback?.blockReasonMessage || '';
+                const safetyRatings = [
+                    ...(Array.isArray(messageData.safetyRatings) ? messageData.safetyRatings : []),
+                    ...(Array.isArray(promptFeedback?.safetyRatings) ? promptFeedback.safetyRatings : []),
+                ];
+                const blockedCategories = [...new Set(safetyRatings
+                    .filter(rating => rating?.blocked)
+                    .map(rating => rating.category)
+                    .filter(Boolean))];
+                const usage = messageData.usageMetadata || {};
+                const tokenDetails = [];
+                if (typeof usage.candidatesTokenCount === 'number') {
+                    tokenDetails.push(`通常出力: ${usage.candidatesTokenCount} tokens`);
+                }
+                if (typeof usage.thoughtsTokenCount === 'number') {
+                    tokenDetails.push(`思考: ${usage.thoughtsTokenCount} tokens`);
+                }
+
+                const details = [`終了理由: ${finishReason}`];
+                if (finishMessage) details.push(`詳細: ${finishMessage}`);
+                if (blockedCategories.length > 0) details.push(`該当カテゴリ: ${blockedCategories.join(', ')}`);
+                if (tokenDetails.length > 0) details.push(tokenDetails.join(' / '));
+                return `Geminiから本文のない応答が返されました。${details.join(' / ')}`;
+            },
+
             async getGeminiModelContextWindow(apiKey, model) {
                 const normalizedModel = String(model || '').replace(/^models\//, '').trim();
                 if (!apiKey || !normalizedModel) return null;
@@ -107,6 +135,7 @@
                 let isCancelled = false;
                 let groundingMetadata = null;
                 let finalUsageMetadata = null;
+                let finalPromptFeedback = null;
 
                 try {
                     while (true) {
@@ -168,11 +197,14 @@
                     }
                     const finishReason = lastCandidateInfo?.finishReason;
                     const safetyRatings = lastCandidateInfo?.safetyRatings;
+                    const finishMessage = lastCandidateInfo?.finishMessage || null;
 
                     yield {
                         type: 'metadata',
                         finishReason: isCancelled ? 'ABORTED' : finishReason,
+                        finishMessage,
                         safetyRatings,
+                        promptFeedback: finalPromptFeedback,
                         groundingMetadata: groundingMetadata,
                         usageMetadata: finalUsageMetadata
                     };
@@ -199,6 +231,11 @@
                         let currentGroundingMetadata = null;
                         let currentUsageMetadata = null;
 
+                        if (chunkJson.usageMetadata) {
+                            currentUsageMetadata = chunkJson.usageMetadata;
+                            finalUsageMetadata = chunkJson.usageMetadata;
+                        }
+
                         if (chunkJson.candidates && chunkJson.candidates.length > 0) {
                             lastCandidateInfo = chunkJson.candidates[0];
                             if (lastCandidateInfo?.content?.parts) {
@@ -216,12 +253,13 @@
                                 currentGroundingMetadata = lastCandidateInfo.groundingMetadata;
                             }
                         } else if (chunkJson.promptFeedback) {
-                            lastCandidateInfo = { finishReason: 'SAFETY', safetyRatings: chunkJson.promptFeedback.safetyRatings };
+                            finalPromptFeedback = chunkJson.promptFeedback;
+                            lastCandidateInfo = {
+                                finishReason: chunkJson.promptFeedback.blockReason || 'ERROR',
+                                finishMessage: chunkJson.promptFeedback.blockReasonMessage || null,
+                                safetyRatings: chunkJson.promptFeedback.safetyRatings
+                            };
                             return null;
-                        }
-
-                        if (chunkJson.usageMetadata) {
-                            currentUsageMetadata = chunkJson.usageMetadata;
                         }
 
                         if (contentText !== null || thoughtText !== null || currentGroundingMetadata || currentUsageMetadata) {
@@ -235,7 +273,11 @@
                         }
                         return null;
                     } catch (parseError) {
-                        return null;
+                        return {
+                            type: 'error',
+                            error: { message: parseError.message, rawData: jsonString },
+                            message: `Geminiストリームの解析に失敗しました: ${parseError.message}`
+                        };
                     }
                 }
             },

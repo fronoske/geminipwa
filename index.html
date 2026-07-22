@@ -2678,6 +2678,16 @@
             margin-bottom: 0;
         }
 
+        .empty-model-response-diagnostic {
+            padding: 8px 10px;
+            border: 1px solid color-mix(in srgb, var(--text-error) 45%, transparent);
+            border-radius: 6px;
+            background: color-mix(in srgb, var(--bg-error-message) 70%, transparent);
+            color: var(--text-error);
+            font-size: 0.9em;
+            white-space: pre-wrap;
+        }
+
         .message-content h1,
         .message-content h2,
         .message-content h3,
@@ -7839,7 +7849,8 @@ const dbUtils = {
                     generatedByApiProvider: msg.generatedByApiProvider || null,
                     generatedByModel: msg.generatedByModel || null,
                     contextWindowTokens: Number(msg.contextWindowTokens) || null,
-                    finishReason: msg.finishReason, safetyRatings: msg.safetyRatings, error: msg.error,
+                    finishReason: msg.finishReason, finishMessage: msg.finishMessage,
+                    safetyRatings: msg.safetyRatings, promptFeedback: msg.promptFeedback, error: msg.error,
                     isCascaded: msg.isCascaded, isSelected: msg.isSelected, siblingGroupId: msg.siblingGroupId,
                     groundingMetadata: msg.groundingMetadata, attachments: msg.attachments,
                     usageMetadata: msg.usageMetadata, thoughtSummaryOpen: msg.thoughtSummaryOpen
@@ -8839,6 +8850,35 @@ const lorebookUtils = {
 // Bundled into the generated index.html from this TypeScript source.
 const apiUtils = {
     geminiModelContextCache: new Map(),
+    formatGeminiEmptyResponse(messageData = {}) {
+        const promptFeedback = messageData.promptFeedback || null;
+        const finishReason = promptFeedback?.blockReason || messageData.finishReason || '不明';
+        const finishMessage = messageData.finishMessage || promptFeedback?.blockReasonMessage || '';
+        const safetyRatings = [
+            ...(Array.isArray(messageData.safetyRatings) ? messageData.safetyRatings : []),
+            ...(Array.isArray(promptFeedback?.safetyRatings) ? promptFeedback.safetyRatings : []),
+        ];
+        const blockedCategories = [...new Set(safetyRatings
+                .filter(rating => rating?.blocked)
+                .map(rating => rating.category)
+                .filter(Boolean))];
+        const usage = messageData.usageMetadata || {};
+        const tokenDetails = [];
+        if (typeof usage.candidatesTokenCount === 'number') {
+            tokenDetails.push(`通常出力: ${usage.candidatesTokenCount} tokens`);
+        }
+        if (typeof usage.thoughtsTokenCount === 'number') {
+            tokenDetails.push(`思考: ${usage.thoughtsTokenCount} tokens`);
+        }
+        const details = [`終了理由: ${finishReason}`];
+        if (finishMessage)
+            details.push(`詳細: ${finishMessage}`);
+        if (blockedCategories.length > 0)
+            details.push(`該当カテゴリ: ${blockedCategories.join(', ')}`);
+        if (tokenDetails.length > 0)
+            details.push(tokenDetails.join(' / '));
+        return `Geminiから本文のない応答が返されました。${details.join(' / ')}`;
+    },
     async getGeminiModelContextWindow(apiKey, model) {
         const normalizedModel = String(model || '').replace(/^models\//, '').trim();
         if (!apiKey || !normalizedModel)
@@ -8939,6 +8979,7 @@ const apiUtils = {
         let isCancelled = false;
         let groundingMetadata = null;
         let finalUsageMetadata = null;
+        let finalPromptFeedback = null;
         try {
             while (true) {
                 if (state.abortController?.signal.aborted && !isCancelled) {
@@ -8999,10 +9040,13 @@ const apiUtils = {
             }
             const finishReason = lastCandidateInfo?.finishReason;
             const safetyRatings = lastCandidateInfo?.safetyRatings;
+            const finishMessage = lastCandidateInfo?.finishMessage || null;
             yield {
                 type: 'metadata',
                 finishReason: isCancelled ? 'ABORTED' : finishReason,
+                finishMessage,
                 safetyRatings,
+                promptFeedback: finalPromptFeedback,
                 groundingMetadata: groundingMetadata,
                 usageMetadata: finalUsageMetadata
             };
@@ -9030,6 +9074,10 @@ const apiUtils = {
                 let thoughtText = null;
                 let currentGroundingMetadata = null;
                 let currentUsageMetadata = null;
+                if (chunkJson.usageMetadata) {
+                    currentUsageMetadata = chunkJson.usageMetadata;
+                    finalUsageMetadata = chunkJson.usageMetadata;
+                }
                 if (chunkJson.candidates && chunkJson.candidates.length > 0) {
                     lastCandidateInfo = chunkJson.candidates[0];
                     if (lastCandidateInfo?.content?.parts) {
@@ -9049,11 +9097,13 @@ const apiUtils = {
                     }
                 }
                 else if (chunkJson.promptFeedback) {
-                    lastCandidateInfo = { finishReason: 'SAFETY', safetyRatings: chunkJson.promptFeedback.safetyRatings };
+                    finalPromptFeedback = chunkJson.promptFeedback;
+                    lastCandidateInfo = {
+                        finishReason: chunkJson.promptFeedback.blockReason || 'ERROR',
+                        finishMessage: chunkJson.promptFeedback.blockReasonMessage || null,
+                        safetyRatings: chunkJson.promptFeedback.safetyRatings
+                    };
                     return null;
-                }
-                if (chunkJson.usageMetadata) {
-                    currentUsageMetadata = chunkJson.usageMetadata;
                 }
                 if (contentText !== null || thoughtText !== null || currentGroundingMetadata || currentUsageMetadata) {
                     return {
@@ -9067,7 +9117,11 @@ const apiUtils = {
                 return null;
             }
             catch (parseError) {
-                return null;
+                return {
+                    type: 'error',
+                    error: { message: parseError.message, rawData: jsonString },
+                    message: `Geminiストリームの解析に失敗しました: ${parseError.message}`
+                };
             }
         }
     },
@@ -10962,6 +11016,15 @@ Object.assign(uiUtils, {
         });
         return cleanHtml;
     },
+    _renderEmptyModelResponseDiagnostic(contentDiv, messageData, apiProvider) {
+        if (!contentDiv || apiProvider !== 'gemini' || String(messageData?.content || '').trim() !== '')
+            return;
+        const diagnostic = document.createElement('p');
+        diagnostic.classList.add('empty-model-response-diagnostic');
+        diagnostic.setAttribute('role', 'status');
+        diagnostic.textContent = apiUtils.formatGeminiEmptyResponse(messageData || {});
+        contentDiv.appendChild(diagnostic);
+    },
     renderChatMessages(maintainScroll = false) {
         const mainContent = elements.chatScreen.querySelector('.main-content');
         const oldScrollTop = maintainScroll ? mainContent.scrollTop : null;
@@ -11225,6 +11288,9 @@ Object.assign(uiUtils, {
                 contentDiv.innerHTML = '';
                 contentDiv.appendChild(pre);
             }
+        }
+        if (role === 'model' && !isStreamingPlaceholder) {
+            this._renderEmptyModelResponseDiagnostic(contentDiv, messageData, messageApiProvider);
         }
         messageDiv.appendChild(contentDiv);
         const citationDetailsDiv = document.createElement('div');
@@ -11810,6 +11876,7 @@ Object.assign(uiUtils, {
             else if (contentDiv) {
                 contentDiv.textContent = finalRawContent;
             }
+            this._renderEmptyModelResponseDiagnostic(contentDiv, finalMessageData, messageApiProvider);
             if (contentDiv)
                 contentDiv.removeAttribute('id');
             const citationContainer = messageDiv.querySelector(`#streaming-citations-${index}`);
@@ -15793,7 +15860,9 @@ Object.assign(appLogic, {
                     generatedByModel: msg.generatedByModel || null,
                     contextWindowTokens: Number(msg.contextWindowTokens) || null,
                     ...(msg.finishReason && { finishReason: msg.finishReason }),
+                    ...(msg.finishMessage && { finishMessage: msg.finishMessage }),
                     ...(msg.safetyRatings && { safetyRatings: msg.safetyRatings }),
+                    ...(msg.promptFeedback && { promptFeedback: msg.promptFeedback }),
                     ...(msg.error && { error: msg.error }),
                     ...(msg.isCascaded !== undefined && { isCascaded: msg.isCascaded }),
                     ...(msg.isSelected !== undefined && { isSelected: msg.isSelected }),
@@ -16055,7 +16124,9 @@ Object.assign(appLogic, {
                     else if (streamData.type === 'metadata') {
                         modelResponseMetadata = {
                             finishReason: streamData.finishReason,
+                            finishMessage: streamData.finishMessage,
                             safetyRatings: streamData.safetyRatings,
+                            promptFeedback: streamData.promptFeedback,
                         };
                         if (selectedApiProvider === 'gemini') {
                             if (streamData.groundingMetadata)
@@ -16085,6 +16156,10 @@ Object.assign(appLogic, {
                 modelThoughtSummaryContent = state.partialThoughtStreamContent;
                 modelResponseRawContent = state.partialStreamContent;
                 let finalContent = modelResponseRawContent;
+                if (selectedApiProvider === 'gemini' && !finalContent && !modelThoughtSummaryContent && !modelResponseMetadata.finishReason) {
+                    modelResponseMetadata.finishReason = 'EMPTY_RESPONSE';
+                    modelResponseMetadata.finishMessage = '本文、思考要約、終了理由のいずれも返されませんでした。';
+                }
                 if (finalContent || modelThoughtSummaryContent || modelResponseMetadata.finishReason) {
                     if (useStreamingForThisCall && modelMessageObjectForStream) {
                         const finalModelMessageIndex = state.currentMessages.indexOf(modelMessageObjectForStream);
@@ -16093,7 +16168,9 @@ Object.assign(appLogic, {
                             msgToUpdate.content = finalContent;
                             msgToUpdate.timestamp = Date.now();
                             msgToUpdate.finishReason = modelResponseMetadata.finishReason;
+                            msgToUpdate.finishMessage = modelResponseMetadata.finishMessage;
                             msgToUpdate.safetyRatings = modelResponseMetadata.safetyRatings;
+                            msgToUpdate.promptFeedback = modelResponseMetadata.promptFeedback;
                             msgToUpdate.usageMetadata = finalUsageMetadataFromStream;
                             if (selectedApiProvider === 'gemini' && contextGeminiIncludeThoughts) {
                                 if (modelThoughtSummaryContent) {
@@ -16186,7 +16263,11 @@ Object.assign(appLogic, {
                 if (selectedApiProvider === 'gemini') {
                     const candidate = data.candidates?.[0];
                     if (candidate) {
-                        finalMetadata = { finishReason: candidate.finishReason, safetyRatings: candidate.safetyRatings };
+                        finalMetadata = {
+                            finishReason: candidate.finishReason,
+                            finishMessage: candidate.finishMessage || null,
+                            safetyRatings: candidate.safetyRatings,
+                        };
                         candidate.content?.parts?.forEach(part => {
                             if (part.thought === true && contextGeminiIncludeThoughts)
                                 finalThoughtSummary += (part.text || "") + "\n\n";
@@ -16197,16 +16278,17 @@ Object.assign(appLogic, {
                         rawContentFromApi = rawContentFromApi.trim();
                         finalGrounding = candidate.groundingMetadata || null;
                         finalUsage = data.usageMetadata || null;
-                        if (candidate.finishReason && candidate.finishReason !== "STOP" && candidate.finishReason !== "MAX_TOKENS")
+                        if (rawContentFromApi && candidate.finishReason && candidate.finishReason !== "STOP" && candidate.finishReason !== "MAX_TOKENS")
                             rawContentFromApi += `\n\n(理由: ${candidate.finishReason})`;
-                        if (!rawContentFromApi && candidate.finishReason === "STOP" && !finalThoughtSummary)
-                            rawContentFromApi = "(応答が空です)";
                     }
                     else {
-                        rawContentFromApi = "応答候補がありません";
                         if (data.promptFeedback) {
-                            rawContentFromApi += ` (理由: ${data.promptFeedback.blockReason || '不明'})`;
-                            finalMetadata = { promptFeedback: data.promptFeedback, finishReason: data.promptFeedback.blockReason || 'ERROR' };
+                            finalMetadata = {
+                                promptFeedback: data.promptFeedback,
+                                finishReason: data.promptFeedback.blockReason || 'ERROR',
+                                finishMessage: data.promptFeedback.blockReasonMessage || null,
+                                safetyRatings: data.promptFeedback.safetyRatings,
+                            };
                         }
                         else {
                             finalMetadata.finishReason = 'ERROR';
@@ -16291,7 +16373,9 @@ Object.assign(appLogic, {
                     msgToUpdate.content = finalContent;
                     msgToUpdate.timestamp = Date.now();
                     msgToUpdate.finishReason = finalMetadata.finishReason;
+                    msgToUpdate.finishMessage = finalMetadata.finishMessage;
                     msgToUpdate.safetyRatings = finalMetadata.safetyRatings;
+                    msgToUpdate.promptFeedback = finalMetadata.promptFeedback;
                     msgToUpdate.usageMetadata = finalUsage;
                     Object.assign(msgToUpdate, responseModelMetadata);
                     if (selectedApiProvider === 'gemini' && contextGeminiIncludeThoughts) {
@@ -16601,6 +16685,14 @@ Object.assign(appLogic, {
                         messageExport.groundingMetadata = msg.groundingMetadata;
                     if (msg.usageMetadata)
                         messageExport.usageMetadata = msg.usageMetadata;
+                    if (msg.finishReason)
+                        messageExport.finishReason = msg.finishReason;
+                    if (msg.finishMessage)
+                        messageExport.finishMessage = msg.finishMessage;
+                    if (msg.safetyRatings)
+                        messageExport.safetyRatings = msg.safetyRatings;
+                    if (msg.promptFeedback)
+                        messageExport.promptFeedback = msg.promptFeedback;
                     if (msg.thoughtSummary)
                         messageExport.thoughtSummary = msg.thoughtSummary;
                     if (msg.deepSeekThoughtSummary)
@@ -16691,6 +16783,10 @@ Object.assign(appLogic, {
                             })),
                             groundingMetadata: msg.groundingMetadata || undefined,
                             usageMetadata: msg.usageMetadata || undefined,
+                            finishReason: msg.finishReason || undefined,
+                            finishMessage: msg.finishMessage || undefined,
+                            safetyRatings: msg.safetyRatings || undefined,
+                            promptFeedback: msg.promptFeedback || undefined,
                             error: msg.error || undefined,
                         })),
                         createdAt: typeof chatData.createdAt === 'number' ? chatData.createdAt : importTimestamp,

@@ -299,7 +299,8 @@ const dbUtils = {
                             generatedByApiProvider: msg.generatedByApiProvider || null,
                             generatedByModel: msg.generatedByModel || null,
                             contextWindowTokens: Number(msg.contextWindowTokens) || null,
-                            finishReason: msg.finishReason, safetyRatings: msg.safetyRatings, error: msg.error,
+                            finishReason: msg.finishReason, finishMessage: msg.finishMessage,
+                            safetyRatings: msg.safetyRatings, promptFeedback: msg.promptFeedback, error: msg.error,
                             isCascaded: msg.isCascaded, isSelected: msg.isSelected, siblingGroupId: msg.siblingGroupId,
                             groundingMetadata: msg.groundingMetadata, attachments: msg.attachments,
                             usageMetadata: msg.usageMetadata, thoughtSummaryOpen: msg.thoughtSummaryOpen
