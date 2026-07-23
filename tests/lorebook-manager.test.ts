@@ -85,6 +85,26 @@ describe('Lorebook management and analysis boundary', () => {
     expect(prompt).toContain('逆方向を推測しない');
     expect(prompt).toContain('原文と最終結果を照合');
     expect(prompt).toContain('不明点や矛盾は勝手に決めず');
+    expect(prompt).toContain('文体・視点・描写・台詞・形式・禁止事項をstyleGuideへ分類');
+    expect(prompt).toContain('物語全体で常に成立する舞台・世界観の大前提はstoryCore');
+    expect(prompt).toContain('特定の場所、組織、物品、事件、話題、人物が関係するときだけ必要な詳細');
+  });
+
+  it('normalizes style instructions into atomic styleGuide rule lists', () => {
+    const context = createContext();
+    const styleGuide = evaluate<Record<string, string[]>>(context, `lorebookManager.normalizeStyleGuide({
+      narration: '三人称一元視点で描く',
+      dialogue: ['会話中心にする', '  '],
+      formatting: ['台詞は鉤括弧で表記する'],
+      avoid: ['設定を列挙しない']
+    })`);
+
+    expect(Object.fromEntries(Object.entries(styleGuide).map(([key, value]) => [key, Array.from(value)]))).toEqual({
+      narration: ['三人称一元視点で描く'],
+      dialogue: ['会話中心にする'],
+      formatting: ['台詞は鉤括弧で表記する'],
+      avoid: ['設定を列挙しない'],
+    });
   });
 
   it('redacts the active API key from transient communication logs', () => {
@@ -118,6 +138,42 @@ describe('Lorebook management and analysis boundary', () => {
     expect(readFile('src/lorebook-manager.ts')).toContain('JSON.stringify(extractionPayload)');
   });
 
+  it('seeds built-in Lorebooks into IndexedDB once and treats deletion as permanent', async () => {
+    const context = createContext();
+    evaluate(context, `(() => {
+      globalThis.state = { lorebookRecords: [] };
+      globalThis.savedItems = [];
+      globalThis.dbUtils = {
+        getAllLorebookRecords: async () => [],
+        putLorebookRecords: async (items) => { globalThis.savedItems = items; }
+      };
+    })()`);
+
+    await new vm.Script('lorebookManager.loadRecords()').runInContext(context);
+    const firstLoad = evaluate<{ recordIds: string[]; installedSeedIds: string[] }>(context, `(() => ({
+      recordIds: state.lorebookRecords.map(record => record.id),
+      installedSeedIds: savedItems.find(item => item.id === LOREBOOK_SEED_REGISTRY_ID).installedSeedIds
+    }))()`);
+    expect(Array.from(firstLoad.recordIds)).toEqual([
+      'tokyo-yunagi-high-v1',
+      'seirei-boarding-school-v1',
+    ]);
+    expect(Array.from(firstLoad.installedSeedIds)).toEqual(firstLoad.recordIds);
+
+    evaluate(context, `(() => {
+      globalThis.seedWriteCount = 0;
+      const registry = savedItems.find(item => item.id === LOREBOOK_SEED_REGISTRY_ID);
+      dbUtils.getAllLorebookRecords = async () => [registry];
+      dbUtils.putLorebookRecords = async () => { globalThis.seedWriteCount += 1; };
+    })()`);
+    await new vm.Script('lorebookManager.loadRecords()').runInContext(context);
+    const afterDeletion = evaluate<{ recordCount: number; seedWriteCount: number }>(context, `({
+      recordCount: state.lorebookRecords.length,
+      seedWriteCount
+    })`);
+    expect({ ...afterDeletion }).toEqual({ recordCount: 0, seedWriteCount: 0 });
+  });
+
   it('saves structured edits without replacing the preserved source text', async () => {
     const context = createContext();
     evaluate(context, `(() => {
@@ -127,7 +183,7 @@ describe('Lorebook management and analysis boundary', () => {
       edited.description = '構造化編集後';
       globalThis.state = {
         currentScreen: 'settings',
-        userLorebookRecords: [{
+        lorebookRecords: [{
           id: 'user-edit-test', lorebook, sourceText: '保持する原文', sourceLabel: 'manual-input',
           order: 0, createdAt: 1, updatedAt: 1
         }]
@@ -147,9 +203,9 @@ describe('Lorebook management and analysis boundary', () => {
 
     await new vm.Script('lorebookManager.saveStructuredLorebook()').runInContext(context);
     const result = evaluate<{ description: string; sourceText: string; analyzedBy?: unknown }>(context, `({
-      description: state.userLorebookRecords[0].lorebook.description,
-      sourceText: state.userLorebookRecords[0].sourceText,
-      analyzedBy: state.userLorebookRecords[0].analyzedBy
+      description: state.lorebookRecords[0].lorebook.description,
+      sourceText: state.lorebookRecords[0].sourceText,
+      analyzedBy: state.lorebookRecords[0].analyzedBy
     })`);
 
     expect({ ...result }).toMatchObject({
@@ -183,5 +239,6 @@ describe('Lorebook management and analysis boundary', () => {
     expect(manager).toContain('解析を中断して設定画面に戻りますか？');
     expect(manager).toContain("mode: record ? 'structured' : 'source'");
     expect(manager).toContain('saveStructuredLorebook()');
+    expect(manager).toContain('LOREBOOK_SEED_REGISTRY_ID');
   });
 });

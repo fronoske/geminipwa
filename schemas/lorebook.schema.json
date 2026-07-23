@@ -51,6 +51,7 @@
       }
     },
     "storyCore": { "type": "string", "minLength": 1 },
+    "styleGuide": { "$ref": "#/$defs/styleGuide" },
     "characters": {
       "type": "array",
       "items": { "$ref": "#/$defs/character" }
@@ -77,6 +78,21 @@
     }
   },
   "$defs": {
+    "styleRuleList": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "styleGuide": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["narration", "dialogue", "formatting", "avoid"],
+      "properties": {
+        "narration": { "$ref": "#/$defs/styleRuleList" },
+        "dialogue": { "$ref": "#/$defs/styleRuleList" },
+        "formatting": { "$ref": "#/$defs/styleRuleList" },
+        "avoid": { "$ref": "#/$defs/styleRuleList" }
+      }
+    },
     "characterId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
     "addressContext": {
       "enum": ["spoken", "innerThought", "public", "private"]

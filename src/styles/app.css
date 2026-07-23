@@ -3180,10 +3180,6 @@
             background: var(--bg-primary);
         }
 
-        .lorebook-management-item.builtin {
-            opacity: 0.8;
-        }
-
         .lorebook-management-details {
             display: flex;
             flex: 1 1 240px;
@@ -3393,6 +3389,10 @@
             .lorebook-management-item {
                 align-items: stretch;
                 flex-direction: column;
+            }
+
+            .lorebook-management-details {
+                flex: 0 1 auto;
             }
 
             .lorebook-management-actions {

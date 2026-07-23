@@ -2,14 +2,12 @@
 // Bundled into the generated index.html from this TypeScript source.
 const lorebookUtils = {
     getAllLorebooks() {
-        const builtinIds = new Set(BUILTIN_LOREBOOKS.map(lorebook => lorebook.id));
-        const records = typeof state !== 'undefined' && Array.isArray(state.userLorebookRecords)
-            ? state.userLorebookRecords
+        const records = typeof state !== 'undefined' && Array.isArray(state.lorebookRecords)
+            ? state.lorebookRecords
             : [];
-        const userLorebooks = records
+        return records
             .map(record => record?.lorebook)
-            .filter(lorebook => lorebook && !builtinIds.has(lorebook.id));
-        return [...BUILTIN_LOREBOOKS, ...userLorebooks];
+            .filter(Boolean);
     },
 
     getAvailableLorebooks() {
@@ -185,6 +183,20 @@ const lorebookUtils = {
         };
     },
 
+    formatStyleGuide(styleGuide) {
+        if (!styleGuide || typeof styleGuide !== 'object') return '';
+        const sections = [
+            ['語り・視点・描写', styleGuide.narration],
+            ['会話・台詞', styleGuide.dialogue],
+            ['表記・出力形式', styleGuide.formatting],
+            ['避ける表現・展開', styleGuide.avoid],
+        ];
+        return sections
+            .filter(([, rules]) => Array.isArray(rules) && rules.length > 0)
+            .map(([label, rules]) => `${label}:\n${rules.map(rule => `- ${rule}`).join('\n')}`)
+            .join('\n');
+    },
+
     buildPrompt(lorebookId, messages = [], roleInstruction = '') {
         const selected = this.selectContext(lorebookId, messages, roleInstruction);
         if (!selected) return '';
@@ -193,6 +205,11 @@ const lorebookUtils = {
             '<lorebook-reference>',
             `【固定ストーリーコア】\n${selected.lorebook.storyCore}`,
         ];
+
+        const styleGuide = this.formatStyleGuide(selected.lorebook.styleGuide);
+        if (styleGuide) {
+            sections.push(`【文体・スタイル（常時適用）】\n${styleGuide}`);
+        }
 
         if (selected.addressingRules.length > 0) {
             sections.push(`【呼称ルール（最優先）】\n${selected.lorebook.addressing.instruction}\n${selected.addressingRules

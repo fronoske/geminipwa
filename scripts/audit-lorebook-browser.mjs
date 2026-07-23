@@ -60,6 +60,15 @@ try {
     await delay(400);
     result.topLevelVisible = document.querySelector('#settings-group-lorebooks')?.open === true;
     result.initialRows = document.querySelectorAll('.lorebook-management-item').length;
+    result.managementRowsCompact = [...document.querySelectorAll('.lorebook-management-item')]
+      .every((row) => row.getBoundingClientRect().height < 160);
+    const storedLorebookItems = await dbUtils.getAllLorebookRecords();
+    result.seededRecordsStored = BUILTIN_LOREBOOKS.every((lorebook) =>
+      storedLorebookItems.some((item) => item.id === lorebook.id && item.lorebook?.id === lorebook.id));
+    result.seededRecordsUnified = [...document.querySelectorAll('.lorebook-management-item')].every((row) => {
+      const labels = [...row.querySelectorAll('button')].map((button) => button.textContent);
+      return labels.includes('編集') && labels.includes('削除') && !row.textContent.includes('組み込み');
+    });
     document.querySelector('#add-lorebook-btn').click();
     await delay(400);
     result.editorActive = state.currentScreen === 'lorebook-editor'
@@ -111,6 +120,12 @@ try {
         name: 'ブラウザ監査Lorebook',
         description: '管理画面の監査用',
         storyCore: '監査用の学校を舞台に、現在の会話を優先する。',
+        styleGuide: {
+          narration: ['三人称一元視点で描く'],
+          dialogue: ['会話の間を大切にする'],
+          formatting: ['台詞は鉤括弧で表記する'],
+          avoid: ['設定を列挙しない'],
+        },
         characters: [
           { id: 'audit-a', name: '監査A', aliases: ['監査A', 'A'], core: '監査Aは女子高校生。' },
           { id: 'audit-b', name: '監査B', aliases: ['監査B', 'B'], core: '監査Bは男子高校生。' },
@@ -154,9 +169,14 @@ try {
     result.savedAlertShown = document.querySelector('#alertDialog').open;
     document.querySelector('#alertDialog .dialog-ok-btn').click();
     await delay(500);
-    result.savedRecordCount = state.userLorebookRecords.length;
-    result.savedName = state.userLorebookRecords[0]?.lorebook?.name || null;
-    result.savedSource = state.userLorebookRecords[0]?.sourceText || null;
+    result.savedRecordCount = state.lorebookRecords.length;
+    result.savedName = state.lorebookRecords.find((record) => record.lorebook.name === 'ブラウザ監査Lorebook')?.lorebook?.name || null;
+    result.savedSource = state.lorebookRecords.find((record) => record.lorebook.name === 'ブラウザ監査Lorebook')?.sourceText || null;
+    const savedLorebookRecord = state.lorebookRecords.find((record) => record.lorebook.name === 'ブラウザ監査Lorebook');
+    const savedLorebookPrompt = lorebookUtils.buildPrompt(savedLorebookRecord?.id, [], '');
+    result.styleGuideSavedAndInjected = savedLorebookRecord?.lorebook?.styleGuide?.narration?.[0] === '三人称一元視点で描く'
+      && savedLorebookPrompt.includes('【文体・スタイル（常時適用）】')
+      && savedLorebookPrompt.includes('設定を列挙しない');
     result.selectorContainsSaved = lorebookUtils.getAvailableLorebooks()
       .some((lorebook) => lorebook.name === 'ブラウザ監査Lorebook');
     result.settingsListContainsSaved = [...document.querySelectorAll('.lorebook-management-item')]
@@ -183,8 +203,9 @@ try {
     }
     document.querySelector('#alertDialog .dialog-ok-btn').click();
     await delay(500);
-    result.structuredEditSavedWithoutLlm = state.userLorebookRecords[0]?.lorebook?.description === '構造化データを直接編集済み'
-      && state.userLorebookRecords[0]?.sourceText === '既存の設定情報'
+    const editedRecord = state.lorebookRecords.find((record) => record.lorebook.name === 'ブラウザ監査Lorebook');
+    result.structuredEditSavedWithoutLlm = editedRecord?.lorebook?.description === '構造化データを直接編集済み'
+      && editedRecord?.sourceText === '既存の設定情報'
       && analysisCalls === 2;
     return JSON.stringify(result);
   })()`;

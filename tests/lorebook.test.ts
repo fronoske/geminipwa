@@ -12,6 +12,9 @@ const fixtureLorebooks = JSON.parse(readFile('tests/fixtures/lorebook.json'));
 const createLorebookContext = (lorebooks = fixtureLorebooks) => {
   const context = vm.createContext({ LOCAL_LOREBOOKS: lorebooks });
   new vm.Script(readFile('.build/runtime/lorebook-data.js')).runInContext(context);
+  new vm.Script(`globalThis.state = {
+    lorebookRecords: BUILTIN_LOREBOOKS.map(lorebook => ({ id: lorebook.id, lorebook }))
+  }`).runInContext(context);
   new vm.Script(readFile('.build/runtime/lorebook.js')).runInContext(context);
   return context;
 };
@@ -68,7 +71,29 @@ describe('Lorebook retrieval', () => {
     expect(schema.properties.schemaVersion.const).toBe(2);
     expect(schema.required).toContain('addressing');
     expect(schema.required).toContain('conditionalMemories');
+    expect(schema.properties.styleGuide.$ref).toBe('#/$defs/styleGuide');
+    expect(schema.$defs.styleGuide.required).toEqual(['narration', 'dialogue', 'formatting', 'avoid']);
     expect(schema.$defs.exactAddressingRule.required).toEqual(['speakerId', 'targetId', 'forms']);
+  });
+
+  it('always injects a structured style guide when one is present', () => {
+    const context = createLorebookContext();
+    evaluate(context, `lorebookUtils.getLorebook('test-lorebook').styleGuide = {
+      narration: ['三人称一元視点で描く'],
+      dialogue: ['会話の間を大切にする'],
+      formatting: ['台詞は鉤括弧で表記する'],
+      avoid: ['設定を説明的に列挙しない']
+    }`);
+    const prompt = evaluate<string>(
+      context,
+      "lorebookUtils.buildPrompt('test-lorebook', [{ role: 'user', content: '誰も登場しない雨の場面' }])",
+    );
+
+    expect(prompt).toContain('【文体・スタイル（常時適用）】');
+    expect(prompt).toContain('語り・視点・描写:\n- 三人称一元視点で描く');
+    expect(prompt).toContain('会話・台詞:\n- 会話の間を大切にする');
+    expect(prompt).toContain('表記・出力形式:\n- 台詞は鉤括弧で表記する');
+    expect(prompt).toContain('避ける表現・展開:\n- 設定を説明的に列挙しない');
   });
 
   it('ships two public school Lorebooks with the requested eleven-character balance', () => {
@@ -172,14 +197,13 @@ describe('Lorebook retrieval', () => {
       ]);
   });
 
-  it('appends persisted user Lorebooks in their saved order', () => {
+  it('uses persisted Lorebooks in their saved order without a runtime built-in distinction', () => {
     const context = createLorebookContext([]);
-    evaluate(context, `globalThis.state = {
-      userLorebookRecords: [
+    evaluate(context, `state.lorebookRecords = [
+        ...state.lorebookRecords,
         { lorebook: { id: 'user-one', name: 'ユーザー1', description: '1' } },
         { lorebook: { id: 'user-two', name: 'ユーザー2', description: '2' } }
-      ]
-    }`);
+      ]`);
 
     expect(evaluate<Array<{ id: string }>>(context, 'lorebookUtils.getAvailableLorebooks()')
       .map(lorebook => lorebook.id)).toEqual([
