@@ -41,6 +41,12 @@ if (closeBrowser) {
 try {
   await call('Network.enable');
   await call('Network.setBypassServiceWorker', { bypass: true });
+  await call('Emulation.setDeviceMetricsOverride', {
+    width: 390,
+    height: 844,
+    deviceScaleFactor: 1,
+    mobile: true,
+  });
   await call('Page.navigate', { url: APP_URL });
   await delay(1800);
 
@@ -59,10 +65,15 @@ try {
     result.editorActive = state.currentScreen === 'lorebook-editor'
       && document.querySelector('#lorebook-editor-screen').classList.contains('active');
     result.analyzeInitiallyDisabled = document.querySelector('#analyze-lorebook-btn').disabled;
-    result.logInitiallyHidden = document.querySelector('#lorebook-analysis-log-panel').classList.contains('hidden');
+    result.logInitiallyClosed = !document.querySelector('#lorebook-analysis-log-dialog').open;
     document.querySelector('#toggle-lorebook-analysis-log-btn').click();
-    result.logShownByButton = !document.querySelector('#lorebook-analysis-log-panel').classList.contains('hidden')
+    const logDialogRect = document.querySelector('#lorebook-analysis-log-dialog').getBoundingClientRect();
+    result.logShownFullScreen = document.querySelector('#lorebook-analysis-log-dialog').open
+      && logDialogRect.width >= innerWidth - 1
+      && logDialogRect.height >= innerHeight - 1
       && document.querySelector('#toggle-lorebook-analysis-log-btn').getAttribute('aria-expanded') === 'true';
+    document.querySelector('#close-lorebook-analysis-log-btn').click();
+    result.logClosedByX = !document.querySelector('#lorebook-analysis-log-dialog').open;
 
     const source = document.querySelector('#lorebook-source-textarea');
     source.value = '既存の設定情報';
@@ -134,6 +145,8 @@ try {
       && communicationLog.includes('原文照合 — 受信')
       && communicationLog.includes('[SYSTEM]')
       && communicationLog.includes('[USER]');
+    result.logOmitsSourceText = communicationLog.includes('"sourceText":"(省略)"')
+      && !communicationLog.includes('"sourceText":"既存の設定情報"');
     document.querySelector('#lorebook-analysis-save-btn').click();
     for (let index = 0; index < 50 && !document.querySelector('#alertDialog').open; index += 1) {
       await delay(20);
@@ -148,6 +161,31 @@ try {
       .some((lorebook) => lorebook.name === 'ブラウザ監査Lorebook');
     result.settingsListContainsSaved = [...document.querySelectorAll('.lorebook-management-item')]
       .some((row) => row.textContent.includes('ブラウザ監査Lorebook'));
+
+    const savedRow = [...document.querySelectorAll('.lorebook-management-item')]
+      .find((row) => row.textContent.includes('ブラウザ監査Lorebook'));
+    [...savedRow.querySelectorAll('button')].find((button) => button.textContent === '編集').click();
+    await delay(400);
+    const structuredTextarea = document.querySelector('#lorebook-source-textarea');
+    const structuredLorebook = JSON.parse(structuredTextarea.value);
+    result.structuredEditMode = lorebookManager.editorState?.mode === 'structured'
+      && structuredLorebook.name === 'ブラウザ監査Lorebook'
+      && document.querySelector('#analyze-lorebook-btn').textContent === '保存'
+      && document.querySelector('#lorebook-editor-provider-row').classList.contains('hidden')
+      && document.querySelector('#lorebook-editor-file-actions').classList.contains('hidden')
+      && document.querySelector('#toggle-lorebook-analysis-log-btn').classList.contains('hidden');
+    structuredLorebook.description = '構造化データを直接編集済み';
+    structuredTextarea.value = JSON.stringify(structuredLorebook, null, 2);
+    structuredTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+    document.querySelector('#analyze-lorebook-btn').click();
+    for (let index = 0; index < 50 && !document.querySelector('#alertDialog').open; index += 1) {
+      await delay(20);
+    }
+    document.querySelector('#alertDialog .dialog-ok-btn').click();
+    await delay(500);
+    result.structuredEditSavedWithoutLlm = state.userLorebookRecords[0]?.lorebook?.description === '構造化データを直接編集済み'
+      && state.userLorebookRecords[0]?.sourceText === '既存の設定情報'
+      && analysisCalls === 2;
     return JSON.stringify(result);
   })()`;
 

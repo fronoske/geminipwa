@@ -27,7 +27,7 @@ The following features are essential product requirements. They must not be remo
 - Treat directional and context-dependent forms of address as critical data, and allocate their prompt budget before character cores and conditional memories.
 - Lorebook registration uses the currently selected LLM for semantic extraction, compression, and source auditing, but requires programmatic schema and referential-integrity validation plus editable user confirmation before persistence.
 - Keep the transient LLM request/response log inspectable from the Lorebook editor without recording API keys, and allow in-progress analysis to be cancelled.
-- Preserve the original source separately from the generated runtime Lorebook so editing can rerun analysis without information loss.
+- Preserve the original source separately for provenance, but edit an existing saved Lorebook as validated structured JSON without rerunning the LLM.
 - Preserve saved Lorebook editing, deletion, ordering, and individual/all import and export through the top-level settings section.
 - Use the complete original Lorebook source as an early full-context seed and add structured, relevant Lorebook reminders near the current turn.
 - After a response reaches 90% of the model's context window, stop including the full-context seed for the remainder of that session; keep the fixed core and selective reminders.

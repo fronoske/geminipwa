@@ -2169,35 +2169,42 @@
             </header>
             <main class="main-content lorebook-editor-content">
                 <div class="lorebook-editor-panel">
-                    <p class="lorebook-editor-provider">
+                    <p id="lorebook-editor-provider-row" class="lorebook-editor-provider">
                         解析に使用するLLM：<strong id="lorebook-analysis-provider"></strong>
                     </p>
-                    <p class="lorebook-management-note">
+                    <p id="lorebook-editor-instructions" class="lorebook-management-note">
                         人物、舞台、関係、呼称などの設定情報を入力してください。ファイルをロードすると入力内容はファイルの内容に置き換わります。
                     </p>
-                    <div class="lorebook-editor-file-actions">
+                    <div id="lorebook-editor-file-actions" class="lorebook-editor-file-actions">
                         <button type="button" id="load-lorebook-source-btn">ファイルをロード</button>
                         <input type="file" id="lorebook-source-file-input"
                             accept=".txt,.md,.json,text/plain,text/markdown,application/json" class="hidden">
                     </div>
-                    <label for="lorebook-source-textarea">設定情報：</label>
+                    <label id="lorebook-editor-textarea-label" for="lorebook-source-textarea">設定情報：</label>
                     <textarea id="lorebook-source-textarea" class="lorebook-source-textarea"
                         placeholder="人物設定・舞台設定・関係・呼称などを入力…"></textarea>
                     <p id="lorebook-editor-status" class="lorebook-editor-status" role="status" aria-live="polite"></p>
                     <div class="lorebook-editor-actions">
                         <button type="button" id="toggle-lorebook-analysis-log-btn"
-                            aria-controls="lorebook-analysis-log-panel" aria-expanded="false">LLMログを表示</button>
+                            aria-controls="lorebook-analysis-log-dialog" aria-expanded="false">LLMログを表示</button>
                         <button type="button" id="analyze-lorebook-btn" class="lorebook-analyze-button" disabled>解析</button>
                     </div>
-                    <section id="lorebook-analysis-log-panel" class="lorebook-analysis-log-panel hidden"
-                        aria-label="LLMとの入出力ログ">
-                        <p>この画面で行った解析のログです。APIキーは含まれず、保存されません。画面を開き直すと破棄されます。</p>
-                        <pre id="lorebook-analysis-log" tabindex="0">解析ログはまだありません。</pre>
-                    </section>
                 </div>
             </main>
         </div>
     </div>
+
+    <dialog id="lorebook-analysis-log-dialog" class="lorebook-analysis-log-dialog"
+        aria-labelledby="lorebook-analysis-log-title">
+        <header class="lorebook-analysis-log-header">
+            <h2 id="lorebook-analysis-log-title">LLM解析ログ</h2>
+            <button type="button" id="close-lorebook-analysis-log-btn" aria-label="LLM解析ログを閉じる">×</button>
+        </header>
+        <div class="lorebook-analysis-log-body">
+            <p>この画面で行った解析のログです。APIキーは含まれず、保存されません。画面を開き直すと破棄されます。</p>
+            <pre id="lorebook-analysis-log" tabindex="0">解析ログはまだありません。</pre>
+        </div>
+    </dialog>
 
     <dialog id="alertDialog" class="custom-dialog">
         <p class="dialog-message"></p>

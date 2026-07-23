@@ -92,7 +92,7 @@ describe('Lorebook management and analysis boundary', () => {
     const content = evaluate<string>(context, `(() => {
       globalThis.elements = {
         lorebookAnalysisLog: { textContent: '' },
-        lorebookAnalysisLogPanel: { classList: { contains: () => true } }
+        lorebookAnalysisLogDialog: { open: false }
       };
       lorebookManager.analysisLogEntries = [];
       lorebookManager.appendAnalysisLog('監査', 'エラー', 'request failed: secret-key', {
@@ -102,6 +102,60 @@ describe('Lorebook management and analysis boundary', () => {
     })()`);
 
     expect(content).toBe('request failed: [APIキーを除去]');
+  });
+
+  it('omits sourceText only from the displayed LLM log payload', () => {
+    const context = createContext();
+    const logged = JSON.parse(evaluate<string>(context, `lorebookManager.serializeAnalysisPayloadForLog({
+      sourceText: 'ログに表示しない原文',
+      candidate: { name: '表示する候補' }
+    })`));
+
+    expect(logged).toEqual({
+      sourceText: '(省略)',
+      candidate: { name: '表示する候補' },
+    });
+    expect(readFile('src/lorebook-manager.ts')).toContain('JSON.stringify(extractionPayload)');
+  });
+
+  it('saves structured edits without replacing the preserved source text', async () => {
+    const context = createContext();
+    evaluate(context, `(() => {
+      const lorebook = JSON.parse(JSON.stringify(BUILTIN_LOREBOOKS[0]));
+      lorebook.id = 'user-edit-test';
+      const edited = JSON.parse(JSON.stringify(lorebook));
+      edited.description = '構造化編集後';
+      globalThis.state = {
+        currentScreen: 'settings',
+        userLorebookRecords: [{
+          id: 'user-edit-test', lorebook, sourceText: '保持する原文', sourceLabel: 'manual-input',
+          order: 0, createdAt: 1, updatedAt: 1
+        }]
+      };
+      const classes = { add() {}, remove() {} };
+      globalThis.elements = {
+        lorebookSourceTextarea: { value: JSON.stringify(edited), classList: classes },
+        lorebookEditorStatus: { textContent: '' },
+        analyzeLorebookBtn: { textContent: '', disabled: false, classList: classes }
+      };
+      globalThis.dbUtils = { putLorebookRecord: async (record) => { globalThis.savedRecord = record; } };
+      globalThis.uiUtils = { showCustomAlert: async () => {}, updateLorebookMenuItem: () => {} };
+      globalThis.history = { back: () => {} };
+      lorebookManager.editorState = { recordId: 'user-edit-test', mode: 'structured' };
+      lorebookManager.renderManagementList = () => {};
+    })()`);
+
+    await new vm.Script('lorebookManager.saveStructuredLorebook()').runInContext(context);
+    const result = evaluate<{ description: string; sourceText: string; analyzedBy?: unknown }>(context, `({
+      description: state.userLorebookRecords[0].lorebook.description,
+      sourceText: state.userLorebookRecords[0].sourceText,
+      analyzedBy: state.userLorebookRecords[0].analyzedBy
+    })`);
+
+    expect({ ...result }).toMatchObject({
+      description: '構造化編集後',
+      sourceText: '保持する原文',
+    });
   });
 
   it('defines persistent records, import/export controls, and a full-screen editor', () => {
@@ -116,7 +170,8 @@ describe('Lorebook management and analysis boundary', () => {
     expect(html).toContain('id="settings-group-lorebooks"');
     expect(html).toContain('id="lorebook-editor-screen"');
     expect(html).toContain('id="toggle-lorebook-analysis-log-btn"');
-    expect(html).toContain('id="lorebook-analysis-log-panel"');
+    expect(html).toContain('id="lorebook-analysis-log-dialog"');
+    expect(html).toContain('id="close-lorebook-analysis-log-btn"');
     expect(html).toContain('id="import-lorebooks-btn"');
     expect(html).toContain('id="export-all-lorebooks-btn"');
     expect(manager).toContain('現在入力されている内容は、ファイルの内容で上書きされます。');
@@ -126,5 +181,7 @@ describe('Lorebook management and analysis boundary', () => {
     expect(manager).toContain("'構造修復'");
     expect(manager).toContain('state.abortController.abort()');
     expect(manager).toContain('解析を中断して設定画面に戻りますか？');
+    expect(manager).toContain("mode: record ? 'structured' : 'source'");
+    expect(manager).toContain('saveStructuredLorebook()');
   });
 });
