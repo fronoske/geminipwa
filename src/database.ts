@@ -235,6 +235,9 @@ const dbUtils = {
                             if (!['light', 'dark'].includes(state.settings.theme)) {
                                 state.settings.theme = 'light';
                             }
+                            state.settings.autoScrollResponseCharacterLimit = normalizeAutoScrollResponseCharacterLimit(
+                                state.settings.autoScrollResponseCharacterLimit
+                            );
                             if (!Array.isArray(state.settings.openrouterSelectedModels)) {
                                 state.settings.openrouterSelectedModels = [...DEFAULT_OPENROUTER_SELECTED_MODELS];
                             } else {

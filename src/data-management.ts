@@ -685,8 +685,11 @@ newSettings.llmAggregatorAdditionalModels = elements.llmAggregatorAdditionalMode
                 newSettings.enterToSend = elements.enterToSendCheckbox.checked;
                 newSettings.showResponseTimer = elements.showResponseTimerToggle.checked;
 newSettings.headerTapScrollToTop = elements.headerTapScrollToTopToggle.checked;
-newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.checked;
+                newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.checked;
                 newSettings.autoScrollOnNewMessage = elements.autoScrollOnNewMessageCheckbox.checked;
+                newSettings.autoScrollResponseCharacterLimit = normalizeAutoScrollResponseCharacterLimit(
+                    elements.autoScrollResponseCharacterLimitInput.value
+                );
                 newSettings.autoScrollOnThought = elements.autoScrollOnThoughtCheckbox.checked;
                 newSettings.historySortOrder = elements.historySortOrderSelect.value;
                 newSettings.theme = elements.themeSelect.value;

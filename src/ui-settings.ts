@@ -387,6 +387,10 @@ elements.headerTapScrollToTopToggle.checked = state.settings.headerTapScrollToTo
 elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollToBottom;
                 elements.showResponseTimerToggle.checked = state.settings.showResponseTimer;
                 elements.autoScrollOnNewMessageCheckbox.checked = state.settings.autoScrollOnNewMessage;
+                elements.autoScrollResponseCharacterLimitInput.value = normalizeAutoScrollResponseCharacterLimit(
+                    state.settings.autoScrollResponseCharacterLimit
+                );
+                elements.autoScrollResponseCharacterLimitInput.disabled = !state.settings.autoScrollOnNewMessage;
                 elements.autoScrollOnThoughtCheckbox.checked = state.settings.autoScrollOnThought;
                 elements.historySortOrderSelect.value = state.settings.historySortOrder || 'updatedAt';
                 if (elements.themeSelect) elements.themeSelect.value = state.settings.theme || 'light';

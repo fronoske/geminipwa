@@ -798,8 +798,13 @@ Object.assign(appLogic, {
                             if (useStreamingForThisCall) {
                                 uiUtils.finalizeStreamingMessage(finalModelMessageIndex);
                             } else {
-                                const shouldMaintainScroll = !state.settings.autoScrollOnNewMessage;
-uiUtils.renderChatMessages(shouldMaintainScroll);
+                                const shouldScrollAfterResponse = state.settings.autoScrollOnNewMessage &&
+                                    shouldAutoScrollResponseBody(
+                                        msgToUpdate.content,
+                                        state.settings.autoScrollResponseCharacterLimit
+                                    );
+                                uiUtils.renderChatMessages(!shouldScrollAfterResponse);
+                                if (shouldScrollAfterResponse) uiUtils.scrollToBottom();
                             }
                             await dbUtils.saveChat();
 

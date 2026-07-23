@@ -163,6 +163,10 @@ Object.assign(appLogic, {
                         uiUtils.applyTheme();
                     });
                 }
+                elements.autoScrollOnNewMessageCheckbox.addEventListener('change', () => {
+                    elements.autoScrollResponseCharacterLimitInput.disabled =
+                        !elements.autoScrollOnNewMessageCheckbox.checked;
+                });
                 if (elements.apiProviderSelect) {
                     elements.apiProviderSelect.addEventListener('change', (event) => {
                         const selectedProvider = event.target.value;

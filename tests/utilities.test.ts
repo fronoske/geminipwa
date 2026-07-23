@@ -9,6 +9,7 @@ let context: vm.Context;
 
 beforeEach(() => {
   context = vm.createContext({
+    DEFAULT_AUTO_SCROLL_RESPONSE_CHARACTER_LIMIT: -1,
     document: { hidden: false },
     FileReader: class {},
     setTimeout,
@@ -39,5 +40,40 @@ describe('generated utilities', () => {
     context.document.hidden = true;
 
     await expect(new vm.Script('sleep(1000)').runInContext(context)).resolves.toBeUndefined();
+  });
+
+  it.each([
+    [undefined, -1],
+    [null, -1],
+    ['', -1],
+    ['  ', -1],
+    [false, -1],
+    [-2, -1],
+    [1.5, -1],
+    ['-1', -1],
+    ['0', 0],
+    [200, 200],
+  ])('normalizes the AI-response auto-scroll limit %j to %d', (value, expected) => {
+    context.value = value;
+
+    expect(
+      new vm.Script('normalizeAutoScrollResponseCharacterLimit(value)').runInContext(context),
+    ).toBe(expected);
+  });
+
+  it('applies -1, 0, and positive AI-response auto-scroll limits to body text', () => {
+    context.content = '長いAI応答';
+
+    expect(new vm.Script('shouldAutoScrollResponseBody(content, -1)').runInContext(context)).toBe(true);
+    expect(new vm.Script('shouldAutoScrollResponseBody(content, 0)').runInContext(context)).toBe(false);
+    expect(new vm.Script('shouldAutoScrollResponseBody(content, 7)').runInContext(context)).toBe(true);
+    expect(new vm.Script('shouldAutoScrollResponseBody(content, 6)').runInContext(context)).toBe(false);
+  });
+
+  it('counts Unicode code points rather than UTF-16 code units', () => {
+    context.content = '😀a';
+
+    expect(new vm.Script('shouldAutoScrollResponseBody(content, 3)').runInContext(context)).toBe(true);
+    expect(new vm.Script('shouldAutoScrollResponseBody(content, 2)').runInContext(context)).toBe(false);
   });
 });

@@ -35,6 +35,27 @@ function formatCompactTokenCount(value: number): string {
   return `${compactValue.toLocaleString('en-US', { maximumFractionDigits: 1 })}${unit.suffix}`;
 }
 
+function normalizeAutoScrollResponseCharacterLimit(value: unknown): number {
+  if (
+    (typeof value !== 'number' && typeof value !== 'string') ||
+    (typeof value === 'string' && value.trim() === '')
+  ) {
+    return DEFAULT_AUTO_SCROLL_RESPONSE_CHARACTER_LIMIT;
+  }
+  const numericValue = Number(value);
+  return Number.isInteger(numericValue) && numericValue >= -1
+    ? numericValue
+    : DEFAULT_AUTO_SCROLL_RESPONSE_CHARACTER_LIMIT;
+}
+
+function shouldAutoScrollResponseBody(content: unknown, limit: unknown): boolean {
+  const normalizedLimit = normalizeAutoScrollResponseCharacterLimit(limit);
+  if (normalizedLimit === -1) return true;
+
+  const characterCount = Array.from(typeof content === 'string' ? content : '').length;
+  return characterCount < normalizedLimit;
+}
+
 function fileToBase64(file: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();

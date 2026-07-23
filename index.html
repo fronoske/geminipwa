@@ -2454,6 +2454,25 @@
             cursor: pointer;
         }
 
+        .settings-child-option {
+            margin: -3px 0 12px 24px;
+            color: var(--text-primary);
+        }
+
+        .settings-child-option label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .settings-child-option input[type="number"] {
+            width: 7em;
+            margin-bottom: 0;
+        }
+
+        .settings-child-option:has(input:disabled) {
+            opacity: 0.55;
+        }
+
         .param-grid {
     display: grid;
 
@@ -6035,6 +6054,14 @@ font-size: 1.142em !important;
                                                 <input type="checkbox" id="auto-scroll-on-new-message">
                                                 メッセージ送受信時に自動スクロールする
                                             </label>
+                                            <div id="auto-scroll-response-limit-setting" class="settings-child-option">
+                                                <label for="auto-scroll-response-character-limit">
+                                                    AI応答を自動追従する文字数（-1：最後まで、0：追従しない）
+                                                </label>
+                                                <input type="number" id="auto-scroll-response-character-limit"
+                                                    min="-1" step="1" value="-1"
+                                                    aria-label="AI応答を自動追従する文字数">
+                                            </div>
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="header-tap-scroll-to-top-toggle">
                                                 ヘッダータップで最上部へスクロール
@@ -6770,6 +6797,7 @@ const DEFAULT_TOGGLE_BUTTON_BOTTOM_FONT_SIZE = 14;
 const DEFAULT_TOGGLE_BUTTON_BOTTOM_TEXT_COLLAPSE = "_";
 const DEFAULT_TOGGLE_BUTTON_BOTTOM_TEXT_EXPAND = "□";
 const DEFAULT_AUTO_SCROLL_ON_NEW_MESSAGE = true;
+const DEFAULT_AUTO_SCROLL_RESPONSE_CHARACTER_LIMIT = -1;
 const DEFAULT_PERSIST_MESSAGE_COLLAPSE_STATE = true;
 const DEFAULT_THOUGHT_SUMMARY_OPACITY = 0.65;
 const DEFAULT_THOUGHT_SUMMARY_FONT_SIZE = 13;
@@ -6982,6 +7010,7 @@ const elements = {
     headerTapScrollToTopToggle: document.getElementById('header-tap-scroll-to-top-toggle'),
     footerTapScrollToBottomToggle: document.getElementById('footer-tap-scroll-to-bottom-toggle'),
     autoScrollOnNewMessageCheckbox: document.getElementById('auto-scroll-on-new-message'),
+    autoScrollResponseCharacterLimitInput: document.getElementById('auto-scroll-response-character-limit'),
     autoScrollOnThoughtCheckbox: document.getElementById('auto-scroll-on-thought'),
     historySortOrderSelect: document.getElementById('history-sort-order'),
     themeSelect: document.getElementById('theme-select'),
@@ -7287,6 +7316,7 @@ const state = {
         headerTapScrollToTop: true,
         footerTapScrollToBottom: false,
         autoScrollOnNewMessage: DEFAULT_AUTO_SCROLL_ON_NEW_MESSAGE,
+        autoScrollResponseCharacterLimit: DEFAULT_AUTO_SCROLL_RESPONSE_CHARACTER_LIMIT,
         autoScrollOnThought: false,
         historySortOrder: 'updatedAt',
         theme: 'light',
@@ -7788,6 +7818,7 @@ const dbUtils = {
                     if (!['light', 'dark'].includes(state.settings.theme)) {
                         state.settings.theme = 'light';
                     }
+                    state.settings.autoScrollResponseCharacterLimit = normalizeAutoScrollResponseCharacterLimit(state.settings.autoScrollResponseCharacterLimit);
                     if (!Array.isArray(state.settings.openrouterSelectedModels)) {
                         state.settings.openrouterSelectedModels = [...DEFAULT_OPENROUTER_SELECTED_MODELS];
                     }
@@ -8071,6 +8102,23 @@ function formatCompactTokenCount(value) {
         return Math.round(count).toLocaleString('en-US');
     const compactValue = count / unit.threshold;
     return `${compactValue.toLocaleString('en-US', { maximumFractionDigits: 1 })}${unit.suffix}`;
+}
+function normalizeAutoScrollResponseCharacterLimit(value) {
+    if ((typeof value !== 'number' && typeof value !== 'string') ||
+        (typeof value === 'string' && value.trim() === '')) {
+        return DEFAULT_AUTO_SCROLL_RESPONSE_CHARACTER_LIMIT;
+    }
+    const numericValue = Number(value);
+    return Number.isInteger(numericValue) && numericValue >= -1
+        ? numericValue
+        : DEFAULT_AUTO_SCROLL_RESPONSE_CHARACTER_LIMIT;
+}
+function shouldAutoScrollResponseBody(content, limit) {
+    const normalizedLimit = normalizeAutoScrollResponseCharacterLimit(limit);
+    if (normalizedLimit === -1)
+        return true;
+    const characterCount = Array.from(typeof content === 'string' ? content : '').length;
+    return characterCount < normalizedLimit;
 }
 function fileToBase64(file) {
     return new Promise((resolve, reject) => {
@@ -11825,10 +11873,10 @@ Object.assign(uiUtils, {
                 this.renderCitations(state.currentMessages[index], citationContainer);
             }
         }
-        const autoScrollEnabledForThisContentType = isThoughtSummary
+        const shouldAutoScroll = isThoughtSummary
             ? state.settings.autoScrollOnThought
-            : state.settings.autoScrollOnNewMessage;
-        if (autoScrollEnabledForThisContentType && targetContentDiv?.textContent?.length < 200) {
+            : state.settings.autoScrollOnNewMessage && shouldAutoScrollResponseBody(state.partialStreamContent, state.settings.autoScrollResponseCharacterLimit);
+        if (shouldAutoScroll) {
             this.scrollToBottom();
         }
     },
@@ -11893,7 +11941,8 @@ Object.assign(uiUtils, {
                 }
             }
         }
-        if (state.settings.autoScrollOnNewMessage && messageDiv?.textContent?.length < 200) {
+        const finalResponseContent = state.currentMessages[index]?.content || '';
+        if (state.settings.autoScrollOnNewMessage && shouldAutoScrollResponseBody(finalResponseContent, state.settings.autoScrollResponseCharacterLimit)) {
             this.scrollToBottom();
         }
     },
@@ -12417,6 +12466,8 @@ Object.assign(uiUtils, {
         elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollToBottom;
         elements.showResponseTimerToggle.checked = state.settings.showResponseTimer;
         elements.autoScrollOnNewMessageCheckbox.checked = state.settings.autoScrollOnNewMessage;
+        elements.autoScrollResponseCharacterLimitInput.value = normalizeAutoScrollResponseCharacterLimit(state.settings.autoScrollResponseCharacterLimit);
+        elements.autoScrollResponseCharacterLimitInput.disabled = !state.settings.autoScrollOnNewMessage;
         elements.autoScrollOnThoughtCheckbox.checked = state.settings.autoScrollOnThought;
         elements.historySortOrderSelect.value = state.settings.historySortOrder || 'updatedAt';
         if (elements.themeSelect)
@@ -14070,6 +14121,10 @@ Object.assign(appLogic, {
                 uiUtils.applyTheme();
             });
         }
+        elements.autoScrollOnNewMessageCheckbox.addEventListener('change', () => {
+            elements.autoScrollResponseCharacterLimitInput.disabled =
+                !elements.autoScrollOnNewMessageCheckbox.checked;
+        });
         if (elements.apiProviderSelect) {
             elements.apiProviderSelect.addEventListener('change', (event) => {
                 const selectedProvider = event.target.value;
@@ -16401,8 +16456,11 @@ Object.assign(appLogic, {
                         uiUtils.finalizeStreamingMessage(finalModelMessageIndex);
                     }
                     else {
-                        const shouldMaintainScroll = !state.settings.autoScrollOnNewMessage;
-                        uiUtils.renderChatMessages(shouldMaintainScroll);
+                        const shouldScrollAfterResponse = state.settings.autoScrollOnNewMessage &&
+                            shouldAutoScrollResponseBody(msgToUpdate.content, state.settings.autoScrollResponseCharacterLimit);
+                        uiUtils.renderChatMessages(!shouldScrollAfterResponse);
+                        if (shouldScrollAfterResponse)
+                            uiUtils.scrollToBottom();
                     }
                     await dbUtils.saveChat();
                 }
@@ -17195,6 +17253,7 @@ Object.assign(appLogic, {
         newSettings.headerTapScrollToTop = elements.headerTapScrollToTopToggle.checked;
         newSettings.footerTapScrollToBottom = elements.footerTapScrollToBottomToggle.checked;
         newSettings.autoScrollOnNewMessage = elements.autoScrollOnNewMessageCheckbox.checked;
+        newSettings.autoScrollResponseCharacterLimit = normalizeAutoScrollResponseCharacterLimit(elements.autoScrollResponseCharacterLimitInput.value);
         newSettings.autoScrollOnThought = elements.autoScrollOnThoughtCheckbox.checked;
         newSettings.historySortOrder = elements.historySortOrderSelect.value;
         newSettings.theme = elements.themeSelect.value;

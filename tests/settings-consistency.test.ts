@@ -9,6 +9,24 @@ const readFile = (filename: string): string =>
 const readRuntime = (name: string): string => readFile(`.build/runtime/${name}.js`);
 
 describe('settings behavior consistency', () => {
+  it('places the AI-response auto-scroll limit under its parent and applies it to every response mode', () => {
+    const html = readFile('src/index.html');
+    const parentIndex = html.indexOf('id="auto-scroll-on-new-message"');
+    const childIndex = html.indexOf('id="auto-scroll-response-character-limit"');
+    const nextSiblingSettingIndex = html.indexOf('id="header-tap-scroll-to-top-toggle"');
+    const streamingTools = readFile('src/ui-message-tools.ts');
+    const sending = readFile('src/message-sending.ts');
+
+    expect(parentIndex).toBeGreaterThan(-1);
+    expect(childIndex).toBeGreaterThan(parentIndex);
+    expect(childIndex).toBeLessThan(nextSiblingSettingIndex);
+    expect(html).toContain('min="-1" step="1" value="-1"');
+    expect(streamingTools).toContain('shouldAutoScrollResponseBody(\n                        state.partialStreamContent');
+    expect(streamingTools).toContain('shouldAutoScrollResponseBody(\n                    finalResponseContent');
+    expect(streamingTools).not.toMatch(/textContent\?\.length < 200/);
+    expect(sending).toContain('shouldAutoScrollResponseBody(\n                                        msgToUpdate.content');
+  });
+
   it('does not claim that the common system prompt overrides provider prompts', () => {
     const html = readFile('src/index.html');
     expect(html).toContain('API共通プロンプト</summary>');

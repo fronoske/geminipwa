@@ -428,11 +428,14 @@ const getCurrentMermaidTheme = () => {
                     }
                 }
 
-                const autoScrollEnabledForThisContentType = isThoughtSummary
+                const shouldAutoScroll = isThoughtSummary
                     ? state.settings.autoScrollOnThought
-                    : state.settings.autoScrollOnNewMessage;
+                    : state.settings.autoScrollOnNewMessage && shouldAutoScrollResponseBody(
+                        state.partialStreamContent,
+                        state.settings.autoScrollResponseCharacterLimit
+                    );
 
-                if (autoScrollEnabledForThisContentType && targetContentDiv?.textContent?.length < 200) {
+                if (shouldAutoScroll) {
                     this.scrollToBottom();
                 }
             },
@@ -499,7 +502,11 @@ const getCurrentMermaidTheme = () => {
                         }
                     }
                 }
-                if (state.settings.autoScrollOnNewMessage && messageDiv?.textContent?.length < 200) {
+                const finalResponseContent = state.currentMessages[index]?.content || '';
+                if (state.settings.autoScrollOnNewMessage && shouldAutoScrollResponseBody(
+                    finalResponseContent,
+                    state.settings.autoScrollResponseCharacterLimit
+                )) {
                     this.scrollToBottom();
                 }
             },

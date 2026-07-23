@@ -1630,6 +1630,14 @@
                                                 <input type="checkbox" id="auto-scroll-on-new-message">
                                                 メッセージ送受信時に自動スクロールする
                                             </label>
+                                            <div id="auto-scroll-response-limit-setting" class="settings-child-option">
+                                                <label for="auto-scroll-response-character-limit">
+                                                    AI応答を自動追従する文字数（-1：最後まで、0：追従しない）
+                                                </label>
+                                                <input type="number" id="auto-scroll-response-character-limit"
+                                                    min="-1" step="1" value="-1"
+                                                    aria-label="AI応答を自動追従する文字数">
+                                            </div>
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="header-tap-scroll-to-top-toggle">
                                                 ヘッダータップで最上部へスクロール
