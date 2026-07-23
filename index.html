@@ -6524,7 +6524,7 @@ font-size: 1.142em !important;
                         バージョン: <span id="app-version"></span>
                     </p>
                     <p style="text-align: center; color: var(--text-secondary); font-size: 12px; margin-top: -5px; margin-bottom: 10px;">
-                        <a href="https://github.com/titan823/geminipwa" target="_blank" rel="noopener noreferrer" style="color: var(--text-link); text-decoration: none;">GitHub Repository (Readme)</a>
+                        <a href="https://github.com/fronoske/geminipwa/blob/stop-auto-scroll/README.md" target="_blank" rel="noopener noreferrer" style="color: var(--text-link); text-decoration: none;">GitHub Repository (Readme)</a>
                     </p>
                     <button id="update-app-btn">アプリを更新 (キャッシュクリア)</button>
                     <p
@@ -6791,7 +6791,7 @@ const LIGHT_MODE_MODEL_MESSAGE_COLOR = '#e5e5ea';
 const LIGHT_MODE_SECONDARY_COLOR = '#f0f2f5';
 const LIGHT_MODE_HEADER_COLOR = '#4a90e2';
 const LIGHT_MODE_PRIMARY_COLOR = '#ffffff';
-const APP_VERSION = "2026.07.16-fronoske";
+const APP_VERSION = "2026.07.23-fronoske";
 const SWIPE_THRESHOLD = 50;
 const ZOOM_THRESHOLD = 1.01;
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -9242,7 +9242,7 @@ const apiUtils = {
             const activeBackend = multiBackendUtils.getActiveBackend();
             if (activeBackend && activeBackend.url.includes('openrouter.ai')) {
                 dsRequestBody.http_referer = "https://geminipwa.pages.dev/";
-                dsRequestBody.site_url = "https://github.com/titan823/geminipwa";
+                dsRequestBody.site_url = "https://github.com/fronoske/geminipwa/blob/stop-auto-scroll/README.md";
             }
         }
         try {

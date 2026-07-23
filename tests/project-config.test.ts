@@ -540,7 +540,13 @@ describe('project configuration', () => {
   });
 
   it('uses the current release date as the application version', () => {
-    expect(readFile('src/app-config.ts')).toContain('const APP_VERSION = "2026.07.16-fronoske"');
+    expect(readFile('src/app-config.ts')).toContain('const APP_VERSION = "2026.07.23-fronoske"');
+  });
+
+  it('links repository references to the current branch README', () => {
+    const repositoryReadmeUrl = 'https://github.com/fronoske/geminipwa/blob/stop-auto-scroll/README.md';
+    expect(readFile('src/index.html')).toContain(`href="${repositoryReadmeUrl}"`);
+    expect(readFile('src/api-clients.ts')).toContain(`dsRequestBody.site_url = "${repositoryReadmeUrl}"`);
   });
 
   it('pre-caches only public runtime files', () => {
