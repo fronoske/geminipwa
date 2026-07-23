@@ -27,7 +27,9 @@ The following features are essential product requirements. They must not be remo
 - Treat directional and context-dependent forms of address as critical data, and allocate their prompt budget before character cores and conditional memories.
 - Lorebook registration uses the currently selected LLM for semantic extraction, compression, and source auditing, but requires programmatic schema and referential-integrity validation plus editable user confirmation before persistence.
 - Keep the transient LLM request/response log inspectable from the Lorebook editor without recording API keys, and allow in-progress analysis to be cancelled.
-- Preserve the original source separately for provenance, but edit an existing saved Lorebook as validated structured JSON without rerunning the LLM.
+- Preserve the original source separately for provenance, but edit an existing saved Lorebook as validated structured data without rerunning the LLM.
+- Use a schema-aware form as the default editor for structured Lorebooks, with collapsible repeatable sections and an advanced JSON fallback; keep IDs and cross-references app-managed.
+- Keep canonical and persisted Lorebooks on schema v3, which requires `styleGuide` and excludes the old `conditionalMemories.characters` field; accept schema v2 only at load/import boundaries and migrate it to `anyCharacters` before use.
 - Seed bundled sample Lorebooks into IndexedDB once, then treat every Lorebook identically for editing, deletion, ordering, selection, and individual/all import and export.
 - Track installed seed IDs separately in the Lorebook store so deleting a sample remains effective across reloads; clearing all site data removes this registry and restores the samples on the next launch.
 - Use the complete original Lorebook source as an early full-context seed and add structured, relevant Lorebook reminders near the current turn.

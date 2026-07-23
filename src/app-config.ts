@@ -43,7 +43,7 @@
         const DEFAULT_XAI_MODEL = 'grok-4-1-fast-non-reasoning';
         const DEFAULT_LLMAGGREGATOR_MODEL = 'google/gemma-4-31b-it:free';
         const DEFAULT_STREAMING_SPEED = 12;
-        const LOREBOOK_SCHEMA_VERSION = 2;
+        const LOREBOOK_SCHEMA_VERSION = 3;
         const LOREBOOK_PACKAGE_VERSION = 1;
         const LOREBOOK_SEED_REGISTRY_ID = '__geminipwa_lorebook_seed_registry__';
         const LOREBOOK_ANALYSIS_METHOD_VERSION = 'llm-analysis-v1';

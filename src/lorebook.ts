@@ -77,7 +77,6 @@ const lorebookUtils = {
     memoryMatches(memory, activeCharacterIds, queryText) {
         if (memory.allCharacters && !memory.allCharacters.every(id => activeCharacterIds.has(id))) return false;
         if (memory.anyCharacters && !memory.anyCharacters.some(id => activeCharacterIds.has(id))) return false;
-        if (memory.characters && !memory.characters.some(id => activeCharacterIds.has(id))) return false;
         if (memory.keywords && !this.includesAny(queryText, memory.keywords)) return false;
         return true;
     },

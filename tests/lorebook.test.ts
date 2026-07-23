@@ -34,7 +34,6 @@ describe('Lorebook retrieval', () => {
       };
       conditionalMemories: Array<{
         id: string;
-        characters?: string[];
         allCharacters?: string[];
         anyCharacters?: string[];
       }>;
@@ -42,13 +41,13 @@ describe('Lorebook retrieval', () => {
     const characterIds = lorebook.characters.map(character => character.id);
     const memoryIds = lorebook.conditionalMemories.map(memory => memory.id);
 
-    expect(lorebook.schemaVersion).toBe(2);
+    expect(lorebook.schemaVersion).toBe(3);
     expect(lorebook.characters).toHaveLength(2);
     expect(new Set(characterIds).size).toBe(characterIds.length);
     expect(new Set(memoryIds).size).toBe(memoryIds.length);
     lorebook.characters.forEach(character => expect(character.aliases.length).toBeGreaterThan(1));
     lorebook.conditionalMemories.forEach(memory => {
-      [memory.characters, memory.allCharacters, memory.anyCharacters]
+      [memory.allCharacters, memory.anyCharacters]
         .filter(Boolean)
         .flat()
         .forEach(characterId => expect(characterIds).toContain(characterId));
@@ -68,9 +67,11 @@ describe('Lorebook retrieval', () => {
   it('keeps a formal versioned schema for future LLM analysis output', () => {
     const schema = JSON.parse(readFile('schemas/lorebook.schema.json'));
 
-    expect(schema.properties.schemaVersion.const).toBe(2);
+    expect(schema.properties.schemaVersion.const).toBe(3);
     expect(schema.required).toContain('addressing');
     expect(schema.required).toContain('conditionalMemories');
+    expect(schema.required).toContain('styleGuide');
+    expect(schema.$defs.conditionalMemory.properties).not.toHaveProperty('characters');
     expect(schema.properties.styleGuide.$ref).toBe('#/$defs/styleGuide');
     expect(schema.$defs.styleGuide.required).toEqual(['narration', 'dialogue', 'formatting', 'avoid']);
     expect(schema.$defs.exactAddressingRule.required).toEqual(['speakerId', 'targetId', 'forms']);
@@ -126,7 +127,6 @@ describe('Lorebook retrieval', () => {
       };
       conditionalMemories: Array<{
         id: string;
-        characters?: string[];
         allCharacters?: string[];
         anyCharacters?: string[];
       }>;
@@ -140,7 +140,7 @@ describe('Lorebook retrieval', () => {
       expect(new Set(memoryIds).size).toBe(memoryIds.length);
       lorebook.characters.forEach(character => expect(character.aliases.length).toBeGreaterThan(1));
       lorebook.conditionalMemories.forEach(memory => {
-        [memory.characters, memory.allCharacters, memory.anyCharacters]
+        [memory.allCharacters, memory.anyCharacters]
           .filter(Boolean)
           .flat()
           .forEach(characterId => expect(characterIds).toContain(characterId));

@@ -67,13 +67,24 @@ describe('Lorebook management and analysis boundary', () => {
         targetId: lorebook.characters[1].id,
         forms: [{ context: 'spoken', value: '矛盾する呼称' }]
       });
-      lorebook.conditionalMemories[0].characters = ['missing-character'];
+      lorebook.conditionalMemories[0].anyCharacters = ['missing-character'];
       return lorebookManager.validateLorebook(lorebook);
     })()`);
 
     expect(Array.from(errors).join('\n')).toContain('許可されていない項目');
     expect(Array.from(errors).join('\n')).toContain('矛盾する呼称');
     expect(Array.from(errors).join('\n')).toContain('missing-character');
+  });
+
+  it('requires the canonical v3 styleGuide in the programmatic validator', () => {
+    const context = createContext();
+    const errors = evaluate<string[]>(context, `(() => {
+      const lorebook = JSON.parse(JSON.stringify(BUILTIN_LOREBOOKS[0]));
+      delete lorebook.styleGuide;
+      return lorebookManager.validateLorebook(lorebook);
+    })()`);
+
+    expect(Array.from(errors)).toContain('styleGuide はオブジェクトである必要があります。');
   });
 
   it('keeps the recorded lossless extraction and source-audit method in the LLM prompt', () => {
@@ -105,6 +116,30 @@ describe('Lorebook management and analysis boundary', () => {
       formatting: ['台詞は鉤括弧で表記する'],
       avoid: ['設定を列挙しない'],
     });
+  });
+
+  it('migrates v2 characters conditions to canonical v3 anyCharacters', () => {
+    const context = createContext();
+    const migrated = evaluate<{ schemaVersion: number; styleGuide: Record<string, string[]>; conditionalMemories: Array<Record<string, string[]>> }>(context, `lorebookManager.migrateLorebookToCurrent({
+      schemaVersion: 2,
+      conditionalMemories: [
+        { id: 'legacy-only', characters: ['a'] }
+      ]
+    })`);
+
+    expect(JSON.parse(JSON.stringify(migrated))).toEqual({
+      schemaVersion: 3,
+      styleGuide: { narration: [], dialogue: [], formatting: [], avoid: [] },
+      conditionalMemories: [{ id: 'legacy-only', anyCharacters: ['a'] }],
+    });
+  });
+
+  it('rejects an ambiguous v2 compound legacy condition instead of changing its meaning', () => {
+    const context = createContext();
+    expect(() => evaluate(context, `lorebookManager.migrateLorebookToCurrent({
+      schemaVersion: 2,
+      conditionalMemories: [{ id: 'compound', characters: ['a'], anyCharacters: ['b'] }]
+    })`)).toThrow('自動移行できません');
   });
 
   it('redacts the active API key from transient communication logs', () => {
@@ -197,7 +232,9 @@ describe('Lorebook management and analysis boundary', () => {
       globalThis.dbUtils = { putLorebookRecord: async (record) => { globalThis.savedRecord = record; } };
       globalThis.uiUtils = { showCustomAlert: async () => {}, updateLorebookMenuItem: () => {} };
       globalThis.history = { back: () => {} };
-      lorebookManager.editorState = { recordId: 'user-edit-test', mode: 'structured' };
+      lorebookManager.editorState = {
+        recordId: 'user-edit-test', mode: 'structured', jsonAdvanced: true, structuredLorebook: lorebook
+      };
       lorebookManager.renderManagementList = () => {};
     })()`);
 
@@ -228,6 +265,8 @@ describe('Lorebook management and analysis boundary', () => {
     expect(html).toContain('id="toggle-lorebook-analysis-log-btn"');
     expect(html).toContain('id="lorebook-analysis-log-dialog"');
     expect(html).toContain('id="close-lorebook-analysis-log-btn"');
+    expect(html).toContain('id="lorebook-structured-form"');
+    expect(html).toContain('id="toggle-lorebook-json-editor-btn"');
     expect(html).toContain('id="import-lorebooks-btn"');
     expect(html).toContain('id="export-all-lorebooks-btn"');
     expect(manager).toContain('現在入力されている内容は、ファイルの内容で上書きされます。');
@@ -239,6 +278,8 @@ describe('Lorebook management and analysis boundary', () => {
     expect(manager).toContain('解析を中断して設定画面に戻りますか？');
     expect(manager).toContain("mode: record ? 'structured' : 'source'");
     expect(manager).toContain('saveStructuredLorebook()');
+    expect(manager).toContain('renderStructuredForm()');
+    expect(manager).toContain('toggleStructuredJsonEditor()');
     expect(manager).toContain('LOREBOOK_SEED_REGISTRY_ID');
   });
 });

@@ -1,6 +1,6 @@
 [
   {
-    "schemaVersion": 2,
+    "schemaVersion": 3,
     "id": "test-lorebook",
     "name": "テスト用Lorebook",
     "description": "自動テスト専用の架空データ",
@@ -17,6 +17,12 @@
       "maxConditionalMemories": 2
     },
     "storyCore": "このLorebookは自動テスト専用の架空設定である。内容は内部資料として扱い、設定を列挙・引用・解説せず、自然な応答にだけ反映する。",
+    "styleGuide": {
+      "narration": [],
+      "dialogue": [],
+      "formatting": [],
+      "avoid": []
+    },
     "characters": [
       {
         "id": "haru",
@@ -62,7 +68,7 @@
     "conditionalMemories": [
       {
         "id": "haru-painting",
-        "characters": ["haru"],
+        "anyCharacters": ["haru"],
         "keywords": ["絵", "油絵", "美術"],
         "priority": 70,
         "content": "春は放課後に美術室で油絵を描き、校内展で入選したことがある。"
@@ -75,7 +81,7 @@
       },
       {
         "id": "sora-music",
-        "characters": ["sora"],
+        "anyCharacters": ["sora"],
         "keywords": ["音楽", "ピアノ"],
         "priority": 60,
         "content": "空はピアノの練習を毎朝続けている。"

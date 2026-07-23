@@ -187,16 +187,41 @@ try {
     [...savedRow.querySelectorAll('button')].find((button) => button.textContent === '編集').click();
     await delay(400);
     const structuredTextarea = document.querySelector('#lorebook-source-textarea');
-    const structuredLorebook = JSON.parse(structuredTextarea.value);
+    const structuredForm = document.querySelector('#lorebook-structured-form');
     result.structuredEditMode = lorebookManager.editorState?.mode === 'structured'
-      && structuredLorebook.name === 'ブラウザ監査Lorebook'
+      && structuredForm.querySelector('[data-lorebook-field="name"]').value === 'ブラウザ監査Lorebook'
+      && !structuredForm.classList.contains('hidden')
+      && structuredTextarea.classList.contains('hidden')
       && document.querySelector('#analyze-lorebook-btn').textContent === '保存'
       && document.querySelector('#lorebook-editor-provider-row').classList.contains('hidden')
       && document.querySelector('#lorebook-editor-file-actions').classList.contains('hidden')
       && document.querySelector('#toggle-lorebook-analysis-log-btn').classList.contains('hidden');
-    structuredLorebook.description = '構造化データを直接編集済み';
-    structuredTextarea.value = JSON.stringify(structuredLorebook, null, 2);
-    structuredTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+    result.legacyConditionLabelHidden = !structuredForm.textContent.includes('互換');
+
+    const characterSection = [...structuredForm.querySelectorAll('.lorebook-form-section')]
+      .find((section) => section.querySelector(':scope > summary')?.textContent.startsWith('人物（'));
+    const characterCountBefore = structuredForm.querySelectorAll('[data-collection-item="characters"]').length;
+    [...characterSection.querySelectorAll(':scope > button')].find((button) => button.textContent === '人物を追加').click();
+    const characterCountAfterAdd = structuredForm.querySelectorAll('[data-collection-item="characters"]').length;
+    const lastCharacter = [...structuredForm.querySelectorAll('[data-collection-item="characters"]')].at(-1);
+    [...lastCharacter.querySelectorAll('.lorebook-form-item-actions button')]
+      .find((button) => button.textContent === '削除').click();
+    result.structuredFormCollectionsWork = characterCountAfterAdd === characterCountBefore + 1
+      && structuredForm.querySelectorAll('[data-collection-item="characters"]').length === characterCountBefore;
+
+    document.querySelector('#toggle-lorebook-json-editor-btn').click();
+    await delay(50);
+    const advancedLorebook = JSON.parse(structuredTextarea.value);
+    result.advancedJsonEditorWorks = lorebookManager.editorState.jsonAdvanced
+      && !structuredTextarea.classList.contains('hidden')
+      && advancedLorebook.name === 'ブラウザ監査Lorebook';
+    document.querySelector('#toggle-lorebook-json-editor-btn').click();
+    await delay(100);
+    result.advancedJsonReturnsToForm = !lorebookManager.editorState.jsonAdvanced
+      && !structuredForm.classList.contains('hidden')
+      && structuredTextarea.classList.contains('hidden');
+
+    structuredForm.querySelector('[data-lorebook-field="description"]').value = '構造化フォームで直接編集済み';
     document.querySelector('#analyze-lorebook-btn').click();
     for (let index = 0; index < 50 && !document.querySelector('#alertDialog').open; index += 1) {
       await delay(20);
@@ -204,7 +229,7 @@ try {
     document.querySelector('#alertDialog .dialog-ok-btn').click();
     await delay(500);
     const editedRecord = state.lorebookRecords.find((record) => record.lorebook.name === 'ブラウザ監査Lorebook');
-    result.structuredEditSavedWithoutLlm = editedRecord?.lorebook?.description === '構造化データを直接編集済み'
+    result.structuredEditSavedWithoutLlm = editedRecord?.lorebook?.description === '構造化フォームで直接編集済み'
       && editedRecord?.sourceText === '既存の設定情報'
       && analysisCalls === 2;
     return JSON.stringify(result);

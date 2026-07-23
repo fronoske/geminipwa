@@ -138,10 +138,20 @@ const lorebookManager = {
     async loadRecords() {
         const storedItems = await dbUtils.getAllLorebookRecords();
         const registry = storedItems.find(item => item?.id === LOREBOOK_SEED_REGISTRY_ID) || null;
+        let recordsWereMigrated = false;
         const records = storedItems
-            .filter(record => record?.id !== LOREBOOK_SEED_REGISTRY_ID
-                && record?.lorebook
-                && this.validateLorebook(record.lorebook).length === 0)
+            .filter(record => record?.id !== LOREBOOK_SEED_REGISTRY_ID && record?.lorebook)
+            .map(record => {
+                try {
+                    if (record.lorebook.schemaVersion === LOREBOOK_SCHEMA_VERSION) return record;
+                    recordsWereMigrated = true;
+                    return { ...record, lorebook: this.migrateLorebookToCurrent(record.lorebook) };
+                } catch (error) {
+                    console.warn(`Lorebook「${record.lorebook?.name || record.id}」を移行できませんでした:`, error);
+                    return null;
+                }
+            })
+            .filter(record => record && this.validateLorebook(record.lorebook).length === 0)
             .sort((left, right) => (Number(left.order) || 0) - (Number(right.order) || 0));
         const installedSeedIds = new Set(Array.isArray(registry?.installedSeedIds)
             ? registry.installedSeedIds.map(String)
@@ -170,7 +180,7 @@ const lorebookManager = {
             installedSeedIds: [...installedSeedIds],
             updatedAt: now,
         };
-        if (!registry || seedsToInstall.length > 0) {
+        if (!registry || seedsToInstall.length > 0 || recordsWereMigrated) {
             await dbUtils.putLorebookRecords([...records, ...seededRecords, nextRegistry]);
         }
         state.lorebookRecords = [...records, ...seededRecords]
@@ -178,7 +188,7 @@ const lorebookManager = {
     },
 
     createSeedRecord(lorebook, now = Date.now()) {
-        const clonedLorebook = this.clone(lorebook);
+        const clonedLorebook = this.migrateLorebookToCurrent(lorebook);
         return {
             id: clonedLorebook.id,
             lorebook: clonedLorebook,
@@ -216,6 +226,7 @@ const lorebookManager = {
             if (file) await this.loadSourceFile(file);
         });
         elements.lorebookSourceTextarea.addEventListener('input', () => this.updateEditorState());
+        elements.toggleLorebookJsonEditorBtn.addEventListener('click', () => this.toggleStructuredJsonEditor());
         elements.toggleLorebookAnalysisLogBtn.addEventListener('click', () => this.toggleAnalysisLog());
         elements.closeLorebookAnalysisLogBtn.addEventListener('click', () => this.closeAnalysisLog());
         elements.lorebookAnalysisLogDialog.addEventListener('close', () => this.handleAnalysisLogClosed());
@@ -326,6 +337,8 @@ const lorebookManager = {
             recordId: record?.id || null,
             sourceLabel: record?.sourceLabel || 'manual-input',
             mode: record ? 'structured' : 'source',
+            jsonAdvanced: false,
+            structuredLorebook: record ? this.clone(record.lorebook) : null,
         };
         this.resetAnalysisLog();
         const isStructured = this.editorState.mode === 'structured';
@@ -335,24 +348,503 @@ const lorebookManager = {
         elements.lorebookSourceTextarea.spellcheck = !isStructured;
         elements.lorebookEditorProviderRow.classList.toggle('hidden', isStructured);
         elements.lorebookEditorFileActions.classList.toggle('hidden', isStructured);
+        elements.lorebookStructuredEditorToolbar.classList.toggle('hidden', !isStructured);
         elements.toggleLorebookAnalysisLogBtn.classList.toggle('hidden', isStructured);
         elements.lorebookEditorInstructions.textContent = isStructured
-            ? '構造化済みLorebookをJSONで直接編集します。ID、スキーマ、解析情報、検索上限はアプリが管理するため、編集しても元の値が維持されます。'
+            ? '構造化済みLorebookをフォームで編集します。各項目は折り畳んで表示できます。ID、スキーマ、解析情報、検索上限はアプリが管理します。'
             : '人物、舞台、関係、呼称などの設定情報を入力してください。ファイルをロードすると入力内容はファイルの内容に置き換わります。';
         elements.lorebookEditorTextareaLabel.textContent = isStructured ? '構造化済みLorebook（JSON）：' : '設定情報：';
         elements.lorebookSourceTextarea.placeholder = isStructured
             ? '構造化済みLorebookのJSON'
             : '人物設定・舞台設定・関係・呼称などを入力…';
         if (isStructured) {
-            elements.lorebookEditorStatus.textContent = 'JSONを修正して「保存」を押してください。LLMによる再解析は行いません。';
+            this.renderStructuredForm();
+            this.updateStructuredEditorVisibility();
+            elements.lorebookEditorStatus.textContent = 'フォームを修正して「保存」を押してください。LLMによる再解析は行いません。';
         } else {
+            elements.lorebookStructuredForm.classList.add('hidden');
+            elements.lorebookEditorTextareaLabel.classList.remove('hidden');
+            elements.lorebookSourceTextarea.classList.remove('hidden');
             const requestContext = apiUtils.getCurrentProviderRequestContext();
             elements.lorebookAnalysisProvider.textContent = `${requestContext.provider} / ${requestContext.model || 'モデル未選択'}`;
             elements.lorebookEditorStatus.textContent = '設定情報を入力するか、端末のファイルをロードしてください。';
         }
         this.updateEditorState();
         uiUtils.showScreen('lorebook-editor');
-        elements.lorebookSourceTextarea.focus();
+        if (isStructured) {
+            elements.lorebookStructuredForm.querySelector('input, textarea, select')?.focus();
+        } else {
+            elements.lorebookSourceTextarea.focus();
+        }
+    },
+
+    createStructuredField(labelText, control, hint = '') {
+        const field = document.createElement('label');
+        field.className = 'lorebook-form-field';
+        const label = document.createElement('span');
+        label.className = 'lorebook-form-label';
+        label.textContent = labelText;
+        field.append(label, control);
+        if (hint) {
+            const note = document.createElement('small');
+            note.textContent = hint;
+            field.appendChild(note);
+        }
+        return field;
+    },
+
+    createStructuredInput(value = '') {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = value ?? '';
+        return input;
+    },
+
+    createStructuredTextarea(value = '', rows = 3) {
+        const textarea = document.createElement('textarea');
+        textarea.value = value ?? '';
+        textarea.rows = rows;
+        return textarea;
+    },
+
+    createStructuredSelect(options, selectedValue = '') {
+        const select = document.createElement('select');
+        options.forEach(({ value, text }) => {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = text;
+            option.selected = value === selectedValue;
+            select.appendChild(option);
+        });
+        return select;
+    },
+
+    createStructuredDetails(title, { open = false, item = false } = {}) {
+        const details = document.createElement('details');
+        details.className = item ? 'lorebook-form-item' : 'lorebook-form-section';
+        details.open = open;
+        const summary = document.createElement('summary');
+        summary.textContent = title;
+        details.appendChild(summary);
+        return details;
+    },
+
+    createStructuredItemActions(collection, index, count, { removable = true } = {}) {
+        const actions = document.createElement('div');
+        actions.className = 'lorebook-form-item-actions';
+        const add = (label, title, action, disabled = false, danger = false) => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.textContent = label;
+            button.title = title;
+            button.disabled = disabled;
+            if (danger) button.classList.add('danger');
+            button.addEventListener('click', () => this.mutateStructuredCollection(collection, index, action));
+            actions.appendChild(button);
+        };
+        add('↑', '上へ移動', 'up', index === 0);
+        add('↓', '下へ移動', 'down', index >= count - 1);
+        if (removable) add('削除', 'この項目を削除', 'remove', false, true);
+        return actions;
+    },
+
+    createStructuredAddButton(label, handler) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'lorebook-form-add-button';
+        button.textContent = label;
+        button.addEventListener('click', handler);
+        return button;
+    },
+
+    getStructuredCharacterOptions(lorebook) {
+        return (lorebook.characters || []).map(character => ({
+            value: character.id,
+            text: character.name || character.id,
+        }));
+    },
+
+    renderStructuredForm() {
+        const lorebook = this.editorState?.structuredLorebook;
+        const form = elements.lorebookStructuredForm;
+        form.replaceChildren();
+        if (!lorebook) return;
+
+        const basic = this.createStructuredDetails('基本情報', { open: true });
+        const name = this.createStructuredInput(lorebook.name);
+        name.dataset.lorebookField = 'name';
+        const description = this.createStructuredTextarea(lorebook.description, 2);
+        description.dataset.lorebookField = 'description';
+        const storyCore = this.createStructuredTextarea(lorebook.storyCore, 8);
+        storyCore.dataset.lorebookField = 'storyCore';
+        basic.append(
+            this.createStructuredField('名称', name),
+            this.createStructuredField('説明', description),
+            this.createStructuredField('固定ストーリーコア', storyCore, '常に成立する舞台・世界観・物語上の原則を記述します。')
+        );
+        form.appendChild(basic);
+
+        const styleGuide = this.normalizeStyleGuide(lorebook.styleGuide);
+        const style = this.createStructuredDetails('文体・スタイル');
+        [
+            ['narration', '語り・視点・描写'],
+            ['dialogue', '会話・台詞'],
+            ['formatting', '表記・出力形式'],
+            ['avoid', '避ける表現・展開'],
+        ].forEach(([key, label]) => {
+            const textarea = this.createStructuredTextarea(styleGuide[key].join('\n'), 3);
+            textarea.dataset.styleKey = key;
+            style.appendChild(this.createStructuredField(label, textarea, '1行につき1つのルールを入力します。'));
+        });
+        form.appendChild(style);
+
+        const characters = Array.isArray(lorebook.characters) ? lorebook.characters : [];
+        const characterSection = this.createStructuredDetails(`人物（${characters.length}件）`);
+        const characterList = document.createElement('div');
+        characterList.className = 'lorebook-form-item-list';
+        characterList.dataset.collection = 'characters';
+        characters.forEach((character, index) => {
+            const item = this.createStructuredDetails(`${index + 1}. ${character.name || '名称未入力'}`, { item: true });
+            item.dataset.collectionItem = 'characters';
+            item.dataset.id = character.id;
+            const characterName = this.createStructuredInput(character.name);
+            characterName.dataset.characterField = 'name';
+            const aliases = this.createStructuredTextarea((character.aliases || []).join('\n'), 3);
+            aliases.dataset.characterField = 'aliases';
+            const core = this.createStructuredTextarea(character.core, 5);
+            core.dataset.characterField = 'core';
+            item.append(
+                this.createStructuredField('名前', characterName),
+                this.createStructuredField('別名・検索語', aliases, '1行につき1つ入力します。正式名も含めてください。'),
+                this.createStructuredField('人物コア', core),
+                this.createStructuredItemActions('characters', index, characters.length)
+            );
+            characterList.appendChild(item);
+        });
+        characterSection.append(
+            characterList,
+            this.createStructuredAddButton('人物を追加', () => this.addStructuredItem('characters'))
+        );
+        form.appendChild(characterSection);
+
+        const characterOptions = this.getStructuredCharacterOptions(lorebook);
+        const addressing = lorebook.addressing || { instruction: '', exactRules: [], fallbackRules: [] };
+        const addressingSection = this.createStructuredDetails(`呼称ルール（個別 ${(addressing.exactRules || []).length}件／一般 ${(addressing.fallbackRules || []).length}件）`);
+        const instruction = this.createStructuredTextarea(addressing.instruction, 3);
+        instruction.dataset.addressingInstruction = 'true';
+        addressingSection.appendChild(this.createStructuredField('適用原則', instruction));
+
+        const exactHeading = document.createElement('h3');
+        exactHeading.textContent = '人物間の個別呼称';
+        addressingSection.appendChild(exactHeading);
+        const exactList = document.createElement('div');
+        exactList.className = 'lorebook-form-item-list';
+        exactList.dataset.collection = 'exactRules';
+        (addressing.exactRules || []).forEach((rule, index, rules) => {
+            const speakerName = characterOptions.find(option => option.value === rule.speakerId)?.text || rule.speakerId;
+            const targetName = characterOptions.find(option => option.value === rule.targetId)?.text || rule.targetId;
+            const item = this.createStructuredDetails(`${index + 1}. ${speakerName} → ${targetName}`, { item: true });
+            item.dataset.collectionItem = 'exactRules';
+            const speaker = this.createStructuredSelect(characterOptions, rule.speakerId);
+            speaker.dataset.exactField = 'speakerId';
+            const target = this.createStructuredSelect(characterOptions, rule.targetId);
+            target.dataset.exactField = 'targetId';
+            item.append(
+                this.createStructuredField('話者', speaker),
+                this.createStructuredField('相手', target)
+            );
+            const forms = new Map((rule.forms || []).map(formValue => [formValue.context, formValue.value]));
+            [
+                ['spoken', '発話'],
+                ['innerThought', '内心'],
+                ['public', '人前'],
+                ['private', '二人きり'],
+            ].forEach(([context, label]) => {
+                const input = this.createStructuredInput(forms.get(context) || '');
+                input.dataset.addressContext = context;
+                item.appendChild(this.createStructuredField(label, input, '該当しない文脈は空欄にします。'));
+            });
+            item.appendChild(this.createStructuredItemActions('exactRules', index, rules.length));
+            exactList.appendChild(item);
+        });
+        addressingSection.append(
+            exactList,
+            this.createStructuredAddButton('個別呼称を追加', () => this.addStructuredItem('exactRules'))
+        );
+
+        const fallbackHeading = document.createElement('h3');
+        fallbackHeading.textContent = '対象一般への呼称';
+        addressingSection.appendChild(fallbackHeading);
+        const fallbackList = document.createElement('div');
+        fallbackList.className = 'lorebook-form-item-list';
+        fallbackList.dataset.collection = 'fallbackRules';
+        const contextOptions = [
+            { value: 'spoken', text: '発話' },
+            { value: 'innerThought', text: '内心' },
+            { value: 'public', text: '人前' },
+            { value: 'private', text: '二人きり' },
+        ];
+        (addressing.fallbackRules || []).forEach((rule, index, rules) => {
+            const speakerName = characterOptions.find(option => option.value === rule.speakerId)?.text || rule.speakerId;
+            const item = this.createStructuredDetails(`${index + 1}. ${speakerName} → ${rule.targetDescription || '対象未入力'}`, { item: true });
+            item.dataset.collectionItem = 'fallbackRules';
+            const speaker = this.createStructuredSelect(characterOptions, rule.speakerId);
+            speaker.dataset.fallbackField = 'speakerId';
+            const targetDescription = this.createStructuredInput(rule.targetDescription);
+            targetDescription.dataset.fallbackField = 'targetDescription';
+            const context = this.createStructuredSelect(contextOptions, rule.context);
+            context.dataset.fallbackField = 'context';
+            const formTemplate = this.createStructuredInput(rule.formTemplate);
+            formTemplate.dataset.fallbackField = 'formTemplate';
+            item.append(
+                this.createStructuredField('話者', speaker),
+                this.createStructuredField('相手の種類・説明', targetDescription),
+                this.createStructuredField('文脈', context),
+                this.createStructuredField('呼称パターン', formTemplate),
+                this.createStructuredItemActions('fallbackRules', index, rules.length)
+            );
+            fallbackList.appendChild(item);
+        });
+        addressingSection.append(
+            fallbackList,
+            this.createStructuredAddButton('一般呼称を追加', () => this.addStructuredItem('fallbackRules'))
+        );
+        form.appendChild(addressingSection);
+
+        const memories = Array.isArray(lorebook.conditionalMemories) ? lorebook.conditionalMemories : [];
+        const memorySection = this.createStructuredDetails(`条件付き記憶（${memories.length}件）`);
+        const memoryList = document.createElement('div');
+        memoryList.className = 'lorebook-form-item-list';
+        memoryList.dataset.collection = 'conditionalMemories';
+        memories.forEach((memory, index) => {
+            const item = this.createStructuredDetails(`${index + 1}. ${String(memory.content || '').slice(0, 38) || '内容未入力'}`, { item: true });
+            item.dataset.collectionItem = 'conditionalMemories';
+            item.dataset.id = memory.id;
+            const conditionGroups = document.createElement('div');
+            conditionGroups.className = 'lorebook-form-memory-conditions';
+            [
+                ['allCharacters', '選択した人物が全員登場'],
+                ['anyCharacters', '選択した人物のいずれかが登場'],
+            ].forEach(([key, labelText]) => {
+                const conditionGroup = this.createStructuredDetails(labelText, { item: true });
+                conditionGroup.classList.add('lorebook-form-memory-condition');
+                conditionGroup.dataset.memoryConditionKey = key;
+                conditionGroup.open = Array.isArray(memory[key]) && memory[key].length > 0;
+                const checks = document.createElement('div');
+                checks.className = 'lorebook-form-character-checks';
+                const selectedCharacters = new Set(Array.isArray(memory[key]) ? memory[key] : []);
+                characterOptions.forEach(option => {
+                    const label = document.createElement('label');
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.value = option.value;
+                    checkbox.dataset.memoryCharacter = 'true';
+                    checkbox.checked = selectedCharacters.has(option.value);
+                    label.append(checkbox, document.createTextNode(option.text));
+                    checks.appendChild(label);
+                });
+                conditionGroup.appendChild(checks);
+                conditionGroups.appendChild(conditionGroup);
+            });
+            const keywords = this.createStructuredTextarea((memory.keywords || []).join('\n'), 3);
+            keywords.dataset.memoryField = 'keywords';
+            const priority = document.createElement('input');
+            priority.type = 'number';
+            priority.min = '0';
+            priority.max = '100';
+            priority.step = '1';
+            priority.value = Number.isInteger(memory.priority) ? String(memory.priority) : '50';
+            priority.dataset.memoryField = 'priority';
+            const content = this.createStructuredTextarea(memory.content, 5);
+            content.dataset.memoryField = 'content';
+            item.append(
+                this.createStructuredField('人物条件', conditionGroups, '必要な条件だけ展開して人物を選択します。複数条件の併用も可能です。'),
+                this.createStructuredField('キーワード', keywords, '1行につき1つ入力します。人物条件もキーワードもない場合は常に参照されます。'),
+                this.createStructuredField('優先度（0～100）', priority),
+                this.createStructuredField('記憶の内容', content),
+                this.createStructuredItemActions('conditionalMemories', index, memories.length)
+            );
+            memoryList.appendChild(item);
+        });
+        memorySection.append(
+            memoryList,
+            this.createStructuredAddButton('条件付き記憶を追加', () => this.addStructuredItem('conditionalMemories'))
+        );
+        form.appendChild(memorySection);
+    },
+
+    splitStructuredLines(value) {
+        return String(value || '').split(/\r?\n/).map(item => item.trim()).filter(Boolean);
+    },
+
+    collectStructuredForm() {
+        const form = elements.lorebookStructuredForm;
+        const lorebook = this.clone(this.editorState.structuredLorebook);
+        const fieldValue = name => form.querySelector(`[data-lorebook-field="${name}"]`)?.value ?? '';
+        lorebook.name = fieldValue('name').trim();
+        lorebook.description = fieldValue('description').trim();
+        lorebook.storyCore = fieldValue('storyCore').trim();
+        lorebook.styleGuide = {};
+        ['narration', 'dialogue', 'formatting', 'avoid'].forEach(key => {
+            lorebook.styleGuide[key] = this.splitStructuredLines(form.querySelector(`[data-style-key="${key}"]`)?.value);
+        });
+        lorebook.characters = [...form.querySelectorAll('[data-collection-item="characters"]')].map(item => ({
+            id: item.dataset.id,
+            name: item.querySelector('[data-character-field="name"]').value.trim(),
+            aliases: this.splitStructuredLines(item.querySelector('[data-character-field="aliases"]').value),
+            core: item.querySelector('[data-character-field="core"]').value.trim(),
+        }));
+        lorebook.addressing = {
+            instruction: form.querySelector('[data-addressing-instruction]')?.value.trim() || '',
+            exactRules: [...form.querySelectorAll('[data-collection-item="exactRules"]')].map(item => ({
+                speakerId: item.querySelector('[data-exact-field="speakerId"]').value,
+                targetId: item.querySelector('[data-exact-field="targetId"]').value,
+                forms: [...item.querySelectorAll('[data-address-context]')]
+                    .filter(input => input.value.trim())
+                    .map(input => ({ context: input.dataset.addressContext, value: input.value.trim() })),
+            })),
+            fallbackRules: [...form.querySelectorAll('[data-collection-item="fallbackRules"]')].map(item => ({
+                speakerId: item.querySelector('[data-fallback-field="speakerId"]').value,
+                targetDescription: item.querySelector('[data-fallback-field="targetDescription"]').value.trim(),
+                context: item.querySelector('[data-fallback-field="context"]').value,
+                formTemplate: item.querySelector('[data-fallback-field="formTemplate"]').value.trim(),
+            })),
+        };
+        lorebook.conditionalMemories = [...form.querySelectorAll('[data-collection-item="conditionalMemories"]')].map(item => {
+            const memory = {
+                id: item.dataset.id,
+                priority: Number.parseInt(item.querySelector('[data-memory-field="priority"]').value, 10),
+                content: item.querySelector('[data-memory-field="content"]').value.trim(),
+            };
+            item.querySelectorAll('[data-memory-condition-key]').forEach(group => {
+                const characterIds = [...group.querySelectorAll('[data-memory-character]:checked')].map(input => input.value);
+                if (characterIds.length > 0) memory[group.dataset.memoryConditionKey] = characterIds;
+            });
+            const keywords = this.splitStructuredLines(item.querySelector('[data-memory-field="keywords"]').value);
+            if (keywords.length > 0) memory.keywords = keywords;
+            return memory;
+        });
+        return lorebook;
+    },
+
+    createStructuredEntityId(prefix, existingIds) {
+        let id = `${prefix}-${Date.now().toString(36)}`;
+        let suffix = 2;
+        while (existingIds.has(id)) id = `${prefix}-${Date.now().toString(36)}-${suffix++}`;
+        return id;
+    },
+
+    addStructuredItem(collection) {
+        const lorebook = this.collectStructuredForm();
+        if (collection === 'characters') {
+            const ids = new Set(lorebook.characters.map(character => character.id));
+            lorebook.characters.push({
+                id: this.createStructuredEntityId('character', ids),
+                name: '',
+                aliases: [],
+                core: '',
+            });
+        } else if (collection === 'exactRules') {
+            const first = lorebook.characters[0]?.id || '';
+            const second = lorebook.characters[1]?.id || first;
+            lorebook.addressing.exactRules.push({
+                speakerId: first,
+                targetId: second,
+                forms: [{ context: 'spoken', value: '' }],
+            });
+        } else if (collection === 'fallbackRules') {
+            lorebook.addressing.fallbackRules.push({
+                speakerId: lorebook.characters[0]?.id || '',
+                targetDescription: '',
+                context: 'spoken',
+                formTemplate: '',
+            });
+        } else if (collection === 'conditionalMemories') {
+            const ids = new Set(lorebook.conditionalMemories.map(memory => memory.id));
+            lorebook.conditionalMemories.push({
+                id: this.createStructuredEntityId('memory', ids),
+                priority: 50,
+                content: '',
+            });
+        }
+        this.editorState.structuredLorebook = lorebook;
+        this.renderStructuredForm();
+        const section = elements.lorebookStructuredForm.querySelector(`[data-collection="${collection}"]`)?.closest('details');
+        if (section) section.open = true;
+        const items = elements.lorebookStructuredForm.querySelectorAll(`[data-collection-item="${collection}"]`);
+        const lastItem = items[items.length - 1];
+        if (lastItem) {
+            lastItem.open = true;
+            lastItem.scrollIntoView({ block: 'nearest' });
+        }
+    },
+
+    async mutateStructuredCollection(collection, index, action) {
+        const lorebook = this.collectStructuredForm();
+        const items = collection === 'characters'
+            ? lorebook.characters
+            : collection === 'conditionalMemories'
+                ? lorebook.conditionalMemories
+                : lorebook.addressing[collection];
+        if (!Array.isArray(items) || !items[index]) return;
+        if (action === 'remove' && collection === 'characters') {
+            const characterId = items[index].id;
+            const referenceCount = lorebook.addressing.exactRules.filter(rule => rule.speakerId === characterId || rule.targetId === characterId).length
+                + lorebook.addressing.fallbackRules.filter(rule => rule.speakerId === characterId).length
+                + lorebook.conditionalMemories.filter(memory => ['allCharacters', 'anyCharacters']
+                    .some(key => Array.isArray(memory[key]) && memory[key].includes(characterId))).length;
+            if (referenceCount > 0) {
+                await uiUtils.showCustomAlert(`この人物は${referenceCount}件の呼称ルールまたは条件付き記憶から参照されています。先に参照を削除してください。`);
+                return;
+            }
+        }
+        if (action === 'remove') items.splice(index, 1);
+        if (action === 'up' && index > 0) [items[index - 1], items[index]] = [items[index], items[index - 1]];
+        if (action === 'down' && index < items.length - 1) [items[index + 1], items[index]] = [items[index], items[index + 1]];
+        this.editorState.structuredLorebook = lorebook;
+        this.renderStructuredForm();
+        const section = elements.lorebookStructuredForm.querySelector(`[data-collection="${collection}"]`)?.closest('details');
+        if (section) section.open = true;
+    },
+
+    updateStructuredEditorVisibility() {
+        const advanced = this.editorState?.mode === 'structured' && this.editorState.jsonAdvanced;
+        elements.lorebookStructuredForm.classList.toggle('hidden', advanced || this.editorState?.mode !== 'structured');
+        elements.lorebookEditorTextareaLabel.classList.toggle('hidden', this.editorState?.mode === 'structured' && !advanced);
+        elements.lorebookSourceTextarea.classList.toggle('hidden', this.editorState?.mode === 'structured' && !advanced);
+        elements.toggleLorebookJsonEditorBtn.textContent = advanced ? 'フォーム編集に戻る' : '高度なJSON編集';
+    },
+
+    async toggleStructuredJsonEditor() {
+        if (this.editorState?.mode !== 'structured') return;
+        if (!this.editorState.jsonAdvanced) {
+            const lorebook = this.collectStructuredForm();
+            this.editorState.structuredLorebook = lorebook;
+            elements.lorebookSourceTextarea.value = JSON.stringify(lorebook, null, 2);
+            this.editorState.jsonAdvanced = true;
+        } else {
+            try {
+                const lorebook = JSON.parse(elements.lorebookSourceTextarea.value);
+                const record = this.getRecord(this.editorState.recordId);
+                lorebook.id = record.id;
+                lorebook.schemaVersion = LOREBOOK_SCHEMA_VERSION;
+                lorebook.analysis = this.clone(record.lorebook.analysis);
+                lorebook.retrieval = this.clone(record.lorebook.retrieval);
+                const errors = this.validateLorebook(lorebook);
+                if (errors.length > 0) throw new Error(errors.join('\n'));
+                this.editorState.structuredLorebook = this.migrateLorebookToCurrent(lorebook);
+                this.editorState.jsonAdvanced = false;
+                this.renderStructuredForm();
+            } catch (error) {
+                await uiUtils.showCustomAlert(`フォーム編集へ戻れません: ${error.message}`);
+                return;
+            }
+        }
+        this.updateStructuredEditorVisibility();
+        elements.lorebookEditorStatus.textContent = this.editorState.jsonAdvanced
+            ? '高度なJSON編集です。フォームへ戻る前または保存時に検証されます。'
+            : 'フォームを修正して「保存」を押してください。LLMによる再解析は行いません。';
+        this.updateEditorState();
     },
 
     updateEditorState() {
@@ -382,7 +874,9 @@ const lorebookManager = {
         this.isSavingStructured = true;
         this.updateEditorState();
         try {
-            const editedLorebook = JSON.parse(elements.lorebookSourceTextarea.value);
+            const editedLorebook = this.editorState.jsonAdvanced
+                ? JSON.parse(elements.lorebookSourceTextarea.value)
+                : this.collectStructuredForm();
             if (!editedLorebook || typeof editedLorebook !== 'object' || Array.isArray(editedLorebook)) {
                 throw new Error('LorebookはJSONオブジェクトである必要があります。');
             }
@@ -472,7 +966,7 @@ JSONは次の形だけを返す。Markdown、コードフェンス、解説を�
       "exactRules": [{"speakerId":"id","targetId":"id","forms":[{"context":"spoken|innerThought|public|private","value":"呼称"}]}],
       "fallbackRules": [{"speakerId":"id","targetDescription":"対象の説明","context":"spoken|innerThought|public|private","formTemplate":"呼称パターン"}]
     },
-    "conditionalMemories": [{"id":"memory-id","characters":["id"],"keywords":["検索語"],"priority":50,"content":"一つの話題だけを扱う記憶"}]
+    "conditionalMemories": [{"id":"memory-id","anyCharacters":["id"],"keywords":["検索語"],"priority":50,"content":"一つの話題だけを扱う記憶"}]
   },
   "reviewReport": {
     "warnings": ["警告"],
@@ -481,7 +975,7 @@ JSONは次の形だけを返す。Markdown、コードフェンス、解説を�
     "structuredAddressingCount": 0
   }
 }
-conditionalMemoriesの人物条件は characters、allCharacters、anyCharacters のうち意味に合うものだけを使う。話題依存ならkeywordsを付ける。priorityは0〜100。IDは小文字英数字とハイフンだけにする。`;
+conditionalMemoriesの人物条件は allCharacters、anyCharacters のうち意味に合うものだけを使い、これ以外の人物条件フィールドは生成しない。話題依存ならkeywordsを付ける。priorityは0〜100。IDは小文字英数字とハイフンだけにする。`;
     },
 
     parseAnalysisJson(text) {
@@ -514,6 +1008,33 @@ conditionalMemoriesの人物条件は characters、allCharacters、anyCharacters
             formatting: normalizeRules(styleGuide?.formatting),
             avoid: normalizeRules(styleGuide?.avoid),
         };
+    },
+
+    migrateLorebookToCurrent(rawLorebook) {
+        const lorebook = this.clone(rawLorebook);
+        if (lorebook?.schemaVersion === LOREBOOK_SCHEMA_VERSION) return lorebook;
+        if (lorebook?.schemaVersion !== 2) {
+            throw new Error(`対応していないLorebookスキーマです: ${lorebook?.schemaVersion}`);
+        }
+        lorebook.styleGuide = this.normalizeStyleGuide(lorebook.styleGuide);
+        (lorebook.conditionalMemories || []).forEach(memory => {
+            if (!Array.isArray(memory.characters) || memory.characters.length === 0) {
+                delete memory.characters;
+                return;
+            }
+            if (Array.isArray(memory.anyCharacters) && memory.anyCharacters.length > 0) {
+                const legacyIds = [...new Set(memory.characters)].sort();
+                const currentIds = [...new Set(memory.anyCharacters)].sort();
+                if (JSON.stringify(legacyIds) !== JSON.stringify(currentIds)) {
+                    throw new Error(`条件付き記憶「${memory.id || 'ID不明'}」は旧charactersとanyCharactersに異なる条件があり、自動移行できません。`);
+                }
+            } else {
+                memory.anyCharacters = [...memory.characters];
+            }
+            delete memory.characters;
+        });
+        lorebook.schemaVersion = LOREBOOK_SCHEMA_VERSION;
+        return lorebook;
     },
 
     slugify(value) {
@@ -564,7 +1085,7 @@ conditionalMemoriesの人物条件は characters、allCharacters、anyCharacters
                 rule.speakerId = remap(rule.speakerId);
             });
             (lorebook.conditionalMemories || []).forEach(memory => {
-                ['characters', 'allCharacters', 'anyCharacters'].forEach(key => {
+                ['allCharacters', 'anyCharacters'].forEach(key => {
                     if (Array.isArray(memory[key])) memory[key] = memory[key].map(remap);
                 });
             });
@@ -628,21 +1149,19 @@ conditionalMemoriesの人物条件は characters、allCharacters、anyCharacters
         requireString(lorebook.name, 'name');
         if (typeof lorebook.description !== 'string') errors.push('description は文字列である必要があります。');
         requireString(lorebook.storyCore, 'storyCore');
-        if (lorebook.styleGuide !== undefined) {
-            if (!lorebook.styleGuide || typeof lorebook.styleGuide !== 'object' || Array.isArray(lorebook.styleGuide)) {
-                errors.push('styleGuide はオブジェクトである必要があります。');
-            } else {
-                const styleKeys = ['narration', 'dialogue', 'formatting', 'avoid'];
-                checkAllowedKeys(lorebook.styleGuide, styleKeys, 'styleGuide');
-                styleKeys.forEach(key => {
-                    const rules = lorebook.styleGuide[key];
-                    if (!Array.isArray(rules)) {
-                        errors.push(`styleGuide.${key} は配列である必要があります。`);
-                        return;
-                    }
-                    rules.forEach((rule, index) => requireString(rule, `styleGuide.${key}[${index}]`));
-                });
-            }
+        if (!lorebook.styleGuide || typeof lorebook.styleGuide !== 'object' || Array.isArray(lorebook.styleGuide)) {
+            errors.push('styleGuide はオブジェクトである必要があります。');
+        } else {
+            const styleKeys = ['narration', 'dialogue', 'formatting', 'avoid'];
+            checkAllowedKeys(lorebook.styleGuide, styleKeys, 'styleGuide');
+            styleKeys.forEach(key => {
+                const rules = lorebook.styleGuide[key];
+                if (!Array.isArray(rules)) {
+                    errors.push(`styleGuide.${key} は配列である必要があります。`);
+                    return;
+                }
+                rules.forEach((rule, index) => requireString(rule, `styleGuide.${key}[${index}]`));
+            });
         }
         if (!lorebook.analysis || typeof lorebook.analysis !== 'object' || Array.isArray(lorebook.analysis)) {
             errors.push('analysis が必要です。');
@@ -720,7 +1239,7 @@ conditionalMemoriesの人物条件は characters、allCharacters、anyCharacters
         if (!Array.isArray(lorebook.conditionalMemories)) errors.push('conditionalMemories は配列である必要があります。');
         const memoryIds = new Set();
         (Array.isArray(lorebook.conditionalMemories) ? lorebook.conditionalMemories : []).forEach((memory, index) => {
-            checkAllowedKeys(memory, ['id', 'characters', 'allCharacters', 'anyCharacters', 'keywords', 'priority', 'content'], `conditionalMemories[${index}]`);
+            checkAllowedKeys(memory, ['id', 'allCharacters', 'anyCharacters', 'keywords', 'priority', 'content'], `conditionalMemories[${index}]`);
             requireString(memory?.id, `conditionalMemories[${index}].id`);
             requireString(memory?.content, `conditionalMemories[${index}].content`);
             if (!/^[a-z0-9][a-z0-9-]*$/.test(memory?.id || '')) errors.push(`conditionalMemories[${index}].id の形式が不正です。`);
@@ -729,7 +1248,7 @@ conditionalMemoriesの人物条件は characters、allCharacters、anyCharacters
             if (!Number.isInteger(memory?.priority) || memory.priority < 0 || memory.priority > 100) {
                 errors.push(`conditionalMemories[${index}].priority は0〜100の整数である必要があります。`);
             }
-            ['characters', 'allCharacters', 'anyCharacters'].forEach(key => {
+            ['allCharacters', 'anyCharacters'].forEach(key => {
                 if (memory?.[key] !== undefined) {
                     if (!Array.isArray(memory[key]) || memory[key].length === 0) errors.push(`conditionalMemories[${index}].${key} が不正です。`);
                     (memory[key] || []).forEach(id => {
@@ -946,7 +1465,7 @@ conditionalMemoriesの人物条件は characters、allCharacters、anyCharacters
             return data.lorebooks;
         }
         if (data?.lorebook && typeof data.lorebook === 'object') return [data];
-        if (data?.schemaVersion === LOREBOOK_SCHEMA_VERSION) return [{ lorebook: data }];
+        if ([2, LOREBOOK_SCHEMA_VERSION].includes(data?.schemaVersion)) return [{ lorebook: data }];
         throw new Error('対応していないLorebookファイル形式です。');
     },
 
@@ -959,7 +1478,7 @@ conditionalMemoriesの人物条件は characters、allCharacters、anyCharacters
             const importedRecords = [];
             const reservedIds = new Set();
             for (const entry of entries) {
-                const sourceLorebook = this.clone(entry.lorebook);
+                const sourceLorebook = this.migrateLorebookToCurrent(entry.lorebook);
                 const errors = this.validateLorebook(sourceLorebook);
                 if (errors.length > 0) throw new Error(`${sourceLorebook?.name || '名称不明'}: ${errors.join(' / ')}`);
                 const id = this.createUniqueId(sourceLorebook.name, null, reservedIds);

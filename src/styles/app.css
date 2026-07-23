@@ -3238,6 +3238,178 @@
             margin: 8px 0 12px;
         }
 
+        .lorebook-structured-editor-toolbar {
+            display: flex;
+            justify-content: flex-end;
+            margin: 0 0 8px;
+        }
+
+        .lorebook-structured-editor-toolbar button {
+            width: auto;
+            margin: 0;
+            font-size: 12px;
+        }
+
+        .lorebook-structured-form {
+            display: flex;
+            flex: 1;
+            min-height: 0;
+            flex-direction: column;
+            gap: 8px;
+            overflow: auto;
+            padding: 2px 2px 12px;
+        }
+
+        .lorebook-form-section,
+        .lorebook-form-item {
+            border: 1px solid var(--border-tertiary);
+            border-radius: 6px;
+            background: var(--bg-primary);
+        }
+
+        .lorebook-form-section > summary,
+        .lorebook-form-item > summary {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .lorebook-form-section > summary {
+            padding: 10px;
+            background: var(--bg-secondary);
+        }
+
+        .lorebook-form-section > :not(summary) {
+            margin-right: 10px;
+            margin-left: 10px;
+        }
+
+        .lorebook-form-section > :last-child {
+            margin-bottom: 10px;
+        }
+
+        .lorebook-form-section h3 {
+            margin-top: 16px;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .lorebook-form-field {
+            display: flex;
+            min-width: 0;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 10px;
+        }
+
+        .lorebook-form-label {
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .lorebook-form-field small {
+            color: var(--text-secondary);
+            font-size: 10px;
+        }
+
+        .lorebook-form-field input[type="text"],
+        .lorebook-form-field input[type="number"],
+        .lorebook-form-field select,
+        .lorebook-form-field textarea {
+            box-sizing: border-box;
+            width: 100%;
+            margin: 0;
+        }
+
+        .lorebook-form-field textarea {
+            min-height: 0;
+            resize: vertical;
+            line-height: 1.45;
+        }
+
+        .lorebook-form-item-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .lorebook-form-item {
+            background: var(--bg-secondary);
+        }
+
+        .lorebook-form-item > summary {
+            padding: 8px;
+            font-size: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        .lorebook-form-item > :not(summary) {
+            margin-right: 8px;
+            margin-left: 8px;
+        }
+
+        .lorebook-form-item-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 6px;
+            margin-top: 10px;
+            margin-bottom: 8px;
+        }
+
+        .lorebook-form-item-actions button,
+        .lorebook-form-add-button {
+            width: auto;
+            margin: 0;
+            padding: 5px 8px;
+            font-size: 11px;
+        }
+
+        .lorebook-form-item-actions button.danger {
+            background: var(--bg-button-delete);
+        }
+
+        .lorebook-form-add-button {
+            margin-top: 8px;
+        }
+
+        .lorebook-form-character-checks {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 4px 8px;
+            padding: 6px;
+            border: 1px solid var(--border-tertiary);
+            border-radius: 5px;
+            background: var(--bg-primary);
+        }
+
+        .lorebook-form-character-checks label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            min-width: 0;
+            font-size: 11px;
+        }
+
+        .lorebook-form-character-checks input {
+            width: auto;
+            margin: 0;
+        }
+
+        .lorebook-form-memory-conditions {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .lorebook-form-memory-condition > summary {
+            padding: 6px 8px;
+            font-weight: normal;
+        }
+
+        .lorebook-form-memory-condition .lorebook-form-character-checks {
+            margin-bottom: 6px;
+        }
+
         .lorebook-editor-file-actions button,
         .lorebook-analyze-button {
             width: auto;
