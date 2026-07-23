@@ -196,6 +196,7 @@ _setupParamSlider(paramId, defaultValue, storageKey) {
 
                     await dbUtils.openDB();
                     await dbUtils.loadSettings();
+                    await lorebookManager.loadRecords();
                     if (navigator.storage && navigator.storage.persist) { navigator.storage.persist(); }
                     uiUtils.applyTheme();
                     uiUtils.applyFontFamily();

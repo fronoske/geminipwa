@@ -353,8 +353,9 @@ if (state.settings.disableDeleteApiKeyConfirmation) {
                 });
 
                 const keyInput = document.createElement('input');
-                keyInput.type = 'password';
+                keyInput.type = state.settings.unmaskApiKeys ? 'text' : 'password';
                 keyInput.className = 'api-key-item-input';
+                keyInput.dataset.apiKeyInput = 'true';
                 keyInput.value = key.value;
                 keyInput.placeholder = 'APIキーを入力...';
                 keyInput.style.marginBottom = '0';

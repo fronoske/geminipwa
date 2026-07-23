@@ -350,12 +350,13 @@
                     if(apiKey) apiKey.label = e.target.value;
                 });
 
-                const keyInput = this.createInputElement('password', 'api-key-item-input', key.value, 'APIキー...', (e) => {
+                const keyInput = this.createInputElement(state.settings.unmaskApiKeys ? 'text' : 'password', 'api-key-item-input', key.value, 'APIキー...', (e) => {
                     const backend = state.settings.llmaggregatorBackends.find(b => b.id === backendId);
                     const apiKey = backend.apiKeys.find(k => k.id === key.id);
                     if(apiKey) apiKey.value = e.target.value;
                     if(apiKey.isActive) this.updateMainBackendInput();
                 });
+                keyInput.dataset.apiKeyInput = 'true';
 
                 const actions = document.createElement('div');
                 actions.className = 'api-key-item-actions';

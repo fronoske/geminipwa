@@ -172,6 +172,24 @@ describe('Lorebook retrieval', () => {
       ]);
   });
 
+  it('appends persisted user Lorebooks in their saved order', () => {
+    const context = createLorebookContext([]);
+    evaluate(context, `globalThis.state = {
+      userLorebookRecords: [
+        { lorebook: { id: 'user-one', name: 'ユーザー1', description: '1' } },
+        { lorebook: { id: 'user-two', name: 'ユーザー2', description: '2' } }
+      ]
+    }`);
+
+    expect(evaluate<Array<{ id: string }>>(context, 'lorebookUtils.getAvailableLorebooks()')
+      .map(lorebook => lorebook.id)).toEqual([
+        'tokyo-yunagi-high-v1',
+        'seirei-boarding-school-v1',
+        'user-one',
+        'user-two',
+      ]);
+  });
+
   it('injects the public-high-school relationship and directional forms of address', () => {
     const context = createLorebookContext([]);
     const prompt = evaluate<string>(

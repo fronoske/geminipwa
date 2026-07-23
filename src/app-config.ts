@@ -1,8 +1,9 @@
 // Bundled into the generated index.html from this TypeScript source.
         const DB_NAME = 'GeminiPWA_DB';
-        const DB_VERSION = 8;
+        const DB_VERSION = 9;
         const SETTINGS_STORE = 'settings';
         const CHATS_STORE = 'chats';
+        const LOREBOOKS_STORE = 'lorebooks';
         const CHAT_UPDATEDAT_INDEX = 'updatedAtIndex';
         const CHAT_CREATEDAT_INDEX = 'createdAtIndex';
         const API_PROVIDERS = [
@@ -42,6 +43,18 @@
         const DEFAULT_XAI_MODEL = 'grok-4-1-fast-non-reasoning';
         const DEFAULT_LLMAGGREGATOR_MODEL = 'google/gemma-4-31b-it:free';
         const DEFAULT_STREAMING_SPEED = 12;
+        const LOREBOOK_SCHEMA_VERSION = 2;
+        const LOREBOOK_PACKAGE_VERSION = 1;
+        const LOREBOOK_ANALYSIS_METHOD_VERSION = 'llm-analysis-v1';
+        const LOREBOOK_SOURCE_MAX_CHARACTERS = 500_000;
+        const DEFAULT_LOREBOOK_RETRIEVAL = Object.freeze({
+            scanMessageCount: 10,
+            maxDynamicCharacters: 2600,
+            maxCharacterCores: 5,
+            maxAddressingRules: 14,
+            maxAddressingCharacters: 1000,
+            maxConditionalMemories: 6,
+        });
         const CONTEXT_PRESSURE_THRESHOLD_PERCENT = 90;
         const DEFAULT_TEMPERATURE = 0.5;
         const DEFAULT_MAX_TOKENS = 4000;
@@ -115,7 +128,7 @@ const PASTEL_RAINBOW_THEME_COLOR = '#ffadad';
         const LIGHT_MODE_HEADER_COLOR = '#4a90e2';
         const LIGHT_MODE_PRIMARY_COLOR = '#ffffff';
 
-        const APP_VERSION = "2026.07.23-fronoske";
+        const APP_VERSION = "2026.07.24-fronoske";
         const SWIPE_THRESHOLD = 50;
         const ZOOM_THRESHOLD = 1.01;
         const MAX_FILE_SIZE = 10 * 1024 * 1024;

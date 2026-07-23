@@ -1,12 +1,23 @@
 // @ts-nocheck -- Enable after shared application and persisted chat types are defined.
 // Bundled into the generated index.html from this TypeScript source.
 const lorebookUtils = {
+    getAllLorebooks() {
+        const builtinIds = new Set(BUILTIN_LOREBOOKS.map(lorebook => lorebook.id));
+        const records = typeof state !== 'undefined' && Array.isArray(state.userLorebookRecords)
+            ? state.userLorebookRecords
+            : [];
+        const userLorebooks = records
+            .map(record => record?.lorebook)
+            .filter(lorebook => lorebook && !builtinIds.has(lorebook.id));
+        return [...BUILTIN_LOREBOOKS, ...userLorebooks];
+    },
+
     getAvailableLorebooks() {
-        return BUILTIN_LOREBOOKS.map(({ id, name, description }) => ({ id, name, description }));
+        return this.getAllLorebooks().map(({ id, name, description }) => ({ id, name, description }));
     },
 
     getLorebook(lorebookId) {
-        return BUILTIN_LOREBOOKS.find(lorebook => lorebook.id === lorebookId) || null;
+        return this.getAllLorebooks().find(lorebook => lorebook.id === lorebookId) || null;
     },
 
     normalizeLorebookId(lorebookId) {

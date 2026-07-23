@@ -46,6 +46,9 @@ const dbUtils = {
                         if (!db.objectStoreNames.contains(SETTINGS_STORE)) {
                             db.createObjectStore(SETTINGS_STORE, { keyPath: 'key' });
                         }
+                        if (!db.objectStoreNames.contains(LOREBOOKS_STORE)) {
+                            db.createObjectStore(LOREBOOKS_STORE, { keyPath: 'id' });
+                        }
                         let chatStore;
                         if (!db.objectStoreNames.contains(CHATS_STORE)) {
                             chatStore = db.createObjectStore(CHATS_STORE, { keyPath: 'id', autoIncrement: true });
@@ -467,19 +470,80 @@ const dbUtils = {
                 });
             },
 
+            async getAllLorebookRecords() {
+                await this.openDB();
+                return new Promise((resolve, reject) => {
+                    try {
+                        const store = this._getStore(LOREBOOKS_STORE);
+                        const request = store.getAll();
+                        request.onsuccess = (event) => resolve(event.target.result
+                            .sort((left, right) => (Number(left.order) || 0) - (Number(right.order) || 0)));
+                        request.onerror = (event) => reject(`Lorebook一覧取得エラー: ${event.target.error}`);
+                    } catch (error) {
+                        reject(error);
+                    }
+                });
+            },
+
+            async putLorebookRecord(record) {
+                await this.openDB();
+                return new Promise((resolve, reject) => {
+                    try {
+                        const store = this._getStore(LOREBOOKS_STORE, 'readwrite');
+                        const request = store.put(record);
+                        request.onsuccess = () => resolve(record);
+                        request.onerror = (event) => reject(`Lorebook保存エラー: ${event.target.error}`);
+                    } catch (error) {
+                        reject(error);
+                    }
+                });
+            },
+
+            async putLorebookRecords(records) {
+                await this.openDB();
+                return new Promise((resolve, reject) => {
+                    try {
+                        const transaction = state.db.transaction([LOREBOOKS_STORE], 'readwrite');
+                        const store = transaction.objectStore(LOREBOOKS_STORE);
+                        transaction.oncomplete = () => resolve(records);
+                        transaction.onerror = (event) => reject(`Lorebook一括保存エラー: ${event.target.error}`);
+                        transaction.onabort = (event) => reject(`Lorebook一括保存が中断されました: ${event.target.error || ''}`);
+                        records.forEach(record => store.put(record));
+                    } catch (error) {
+                        reject(error);
+                    }
+                });
+            },
+
+            async deleteLorebookRecord(id) {
+                await this.openDB();
+                return new Promise((resolve, reject) => {
+                    try {
+                        const store = this._getStore(LOREBOOKS_STORE, 'readwrite');
+                        const request = store.delete(id);
+                        request.onsuccess = () => resolve();
+                        request.onerror = (event) => reject(`Lorebook削除エラー: ${event.target.error}`);
+                    } catch (error) {
+                        reject(error);
+                    }
+                });
+            },
+
             async clearAllData() {
                 await this.openDB();
                 return new Promise((resolve, reject) => {
                     try {
-                        const transaction = state.db.transaction([SETTINGS_STORE, CHATS_STORE], 'readwrite');
+                        const transaction = state.db.transaction([SETTINGS_STORE, CHATS_STORE, LOREBOOKS_STORE], 'readwrite');
                         const settingsStore = transaction.objectStore(SETTINGS_STORE);
                         const chatsStore = transaction.objectStore(CHATS_STORE);
+                        const lorebooksStore = transaction.objectStore(LOREBOOKS_STORE);
 
                         transaction.oncomplete = () => resolve();
                         transaction.onerror = (e) => reject(`データ全消去エラー: ${e.target.error}`);
 
                         settingsStore.clear();
                         chatsStore.clear();
+                        lorebooksStore.clear();
                     } catch (error) {
                         reject(error);
                     }

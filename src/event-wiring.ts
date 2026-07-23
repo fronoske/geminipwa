@@ -717,6 +717,7 @@ Object.assign(appLogic, {
                 multiApiKeyUtils.initializeMultiApiKeys();
                 multiBackendUtils.initialize();
                 openRouterModelCatalog.initialize();
+                lorebookManager.initialize();
                 elements.geminiApiKeyInput.addEventListener('input', () => multiApiKeyUtils.syncMainApiKeyInput('gemini'));
                 elements.deepSeekApiKeyInput.addEventListener('input', () => multiApiKeyUtils.syncMainApiKeyInput('deepseek'));
                 elements.claudeApiKeyInput.addEventListener('input', () => multiApiKeyUtils.syncMainApiKeyInput('claude'));

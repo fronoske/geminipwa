@@ -927,4 +927,104 @@ async callDeepSeekApi(apiKey, model, messagesForApi, generationConfig, systemIns
                 }
                 return response;
             },
+
+            getCurrentProviderRequestContext() {
+                const provider = state.settings.apiProvider;
+                let apiKey = '';
+                if (provider === 'llmaggregator') {
+                    const activeBackend = multiBackendUtils.getActiveBackend();
+                    apiKey = multiBackendUtils.getActiveApiKeyForBackend(activeBackend);
+                } else if (state.settings.showMultiApiKeys) {
+                    apiKey = multiApiKeyUtils.getActiveApiKey(provider);
+                } else {
+                    const keySettings = {
+                        gemini: 'apiKey',
+                        deepseek: 'deepSeekApiKey',
+                        claude: 'claudeApiKey',
+                        openai: 'openaiApiKey',
+                        openrouter: 'openrouterApiKey',
+                        xai: 'xaiApiKey',
+                    };
+                    apiKey = state.settings[keySettings[provider]] || '';
+                }
+
+                const modelSettings = {
+                    gemini: 'modelName',
+                    deepseek: 'deepSeekModelName',
+                    claude: 'claudeModelName',
+                    openai: 'openaiModelName',
+                    openrouter: 'openrouterModelName',
+                    xai: 'xaiModelName',
+                    llmaggregator: 'llmAggregatorModelName',
+                };
+                return { provider, apiKey, model: state.settings[modelSettings[provider]] || '' };
+            },
+
+            extractNonStreamingText(provider, data) {
+                if (provider === 'gemini') {
+                    return (data?.candidates?.[0]?.content?.parts || [])
+                        .filter(part => !part?.thought && typeof part?.text === 'string')
+                        .map(part => part.text)
+                        .join('');
+                }
+                if (provider === 'claude') {
+                    return (Array.isArray(data?.content) ? data.content : [])
+                        .filter(part => part?.type === 'text' && typeof part?.text === 'string')
+                        .map(part => part.text)
+                        .join('');
+                }
+                const content = data?.choices?.[0]?.message?.content;
+                if (typeof content === 'string') return content;
+                if (Array.isArray(content)) {
+                    return content.map(part => typeof part === 'string' ? part : part?.text || '').join('');
+                }
+                return '';
+            },
+
+            async requestCurrentProviderText(systemPrompt, userPrompt, options = {}) {
+                const { provider, apiKey, model } = this.getCurrentProviderRequestContext();
+                if (!apiKey) throw new Error(`${provider} APIキーが設定されていません。`);
+                if (!model) throw new Error(`${provider} のモデルが選択されていません。`);
+
+                if (provider === 'llmaggregator') {
+                    const activeBackend = multiBackendUtils.getActiveBackend();
+                    if (!activeBackend?.url) throw new Error('LLM AggregatorのAPIバックエンドURLが設定されていません。');
+                    if (!isAllowedAggregatorDomain(activeBackend.url)) {
+                        throw new Error('LLM AggregatorのバックエンドURLが許可されていません。');
+                    }
+                }
+
+                const messages = [{ role: 'user', parts: [{ text: userPrompt }] }];
+                const generationConfig = {
+                    temperature: options.temperature ?? 0.1,
+                    maxOutputTokens: options.maxOutputTokens ?? 16384,
+                    topP: options.topP ?? 0.9,
+                };
+                const systemInstruction = provider === 'gemini'
+                    ? { role: 'system', parts: [{ text: systemPrompt }] }
+                    : { content: systemPrompt, parts: [{ text: systemPrompt }] };
+
+                try {
+                    let response;
+                    if (provider === 'gemini') {
+                        response = await this.callGeminiApi(apiKey, model, messages, generationConfig, systemInstruction, false, false, false);
+                    } else if (provider === 'deepseek' || provider === 'llmaggregator') {
+                        response = await this.callDeepSeekApi(apiKey, model, messages, generationConfig, systemInstruction, false, provider);
+                    } else if (provider === 'claude') {
+                        response = await this.callClaudeApi(apiKey, model, messages, generationConfig, systemInstruction, false);
+                    } else if (provider === 'openai' || provider === 'openrouter') {
+                        response = await this.callOpenAICompatibleApi(apiKey, model, provider, messages, generationConfig, systemInstruction, false, false);
+                    } else if (provider === 'xai') {
+                        response = await this.callXaiApi(apiKey, model, messages, generationConfig, systemInstruction, false, false);
+                    } else {
+                        throw new Error('対応していないAPIプロバイダーです。');
+                    }
+                    const data = await response.json();
+                    const text = this.extractNonStreamingText(provider, data).trim();
+                    if (!text) throw new Error(`${provider} から解析結果が返されませんでした。`);
+                    return { text, provider, model };
+                } finally {
+                    state.abortController = null;
+                }
+            },
         };

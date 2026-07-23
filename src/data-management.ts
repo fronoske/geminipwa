@@ -810,7 +810,7 @@ newSettings.headerTapScrollToTop = elements.headerTapScrollToTopToggle.checked;
                 });
             },
             async confirmClearAllData() {
-                const confirmed = await uiUtils.showCustomConfirm("本当にすべてのデータ（チャット履歴と設定）を削除しますか？この操作は元に戻せません。");
+                const confirmed = await uiUtils.showCustomConfirm("本当にすべてのデータ（チャット履歴・設定・保存済みLorebook）を削除しますか？この操作は元に戻せません。");
                 if (confirmed) {
                     try {
                         await dbUtils.clearAllData();

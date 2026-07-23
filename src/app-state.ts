@@ -3,6 +3,7 @@
             db: null,
             currentChatId: null,
             currentLorebookId: null,
+            userLorebookRecords: [],
             currentMessages: [],
             settings: {
                 apiKey: '',

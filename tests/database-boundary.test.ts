@@ -29,6 +29,10 @@ describe('database boundary', () => {
       'getChat',
       'getAllChats',
       'deleteChat',
+      'getAllLorebookRecords',
+      'putLorebookRecord',
+      'putLorebookRecords',
+      'deleteLorebookRecord',
       'clearAllData',
       'clearAllChatsStore',
     ]);

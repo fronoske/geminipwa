@@ -25,8 +25,10 @@ The following features are essential product requirements. They must not be remo
 - Preserve the session's Lorebook assignment across save, load, duplication, and bulk export/import.
 - Keep fixed story context, directional forms of address, character cores, and deterministic conditional memories structurally separate.
 - Treat directional and context-dependent forms of address as critical data, and allocate their prompt budget before character cores and conditional memories.
-- For future Lorebook registration, use the LLM for semantic extraction and compression, but require programmatic schema and referential-integrity validation plus editable user confirmation before persistence.
+- Lorebook registration uses the currently selected LLM for semantic extraction, compression, and source auditing, but requires programmatic schema and referential-integrity validation plus editable user confirmation before persistence.
+- Keep the transient LLM request/response log inspectable from the Lorebook editor without recording API keys, and allow in-progress analysis to be cancelled.
 - Preserve the original source separately from the generated runtime Lorebook so editing can rerun analysis without information loss.
+- Preserve saved Lorebook editing, deletion, ordering, and individual/all import and export through the top-level settings section.
 - Use the complete original Lorebook source as an early full-context seed and add structured, relevant Lorebook reminders near the current turn.
 - After a response reaches 90% of the model's context window, stop including the full-context seed for the remainder of that session; keep the fixed core and selective reminders.
 - If the selected model's context-window limit is unknown, keep the full-context seed enabled; do not infer a percentage or automatically switch injection modes.

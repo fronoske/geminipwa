@@ -2,6 +2,11 @@
 // Bundled into the generated index.html from this TypeScript source.
 Object.assign(uiUtils, {
             showScreen(screenName, fromPopState = false) {
+                if (state.currentScreen === 'lorebook-editor'
+                    && screenName !== 'lorebook-editor'
+                    && lorebookManager.isAnalyzing) {
+                    lorebookManager.cancelAnalysis();
+                }
                 if (state.isMemoVisible && screenName !== 'chat') {
                     elements.memoArea.classList.add('hidden');
                     state.isMemoVisible = false;
@@ -12,15 +17,18 @@ Object.assign(uiUtils, {
                 }
                 if (screenName === state.currentScreen) {
                     if (screenName === 'history') this.updateHistoryHeaderButtonVisibility();
-                    if (screenName === 'settings') this.applySettingsUIDetailsOpenStates();
+                    if (screenName === 'settings') {
+                        this.applySettingsUIDetailsOpenStates();
+                        lorebookManager.renderManagementList();
+                    }
                     return;
                 }
 
-                                                const allScreens = [elements.chatScreen, elements.historyScreen, elements.settingsScreen];
+                const allScreens = [elements.chatScreen, elements.historyScreen, elements.settingsScreen, elements.lorebookEditorScreen];
                 let activeScreen = null;
 
                 if (!fromPopState) {
-                    if (screenName === 'history' || screenName === 'settings') {
+                    if (screenName === 'history' || screenName === 'settings' || screenName === 'lorebook-editor') {
                         history.pushState({ screen: screenName }, '', `#${screenName}`);
                     } else if (screenName === 'chat') {
                         history.replaceState({ screen: 'chat' }, '', '#chat');
@@ -39,6 +47,7 @@ Object.assign(uiUtils, {
                     elements.chatScreen.style.transform = 'translateX(0)';
                     elements.historyScreen.style.transform = 'translateX(-100%)';
                     elements.settingsScreen.style.transform = 'translateX(100%)';
+                    elements.lorebookEditorScreen.style.transform = 'translateX(200%)';
                     requestAnimationFrame(() => {
                         this.adjustTextareaHeight();
                         this.updateChatScreenElementVisibility();
@@ -48,13 +57,22 @@ Object.assign(uiUtils, {
                     elements.chatScreen.style.transform = 'translateX(100%)';
                     elements.historyScreen.style.transform = 'translateX(0)';
                     elements.settingsScreen.style.transform = 'translateX(200%)';
+                    elements.lorebookEditorScreen.style.transform = 'translateX(300%)';
                     this.renderHistoryList();
                 } else if (screenName === 'settings') {
                     activeScreen = elements.settingsScreen;
                     elements.chatScreen.style.transform = 'translateX(-100%)';
                     elements.historyScreen.style.transform = 'translateX(-200%)';
                     elements.settingsScreen.style.transform = 'translateX(0)';
+                    elements.lorebookEditorScreen.style.transform = 'translateX(100%)';
                     this.applySettingsToUI();
+                    lorebookManager.renderManagementList();
+                } else if (screenName === 'lorebook-editor') {
+                    activeScreen = elements.lorebookEditorScreen;
+                    elements.chatScreen.style.transform = 'translateX(-200%)';
+                    elements.historyScreen.style.transform = 'translateX(-300%)';
+                    elements.settingsScreen.style.transform = 'translateX(-100%)';
+                    elements.lorebookEditorScreen.style.transform = 'translateX(0)';
                 }
 
                 requestAnimationFrame(() => {
@@ -621,11 +639,9 @@ Object.assign(uiUtils, {
                     const el = document.getElementById(id);
                     if (el) el.type = type;
                 });
-                const dynamicInputs = document.querySelectorAll('.api-key-item-input');
+                const dynamicInputs = document.querySelectorAll('.api-key-item-input[data-api-key-input="true"]');
                 dynamicInputs.forEach(input => {
-                    if (input.placeholder && input.placeholder.includes('APIキー')) {
-                        input.type = type;
-                    }
+                    input.type = type;
                 });
             },
 });

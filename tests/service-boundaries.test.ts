@@ -12,6 +12,7 @@ const serviceBoundaries = [
   ['input-preset', 'inputPresetUtils'],
   ['lorebook', 'lorebookUtils'],
   ['api-clients', 'apiUtils'],
+  ['lorebook-manager', 'lorebookManager'],
   ['backend-manager', 'multiBackendUtils'],
   ['error-recovery', 'errorRecovery'],
   ['api-key-manager', 'multiApiKeyUtils'],

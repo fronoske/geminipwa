@@ -130,6 +130,57 @@ describe('settings behavior consistency', () => {
     expect(new vm.Script('state.settings.llmaggregatorBackends[0].apiKeys.length').runInContext(backendContext)).toBe(0);
   });
 
+  it('preserves the API-key unmask setting when key lists are rebuilt during switching', () => {
+    const createDocument = () => ({
+      createElement: (tagName: string) => ({
+        tagName: tagName.toUpperCase(),
+        type: '',
+        className: '',
+        value: '',
+        placeholder: '',
+        textContent: '',
+        disabled: false,
+        style: {},
+        dataset: {},
+        children: [] as any[],
+        addEventListener: vi.fn(),
+        appendChild(child: any) { this.children.push(child); return child; },
+      }),
+      querySelector: vi.fn(() => null),
+    });
+
+    const providerContext = vm.createContext({
+      state: {
+        settings: {
+          unmaskApiKeys: true,
+          geminiApiKeys: [{ id: 'key-1', label: 'キー 1', value: 'secret', isActive: true }],
+        },
+      },
+      document: createDocument(),
+    });
+    new vm.Script(readRuntime('api-key-manager')).runInContext(providerContext);
+    expect(new vm.Script(
+      "multiApiKeyUtils.createApiKeyItem('gemini', state.settings.geminiApiKeys[0], 0).children[0].children[1].type",
+    ).runInContext(providerContext)).toBe('text');
+
+    const backendContext = vm.createContext({
+      state: {
+        settings: {
+          unmaskApiKeys: true,
+          llmaggregatorBackends: [{
+            id: 'backend-1',
+            apiKeys: [{ id: 'key-1', label: 'キー 1', value: 'secret', isActive: true }],
+          }],
+        },
+      },
+      document: createDocument(),
+    });
+    new vm.Script(readRuntime('backend-manager')).runInContext(backendContext);
+    expect(new vm.Script(
+      "multiBackendUtils.createApiKeyItem('backend-1', state.settings.llmaggregatorBackends[0].apiKeys[0], 0).children[0].children[1].type",
+    ).runInContext(backendContext)).toBe('text');
+  });
+
   it('describes duplicate prevention rather than deletion', () => {
     const html = readFile('src/index.html');
     expect(html).not.toContain('重複登録されたAPIキーを削除');

@@ -13,7 +13,7 @@
 - `index.html` は約22,000行、約1.26MB。
 - 約4,880行のCSSと、約14,000行の主要JavaScriptがインラインで記述されている。
 - JavaScriptはグローバルな `state`、`elements`、`dbUtils`、`uiUtils`、`appLogic` を中心に相互参照している。
-- IndexedDBのデータベース名は `GeminiPWA_DB`、現在のスキーマバージョンは8。
+- IndexedDBのデータベース名は `GeminiPWA_DB`、現在のスキーマバージョンは9。
 - `sw.js` は `index.html`、`manifest.json`、`marked.js` などのファイル名を固定してキャッシュしている。
 - GitHub Pages向けのビルド・デプロイワークフローはなく、現在はリポジトリ直下の静的ファイルをそのまま公開する構成。
 - HTML属性のインラインイベントハンドラーは見当たらず、外部スクリプト化を妨げる要因は比較的少ない。

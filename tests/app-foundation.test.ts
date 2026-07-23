@@ -23,7 +23,7 @@ describe('application foundation scripts', () => {
     const context = vm.createContext({});
     new vm.Script(readRuntime('app-config')).runInContext(context);
     expect(new vm.Script('DB_NAME').runInContext(context)).toBe('GeminiPWA_DB');
-    expect(new vm.Script('DB_VERSION').runInContext(context)).toBe(8);
+    expect(new vm.Script('DB_VERSION').runInContext(context)).toBe(9);
     expect(new vm.Script('DEFAULT_MODEL').runInContext(context)).toBe('gemini-3.5-flash');
     expect(new vm.Script('API_PROVIDERS.length').runInContext(context)).toBe(7);
   });
