@@ -2540,12 +2540,6 @@
             font-size: 0.85em;
         }
 
-        .openrouter-model-filter-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 8px;
-        }
-
         .openrouter-model-provider-filter {
             margin: 0 0 10px;
             padding: 8px;
@@ -2587,17 +2581,11 @@
             font-size: 0.8em;
         }
 
-        .openrouter-model-capability-filters,
         .openrouter-model-bulk-actions {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
             margin-bottom: 10px;
-        }
-
-        .openrouter-model-capability-filters .checkbox-label {
-            width: auto;
-            margin: 0;
         }
 
         .openrouter-model-bulk-actions button {
@@ -2608,58 +2596,109 @@
 
         .openrouter-model-catalog-list {
             max-height: 320px;
-            overflow-y: auto;
+            overflow: auto;
             margin-bottom: 12px;
             border: 1px solid var(--border-tertiary);
             border-radius: 5px;
             background-color: var(--bg-primary);
         }
 
-        .openrouter-model-catalog-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-            margin: 0;
-            padding: 9px;
+        .openrouter-model-catalog-table {
+            width: 100%;
+            min-width: 480px;
+            border-collapse: collapse;
+            color: var(--text-primary);
+            font-size: 0.82em;
+        }
+
+        .openrouter-model-catalog-table th,
+        .openrouter-model-catalog-table td {
+            padding: 8px;
             border-bottom: 1px solid var(--border-tertiary);
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .openrouter-model-catalog-table th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background-color: var(--bg-secondary);
+            white-space: nowrap;
+        }
+
+        .openrouter-model-sort-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            width: auto;
+            margin: 0;
+            padding: 0;
+            border: none;
+            background: none;
+            color: inherit;
+            font: inherit;
+            font-weight: bold;
             cursor: pointer;
         }
 
-        .openrouter-model-catalog-item:last-child {
-            border-bottom: none;
+        .openrouter-model-sort-button.active {
+            color: var(--text-link);
         }
 
-        .openrouter-model-catalog-item:hover {
+        .openrouter-model-sort-indicator {
+            font-size: 0.9em;
+        }
+
+        .openrouter-model-catalog-table tbody tr:hover {
             background-color: var(--bg-secondary);
         }
 
-        .openrouter-model-catalog-item input {
-            flex: 0 0 auto;
-            margin-top: 3px;
+        .openrouter-model-catalog-table tbody tr:last-child td {
+            border-bottom: none;
         }
 
-        .openrouter-model-catalog-item-text,
-        .openrouter-model-catalog-item-cost,
-        .openrouter-model-catalog-item-meta {
+        .openrouter-model-catalog-table th:first-child,
+        .openrouter-model-catalog-table td:first-child {
+            min-width: 230px;
+        }
+
+        .openrouter-model-catalog-table td:nth-child(2),
+        .openrouter-model-catalog-table td:nth-child(3) {
+            white-space: nowrap;
+        }
+
+        .openrouter-model-cost-cell span,
+        .openrouter-model-identity span,
+        .openrouter-model-identity strong,
+        .openrouter-model-context-cell span {
             display: block;
-            min-width: 0;
         }
 
-        .openrouter-model-catalog-item-text {
+        .openrouter-model-identity span {
+            margin-bottom: 2px;
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        .openrouter-model-context-capabilities {
+            margin-top: 2px;
+            font-weight: bold;
+            letter-spacing: 0.08em;
+        }
+
+        .openrouter-model-selection {
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            margin: 0;
+            cursor: pointer;
             overflow-wrap: anywhere;
         }
 
-        .openrouter-model-catalog-item-cost,
-        .openrouter-model-catalog-item-meta {
-            color: var(--text-secondary);
-            font-size: 0.78em;
-            font-weight: normal;
-        }
-
-        @media (max-width: 600px) {
-            .openrouter-model-filter-grid {
-                grid-template-columns: 1fr;
-            }
+        .openrouter-model-selection input {
+            flex: 0 0 auto;
+            margin: 2px 0 0;
         }
 
         @media (prefers-color-scheme: dark) {

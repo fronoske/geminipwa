@@ -247,6 +247,14 @@ const dbUtils = {
                                         .map((modelId) => modelId.trim())
                                 )];
                             }
+                            if (!Array.isArray(state.settings.openrouterModelCatalog)) {
+                                state.settings.openrouterModelCatalog = [];
+                            }
+                            const openrouterCatalogFetchedAt = Number(state.settings.openrouterModelCatalogFetchedAt);
+                            state.settings.openrouterModelCatalogFetchedAt = Number.isFinite(openrouterCatalogFetchedAt)
+                                && openrouterCatalogFetchedAt > 0
+                                ? openrouterCatalogFetchedAt
+                                : null;
                             if (state.settings.openrouterModelName === 'openrouter/auto') {
                                 state.settings.openrouterModelName = DEFAULT_OPENROUTER_MODEL;
                             }

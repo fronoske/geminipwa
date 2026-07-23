@@ -28,6 +28,7 @@
             'deepseek/deepseek-v4-pro',
         ];
         const OPENROUTER_MODEL_CATALOG_URL = 'https://openrouter.ai/api/v1/models/user';
+        const OPENROUTER_MIN_CONTEXT_LENGTH_EXCLUSIVE = 1_000_000;
         const OPENROUTER_MODEL_PROVIDERS = [
             { value: 'openai', text: 'OpenAI', prefixes: ['openai'] },
             { value: 'anthropic', text: 'Anthropic', prefixes: ['anthropic'] },
