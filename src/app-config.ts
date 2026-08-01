@@ -15,21 +15,20 @@
             { value: 'xai', text: 'Grok (xAI API)' },
             { value: 'llmaggregator', text: 'LLM Aggregator' }
         ];
-        const DEFAULT_MODEL = 'gemini-3.5-flash';
+        const DEFAULT_MODEL = 'gemini-3.6-flash';
         const DEFAULT_DEEPSEEK_MODEL = 'deepseek-reasoner';
         const DEFAULT_CLAUDE_MODEL = 'claude-3-7-sonnet-20250219';
         const DEFAULT_OPENAI_MODEL = 'gpt-3.5-turbo';
-        const DEFAULT_OPENROUTER_MODEL = 'google/gemma-4-31b-it:free';
+        const DEFAULT_OPENROUTER_MODEL = 'z-ai/glm-5.2';
         const DEFAULT_OPENROUTER_SELECTED_MODELS = [
-            'google/gemma-4-31b-it:free',
             'google/gemini-3.1-pro-preview',
             'google/gemini-2.5-pro',
             'anthropic/claude-sonnet-5',
             'z-ai/glm-5.2',
-            'deepseek/deepseek-v4-pro',
+            'deepseek/deepseek-v4-flash-0731',
         ];
         const OPENROUTER_MODEL_CATALOG_URL = 'https://openrouter.ai/api/v1/models/user';
-        const OPENROUTER_MIN_CONTEXT_LENGTH_EXCLUSIVE = 1_000_000;
+        const OPENROUTER_MIN_CONTEXT_LENGTH_EXCLUSIVE = 256_000;
         const OPENROUTER_MODEL_PROVIDERS = [
             { value: 'openai', text: 'OpenAI', prefixes: ['openai'] },
             { value: 'anthropic', text: 'Anthropic', prefixes: ['anthropic'] },
@@ -129,7 +128,7 @@ const PASTEL_RAINBOW_THEME_COLOR = '#ffadad';
         const LIGHT_MODE_HEADER_COLOR = '#4a90e2';
         const LIGHT_MODE_PRIMARY_COLOR = '#ffffff';
 
-        const APP_VERSION = "2026.07.24-fronoske";
+        const APP_VERSION = "2026.08.01-fronoske";
         const SWIPE_THRESHOLD = 50;
         const ZOOM_THRESHOLD = 1.01;
         const MAX_FILE_SIZE = 10 * 1024 * 1024;
