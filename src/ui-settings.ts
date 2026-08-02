@@ -220,6 +220,9 @@ document.body.classList.remove('dark-mode', 'light-mode-forced', 'pastel-pink-mo
                 elements.enableCommonSystemPromptDefaultCheckbox.checked = state.settings.enableCommonSystemPromptDefault;
                 elements.commonDummyUserInput.value = state.settings.commonDummyUser || '';
                 elements.enableCommonDummyUserCheckbox.checked = state.settings.enableCommonDummyUser;
+                elements.commonDummyModelInput.value = state.settings.commonDummyModel || '';
+                elements.enableCommonDummyModelCheckbox.checked = state.settings.enableCommonDummyModel;
+                elements.concatCommonDummyModelCheckbox.checked = state.settings.concatCommonDummyModel;
                 elements.geminiApiKeyInput.value = state.settings.apiKey || '';
                 elements.geminiModelNameSelect.value = state.settings.modelName || DEFAULT_MODEL;
                 elements.geminiAdditionalModelsTextarea.value = state.settings.additionalModels || '';

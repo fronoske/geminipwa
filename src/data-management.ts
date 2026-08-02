@@ -559,6 +559,9 @@ Object.assign(appLogic, {
                 newSettings.enableCommonSystemPromptDefault = elements.enableCommonSystemPromptDefaultCheckbox.checked;
                 newSettings.commonDummyUser = elements.commonDummyUserInput.value.trim();
                 newSettings.enableCommonDummyUser = elements.enableCommonDummyUserCheckbox.checked;
+                newSettings.commonDummyModel = elements.commonDummyModelInput.value.trim();
+                newSettings.enableCommonDummyModel = elements.enableCommonDummyModelCheckbox.checked;
+                newSettings.concatCommonDummyModel = elements.concatCommonDummyModelCheckbox.checked;
                 newSettings.inputPresets = inputPresetUtils.readSettingsFromUI();
 
                 newSettings.modelName = elements.geminiModelNameSelect.value;

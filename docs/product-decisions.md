@@ -43,6 +43,13 @@ The following features are essential product requirements. They must not be remo
 - Preserve one shared Dummy User prompt for all API providers.
 - Preserve its enabled state and append it only to the API request, without adding it to persisted chat history.
 
+### Common Dummy Model prompt
+
+- Preserve one shared Dummy Model prompt for all API providers, appended as a transient `model`/`assistant` message at the end of the API request.
+- Keep sending the prompt and concatenating it with the visible, persisted response as independent options.
+- Do not add the transient prompt itself to chat history when concatenation is disabled.
+- Suppress the Dummy Model prompt for Claude requests that use extended thinking because Anthropic does not allow assistant prefills in that mode.
+
 ### Memo and clipboard stack
 
 - Preserve the independent memo panel and its copy, paste, and clear actions.

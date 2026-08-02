@@ -1,5 +1,22 @@
 // @ts-nocheck -- Enable after shared application types are defined.
 // Bundled into the generated index.html from this TypeScript source.
+const appendTransientDummyPrompts = (apiMessages, settings, { allowDummyModel = true } = {}) => {
+    const dummyUserText = settings.enableCommonDummyUser
+        ? settings.commonDummyUser?.trim()
+        : '';
+    const dummyModelText = allowDummyModel && settings.enableCommonDummyModel
+        ? settings.commonDummyModel?.trim()
+        : '';
+
+    if (dummyUserText) apiMessages.push({ role: 'user', parts: [{ text: dummyUserText }] });
+    if (dummyModelText) apiMessages.push({ role: 'model', parts: [{ text: dummyModelText }] });
+
+    return {
+        dummyModelText: dummyModelText || '',
+        dummyModelPrefix: settings.concatCommonDummyModel && dummyModelText ? dummyModelText : '',
+    };
+};
+
 Object.assign(appLogic, {
             async handleSend(isRetry = false, retryUserMessageIndex = -1) {
                 await this.commitAllOpenEdits();
@@ -371,12 +388,9 @@ Object.assign(appLogic, {
                         }
                         return { role: msg.role, parts: parts.length > 0 ? parts : [{ text: '' }] };
                     });
-                const commonDummyUser = state.settings.enableCommonDummyUser
-                    ? state.settings.commonDummyUser?.trim()
-                    : '';
-                if (commonDummyUser) {
-                    apiMessages.push({ role: 'user', parts: [{ text: commonDummyUser }] });
-                }
+                const { dummyModelPrefix } = appendTransientDummyPrompts(apiMessages, state.settings, {
+                    allowDummyModel: !(selectedApiProvider === 'claude' && contextClaudeIncludeThoughts),
+                });
                 const commonGenerationConfig = {};
                 if (contextTemperature !== null) commonGenerationConfig.temperature = contextTemperature;
                 if (contextMaxTokens !== null) commonGenerationConfig.maxOutputTokens = contextMaxTokens;
@@ -449,7 +463,7 @@ Object.assign(appLogic, {
                         throw new Error("不明なAPIプロバイダーが選択されています。");
                     }
 
-                    state.partialStreamContent = '';
+                    state.partialStreamContent = dummyModelPrefix;
                     state.partialThoughtStreamContent = '';
 
                     if (useStreamingForThisCall) {
@@ -746,7 +760,7 @@ Object.assign(appLogic, {
                             }
                             if (!rawContentFromApi && finalMetadata.finishReason === 'stop') rawContentFromApi = "(応答が空です)";
                         }
-                        finalContent = rawContentFromApi;
+                        finalContent = dummyModelPrefix + rawContentFromApi;
                     }
 
 

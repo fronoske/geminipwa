@@ -24,7 +24,7 @@ describe('application foundation scripts', () => {
     new vm.Script(readRuntime('app-config')).runInContext(context);
     expect(new vm.Script('DB_NAME').runInContext(context)).toBe('GeminiPWA_DB');
     expect(new vm.Script('DB_VERSION').runInContext(context)).toBe(9);
-    expect(new vm.Script('DEFAULT_MODEL').runInContext(context)).toBe('gemini-3.5-flash');
+    expect(new vm.Script('DEFAULT_MODEL').runInContext(context)).toBe('gemini-3.6-flash');
     expect(new vm.Script('API_PROVIDERS.length').runInContext(context)).toBe(7);
   });
 
@@ -33,7 +33,7 @@ describe('application foundation scripts', () => {
     new vm.Script(readRuntime('app-config')).runInContext(context);
     new vm.Script(readRuntime('app-state')).runInContext(context);
     expect(new vm.Script('state.currentMessages.length').runInContext(context)).toBe(0);
-    expect(new vm.Script('state.settings.modelName').runInContext(context)).toBe('gemini-3.5-flash');
+    expect(new vm.Script('state.settings.modelName').runInContext(context)).toBe('gemini-3.6-flash');
     expect(new vm.Script('state.settings.apiProvider').runInContext(context)).toBe('gemini');
     expect(
       new vm.Script("Object.keys(state.settings).some((key) => /twin|resummar|sessionLink|cryscroller|immersiveScrolling|proofread|imageUrlReplacement|fuzzySearch|characterNames|RomajiToKatakana/i.test(key))").runInContext(

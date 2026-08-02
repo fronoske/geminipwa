@@ -6489,6 +6489,27 @@ font-size: 1.142em !important;
                             </label>
                         </div>
                     </details>
+                    <details id="settings-group-common-dummy-model-prompt" class="settings-subsection">
+                        <summary class="settings-subsection-summary">
+                            ダミーModelプロンプト</summary>
+                        <div style="padding-top:10px; padding-left:15px;">
+                            <textarea id="common-dummy-model"
+                                placeholder="API送信直前にmodelロールとして履歴末尾へ一時的に追加されます"
+                                aria-label="共通ダミーModelプロンプト"></textarea>
+                            <label class="checkbox-label" style="margin-top: -5px; margin-bottom: 10px;">
+                                <input type="checkbox" id="enable-common-dummy-model">
+                                この共通ダミーModelプロンプトを有効にする
+                            </label>
+                            <label class="checkbox-label" style="margin-bottom: 5px;">
+                                <input type="checkbox" id="concat-common-dummy-model">
+                                ダミーModelと回答を連結する
+                            </label>
+                            <p style="font-size: 11px; color: var(--text-secondary); margin-top: 0; margin-bottom: 10px;">
+                                ※ 連結時は、ダミーModelの内容をAPI応答の先頭に付けて表示・保存します。<br>
+                                ※ Claudeの思考プロセスを有効にした送信では使用されません。
+                            </p>
+                        </div>
+                    </details>
                 </details>
 
                 <details class="settings-group" id="settings-group-lorebooks" open>
@@ -7409,6 +7430,9 @@ const elements = {
     enableCommonSystemPromptDefaultCheckbox: document.getElementById('enable-common-system-prompt-default'),
     commonDummyUserInput: document.getElementById('common-dummy-user'),
     enableCommonDummyUserCheckbox: document.getElementById('enable-common-dummy-user'),
+    commonDummyModelInput: document.getElementById('common-dummy-model'),
+    enableCommonDummyModelCheckbox: document.getElementById('enable-common-dummy-model'),
+    concatCommonDummyModelCheckbox: document.getElementById('concat-common-dummy-model'),
     geminiSettingsGroup: document.getElementById('gemini-settings-group'),
     geminiApiKeyInput: document.getElementById('gemini-api-key'),
     geminiModelNameSelect: document.getElementById('gemini-model-name'),
@@ -7775,6 +7799,9 @@ const state = {
         enableCommonSystemPromptDefault: false,
         commonDummyUser: '',
         enableCommonDummyUser: true,
+        commonDummyModel: '',
+        enableCommonDummyModel: true,
+        concatCommonDummyModel: false,
         inputPresets: DEFAULT_INPUT_PRESETS.map(preset => ({ ...preset })),
         geminiSystemPrompt: '',
         geminiEnableSystemPromptDefault: true,
@@ -8278,6 +8305,31 @@ const dbUtils = {
                     if (loadedSettings.enableCommonDummyUser === undefined && loadedSettings.enableDummyUser !== undefined) {
                         loadedSettings.enableCommonDummyUser = loadedSettings.enableDummyUser;
                     }
+                    const legacyDummyModelPrefix = {
+                        gemini: 'gemini',
+                        deepseek: 'deepSeek',
+                        claude: 'claude',
+                        openai: 'openai',
+                        openrouter: 'openrouter',
+                        xai: 'xai',
+                        llmaggregator: 'llmAggregator',
+                    }[loadedSettings.apiProvider];
+                    const migrateLegacyDummyModelSetting = (newKey, globalKey, providerSuffix) => {
+                        if (loadedSettings[newKey] !== undefined)
+                            return;
+                        const providerKey = legacyDummyModelPrefix
+                            ? `${legacyDummyModelPrefix}${providerSuffix}`
+                            : null;
+                        if (providerKey && loadedSettings[providerKey] !== undefined) {
+                            loadedSettings[newKey] = loadedSettings[providerKey];
+                        }
+                        else if (loadedSettings[globalKey] !== undefined) {
+                            loadedSettings[newKey] = loadedSettings[globalKey];
+                        }
+                    };
+                    migrateLegacyDummyModelSetting('commonDummyModel', 'dummyModel', 'DummyModel');
+                    migrateLegacyDummyModelSetting('enableCommonDummyModel', 'enableDummyModel', 'EnableDummyModel');
+                    migrateLegacyDummyModelSetting('concatCommonDummyModel', 'concatDummyModel', 'ConcatDummyModel');
                     oldGlobalParams.forEach(param => {
                         if (loadedSettings.hasOwnProperty(param)) {
                             providerPrefixes.forEach(prefix => {
@@ -14763,6 +14815,9 @@ Object.assign(uiUtils, {
         elements.enableCommonSystemPromptDefaultCheckbox.checked = state.settings.enableCommonSystemPromptDefault;
         elements.commonDummyUserInput.value = state.settings.commonDummyUser || '';
         elements.enableCommonDummyUserCheckbox.checked = state.settings.enableCommonDummyUser;
+        elements.commonDummyModelInput.value = state.settings.commonDummyModel || '';
+        elements.enableCommonDummyModelCheckbox.checked = state.settings.enableCommonDummyModel;
+        elements.concatCommonDummyModelCheckbox.checked = state.settings.concatCommonDummyModel;
         elements.geminiApiKeyInput.value = state.settings.apiKey || '';
         elements.geminiModelNameSelect.value = state.settings.modelName || DEFAULT_MODEL;
         elements.geminiAdditionalModelsTextarea.value = state.settings.additionalModels || '';
@@ -18072,6 +18127,22 @@ Object.assign(appLogic, {
 /* source: message-sending.ts */
 // @ts-nocheck -- Enable after shared application types are defined.
 // Bundled into the generated index.html from this TypeScript source.
+const appendTransientDummyPrompts = (apiMessages, settings, { allowDummyModel = true } = {}) => {
+    const dummyUserText = settings.enableCommonDummyUser
+        ? settings.commonDummyUser?.trim()
+        : '';
+    const dummyModelText = allowDummyModel && settings.enableCommonDummyModel
+        ? settings.commonDummyModel?.trim()
+        : '';
+    if (dummyUserText)
+        apiMessages.push({ role: 'user', parts: [{ text: dummyUserText }] });
+    if (dummyModelText)
+        apiMessages.push({ role: 'model', parts: [{ text: dummyModelText }] });
+    return {
+        dummyModelText: dummyModelText || '',
+        dummyModelPrefix: settings.concatCommonDummyModel && dummyModelText ? dummyModelText : '',
+    };
+};
 Object.assign(appLogic, {
     async handleSend(isRetry = false, retryUserMessageIndex = -1) {
         await this.commitAllOpenEdits();
@@ -18457,12 +18528,9 @@ Object.assign(appLogic, {
             }
             return { role: msg.role, parts: parts.length > 0 ? parts : [{ text: '' }] };
         });
-        const commonDummyUser = state.settings.enableCommonDummyUser
-            ? state.settings.commonDummyUser?.trim()
-            : '';
-        if (commonDummyUser) {
-            apiMessages.push({ role: 'user', parts: [{ text: commonDummyUser }] });
-        }
+        const { dummyModelPrefix } = appendTransientDummyPrompts(apiMessages, state.settings, {
+            allowDummyModel: !(selectedApiProvider === 'claude' && contextClaudeIncludeThoughts),
+        });
         const commonGenerationConfig = {};
         if (contextTemperature !== null)
             commonGenerationConfig.temperature = contextTemperature;
@@ -18544,7 +18612,7 @@ Object.assign(appLogic, {
             else {
                 throw new Error("不明なAPIプロバイダーが選択されています。");
             }
-            state.partialStreamContent = '';
+            state.partialStreamContent = dummyModelPrefix;
             state.partialThoughtStreamContent = '';
             if (useStreamingForThisCall) {
                 const tempPlaceholderIndex = state.currentMessages.length;
@@ -18868,7 +18936,7 @@ Object.assign(appLogic, {
                     if (!rawContentFromApi && finalMetadata.finishReason === 'stop')
                         rawContentFromApi = "(応答が空です)";
                 }
-                finalContent = rawContentFromApi;
+                finalContent = dummyModelPrefix + rawContentFromApi;
             }
             if (finalContent || finalThoughtSummary || finalMetadata.finishReason) {
                 let finalModelMessageIndex;
@@ -19605,6 +19673,9 @@ Object.assign(appLogic, {
         newSettings.enableCommonSystemPromptDefault = elements.enableCommonSystemPromptDefaultCheckbox.checked;
         newSettings.commonDummyUser = elements.commonDummyUserInput.value.trim();
         newSettings.enableCommonDummyUser = elements.enableCommonDummyUserCheckbox.checked;
+        newSettings.commonDummyModel = elements.commonDummyModelInput.value.trim();
+        newSettings.enableCommonDummyModel = elements.enableCommonDummyModelCheckbox.checked;
+        newSettings.concatCommonDummyModel = elements.concatCommonDummyModelCheckbox.checked;
         newSettings.inputPresets = inputPresetUtils.readSettingsFromUI();
         newSettings.modelName = elements.geminiModelNameSelect.value;
         newSettings.additionalModels = elements.geminiAdditionalModelsTextarea.value.trim();

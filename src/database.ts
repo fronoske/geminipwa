@@ -119,6 +119,29 @@ const dbUtils = {
                             if (loadedSettings.enableCommonDummyUser === undefined && loadedSettings.enableDummyUser !== undefined) {
                                 loadedSettings.enableCommonDummyUser = loadedSettings.enableDummyUser;
                             }
+                            const legacyDummyModelPrefix = {
+                                gemini: 'gemini',
+                                deepseek: 'deepSeek',
+                                claude: 'claude',
+                                openai: 'openai',
+                                openrouter: 'openrouter',
+                                xai: 'xai',
+                                llmaggregator: 'llmAggregator',
+                            }[loadedSettings.apiProvider];
+                            const migrateLegacyDummyModelSetting = (newKey, globalKey, providerSuffix) => {
+                                if (loadedSettings[newKey] !== undefined) return;
+                                const providerKey = legacyDummyModelPrefix
+                                    ? `${legacyDummyModelPrefix}${providerSuffix}`
+                                    : null;
+                                if (providerKey && loadedSettings[providerKey] !== undefined) {
+                                    loadedSettings[newKey] = loadedSettings[providerKey];
+                                } else if (loadedSettings[globalKey] !== undefined) {
+                                    loadedSettings[newKey] = loadedSettings[globalKey];
+                                }
+                            };
+                            migrateLegacyDummyModelSetting('commonDummyModel', 'dummyModel', 'DummyModel');
+                            migrateLegacyDummyModelSetting('enableCommonDummyModel', 'enableDummyModel', 'EnableDummyModel');
+                            migrateLegacyDummyModelSetting('concatCommonDummyModel', 'concatDummyModel', 'ConcatDummyModel');
 
                             oldGlobalParams.forEach(param => {
                                 if (loadedSettings.hasOwnProperty(param)) {

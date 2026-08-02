@@ -65,12 +65,14 @@ describe('project configuration', () => {
     expect(readFile('src/message-sending.ts')).not.toMatch(/apiProvider === 'dummy'|selectedApiProvider === 'dummy'/);
   });
 
-  it('does not ship provider-specific dummy prompts or Dummy Model prompts', () => {
+  it('keeps dummy prompts common instead of provider-specific', () => {
     const providerDummyPattern = /(?:gemini|deepSeek|claude|openai|xai|llmAggregator).*Dummy(?:User|Model)/i;
     expect(readFile('src/index.html')).not.toMatch(/(?:gemini|deepseek|claude|openai|xai|llmaggregator)-dummy-(?:user|model)/i);
     expect(readFile('src/app-state.ts')).not.toMatch(providerDummyPattern);
     expect(readFile('src/message-sending.ts')).not.toMatch(providerDummyPattern);
-    expect(readFile('src/index.html')).not.toMatch(/Dummy Model|ダミーModel/i);
+    expect(readFile('src/index.html')).toContain('id="common-dummy-model"');
+    expect(readFile('src/index.html')).toContain('id="enable-common-dummy-model"');
+    expect(readFile('src/index.html')).toContain('id="concat-common-dummy-model"');
   });
 
   it('does not ship webhook forwarding', () => {
@@ -443,7 +445,7 @@ describe('project configuration', () => {
     expect(openRouterSettings).not.toContain('openrouter-model-reasoning-filter');
     expect(catalog).not.toContain('openrouterModelVisionFilter');
     expect(catalog).not.toContain('openrouterModelReasoningFilter');
-    expect(readFile('src/app-config.ts')).toContain('const OPENROUTER_MIN_CONTEXT_LENGTH_EXCLUSIVE = 1_000_000;');
+    expect(readFile('src/app-config.ts')).toContain('const OPENROUTER_MIN_CONTEXT_LENGTH_EXCLUSIVE = 256_000;');
     expect(catalog).not.toContain("id.className = 'openrouter-model-catalog-item-id';");
     expect(catalog).toContain("elements.fetchOpenrouterModelsBtn.addEventListener('click'");
     expect(catalog).toContain('await this.clearCatalog();');
@@ -488,7 +490,7 @@ describe('project configuration', () => {
     expect(html).not.toContain('Dummy User');
     expect(readFile('src/app-state.ts')).toContain("commonDummyUser: ''");
     const sending = readFile('src/message-sending.ts');
-    expect(sending).toContain("role: 'user', parts: [{ text: commonDummyUser }]");
+    expect(sending).toContain("role: 'user', parts: [{ text: dummyUserText }]");
     expect(readFile('docs/product-decisions.md')).toContain('Common Dummy User prompt');
   });
 
@@ -540,7 +542,7 @@ describe('project configuration', () => {
   });
 
   it('uses the current release date as the application version', () => {
-    expect(readFile('src/app-config.ts')).toContain('const APP_VERSION = "2026.07.24-fronoske"');
+    expect(readFile('src/app-config.ts')).toContain('const APP_VERSION = "2026.08.01-fronoske"');
   });
 
   it('links repository references to the current branch README', () => {

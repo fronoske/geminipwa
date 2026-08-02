@@ -64,11 +64,16 @@ describe('OpenRouter model catalog', () => {
 
     const models = await new vm.Script("openRouterModelCatalog.fetchModels('secret-key')").runInContext(context);
     expect(Array.from(models, (model: { id: string }) => model.id)).toEqual([
+      'google/context-too-short',
       'openai/new-text-model',
       'qwen/free-text-model:free',
     ]);
-    expect(models[0]).toMatchObject({ provider: 'openai', supportsVision: true, supportsReasoning: true, isFree: false });
-    expect(models[1]).toMatchObject({ provider: 'qwen', isFree: true });
+    expect(models.find((model: { id: string }) => model.id === 'openai/new-text-model')).toMatchObject({
+      provider: 'openai', supportsVision: true, supportsReasoning: true, isFree: false,
+    });
+    expect(models.find((model: { id: string }) => model.id === 'qwen/free-text-model:free')).toMatchObject({
+      provider: 'qwen', isFree: true,
+    });
     expect(fetchMock).toHaveBeenCalledWith(
       'https://openrouter.ai/api/v1/models/user',
       expect.objectContaining({
