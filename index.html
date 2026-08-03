@@ -6988,7 +6988,7 @@ font-size: 1.142em !important;
                     </div>
                 </details>
 
-                <details class="settings-group" id="settings-group-lorebooks" open>
+                <details class="settings-group" id="settings-group-lorebooks">
                     <summary
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
                         Lorebook</summary>
@@ -12065,7 +12065,8 @@ conditionalMemoriesの人物条件は allCharacters、anyCharacters のうち意
     },
     exportAllLorebooks() {
         const ids = lorebookUtils.getAllLorebooks().map(lorebook => lorebook.id);
-        this.downloadJson(this.createExportPackage(ids.map(id => this.buildExportEntry(id))), `geminipwa_lorebooks_${new Date().toISOString().slice(0, 10)}.json`);
+        const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+        this.downloadJson(this.createExportPackage(ids.map(id => this.buildExportEntry(id))), `geminipwa-lorebooks-${date}.json`);
     },
     extractImportEntries(data) {
         if (data?.format === 'GeminiPWA Lorebook' && Array.isArray(data.lorebooks)) {
@@ -15148,7 +15149,10 @@ Object.assign(uiUtils, {
             }
         });
         document.querySelectorAll('#settings-screen .main-content > details.settings-group').forEach(topLevelDetails => {
-            topLevelDetails.open = topLevelDetails.id !== 'settings-group-input-presets';
+            topLevelDetails.open = ![
+                'settings-group-input-presets',
+                'settings-group-lorebooks',
+            ].includes(topLevelDetails.id);
             topLevelDetails.querySelectorAll('details').forEach(nestedDetails => {
                 nestedDetails.open = false;
             });
@@ -19330,7 +19334,7 @@ Object.assign(appLogic, {
             const a = document.createElement('a');
             const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
             a.href = url;
-            a.download = `gemini_pwa_all_sessions_${timestamp}.json`;
+            a.download = `geminipwa-sessions-${timestamp}.json`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -19517,7 +19521,7 @@ Object.assign(appLogic, {
             const a = document.createElement('a');
             const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
             a.href = url;
-            a.download = `gemini_pwa_settings_${timestamp}.json`;
+            a.download = `geminipwa-settings-${timestamp}.json`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);

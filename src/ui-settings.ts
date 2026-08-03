@@ -567,7 +567,10 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                     }
                 });
                 document.querySelectorAll('#settings-screen .main-content > details.settings-group').forEach(topLevelDetails => {
-                    topLevelDetails.open = topLevelDetails.id !== 'settings-group-input-presets';
+                    topLevelDetails.open = ![
+                        'settings-group-input-presets',
+                        'settings-group-lorebooks',
+                    ].includes(topLevelDetails.id);
                     topLevelDetails.querySelectorAll('details').forEach(nestedDetails => {
                         nestedDetails.open = false;
                     });

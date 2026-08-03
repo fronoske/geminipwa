@@ -1451,9 +1451,10 @@ conditionalMemoriesの人物条件は allCharacters、anyCharacters のうち意
 
     exportAllLorebooks() {
         const ids = lorebookUtils.getAllLorebooks().map(lorebook => lorebook.id);
+        const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
         this.downloadJson(
             this.createExportPackage(ids.map(id => this.buildExportEntry(id))),
-            `geminipwa_lorebooks_${new Date().toISOString().slice(0, 10)}.json`
+            `geminipwa-lorebooks-${date}.json`
         );
     },
 

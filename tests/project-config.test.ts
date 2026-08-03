@@ -22,6 +22,16 @@ describe('project configuration', () => {
     }
   });
 
+  it('uses one naming convention for dated exports', () => {
+    const dataManagement = readFile('src/data-management.ts');
+    const lorebookManager = readFile('src/lorebook-manager.ts');
+
+    expect(dataManagement).toContain('`geminipwa-sessions-${timestamp}.json`');
+    expect(dataManagement).toContain('`geminipwa-settings-${timestamp}.json`');
+    expect(lorebookManager).toContain('`geminipwa-lorebooks-${date}.json`');
+    expect(`${dataManagement}\n${lorebookManager}`).not.toMatch(/gemini_pwa_|geminipwa_lorebooks_/);
+  });
+
   it('does not ship the removed Twin-engine feature', () => {
     expect(readFile('src/index.html')).not.toMatch(/twin[-_ ]?engine|resummarize/i);
     expect(readFile('src/app-state.ts')).not.toMatch(/twin[-_ ]?engine|resummarize/i);
@@ -196,7 +206,9 @@ describe('project configuration', () => {
     expect(behaviorIndex).toBeLessThan(displayIndex);
     expect(inputPresetIndex).toBeLessThan(lorebookIndex);
     expect(html).toContain('<details class="settings-group" id="settings-group-input-presets">');
-    expect(readFile('src/ui-settings.ts')).toContain("topLevelDetails.id !== 'settings-group-input-presets'");
+    expect(html).toContain('<details class="settings-group" id="settings-group-lorebooks">');
+    expect(readFile('src/ui-settings.ts')).toContain("'settings-group-input-presets',");
+    expect(readFile('src/ui-settings.ts')).toContain("'settings-group-lorebooks',");
     const behaviorSettings = html.slice(behaviorIndex, displayIndex);
     const displaySettings = html.slice(displayIndex, inputPresetIndex);
     expect(behaviorSettings).not.toContain('settings-group-factor-style-changes');
@@ -291,10 +303,11 @@ describe('project configuration', () => {
     expect(readFile('src/database.ts')).toContain('showSettingsScrollToTopButton|showSettingsScrollToBottomButton');
   });
 
-  it('expands top-level settings except input presets and collapses all nested sections when opening settings', () => {
+  it('expands top-level settings except input presets and Lorebooks, and collapses all nested sections', () => {
     const settingsSource = readFile('src/ui-settings.ts');
     expect(settingsSource).toContain("document.querySelectorAll('#settings-screen .main-content > details.settings-group')");
-    expect(settingsSource).toContain("topLevelDetails.open = topLevelDetails.id !== 'settings-group-input-presets'");
+    expect(settingsSource).toContain("'settings-group-input-presets',");
+    expect(settingsSource).toContain("'settings-group-lorebooks',");
     expect(settingsSource).toContain("topLevelDetails.querySelectorAll('details')");
     expect(settingsSource).toContain('nestedDetails.open = false');
   });

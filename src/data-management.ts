@@ -182,7 +182,7 @@ Object.assign(appLogic, {
                     const a = document.createElement('a');
                     const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
                     a.href = url;
-                    a.download = `gemini_pwa_all_sessions_${timestamp}.json`;
+                    a.download = `geminipwa-sessions-${timestamp}.json`;
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
@@ -372,7 +372,7 @@ Object.assign(appLogic, {
                     const a = document.createElement('a');
                     const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
                     a.href = url;
-                    a.download = `gemini_pwa_settings_${timestamp}.json`;
+                    a.download = `geminipwa-settings-${timestamp}.json`;
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
