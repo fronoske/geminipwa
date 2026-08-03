@@ -66,14 +66,19 @@ describe('project configuration', () => {
   });
 
   it('keeps dummy prompts common instead of provider-specific', () => {
+    const html = readFile('src/index.html');
     const providerDummyPattern = /(?:gemini|deepSeek|claude|openai|xai|llmAggregator).*Dummy(?:User|Model)/i;
-    expect(readFile('src/index.html')).not.toMatch(/(?:gemini|deepseek|claude|openai|xai|llmaggregator)-dummy-(?:user|model)/i);
+    expect(html).not.toMatch(/(?:gemini|deepseek|claude|openai|xai|llmaggregator)-dummy-(?:user|model)/i);
     expect(readFile('src/app-state.ts')).not.toMatch(providerDummyPattern);
     expect(readFile('src/message-sending.ts')).not.toMatch(providerDummyPattern);
-    expect(readFile('src/index.html')).toContain('id="common-dummy-model"');
-    expect(readFile('src/index.html')).toContain('id="common-dummy-model-followup-user"');
-    expect(readFile('src/index.html')).toContain('id="enable-common-dummy-model"');
-    expect(readFile('src/index.html')).toContain('id="concat-common-dummy-model"');
+    expect(html).toContain('id="common-dummy-model"');
+    expect(html).toContain('id="common-dummy-model-followup-user"');
+    expect(html).toContain('id="enable-common-dummy-model-followup-user"');
+    expect(html).toContain('id="enable-common-dummy-model"');
+    expect(html).toContain('id="concat-common-dummy-model"');
+    expect(html.indexOf('※ Claudeの思考プロセス')).toBeLessThan(
+      html.indexOf('for="common-dummy-model-followup-user"'),
+    );
   });
 
   it('does not ship webhook forwarding', () => {
@@ -184,10 +189,14 @@ describe('project configuration', () => {
     const behaviorIndex = html.indexOf('id="settings-group-behavior-adjustment"');
     const displayIndex = html.indexOf('id="settings-group-display-adjustment"');
     const inputPresetIndex = html.indexOf('id="settings-group-input-presets"');
+    const lorebookIndex = html.indexOf('id="settings-group-lorebooks"');
     expect(promptIndex).toBeGreaterThan(-1);
     expect(promptIndex).toBeLessThan(behaviorIndex);
     expect(behaviorIndex).toBeGreaterThan(-1);
     expect(behaviorIndex).toBeLessThan(displayIndex);
+    expect(inputPresetIndex).toBeLessThan(lorebookIndex);
+    expect(html).toContain('<details class="settings-group" id="settings-group-input-presets">');
+    expect(readFile('src/ui-settings.ts')).toContain("topLevelDetails.id !== 'settings-group-input-presets'");
     const behaviorSettings = html.slice(behaviorIndex, displayIndex);
     const displaySettings = html.slice(displayIndex, inputPresetIndex);
     expect(behaviorSettings).not.toContain('settings-group-factor-style-changes');
@@ -282,10 +291,10 @@ describe('project configuration', () => {
     expect(readFile('src/database.ts')).toContain('showSettingsScrollToTopButton|showSettingsScrollToBottomButton');
   });
 
-  it('expands top-level settings sections and collapses all nested sections when opening settings', () => {
+  it('expands top-level settings except input presets and collapses all nested sections when opening settings', () => {
     const settingsSource = readFile('src/ui-settings.ts');
     expect(settingsSource).toContain("document.querySelectorAll('#settings-screen .main-content > details.settings-group')");
-    expect(settingsSource).toContain('topLevelDetails.open = true');
+    expect(settingsSource).toContain("topLevelDetails.open = topLevelDetails.id !== 'settings-group-input-presets'");
     expect(settingsSource).toContain("topLevelDetails.querySelectorAll('details')");
     expect(settingsSource).toContain('nestedDetails.open = false');
   });

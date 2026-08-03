@@ -43,6 +43,7 @@ describe('common Dummy Model prompt', () => {
         enableCommonDummyUser: true,
         commonDummyModel: '  opening line  ',
         commonDummyModelFollowupUser: '  continue after the opening  ',
+        enableCommonDummyModelFollowupUser: true,
         enableCommonDummyModel: true,
         concatCommonDummyModel: false,
       },
@@ -67,6 +68,7 @@ describe('common Dummy Model prompt', () => {
         enableCommonDummyUser: true,
         commonDummyModel: 'opening line',
         commonDummyModelFollowupUser: '',
+        enableCommonDummyModelFollowupUser: true,
         enableCommonDummyModel: true,
         concatCommonDummyModel: true,
       },
@@ -86,6 +88,7 @@ describe('common Dummy Model prompt', () => {
         enableCommonDummyUser: false,
         commonDummyModel: 'opening line',
         commonDummyModelFollowupUser: 'must not be sent',
+        enableCommonDummyModelFollowupUser: true,
         enableCommonDummyModel: false,
         concatCommonDummyModel: true,
       },
@@ -96,6 +99,7 @@ describe('common Dummy Model prompt', () => {
         enableCommonDummyUser: false,
         commonDummyModel: 'opening line',
         commonDummyModelFollowupUser: 'must not be sent',
+        enableCommonDummyModelFollowupUser: true,
         enableCommonDummyModel: true,
         concatCommonDummyModel: true,
       },
@@ -106,5 +110,24 @@ describe('common Dummy Model prompt', () => {
     expect(disabled.result.dummyModelPrefix).toBe('');
     expect(incompatible.messages).toHaveLength(1);
     expect(incompatible.result.dummyModelPrefix).toBe('');
+  });
+
+  it('does not append the follow-up User prompt when its checkbox is disabled', () => {
+    const result = runPromptAppend({
+      settings: {
+        commonDummyUser: '',
+        enableCommonDummyUser: false,
+        commonDummyModel: 'opening line',
+        commonDummyModelFollowupUser: 'must not be sent',
+        enableCommonDummyModelFollowupUser: false,
+        enableCommonDummyModel: true,
+        concatCommonDummyModel: false,
+      },
+    });
+
+    expect(result.messages).toEqual([
+      { role: 'user', parts: [{ text: 'actual message' }] },
+      { role: 'model', parts: [{ text: 'opening line' }] },
+    ]);
   });
 });

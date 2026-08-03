@@ -7,7 +7,7 @@ const appendTransientDummyPrompts = (apiMessages, settings, { allowDummyModel = 
     const dummyModelText = allowDummyModel && settings.enableCommonDummyModel
         ? settings.commonDummyModel?.trim()
         : '';
-    const dummyModelFollowupUserText = dummyModelText
+    const dummyModelFollowupUserText = dummyModelText && settings.enableCommonDummyModelFollowupUser
         ? settings.commonDummyModelFollowupUser?.trim()
         : '';
 

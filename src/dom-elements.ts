@@ -28,6 +28,7 @@ const getRequiredDomElement = (id: string): HTMLElement => {
             enableCommonDummyUserCheckbox: document.getElementById('enable-common-dummy-user'),
             commonDummyModelInput: document.getElementById('common-dummy-model'),
             commonDummyModelFollowupUserInput: document.getElementById('common-dummy-model-followup-user'),
+            enableCommonDummyModelFollowupUserCheckbox: document.getElementById('enable-common-dummy-model-followup-user'),
             enableCommonDummyModelCheckbox: document.getElementById('enable-common-dummy-model'),
             concatCommonDummyModelCheckbox: document.getElementById('concat-common-dummy-model'),
             geminiSettingsGroup: document.getElementById('gemini-settings-group'),

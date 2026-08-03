@@ -561,6 +561,7 @@ Object.assign(appLogic, {
                 newSettings.enableCommonDummyUser = elements.enableCommonDummyUserCheckbox.checked;
                 newSettings.commonDummyModel = elements.commonDummyModelInput.value.trim();
                 newSettings.commonDummyModelFollowupUser = elements.commonDummyModelFollowupUserInput.value.trim();
+                newSettings.enableCommonDummyModelFollowupUser = elements.enableCommonDummyModelFollowupUserCheckbox.checked;
                 newSettings.enableCommonDummyModel = elements.enableCommonDummyModelCheckbox.checked;
                 newSettings.concatCommonDummyModel = elements.concatCommonDummyModelCheckbox.checked;
                 newSettings.inputPresets = inputPresetUtils.readSettingsFromUI();

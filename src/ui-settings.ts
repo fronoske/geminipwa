@@ -222,6 +222,7 @@ document.body.classList.remove('dark-mode', 'light-mode-forced', 'pastel-pink-mo
                 elements.enableCommonDummyUserCheckbox.checked = state.settings.enableCommonDummyUser;
                 elements.commonDummyModelInput.value = state.settings.commonDummyModel || '';
                 elements.commonDummyModelFollowupUserInput.value = state.settings.commonDummyModelFollowupUser || '';
+                elements.enableCommonDummyModelFollowupUserCheckbox.checked = state.settings.enableCommonDummyModelFollowupUser;
                 elements.enableCommonDummyModelCheckbox.checked = state.settings.enableCommonDummyModel;
                 elements.concatCommonDummyModelCheckbox.checked = state.settings.concatCommonDummyModel;
                 elements.geminiApiKeyInput.value = state.settings.apiKey || '';
@@ -566,7 +567,7 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                     }
                 });
                 document.querySelectorAll('#settings-screen .main-content > details.settings-group').forEach(topLevelDetails => {
-                    topLevelDetails.open = true;
+                    topLevelDetails.open = topLevelDetails.id !== 'settings-group-input-presets';
                     topLevelDetails.querySelectorAll('details').forEach(nestedDetails => {
                         nestedDetails.open = false;
                     });
