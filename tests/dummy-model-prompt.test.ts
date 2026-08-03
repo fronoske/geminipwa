@@ -36,12 +36,13 @@ describe('common Dummy Model prompt', () => {
     expect(source).toContain('finalContent = dummyModelPrefix + rawContentFromApi;');
   });
 
-  it('appends transient user and model prompts in order without changing the displayed prefix', () => {
+  it('appends Dummy User, Dummy Model, and its follow-up User prompt in order', () => {
     const result = runPromptAppend({
       settings: {
         commonDummyUser: '  continue  ',
         enableCommonDummyUser: true,
         commonDummyModel: '  opening line  ',
+        commonDummyModelFollowupUser: '  continue after the opening  ',
         enableCommonDummyModel: true,
         concatCommonDummyModel: false,
       },
@@ -51,6 +52,7 @@ describe('common Dummy Model prompt', () => {
       { role: 'user', parts: [{ text: 'actual message' }] },
       { role: 'user', parts: [{ text: 'continue' }] },
       { role: 'model', parts: [{ text: 'opening line' }] },
+      { role: 'user', parts: [{ text: 'continue after the opening' }] },
     ]);
     expect(result.result).toEqual({
       dummyModelText: 'opening line',
@@ -64,6 +66,7 @@ describe('common Dummy Model prompt', () => {
         commonDummyUser: '',
         enableCommonDummyUser: true,
         commonDummyModel: 'opening line',
+        commonDummyModelFollowupUser: '',
         enableCommonDummyModel: true,
         concatCommonDummyModel: true,
       },
@@ -82,6 +85,7 @@ describe('common Dummy Model prompt', () => {
         commonDummyUser: '',
         enableCommonDummyUser: false,
         commonDummyModel: 'opening line',
+        commonDummyModelFollowupUser: 'must not be sent',
         enableCommonDummyModel: false,
         concatCommonDummyModel: true,
       },
@@ -91,6 +95,7 @@ describe('common Dummy Model prompt', () => {
         commonDummyUser: '',
         enableCommonDummyUser: false,
         commonDummyModel: 'opening line',
+        commonDummyModelFollowupUser: 'must not be sent',
         enableCommonDummyModel: true,
         concatCommonDummyModel: true,
       },

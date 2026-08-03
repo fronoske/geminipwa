@@ -6496,6 +6496,10 @@ font-size: 1.142em !important;
                             <textarea id="common-dummy-model"
                                 placeholder="API送信直前にmodelロールとして履歴末尾へ一時的に追加されます"
                                 aria-label="共通ダミーModelプロンプト"></textarea>
+                            <label for="common-dummy-model-followup-user">直後に送信するユーザープロンプト:</label>
+                            <textarea id="common-dummy-model-followup-user"
+                                placeholder="空欄の場合は追加送信しません"
+                                aria-label="ダミーModelプロンプト直後のユーザープロンプト"></textarea>
                             <label class="checkbox-label" style="margin-top: -5px; margin-bottom: 10px;">
                                 <input type="checkbox" id="enable-common-dummy-model">
                                 この共通ダミーModelプロンプトを有効にする
@@ -7350,7 +7354,7 @@ const LIGHT_MODE_MODEL_MESSAGE_COLOR = '#e5e5ea';
 const LIGHT_MODE_SECONDARY_COLOR = '#f0f2f5';
 const LIGHT_MODE_HEADER_COLOR = '#4a90e2';
 const LIGHT_MODE_PRIMARY_COLOR = '#ffffff';
-const APP_VERSION = "2026.08.01-fronoske";
+const APP_VERSION = "2026.08.03-fronoske";
 const SWIPE_THRESHOLD = 50;
 const ZOOM_THRESHOLD = 1.01;
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -7431,6 +7435,7 @@ const elements = {
     commonDummyUserInput: document.getElementById('common-dummy-user'),
     enableCommonDummyUserCheckbox: document.getElementById('enable-common-dummy-user'),
     commonDummyModelInput: document.getElementById('common-dummy-model'),
+    commonDummyModelFollowupUserInput: document.getElementById('common-dummy-model-followup-user'),
     enableCommonDummyModelCheckbox: document.getElementById('enable-common-dummy-model'),
     concatCommonDummyModelCheckbox: document.getElementById('concat-common-dummy-model'),
     geminiSettingsGroup: document.getElementById('gemini-settings-group'),
@@ -7800,6 +7805,7 @@ const state = {
         commonDummyUser: '',
         enableCommonDummyUser: true,
         commonDummyModel: '',
+        commonDummyModelFollowupUser: '',
         enableCommonDummyModel: true,
         concatCommonDummyModel: false,
         inputPresets: DEFAULT_INPUT_PRESETS.map(preset => ({ ...preset })),
@@ -14816,6 +14822,7 @@ Object.assign(uiUtils, {
         elements.commonDummyUserInput.value = state.settings.commonDummyUser || '';
         elements.enableCommonDummyUserCheckbox.checked = state.settings.enableCommonDummyUser;
         elements.commonDummyModelInput.value = state.settings.commonDummyModel || '';
+        elements.commonDummyModelFollowupUserInput.value = state.settings.commonDummyModelFollowupUser || '';
         elements.enableCommonDummyModelCheckbox.checked = state.settings.enableCommonDummyModel;
         elements.concatCommonDummyModelCheckbox.checked = state.settings.concatCommonDummyModel;
         elements.geminiApiKeyInput.value = state.settings.apiKey || '';
@@ -18134,10 +18141,16 @@ const appendTransientDummyPrompts = (apiMessages, settings, { allowDummyModel = 
     const dummyModelText = allowDummyModel && settings.enableCommonDummyModel
         ? settings.commonDummyModel?.trim()
         : '';
+    const dummyModelFollowupUserText = dummyModelText
+        ? settings.commonDummyModelFollowupUser?.trim()
+        : '';
     if (dummyUserText)
         apiMessages.push({ role: 'user', parts: [{ text: dummyUserText }] });
     if (dummyModelText)
         apiMessages.push({ role: 'model', parts: [{ text: dummyModelText }] });
+    if (dummyModelFollowupUserText) {
+        apiMessages.push({ role: 'user', parts: [{ text: dummyModelFollowupUserText }] });
+    }
     return {
         dummyModelText: dummyModelText || '',
         dummyModelPrefix: settings.concatCommonDummyModel && dummyModelText ? dummyModelText : '',
@@ -19674,6 +19687,7 @@ Object.assign(appLogic, {
         newSettings.commonDummyUser = elements.commonDummyUserInput.value.trim();
         newSettings.enableCommonDummyUser = elements.enableCommonDummyUserCheckbox.checked;
         newSettings.commonDummyModel = elements.commonDummyModelInput.value.trim();
+        newSettings.commonDummyModelFollowupUser = elements.commonDummyModelFollowupUserInput.value.trim();
         newSettings.enableCommonDummyModel = elements.enableCommonDummyModelCheckbox.checked;
         newSettings.concatCommonDummyModel = elements.concatCommonDummyModelCheckbox.checked;
         newSettings.inputPresets = inputPresetUtils.readSettingsFromUI();

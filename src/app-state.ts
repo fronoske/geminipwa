@@ -14,6 +14,7 @@
                 commonDummyUser: '',
                 enableCommonDummyUser: true,
                 commonDummyModel: '',
+                commonDummyModelFollowupUser: '',
                 enableCommonDummyModel: true,
                 concatCommonDummyModel: false,
                 inputPresets: DEFAULT_INPUT_PRESETS.map(preset => ({ ...preset })),

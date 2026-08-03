@@ -71,6 +71,7 @@ describe('project configuration', () => {
     expect(readFile('src/app-state.ts')).not.toMatch(providerDummyPattern);
     expect(readFile('src/message-sending.ts')).not.toMatch(providerDummyPattern);
     expect(readFile('src/index.html')).toContain('id="common-dummy-model"');
+    expect(readFile('src/index.html')).toContain('id="common-dummy-model-followup-user"');
     expect(readFile('src/index.html')).toContain('id="enable-common-dummy-model"');
     expect(readFile('src/index.html')).toContain('id="concat-common-dummy-model"');
   });
@@ -542,7 +543,7 @@ describe('project configuration', () => {
   });
 
   it('uses the current release date as the application version', () => {
-    expect(readFile('src/app-config.ts')).toContain('const APP_VERSION = "2026.08.01-fronoske"');
+    expect(readFile('src/app-config.ts')).toContain('const APP_VERSION = "2026.08.03-fronoske"');
   });
 
   it('links repository references to the current branch README', () => {

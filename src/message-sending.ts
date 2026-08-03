@@ -7,9 +7,15 @@ const appendTransientDummyPrompts = (apiMessages, settings, { allowDummyModel = 
     const dummyModelText = allowDummyModel && settings.enableCommonDummyModel
         ? settings.commonDummyModel?.trim()
         : '';
+    const dummyModelFollowupUserText = dummyModelText
+        ? settings.commonDummyModelFollowupUser?.trim()
+        : '';
 
     if (dummyUserText) apiMessages.push({ role: 'user', parts: [{ text: dummyUserText }] });
     if (dummyModelText) apiMessages.push({ role: 'model', parts: [{ text: dummyModelText }] });
+    if (dummyModelFollowupUserText) {
+        apiMessages.push({ role: 'user', parts: [{ text: dummyModelFollowupUserText }] });
+    }
 
     return {
         dummyModelText: dummyModelText || '',

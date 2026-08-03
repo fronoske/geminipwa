@@ -221,6 +221,7 @@ document.body.classList.remove('dark-mode', 'light-mode-forced', 'pastel-pink-mo
                 elements.commonDummyUserInput.value = state.settings.commonDummyUser || '';
                 elements.enableCommonDummyUserCheckbox.checked = state.settings.enableCommonDummyUser;
                 elements.commonDummyModelInput.value = state.settings.commonDummyModel || '';
+                elements.commonDummyModelFollowupUserInput.value = state.settings.commonDummyModelFollowupUser || '';
                 elements.enableCommonDummyModelCheckbox.checked = state.settings.enableCommonDummyModel;
                 elements.concatCommonDummyModelCheckbox.checked = state.settings.concatCommonDummyModel;
                 elements.geminiApiKeyInput.value = state.settings.apiKey || '';
