@@ -1459,7 +1459,8 @@ conditionalMemoriesの人物条件は allCharacters、anyCharacters のうち意
     },
 
     extractImportEntries(data) {
-        if (data?.format === 'GeminiPWA Lorebook' && Array.isArray(data.lorebooks)) {
+        const acceptedPackageFormats = ['GeminiPWA Lorebook'];
+        if (acceptedPackageFormats.includes(data?.format) && Array.isArray(data.lorebooks)) {
             if (data.packageVersion !== LOREBOOK_PACKAGE_VERSION) {
                 throw new Error(`対応していないパッケージバージョンです: ${data.packageVersion}`);
             }
@@ -1475,21 +1476,33 @@ conditionalMemoriesの人物条件は allCharacters、anyCharacters のうち意
             const data = JSON.parse(await file.text());
             const entries = this.extractImportEntries(data);
             if (entries.length === 0) throw new Error('Lorebookが含まれていません。');
-            let order = this.getRecords().length;
+            const existingRecords = this.getRecords();
+            const existingById = new Map(existingRecords.map(record => [record.id, record]));
+            let order = existingRecords.length;
             const importedRecords = [];
             const reservedIds = new Set();
+            let replacedCount = 0;
             for (const entry of entries) {
                 const sourceLorebook = this.migrateLorebookToCurrent(entry.lorebook);
-                const errors = this.validateLorebook(sourceLorebook);
-                if (errors.length > 0) throw new Error(`${sourceLorebook?.name || '名称不明'}: ${errors.join(' / ')}`);
-                const id = this.createUniqueId(sourceLorebook.name, null, reservedIds);
+                const entryId = typeof entry.id === 'string' ? entry.id.trim() : '';
+                const lorebookId = typeof sourceLorebook.id === 'string' ? sourceLorebook.id.trim() : '';
+                if (entryId && lorebookId && entryId !== lorebookId) {
+                    throw new Error(`Lorebook「${sourceLorebook.name || '名称不明'}」のレコードIDとLorebook IDが一致しません。`);
+                }
+                const id = entryId || lorebookId || this.createUniqueId(sourceLorebook.name, null, reservedIds);
+                if (id === LOREBOOK_SEED_REGISTRY_ID) throw new Error('予約済みのLorebook IDはインポートできません。');
+                if (reservedIds.has(id)) throw new Error(`Lorebook ID「${id}」がファイル内で重複しています。`);
                 reservedIds.add(id);
                 sourceLorebook.id = id;
+                sourceLorebook.retrieval = { ...DEFAULT_LOREBOOK_RETRIEVAL, ...(sourceLorebook.retrieval || {}) };
+                const errors = this.validateLorebook(sourceLorebook);
+                if (errors.length > 0) throw new Error(`${sourceLorebook?.name || '名称不明'}: ${errors.join(' / ')}`);
                 sourceLorebook.analysis = {
                     methodVersion: sourceLorebook.analysis?.methodVersion || 'imported',
                     sourceLabel: file.name,
                 };
-                sourceLorebook.retrieval = { ...DEFAULT_LOREBOOK_RETRIEVAL };
+                const existingRecord = existingById.get(id);
+                if (existingRecord) replacedCount++;
                 const now = Date.now();
                 const record = {
                     id,
@@ -1500,16 +1513,30 @@ conditionalMemoriesの人物条件は allCharacters、anyCharacters のうち意
                     sourceLabel: file.name,
                     reviewReport: this.normalizeReviewReport(entry.reviewReport),
                     analyzedBy: entry.analyzedBy || null,
-                    order: order++,
-                    createdAt: now,
+                    order: existingRecord?.order ?? order++,
+                    createdAt: Number(entry.createdAt) || existingRecord?.createdAt || now,
                     updatedAt: now,
                 };
                 importedRecords.push(record);
             }
+            if (replacedCount > 0) {
+                const confirmed = await uiUtils.showCustomConfirm(
+                    `同じIDのLorebookが${replacedCount}件あります。インポートした内容で上書きしますか？`
+                );
+                if (!confirmed) return;
+            }
             await dbUtils.putLorebookRecords(importedRecords);
-            state.lorebookRecords = [...this.getRecords(), ...importedRecords];
+            const importedIds = new Set(importedRecords.map(record => record.id));
+            state.lorebookRecords = [
+                ...existingRecords.filter(record => !importedIds.has(record.id)),
+                ...importedRecords,
+            ].sort((left, right) => (Number(left.order) || 0) - (Number(right.order) || 0));
             this.renderManagementList();
-            await uiUtils.showCustomAlert(`${importedRecords.length}件のLorebookを新規インポートしました。`);
+            uiUtils.updateLorebookMenuItem();
+            const addedCount = importedRecords.length - replacedCount;
+            await uiUtils.showCustomAlert(
+                `${addedCount}件を追加し、${replacedCount}件を同じIDで上書きしました。`
+            );
         } catch (error) {
             await uiUtils.showCustomAlert(`Lorebookをインポートできませんでした: ${error.message}`);
         }

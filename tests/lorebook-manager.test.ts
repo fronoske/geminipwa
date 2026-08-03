@@ -209,6 +209,74 @@ describe('Lorebook management and analysis boundary', () => {
     expect({ ...afterDeletion }).toEqual({ recordCount: 0, seedWriteCount: 0 });
   });
 
+  it('accepts the legacy GeminiPWA package identifier and restores Lorebooks with their original IDs', async () => {
+    const context = createContext();
+    evaluate(context, `(() => {
+      const original = JSON.parse(JSON.stringify(BUILTIN_LOREBOOKS[0]));
+      const restored = JSON.parse(JSON.stringify(original));
+      restored.description = 'エクスポートから復元した内容';
+      globalThis.state = {
+        currentLorebookId: original.id,
+        lorebookRecords: [{
+          id: original.id, lorebook: original, sourceText: '旧内容', sourceLabel: 'seed',
+          order: 0, createdAt: 1, updatedAt: 1
+        }]
+      };
+      globalThis.savedRecords = [];
+      globalThis.confirmCount = 0;
+      globalThis.alertMessage = '';
+      globalThis.dbUtils = {
+        putLorebookRecords: async records => { globalThis.savedRecords = records; }
+      };
+      globalThis.uiUtils = {
+        showCustomConfirm: async () => { globalThis.confirmCount += 1; return true; },
+        showCustomAlert: async message => { globalThis.alertMessage = message; },
+        updateLorebookMenuItem: () => {}
+      };
+      lorebookManager.renderManagementList = () => {};
+      globalThis.importFile = {
+        name: 'legacy.lorebook.json',
+        text: async () => JSON.stringify({
+          format: 'GeminiPWA Lorebook',
+          packageVersion: LOREBOOK_PACKAGE_VERSION,
+          lorebooks: [{
+            id: restored.id,
+            lorebook: restored,
+            sourceText: '復元元テキスト',
+            order: 0,
+            createdAt: 123
+          }]
+        })
+      };
+    })()`);
+
+    await new vm.Script('lorebookManager.importLorebooks(importFile)').runInContext(context);
+    const result = evaluate<{
+      savedRecordId: string;
+      savedLorebookId: string;
+      description: string;
+      stateIds: string[];
+      confirmCount: number;
+      alertMessage: string;
+    }>(context, `({
+      savedRecordId: savedRecords[0].id,
+      savedLorebookId: savedRecords[0].lorebook.id,
+      description: savedRecords[0].lorebook.description,
+      stateIds: state.lorebookRecords.map(record => record.id),
+      confirmCount,
+      alertMessage
+    })`);
+
+    expect({ ...result, stateIds: Array.from(result.stateIds) }).toEqual({
+      savedRecordId: 'tokyo-yunagi-high-v1',
+      savedLorebookId: 'tokyo-yunagi-high-v1',
+      description: 'エクスポートから復元した内容',
+      stateIds: ['tokyo-yunagi-high-v1'],
+      confirmCount: 1,
+      alertMessage: '0件を追加し、1件を同じIDで上書きしました。',
+    });
+  });
+
   it('saves structured edits without replacing the preserved source text', async () => {
     const context = createContext();
     evaluate(context, `(() => {

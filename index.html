@@ -8558,7 +8558,7 @@ const dbUtils = {
                         updatedAt: now,
                         createdAt: existingData ? existingData.createdAt : now,
                         title: title,
-                        lorebookId: lorebookUtils.normalizeLorebookId(state.currentLorebookId),
+                        lorebookId: lorebookUtils.normalizeStoredLorebookId(state.currentLorebookId),
                     };
                     if (state.settings.persistMessageCollapseState) {
                         chatData.collapsedStates = Object.fromEntries(state.messageCollapsedStates);
@@ -9428,6 +9428,12 @@ const lorebookUtils = {
     },
     normalizeLorebookId(lorebookId) {
         return this.getLorebook(lorebookId)?.id || null;
+    },
+    normalizeStoredLorebookId(lorebookId) {
+        if (typeof lorebookId !== 'string')
+            return null;
+        const normalized = lorebookId.trim();
+        return normalized || null;
     },
     normalizeSearchText(value) {
         return String(value || '')
@@ -12069,7 +12075,8 @@ conditionalMemoriesの人物条件は allCharacters、anyCharacters のうち意
         this.downloadJson(this.createExportPackage(ids.map(id => this.buildExportEntry(id))), `geminipwa-lorebooks-${date}.json`);
     },
     extractImportEntries(data) {
-        if (data?.format === 'GeminiPWA Lorebook' && Array.isArray(data.lorebooks)) {
+        const acceptedPackageFormats = ['GeminiPWA Lorebook'];
+        if (acceptedPackageFormats.includes(data?.format) && Array.isArray(data.lorebooks)) {
             if (data.packageVersion !== LOREBOOK_PACKAGE_VERSION) {
                 throw new Error(`対応していないパッケージバージョンです: ${data.packageVersion}`);
             }
@@ -12087,22 +12094,37 @@ conditionalMemoriesの人物条件は allCharacters、anyCharacters のうち意
             const entries = this.extractImportEntries(data);
             if (entries.length === 0)
                 throw new Error('Lorebookが含まれていません。');
-            let order = this.getRecords().length;
+            const existingRecords = this.getRecords();
+            const existingById = new Map(existingRecords.map(record => [record.id, record]));
+            let order = existingRecords.length;
             const importedRecords = [];
             const reservedIds = new Set();
+            let replacedCount = 0;
             for (const entry of entries) {
                 const sourceLorebook = this.migrateLorebookToCurrent(entry.lorebook);
+                const entryId = typeof entry.id === 'string' ? entry.id.trim() : '';
+                const lorebookId = typeof sourceLorebook.id === 'string' ? sourceLorebook.id.trim() : '';
+                if (entryId && lorebookId && entryId !== lorebookId) {
+                    throw new Error(`Lorebook「${sourceLorebook.name || '名称不明'}」のレコードIDとLorebook IDが一致しません。`);
+                }
+                const id = entryId || lorebookId || this.createUniqueId(sourceLorebook.name, null, reservedIds);
+                if (id === LOREBOOK_SEED_REGISTRY_ID)
+                    throw new Error('予約済みのLorebook IDはインポートできません。');
+                if (reservedIds.has(id))
+                    throw new Error(`Lorebook ID「${id}」がファイル内で重複しています。`);
+                reservedIds.add(id);
+                sourceLorebook.id = id;
+                sourceLorebook.retrieval = { ...DEFAULT_LOREBOOK_RETRIEVAL, ...(sourceLorebook.retrieval || {}) };
                 const errors = this.validateLorebook(sourceLorebook);
                 if (errors.length > 0)
                     throw new Error(`${sourceLorebook?.name || '名称不明'}: ${errors.join(' / ')}`);
-                const id = this.createUniqueId(sourceLorebook.name, null, reservedIds);
-                reservedIds.add(id);
-                sourceLorebook.id = id;
                 sourceLorebook.analysis = {
                     methodVersion: sourceLorebook.analysis?.methodVersion || 'imported',
                     sourceLabel: file.name,
                 };
-                sourceLorebook.retrieval = { ...DEFAULT_LOREBOOK_RETRIEVAL };
+                const existingRecord = existingById.get(id);
+                if (existingRecord)
+                    replacedCount++;
                 const now = Date.now();
                 const record = {
                     id,
@@ -12113,16 +12135,27 @@ conditionalMemoriesの人物条件は allCharacters、anyCharacters のうち意
                     sourceLabel: file.name,
                     reviewReport: this.normalizeReviewReport(entry.reviewReport),
                     analyzedBy: entry.analyzedBy || null,
-                    order: order++,
-                    createdAt: now,
+                    order: existingRecord?.order ?? order++,
+                    createdAt: Number(entry.createdAt) || existingRecord?.createdAt || now,
                     updatedAt: now,
                 };
                 importedRecords.push(record);
             }
+            if (replacedCount > 0) {
+                const confirmed = await uiUtils.showCustomConfirm(`同じIDのLorebookが${replacedCount}件あります。インポートした内容で上書きしますか？`);
+                if (!confirmed)
+                    return;
+            }
             await dbUtils.putLorebookRecords(importedRecords);
-            state.lorebookRecords = [...this.getRecords(), ...importedRecords];
+            const importedIds = new Set(importedRecords.map(record => record.id));
+            state.lorebookRecords = [
+                ...existingRecords.filter(record => !importedIds.has(record.id)),
+                ...importedRecords,
+            ].sort((left, right) => (Number(left.order) || 0) - (Number(right.order) || 0));
             this.renderManagementList();
-            await uiUtils.showCustomAlert(`${importedRecords.length}件のLorebookを新規インポートしました。`);
+            uiUtils.updateLorebookMenuItem();
+            const addedCount = importedRecords.length - replacedCount;
+            await uiUtils.showCustomAlert(`${addedCount}件を追加し、${replacedCount}件を同じIDで上書きしました。`);
         }
         catch (error) {
             await uiUtils.showCustomAlert(`Lorebookをインポートできませんでした: ${error.message}`);
@@ -15268,12 +15301,13 @@ Object.assign(uiUtils, {
     },
     updateLorebookMenuItem() {
         const lorebook = lorebookUtils.getLorebook(state.currentLorebookId);
-        const name = lorebook?.name || '使用しない';
+        const storedLorebookId = lorebookUtils.normalizeStoredLorebookId(state.currentLorebookId);
+        const name = lorebook?.name || (storedLorebookId ? '未登録のLorebook' : '使用しない');
         elements.headerMenuLorebookName.textContent = name;
         elements.headerMenuLorebookBtn.disabled = state.isSending;
         elements.headerMenuLorebookBtn.title = state.isSending
             ? '応答中はLorebookを変更できません'
-            : `現在のLorebook: ${name}`;
+            : `現在のLorebook: ${name}${!lorebook && storedLorebookId ? `（ID: ${storedLorebookId}）` : ''}`;
     },
     updateProviderToggleButtons() {
         const providerMap = {
@@ -17778,7 +17812,11 @@ Object.assign(appLogic, {
             const chat = await dbUtils.getChat(id);
             if (chat) {
                 state.currentChatId = chat.id;
-                state.currentLorebookId = lorebookUtils.normalizeLorebookId(chat.lorebookId);
+                state.currentLorebookId = lorebookUtils.normalizeStoredLorebookId(chat.lorebookId);
+                const unavailableLorebookId = state.currentLorebookId
+                    && !lorebookUtils.getLorebook(state.currentLorebookId)
+                    ? state.currentLorebookId
+                    : null;
                 state.currentMessages = chat.messages?.map(msg => ({
                     ...msg,
                     attachments: msg.attachments || [],
@@ -17826,6 +17864,10 @@ Object.assign(appLogic, {
                 }
                 history.replaceState({ screen: 'chat' }, '', '#chat');
                 state.currentScreen = 'chat';
+                if (unavailableLorebookId) {
+                    await uiUtils.showCustomAlert(`このセッションが使用していたLorebook（ID: ${unavailableLorebookId}）は登録されていません。\n` +
+                        'Lorebookをインポートするまで、このセッションにはLorebookが適用されません。');
+                }
                 if (state.settings.autoScrollOnNewMessage && state.currentMessages.length > 0) {
                     uiUtils.scrollToBottom();
                 }
@@ -17845,7 +17887,7 @@ Object.assign(appLogic, {
     async changeCurrentSessionLorebook() {
         if (state.isSending)
             return false;
-        const previousLorebookId = lorebookUtils.normalizeLorebookId(state.currentLorebookId);
+        const previousLorebookId = lorebookUtils.normalizeStoredLorebookId(state.currentLorebookId);
         const selectedLorebookId = await uiUtils.showLorebookSelectionDialog(previousLorebookId);
         if (selectedLorebookId === undefined)
             return false;
@@ -17933,7 +17975,7 @@ Object.assign(appLogic, {
                     updatedAt: Date.now(),
                     createdAt: Date.now(),
                     title: newTitle,
-                    lorebookId: lorebookUtils.normalizeLorebookId(chat.lorebookId)
+                    lorebookId: lorebookUtils.normalizeStoredLorebookId(chat.lorebookId)
                 };
                 if (state.settings.persistMessageCollapseState && chat.collapsedStates) {
                     newChatData.collapsedStates = { ...chat.collapsedStates };
@@ -18494,7 +18536,7 @@ Object.assign(appLogic, {
                 })),
                 updatedAt: Date.now(),
                 title: titleToSave,
-                lorebookId: lorebookUtils.normalizeLorebookId(state.currentLorebookId)
+                lorebookId: lorebookUtils.normalizeStoredLorebookId(state.currentLorebookId)
             };
             if (isNewChatForDBSave) {
                 chatToSave.createdAt = Date.now();
@@ -19285,7 +19327,7 @@ Object.assign(appLogic, {
             }
             const exportableChats = chats.map(chat => ({
                 title: chat.title,
-                lorebookId: lorebookUtils.normalizeLorebookId(chat.lorebookId),
+                lorebookId: lorebookUtils.normalizeStoredLorebookId(chat.lorebookId),
                 messages: chat.messages.map(msg => {
                     const messageExport = {
                         role: msg.role,
@@ -19381,7 +19423,7 @@ Object.assign(appLogic, {
                     const titlePrefix = state.settings.addPrefixOnImport ? `${IMPORT_PREFIX}(全) ` : '';
                     const newChat = {
                         title: `${titlePrefix}${chatData.title}`.substring(0, 100),
-                        lorebookId: lorebookUtils.normalizeLorebookId(chatData.lorebookId),
+                        lorebookId: lorebookUtils.normalizeStoredLorebookId(chatData.lorebookId),
                         messages: (chatData.messages || []).map(msg => ({
                             role: msg.role,
                             content: msg.content || '',

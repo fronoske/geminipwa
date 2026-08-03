@@ -83,7 +83,11 @@ Object.assign(appLogic, {
                     const chat = await dbUtils.getChat(id);
                     if (chat) {
                         state.currentChatId = chat.id;
-                        state.currentLorebookId = lorebookUtils.normalizeLorebookId(chat.lorebookId);
+                        state.currentLorebookId = lorebookUtils.normalizeStoredLorebookId(chat.lorebookId);
+                        const unavailableLorebookId = state.currentLorebookId
+                            && !lorebookUtils.getLorebook(state.currentLorebookId)
+                            ? state.currentLorebookId
+                            : null;
                         state.currentMessages = chat.messages?.map(msg => ({
                             ...msg,
                             attachments: msg.attachments || [],
@@ -132,6 +136,12 @@ Object.assign(appLogic, {
                         }
                         history.replaceState({ screen: 'chat' }, '', '#chat');
                         state.currentScreen = 'chat';
+                        if (unavailableLorebookId) {
+                            await uiUtils.showCustomAlert(
+                                `このセッションが使用していたLorebook（ID: ${unavailableLorebookId}）は登録されていません。\n` +
+                                'Lorebookをインポートするまで、このセッションにはLorebookが適用されません。'
+                            );
+                        }
                         if (state.settings.autoScrollOnNewMessage && state.currentMessages.length > 0) {
                             uiUtils.scrollToBottom();
                         }
@@ -149,7 +159,7 @@ Object.assign(appLogic, {
             async changeCurrentSessionLorebook() {
                 if (state.isSending) return false;
 
-                const previousLorebookId = lorebookUtils.normalizeLorebookId(state.currentLorebookId);
+                const previousLorebookId = lorebookUtils.normalizeStoredLorebookId(state.currentLorebookId);
                 const selectedLorebookId = await uiUtils.showLorebookSelectionDialog(previousLorebookId);
                 if (selectedLorebookId === undefined) return false;
 
@@ -221,7 +231,7 @@ Object.assign(appLogic, {
                             updatedAt: Date.now(),
                             createdAt: Date.now(),
                             title: newTitle,
-                            lorebookId: lorebookUtils.normalizeLorebookId(chat.lorebookId)
+                            lorebookId: lorebookUtils.normalizeStoredLorebookId(chat.lorebookId)
                         };
 
                         if (state.settings.persistMessageCollapseState && chat.collapsedStates) {

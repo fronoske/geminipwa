@@ -80,12 +80,13 @@ Object.assign(uiUtils, {
             },
             updateLorebookMenuItem() {
                 const lorebook = lorebookUtils.getLorebook(state.currentLorebookId);
-                const name = lorebook?.name || '使用しない';
+                const storedLorebookId = lorebookUtils.normalizeStoredLorebookId(state.currentLorebookId);
+                const name = lorebook?.name || (storedLorebookId ? '未登録のLorebook' : '使用しない');
                 elements.headerMenuLorebookName.textContent = name;
                 elements.headerMenuLorebookBtn.disabled = state.isSending;
                 elements.headerMenuLorebookBtn.title = state.isSending
                     ? '応答中はLorebookを変更できません'
-                    : `現在のLorebook: ${name}`;
+                    : `現在のLorebook: ${name}${!lorebook && storedLorebookId ? `（ID: ${storedLorebookId}）` : ''}`;
             },
             updateProviderToggleButtons() {
                 const providerMap = {

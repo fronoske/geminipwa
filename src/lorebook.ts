@@ -22,6 +22,12 @@ const lorebookUtils = {
         return this.getLorebook(lorebookId)?.id || null;
     },
 
+    normalizeStoredLorebookId(lorebookId) {
+        if (typeof lorebookId !== 'string') return null;
+        const normalized = lorebookId.trim();
+        return normalized || null;
+    },
+
     normalizeSearchText(value) {
         return String(value || '')
             .normalize('NFKC')

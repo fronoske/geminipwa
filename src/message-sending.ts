@@ -337,7 +337,7 @@ Object.assign(appLogic, {
                             })),
                             updatedAt: Date.now(),
                             title: titleToSave,
-                            lorebookId: lorebookUtils.normalizeLorebookId(state.currentLorebookId)
+                            lorebookId: lorebookUtils.normalizeStoredLorebookId(state.currentLorebookId)
                         };
 
                         if (isNewChatForDBSave) {

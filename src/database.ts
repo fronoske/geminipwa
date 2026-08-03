@@ -358,7 +358,7 @@ const dbUtils = {
                                 updatedAt: now,
                                 createdAt: existingData ? existingData.createdAt : now,
                                 title: title,
-                                lorebookId: lorebookUtils.normalizeLorebookId(state.currentLorebookId),
+                                lorebookId: lorebookUtils.normalizeStoredLorebookId(state.currentLorebookId),
                             };
 
                             if (state.settings.persistMessageCollapseState) {

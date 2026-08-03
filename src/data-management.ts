@@ -144,7 +144,7 @@ Object.assign(appLogic, {
 
                     const exportableChats = chats.map(chat => ({
                         title: chat.title,
-                        lorebookId: lorebookUtils.normalizeLorebookId(chat.lorebookId),
+                        lorebookId: lorebookUtils.normalizeStoredLorebookId(chat.lorebookId),
                         messages: chat.messages.map(msg => {
                             const messageExport = {
                                 role: msg.role,
@@ -234,7 +234,7 @@ Object.assign(appLogic, {
                             const titlePrefix = state.settings.addPrefixOnImport ? `${IMPORT_PREFIX}(全) ` : '';
                             const newChat = {
                                 title: `${titlePrefix}${chatData.title}`.substring(0, 100),
-                                lorebookId: lorebookUtils.normalizeLorebookId(chatData.lorebookId),
+                                lorebookId: lorebookUtils.normalizeStoredLorebookId(chatData.lorebookId),
                                 messages: (chatData.messages || []).map(msg => ({
                                     role: msg.role,
                                     content: msg.content || '',

@@ -367,18 +367,30 @@ describe('Lorebook retrieval', () => {
 });
 
 describe('Lorebook session integration', () => {
+  it('preserves an unavailable Lorebook ID separately from resolving a registered Lorebook', () => {
+    const context = createLorebookContext();
+
+    expect(evaluate(context, "lorebookUtils.normalizeStoredLorebookId(' missing-lorebook ')"))
+      .toBe('missing-lorebook');
+    expect(evaluate(context, "lorebookUtils.normalizeLorebookId('missing-lorebook')"))
+      .toBeNull();
+  });
+
   it('keeps the selected Lorebook on saved, loaded, duplicated, and imported sessions', () => {
     const database = readFile('src/database.ts');
     const sessions = readFile('src/chat-sessions.ts');
     const sending = readFile('src/message-sending.ts');
     const dataManagement = readFile('src/data-management.ts');
 
-    expect(database).toContain('lorebookId: lorebookUtils.normalizeLorebookId(state.currentLorebookId)');
-    expect(sessions).toContain('state.currentLorebookId = lorebookUtils.normalizeLorebookId(chat.lorebookId)');
-    expect(sessions).toContain('lorebookId: lorebookUtils.normalizeLorebookId(chat.lorebookId)');
+    expect(database).toContain('lorebookId: lorebookUtils.normalizeStoredLorebookId(state.currentLorebookId)');
+    expect(sessions).toContain('state.currentLorebookId = lorebookUtils.normalizeStoredLorebookId(chat.lorebookId)');
+    expect(sessions).toContain('lorebookId: lorebookUtils.normalizeStoredLorebookId(chat.lorebookId)');
     expect(sending).toContain('lorebookUtils.buildPrompt(');
-    expect(dataManagement).toContain('lorebookId: lorebookUtils.normalizeLorebookId(chat.lorebookId)');
-    expect(dataManagement).toContain('lorebookId: lorebookUtils.normalizeLorebookId(chatData.lorebookId)');
+    expect(sending).toContain('lorebookId: lorebookUtils.normalizeStoredLorebookId(state.currentLorebookId)');
+    expect(dataManagement).toContain('lorebookId: lorebookUtils.normalizeStoredLorebookId(chat.lorebookId)');
+    expect(dataManagement).toContain('lorebookId: lorebookUtils.normalizeStoredLorebookId(chatData.lorebookId)');
+    expect(sessions).toContain('このセッションが使用していたLorebook');
+    expect(readFile('src/ui-header-controls.ts')).toContain("'未登録のLorebook'");
   });
 
   it('starts without a Lorebook and lets the current session change it from the header menu', () => {
