@@ -565,7 +565,7 @@ describe('project configuration', () => {
   });
 
   it('uses the current release date as the application version', () => {
-    expect(readFile('src/app-config.ts')).toContain('const APP_VERSION = "2026.08.03-fronoske"');
+    expect(readFile('src/app-config.ts')).toContain('const APP_VERSION = "2026.08.05-fronoske"');
   });
 
   it('links repository references to the current branch README', () => {

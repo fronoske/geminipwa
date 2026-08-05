@@ -173,6 +173,19 @@ describe('Lorebook management and analysis boundary', () => {
     expect(readFile('src/lorebook-manager.ts')).toContain('this.serializeAnalysisPayloadForLog(payload)');
   });
 
+  it('states explicitly when the analysis report has no warnings', () => {
+    const context = createContext();
+    const report = evaluate<string>(context, `lorebookManager.formatAnalysisReport({
+      reviewReport: {
+        warnings: [], unresolvedQuestions: [],
+        sourceAddressingCount: 4, structuredAddressingCount: 4
+      },
+      provider: 'gemini', model: 'test-model'
+    })`);
+
+    expect(report).toBe('警告: なし\n呼称: 原文 4件 / 構造化 4件\n解析: gemini / test-model');
+  });
+
   it('detects token-limit termination and records response metadata before rejecting', async () => {
     const context = createContext();
     evaluate(context, `(() => {
@@ -212,6 +225,8 @@ describe('Lorebook management and analysis boundary', () => {
         lorebookEditorStatus: { textContent: '' }
       };
       globalThis.__analysisCalls = [];
+      globalThis.__progressMessage = '';
+      lorebookManager.updateAnalysisProgressMessage = message => { globalThis.__progressMessage = message; };
       globalThis.apiUtils = {
         getCurrentProviderRequestContext: () => ({ provider: 'gemini', model: 'test-model', apiKey: 'secret' }),
         requestCurrentProviderText: async (_system, _user, options) => {
@@ -239,6 +254,7 @@ describe('Lorebook management and analysis boundary', () => {
     expect(log).toContain('思考: 5,103 tokens');
     expect(log).toContain('指定出力上限: 6,144 tokens');
     expect(log).toContain('この処理単位だけ再試行します');
+    expect(evaluate<string>(context, '__progressMessage')).toContain('出力上限を 6,144 から 12,288 tokensへ拡張');
   });
 
   it('renders deterministic n/m progress after the analysis plan is known', () => {

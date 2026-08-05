@@ -19,6 +19,7 @@ const lorebookManager = {
         this.analysisProgress = null;
         if (!elements.lorebookAnalysisProgress) return;
         elements.lorebookAnalysisProgress.classList.add('hidden');
+        elements.lorebookEditorStatus.classList.remove('hidden');
         elements.lorebookAnalysisProgressCount.textContent = '—';
         elements.lorebookAnalysisProgressCurrent.textContent = '';
         elements.lorebookAnalysisProgressPhases.innerHTML = '';
@@ -32,6 +33,7 @@ const lorebookManager = {
             phases: [{ id: 'plan', label: '解析計画', completed: 0, total: 1 }],
         };
         elements.lorebookAnalysisProgress.classList.remove('hidden');
+        elements.lorebookEditorStatus.classList.add('hidden');
         this.renderAnalysisProgress();
     },
 
@@ -79,6 +81,12 @@ const lorebookManager = {
     finishAnalysisProgress(label) {
         if (!this.analysisProgress) return;
         this.analysisProgress.currentPhaseId = null;
+        this.analysisProgress.currentLabel = label;
+        this.renderAnalysisProgress();
+    },
+
+    updateAnalysisProgressMessage(label) {
+        if (!this.analysisProgress) return;
         this.analysisProgress.currentLabel = label;
         this.renderAnalysisProgress();
     },
@@ -212,7 +220,6 @@ const lorebookManager = {
             `[SYSTEM]\n${systemPrompt}\n\n[USER]\n${logUserPrompt}`,
             requestContext
         );
-        elements.lorebookEditorStatus.textContent = `LLM処理中：${stage}…`;
         try {
             const response = await apiUtils.requestCurrentProviderText(systemPrompt, userPrompt, options);
             this.appendAnalysisLog(
@@ -259,7 +266,7 @@ const lorebookManager = {
         this.analysisCancelRequested = true;
         this.appendAnalysisLog('ユーザー操作', '中断要求', '進行中のAPIリクエストを中断しました。');
         if (state.abortController) state.abortController.abort();
-        elements.lorebookEditorStatus.textContent = '解析を中断しています…';
+        this.updateAnalysisProgressMessage('解析を中断しています…');
         this.updateEditorState();
     },
 
@@ -1193,6 +1200,18 @@ contextはspoken、innerThought、public、privateのいずれかとする。
         };
     },
 
+    formatAnalysisReport(result) {
+        const findings = [
+            ...result.reviewReport.warnings.map(item => `警告: ${item}`),
+            ...result.reviewReport.unresolvedQuestions.map(item => `確認: ${item}`),
+        ];
+        return [
+            ...(findings.length > 0 ? findings : ['警告: なし']),
+            `呼称: 原文 ${result.reviewReport.sourceAddressingCount}件 / 構造化 ${result.reviewReport.structuredAddressingCount}件`,
+            `解析: ${result.provider} / ${result.model}`,
+        ].join('\n');
+    },
+
     normalizeStyleGuide(styleGuide = {}) {
         const normalizeRules = value => {
             const values = Array.isArray(value) ? value : (typeof value === 'string' ? [value] : []);
@@ -1466,6 +1485,7 @@ contextはspoken、innerThought、public、privateのいずれかとする。
         let effectiveMaxOutputTokens = maxOutputTokens;
         for (let attempt = 1; attempt <= 2; attempt++) {
             const attemptStage = attempt === 1 ? stage : `${stage}（JSON再試行）`;
+            if (attempt > 1) this.updateAnalysisProgressMessage(`${stage}：JSONを再生成しています…`);
             const retryInstruction = attempt === 1
                 ? ''
                 : '\n前回はJSONとして解析できませんでした。構文を確認し、指定されたJSONだけを最初から返してください。';
@@ -1493,11 +1513,13 @@ contextはspoken、innerThought、public、privateのいずれかとする。
                         if (truncationAttempt === 0) {
                             const expandedLimit = this.expandedAnalysisOutputLimit(effectiveMaxOutputTokens, error.response);
                             if (expandedLimit > effectiveMaxOutputTokens) {
+                                const retryMessage = `出力上限を ${Number(effectiveMaxOutputTokens).toLocaleString()} から ${expandedLimit.toLocaleString()} tokensへ拡張し、この処理単位だけ再試行します。`;
                                 this.appendAnalysisLog(
                                     attemptStage,
                                     '自動再試行',
-                                    `出力上限を ${Number(effectiveMaxOutputTokens).toLocaleString()} から ${expandedLimit.toLocaleString()} tokensへ拡張し、この処理単位だけ再試行します。`
+                                    retryMessage
                                 );
+                                this.updateAnalysisProgressMessage(retryMessage);
                                 effectiveMaxOutputTokens = expandedLimit;
                                 continue;
                             }
@@ -1862,7 +1884,6 @@ contextはspoken、innerThought、public、privateのいずれかとする。
         this.resetAnalysisLog({ hide: false });
         this.startAnalysisProgress();
         this.updateEditorState();
-        elements.lorebookEditorStatus.textContent = '現在選択中のLLMで分割解析を行っています…';
         try {
             const result = await this.requestAnalysis(
                 sourceText,
@@ -1871,22 +1892,13 @@ contextはspoken、innerThought、public、privateのいずれかとする。
             );
             this.pendingAnalysis = { ...result, sourceText };
             elements.lorebookAnalysisResultTextarea.value = JSON.stringify(result.lorebook, null, 2);
-            const warnings = [
-                ...result.reviewReport.warnings.map(item => `警告: ${item}`),
-                ...result.reviewReport.unresolvedQuestions.map(item => `確認: ${item}`),
-                `呼称: 原文 ${result.reviewReport.sourceAddressingCount}件 / 構造化 ${result.reviewReport.structuredAddressingCount}件`,
-                `解析: ${result.provider} / ${result.model}`,
-            ];
-            elements.lorebookAnalysisReport.textContent = warnings.join('\n') || '警告・未解決事項はありません。';
+            elements.lorebookAnalysisReport.textContent = this.formatAnalysisReport(result);
             elements.lorebookAnalysisDialog.showModal();
-            elements.lorebookEditorStatus.textContent = '解析が完了しました。結果を確認してください。';
             this.finishAnalysisProgress('すべての解析が完了しました。結果を確認してください。');
         } catch (error) {
             if (this.isAnalysisCancellation(error)) {
-                elements.lorebookEditorStatus.textContent = '解析を中断しました。';
                 this.finishAnalysisProgress('解析を中断しました。');
             } else {
-                elements.lorebookEditorStatus.textContent = '解析に失敗しました。';
                 this.finishAnalysisProgress(`解析に失敗しました：${error.message}`);
                 await uiUtils.showCustomAlert(`Lorebookの解析に失敗しました: ${error.message}`);
             }
