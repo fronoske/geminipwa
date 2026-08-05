@@ -174,17 +174,33 @@ const lorebookManager = {
         return ['max_tokens', 'max_token', 'max_output_tokens', 'length', 'token_limit'].includes(normalized);
     },
 
-    formatAnalysisResponseMetadata(response) {
+    formatAnalysisResponseMetadata(response, options = {}) {
         const details = [];
         if (response?.finishReason) details.push(`終了理由: ${response.finishReason}`);
         const usage = response?.usageMetadata || {};
+        if (Number.isFinite(Number(usage.promptTokenCount))) {
+            details.push(`入力: ${Number(usage.promptTokenCount).toLocaleString()} tokens`);
+        }
         if (Number.isFinite(Number(usage.candidatesTokenCount))) {
-            details.push(`出力: ${Number(usage.candidatesTokenCount).toLocaleString()} tokens`);
+            details.push(`通常出力: ${Number(usage.candidatesTokenCount).toLocaleString()} tokens`);
+        }
+        if (Number.isFinite(Number(usage.thoughtsTokenCount))) {
+            details.push(`思考: ${Number(usage.thoughtsTokenCount).toLocaleString()} tokens`);
         }
         if (Number.isFinite(Number(usage.totalTokenCount))) {
             details.push(`合計: ${Number(usage.totalTokenCount).toLocaleString()} tokens`);
         }
+        if (Number.isFinite(Number(options.maxOutputTokens))) {
+            details.push(`指定出力上限: ${Number(options.maxOutputTokens).toLocaleString()} tokens`);
+        }
         return details.length > 0 ? `\n\n[応答メタデータ] ${details.join(' / ')}` : '';
+    },
+
+    expandedAnalysisOutputLimit(currentLimit, response = null) {
+        const current = Math.max(1024, Number(currentLimit) || 8192);
+        const thoughts = Math.max(0, Number(response?.usageMetadata?.thoughtsTokenCount) || 0);
+        const required = Math.max(current * 2, current + thoughts);
+        return Math.min(32768, Math.ceil(required / 1024) * 1024);
     },
 
     async requestLoggedAnalysis(stage, systemPrompt, userPrompt, logUserPrompt = userPrompt, options = {}) {
@@ -202,7 +218,7 @@ const lorebookManager = {
             this.appendAnalysisLog(
                 stage,
                 '受信',
-                `${response.text}${this.formatAnalysisResponseMetadata(response)}`,
+                `${response.text}${this.formatAnalysisResponseMetadata(response, options)}`,
                 { ...response, apiKey: requestContext.apiKey }
             );
             if (this.isOutputLimitFinishReason(response.finishReason)) {
@@ -210,6 +226,8 @@ const lorebookManager = {
                     `LLMの出力がトークン上限で途中終了しました（終了理由: ${response.finishReason}）。`
                 );
                 error.name = 'LorebookAnalysisTruncatedError';
+                error.response = response;
+                error.requestedMaxOutputTokens = options.maxOutputTokens;
                 throw error;
             }
             this.throwIfAnalysisCancelled();
@@ -1445,6 +1463,7 @@ contextはspoken、innerThought、public、privateのいずれかとする。
 
     async requestAnalysisJson({ stage, systemPrompt, payload, maxOutputTokens = 8192, validate = null }) {
         let lastError = null;
+        let effectiveMaxOutputTokens = maxOutputTokens;
         for (let attempt = 1; attempt <= 2; attempt++) {
             const attemptStage = attempt === 1 ? stage : `${stage}（JSON再試行）`;
             const retryInstruction = attempt === 1
@@ -1452,22 +1471,43 @@ contextはspoken、innerThought、public、privateのいずれかとする。
                 : '\n前回はJSONとして解析できませんでした。構文を確認し、指定されたJSONだけを最初から返してください。';
             const userPrompt = `${JSON.stringify(payload)}${retryInstruction}`;
             const logPrompt = `${this.serializeAnalysisPayloadForLog(payload)}${retryInstruction}`;
-            try {
-                const response = await this.requestLoggedAnalysis(
-                    attemptStage,
-                    systemPrompt,
-                    userPrompt,
-                    logPrompt,
-                    { maxOutputTokens }
-                );
-                const data = this.parseAnalysisJson(response.text);
-                const validationMessage = validate ? validate(data) : '';
-                if (validationMessage) throw new Error(validationMessage);
-                return { data, response };
-            } catch (error) {
-                if (this.isAnalysisCancellation(error) || error?.name === 'LorebookAnalysisTruncatedError') throw error;
-                lastError = error;
-                this.appendAnalysisLog(attemptStage, 'JSON検証', error.message || String(error));
+            for (let truncationAttempt = 0; truncationAttempt <= 1; truncationAttempt++) {
+                const requestStage = truncationAttempt === 0
+                    ? attemptStage
+                    : `${attemptStage}（出力上限を拡張して再試行）`;
+                try {
+                    const response = await this.requestLoggedAnalysis(
+                        requestStage,
+                        systemPrompt,
+                        userPrompt,
+                        logPrompt,
+                        { maxOutputTokens: effectiveMaxOutputTokens }
+                    );
+                    const data = this.parseAnalysisJson(response.text);
+                    const validationMessage = validate ? validate(data) : '';
+                    if (validationMessage) throw new Error(validationMessage);
+                    return { data, response };
+                } catch (error) {
+                    if (this.isAnalysisCancellation(error)) throw error;
+                    if (error?.name === 'LorebookAnalysisTruncatedError') {
+                        if (truncationAttempt === 0) {
+                            const expandedLimit = this.expandedAnalysisOutputLimit(effectiveMaxOutputTokens, error.response);
+                            if (expandedLimit > effectiveMaxOutputTokens) {
+                                this.appendAnalysisLog(
+                                    attemptStage,
+                                    '自動再試行',
+                                    `出力上限を ${Number(effectiveMaxOutputTokens).toLocaleString()} から ${expandedLimit.toLocaleString()} tokensへ拡張し、この処理単位だけ再試行します。`
+                                );
+                                effectiveMaxOutputTokens = expandedLimit;
+                                continue;
+                            }
+                        }
+                        throw error;
+                    }
+                    lastError = error;
+                    this.appendAnalysisLog(attemptStage, 'JSON検証', error.message || String(error));
+                    break;
+                }
             }
         }
         throw new Error(`${stage}のJSONを解析できませんでした: ${lastError?.message || '不明なエラー'}`);

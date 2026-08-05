@@ -199,7 +199,46 @@ describe('Lorebook management and analysis boundary', () => {
     await expect(request).rejects.toMatchObject({ name: 'LorebookAnalysisTruncatedError' });
     const log = evaluate<string>(context, 'lorebookManager.analysisLogEntries.map(entry => entry.content).join("\\n")');
     expect(log).toContain('終了理由: MAX_TOKENS');
-    expect(log).toContain('出力: 16,384 tokens');
+    expect(log).toContain('通常出力: 16,384 tokens');
+  });
+
+  it('retries only the truncated analysis unit with an expanded output limit', async () => {
+    const context = createContext();
+    evaluate(context, `(() => {
+      globalThis.state = { abortController: null };
+      globalThis.elements = {
+        lorebookAnalysisLog: { textContent: '' },
+        lorebookAnalysisLogDialog: { open: false },
+        lorebookEditorStatus: { textContent: '' }
+      };
+      globalThis.__analysisCalls = [];
+      globalThis.apiUtils = {
+        getCurrentProviderRequestContext: () => ({ provider: 'gemini', model: 'test-model', apiKey: 'secret' }),
+        requestCurrentProviderText: async (_system, _user, options) => {
+          __analysisCalls.push(options.maxOutputTokens);
+          if (__analysisCalls.length === 1) return {
+            text: '{"characters":[', provider: 'gemini', model: 'test-model', finishReason: 'MAX_TOKENS',
+            usageMetadata: { promptTokenCount: 19447, candidatesTokenCount: 1041, thoughtsTokenCount: 5103, totalTokenCount: 25591 }
+          };
+          return {
+            text: '{"characters":[],"memoryTopics":[]}', provider: 'gemini', model: 'test-model', finishReason: 'STOP',
+            usageMetadata: { promptTokenCount: 19447, candidatesTokenCount: 20, thoughtsTokenCount: 1000, totalTokenCount: 20467 }
+          };
+        }
+      };
+      lorebookManager.analysisLogEntries = [];
+    })()`);
+
+    const request = new vm.Script(`lorebookManager.requestAnalysisJson({
+      stage: '解析計画', systemPrompt: 'system', payload: { sourceText: 'source' }, maxOutputTokens: 6144,
+      validate: data => Array.isArray(data.characters) && Array.isArray(data.memoryTopics) ? '' : 'invalid'
+    })`).runInContext(context) as Promise<unknown>;
+    await expect(request).resolves.toMatchObject({ data: { characters: [], memoryTopics: [] } });
+    expect(evaluate<number[]>(context, '__analysisCalls')).toEqual([6144, 12288]);
+    const log = evaluate<string>(context, 'lorebookManager.analysisLogEntries.map(entry => entry.content).join("\\n")');
+    expect(log).toContain('思考: 5,103 tokens');
+    expect(log).toContain('指定出力上限: 6,144 tokens');
+    expect(log).toContain('この処理単位だけ再試行します');
   });
 
   it('renders deterministic n/m progress after the analysis plan is known', () => {
