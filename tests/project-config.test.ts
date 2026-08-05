@@ -569,7 +569,7 @@ describe('project configuration', () => {
   });
 
   it('links repository references to the current branch README', () => {
-    const repositoryReadmeUrl = 'https://github.com/fronoske/geminipwa/blob/stop-auto-scroll/README.md';
+    const repositoryReadmeUrl = 'https://github.com/fronoske/geminipwa/blob/dev/README.md';
     expect(readFile('src/index.html')).toContain(`href="${repositoryReadmeUrl}"`);
     expect(readFile('src/api-clients.ts')).toContain(`dsRequestBody.site_url = "${repositoryReadmeUrl}"`);
   });

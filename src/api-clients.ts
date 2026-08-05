@@ -336,7 +336,7 @@ async callDeepSeekApi(apiKey, model, messagesForApi, generationConfig, systemIns
                     const activeBackend = multiBackendUtils.getActiveBackend();
                     if(activeBackend && activeBackend.url.includes('openrouter.ai')) {
                         dsRequestBody.http_referer = "https://geminipwa.pages.dev/";
-                        dsRequestBody.site_url = "https://github.com/fronoske/geminipwa/blob/stop-auto-scroll/README.md";
+                        dsRequestBody.site_url = "https://github.com/fronoske/geminipwa/blob/dev/README.md";
                     }
                 }
 
