@@ -58,7 +58,7 @@ try {
 
     uiUtils.showScreen('settings');
     await delay(400);
-    result.topLevelVisible = document.querySelector('#settings-group-lorebooks')?.open === true;
+    result.topLevelInitiallyClosed = document.querySelector('#settings-group-lorebooks')?.open === false;
     result.initialRows = document.querySelectorAll('.lorebook-management-item').length;
     result.managementRowsCompact = [...document.querySelectorAll('.lorebook-management-item')]
       .every((row) => row.getBoundingClientRect().height < 160);
@@ -115,36 +115,60 @@ try {
     await overwritePromise;
     result.cancelPreservesSource = source.value === '既存の設定情報';
 
-    const candidate = {
-      lorebook: {
-        name: 'ブラウザ監査Lorebook',
-        description: '管理画面の監査用',
-        storyCore: '監査用の学校を舞台に、現在の会話を優先する。',
-        styleGuide: {
-          narration: ['三人称一元視点で描く'],
-          dialogue: ['会話の間を大切にする'],
-          formatting: ['台詞は鉤括弧で表記する'],
-          avoid: ['設定を列挙しない'],
-        },
-        characters: [
-          { id: 'audit-a', name: '監査A', aliases: ['監査A', 'A'], core: '監査Aは女子高校生。' },
-          { id: 'audit-b', name: '監査B', aliases: ['監査B', 'B'], core: '監査Bは男子高校生。' },
-        ],
-        addressing: {
-          instruction: '個別呼称を優先し、逆方向へ推測しない。',
+    let analysisCalls = 0;
+    apiUtils.requestCurrentProviderText = async (systemPrompt, userPrompt) => {
+      analysisCalls += 1;
+      const payload = JSON.parse(userPrompt);
+      let data;
+      if (systemPrompt.includes('後続処理のための索引')) {
+        data = {
+          characters: [
+            { id: 'audit-a', name: '監査A', aliases: ['監査A', 'A'] },
+            { id: 'audit-b', name: '監査B', aliases: ['監査B', 'B'] },
+          ],
+          memoryTopics: [{ id: 'audit-memory', label: '二人の関係', keywords: ['幼なじみ'] }],
+        };
+      } else if (systemPrompt.includes('舞台、世界観、作品全体の前提')) {
+        data = {
+          name: 'ブラウザ監査Lorebook',
+          description: '管理画面の監査用',
+          storyCore: '監査用の学校を舞台に、現在の会話を優先する。',
+          styleGuide: {
+            narration: ['三人称一元視点で描く'], dialogue: ['会話の間を大切にする'],
+            formatting: ['台詞は鉤括弧で表記する'], avoid: ['設定を列挙しない'],
+          },
+          addressingInstruction: '個別呼称を優先し、逆方向へ推測しない。',
+        };
+      } else if (systemPrompt.includes('指定された人物ごとに')) {
+        data = { characters: payload.targetCharacters.map((target) => ({
+          id: target.id, name: target.name, aliases: target.aliases,
+          core: target.id === 'audit-a' ? '監査Aは女子高校生。' : '監査Bは男子高校生。',
+        })) };
+      } else if (systemPrompt.includes('指定された人物を話者')) {
+        data = {
           exactRules: [{ speakerId: 'audit-a', targetId: 'audit-b', forms: [{ context: 'spoken', value: 'Bくん' }] }],
           fallbackRules: [],
-        },
-        conditionalMemories: [{ id: 'audit-memory', allCharacters: ['audit-a', 'audit-b'], priority: 80, content: '二人は幼なじみ。' }],
-      },
-      reviewReport: {
-        warnings: [], unresolvedQuestions: [], sourceAddressingCount: 1, structuredAddressingCount: 1,
-      },
-    };
-    let analysisCalls = 0;
-    apiUtils.requestCurrentProviderText = async () => {
-      analysisCalls += 1;
-      return { text: JSON.stringify(candidate), provider: 'browser-audit', model: 'mock-model' };
+        };
+      } else if (systemPrompt.includes('指定された各話題')) {
+        data = { topicResults: payload.topics.map((topic) => ({
+          topicId: topic.id,
+          memories: [{
+            id: topic.id, allCharacters: ['audit-a', 'audit-b'], priority: 80,
+            content: '二人は幼なじみ。',
+          }],
+        })) };
+      } else if (systemPrompt.includes('原文とcandidateを照合')) {
+        data = {
+          reviewReport: { warnings: [], unresolvedQuestions: [], sourceAddressingCount: 1, structuredAddressingCount: 1 },
+          corrections: { characters: [], addressing: { exactRules: [], fallbackRules: [] }, conditionalMemories: [] },
+        };
+      } else {
+        throw new Error('予期しない解析工程');
+      }
+      return {
+        text: JSON.stringify(data), provider: 'browser-audit', model: 'mock-model',
+        finishReason: 'STOP', usageMetadata: { candidatesTokenCount: 100, totalTokenCount: 200 },
+      };
     };
     document.querySelector('#analyze-lorebook-btn').click();
     for (let index = 0; index < 50 && !document.querySelector('#lorebookAnalysisDialog').open; index += 1) {
@@ -153,11 +177,17 @@ try {
     result.analysisCalls = analysisCalls;
     result.analysisDialogShown = document.querySelector('#lorebookAnalysisDialog').open;
     result.analysisReport = document.querySelector('#lorebook-analysis-report').textContent.trim();
+    result.analysisProgress = document.querySelector('#lorebook-analysis-progress-count').textContent;
+    result.analysisProgressComplete = result.analysisProgress === '10 / 10'
+      && document.querySelector('#lorebook-analysis-progress-current').textContent.includes('完了');
     const communicationLog = document.querySelector('#lorebook-analysis-log').textContent;
-    result.logContainsStages = communicationLog.includes('抽出・構造化 — 送信')
-      && communicationLog.includes('抽出・構造化 — 受信')
+    result.logContainsStages = communicationLog.includes('解析計画 — 送信')
+      && communicationLog.includes('人物設定：監査A・監査B — 受信')
+      && communicationLog.includes('呼称・人間関係：監査A・監査B — 受信')
+      && communicationLog.includes('条件付き記憶：二人の関係 — 受信')
       && communicationLog.includes('原文照合 — 送信')
       && communicationLog.includes('原文照合 — 受信')
+      && communicationLog.includes('終了理由: STOP')
       && communicationLog.includes('[SYSTEM]')
       && communicationLog.includes('[USER]');
     result.logOmitsSourceText = communicationLog.includes('"sourceText":"(省略)"')
@@ -231,7 +261,7 @@ try {
     const editedRecord = state.lorebookRecords.find((record) => record.lorebook.name === 'ブラウザ監査Lorebook');
     result.structuredEditSavedWithoutLlm = editedRecord?.lorebook?.description === '構造化フォームで直接編集済み'
       && editedRecord?.sourceText === '既存の設定情報'
-      && analysisCalls === 2;
+      && analysisCalls === 6;
     return JSON.stringify(result);
   })()`;
 

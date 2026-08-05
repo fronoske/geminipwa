@@ -3162,6 +3162,61 @@
             line-height: 1.5;
         }
 
+        .lorebook-analysis-progress {
+            margin: 12px 0;
+            padding: 12px;
+            border: 1px solid var(--border-tertiary);
+            border-radius: 8px;
+            background: var(--bg-secondary);
+            font-size: 12px;
+        }
+
+        .lorebook-analysis-progress-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            font-size: 14px;
+        }
+
+        .lorebook-analysis-progress-count {
+            flex: 0 0 auto;
+            font-variant-numeric: tabular-nums;
+            color: var(--text-link);
+            font-weight: bold;
+        }
+
+        .lorebook-analysis-progress > p {
+            margin: 8px 0;
+            color: var(--text-primary);
+            line-height: 1.45;
+        }
+
+        .lorebook-analysis-progress ul {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 4px 12px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            color: var(--text-secondary);
+        }
+
+        .lorebook-analysis-progress li.current {
+            color: var(--text-link);
+            font-weight: bold;
+        }
+
+        .lorebook-analysis-progress li.complete::before {
+            content: '✓ ';
+        }
+
+        @media (max-width: 480px) {
+            .lorebook-analysis-progress ul {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .lorebook-management-list {
             display: flex;
             flex-direction: column;

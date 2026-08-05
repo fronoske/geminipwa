@@ -170,7 +170,171 @@ describe('Lorebook management and analysis boundary', () => {
       sourceText: '(省略)',
       candidate: { name: '表示する候補' },
     });
-    expect(readFile('src/lorebook-manager.ts')).toContain('JSON.stringify(extractionPayload)');
+    expect(readFile('src/lorebook-manager.ts')).toContain('this.serializeAnalysisPayloadForLog(payload)');
+  });
+
+  it('detects token-limit termination and records response metadata before rejecting', async () => {
+    const context = createContext();
+    evaluate(context, `(() => {
+      globalThis.state = { abortController: null };
+      globalThis.elements = {
+        lorebookAnalysisLog: { textContent: '' },
+        lorebookAnalysisLogDialog: { open: false },
+        lorebookEditorStatus: { textContent: '' }
+      };
+      globalThis.apiUtils = {
+        getCurrentProviderRequestContext: () => ({ provider: 'gemini', model: 'test-model', apiKey: 'secret' }),
+        requestCurrentProviderText: async () => ({
+          text: '{"characters":[', provider: 'gemini', model: 'test-model',
+          finishReason: 'MAX_TOKENS',
+          usageMetadata: { candidatesTokenCount: 16384, totalTokenCount: 20000 }
+        })
+      };
+      lorebookManager.analysisLogEntries = [];
+    })()`);
+
+    const request = new vm.Script(
+      "lorebookManager.requestLoggedAnalysis('解析計画', 'system', 'user')",
+    ).runInContext(context) as Promise<unknown>;
+    await expect(request).rejects.toMatchObject({ name: 'LorebookAnalysisTruncatedError' });
+    const log = evaluate<string>(context, 'lorebookManager.analysisLogEntries.map(entry => entry.content).join("\\n")');
+    expect(log).toContain('終了理由: MAX_TOKENS');
+    expect(log).toContain('出力: 16,384 tokens');
+  });
+
+  it('renders deterministic n/m progress after the analysis plan is known', () => {
+    const context = createContext();
+    const result = evaluate<{ count: string; current: string; phases: string[] }>(context, `(() => {
+      const makeClassList = () => ({ add() {}, remove() {} });
+      const phaseItems = [];
+      globalThis.document = {
+        createElement: () => ({ textContent: '', classList: makeClassList() })
+      };
+      globalThis.elements = {
+        lorebookAnalysisProgress: { classList: makeClassList() },
+        lorebookAnalysisProgressCount: { textContent: '' },
+        lorebookAnalysisProgressCurrent: { textContent: '' },
+        lorebookAnalysisProgressPhases: {
+          set innerHTML(value) { phaseItems.length = 0; },
+          appendChild(item) { phaseItems.push(item); }
+        }
+      };
+      lorebookManager.configureAnalysisProgress({ characterCount: 2, memoryTopicCount: 1 });
+      lorebookManager.beginAnalysisProgressUnit('characters', '人物設定（1 / 2）：アリス');
+      lorebookManager.completeAnalysisProgressUnit('characters', 'アリスを解析しました。');
+      return {
+        count: elements.lorebookAnalysisProgressCount.textContent,
+        current: elements.lorebookAnalysisProgressCurrent.textContent,
+        phases: phaseItems.map(item => item.textContent)
+      };
+    })()`);
+
+    expect(result.count).toBe('2 / 10');
+    expect(result.current).toBe('アリスを解析しました。');
+    expect(Array.from(result.phases)).toContain('人物設定 1 / 2');
+  });
+
+  it('applies audit additions, replacements, and removals without regenerating the full Lorebook', () => {
+    const context = createContext();
+    const corrected = evaluate<{
+      characterIds: string[];
+      exactTargets: string[];
+      memoryIds: string[];
+    }>(context, `(() => {
+      const result = lorebookManager.applyAnalysisCorrections({
+        name: 'test', description: '', storyCore: 'core', styleGuide: {},
+        characters: [{ id: 'keep' }, { id: 'remove' }],
+        addressing: {
+          instruction: 'old',
+          exactRules: [{ speakerId: 'keep', targetId: 'remove', forms: [] }],
+          fallbackRules: []
+        },
+        conditionalMemories: [{ id: 'old-memory' }]
+      }, {
+        removeCharacterIds: ['remove'],
+        characters: [{ id: 'added' }],
+        addressing: {
+          removeExactRules: [{ speakerId: 'keep', targetId: 'remove' }],
+          exactRules: [{ speakerId: 'keep', targetId: 'added', forms: [] }]
+        },
+        removeConditionalMemoryIds: ['old-memory'],
+        conditionalMemories: [{ id: 'new-memory' }]
+      });
+      return {
+        characterIds: result.characters.map(item => item.id),
+        exactTargets: result.addressing.exactRules.map(item => item.targetId),
+        memoryIds: result.conditionalMemories.map(item => item.id)
+      };
+    })()`);
+
+    expect(Array.from(corrected.characterIds)).toEqual(['keep', 'added']);
+    expect(Array.from(corrected.exactTargets)).toEqual(['added']);
+    expect(Array.from(corrected.memoryIds)).toEqual(['new-memory']);
+  });
+
+  it('assembles a valid Lorebook from small planned analysis units', async () => {
+    const context = createContext();
+    evaluate(context, `(() => {
+      globalThis.state = { lorebookRecords: [] };
+      globalThis.requestedStages = [];
+      lorebookManager.beginAnalysisProgressUnit = () => {};
+      lorebookManager.completeAnalysisProgressUnit = () => {};
+      lorebookManager.configureAnalysisProgress = () => {};
+      lorebookManager.addAnalysisProgressPhase = () => {};
+      lorebookManager.appendAnalysisLog = () => {};
+      lorebookManager.requestAnalysisJson = async ({ stage }) => {
+        requestedStages.push(stage);
+        const response = { provider: 'gemini', model: 'test-model' };
+        if (stage === '解析計画') return { response, data: {
+          characters: [
+            { id: 'alice', name: 'アリス', aliases: ['アリス'] },
+            { id: 'bob', name: 'ボブ', aliases: ['ボブ'] }
+          ],
+          memoryTopics: [{ id: 'promise', label: '二人の約束', keywords: ['約束'] }]
+        }};
+        if (stage === '舞台・世界観・文体') return { response, data: {
+          name: 'テスト物語', description: '分割解析テスト', storyCore: '二人が暮らす町を舞台とする。',
+          styleGuide: { narration: ['三人称で描く。'], dialogue: [], formatting: [], avoid: [] },
+          addressingInstruction: '原文の呼称を優先する。'
+        }};
+        if (stage === '人物設定：アリス・ボブ') return { response, data: { characters: [
+          { id: 'alice', name: 'アリス', aliases: ['アリス'], core: '快活な主人公。' },
+          { id: 'bob', name: 'ボブ', aliases: ['ボブ'], core: '慎重な幼なじみ。' }
+        ] }};
+        if (stage === '呼称・人間関係：アリス・ボブ') return { response, data: {
+          exactRules: [
+            { speakerId: 'alice', targetId: 'bob', forms: [{ context: 'spoken', value: 'ボブ' }] },
+            { speakerId: 'bob', targetId: 'alice', forms: [{ context: 'spoken', value: 'アリス' }] }
+          ],
+          fallbackRules: []
+        }};
+        if (stage === '条件付き記憶：二人の約束') return { response, data: { topicResults: [{
+          topicId: 'promise',
+          memories: [{
+            id: 'ignored', allCharacters: ['alice', 'bob'], keywords: ['約束'], priority: 80,
+            content: '二人は再会を約束した。'
+          }]
+        }] }};
+        if (stage === '原文照合') return { response, data: {
+          reviewReport: { warnings: [], unresolvedQuestions: [], sourceAddressingCount: 2, structuredAddressingCount: 2 },
+          corrections: { characters: [], addressing: { exactRules: [], fallbackRules: [] }, conditionalMemories: [] }
+        }};
+        throw new Error('unexpected stage: ' + stage);
+      };
+    })()`);
+
+    const result = await new vm.Script(
+      "lorebookManager.requestAnalysis('source', null, 'test.md')",
+    ).runInContext(context) as { lorebook: Record<string, unknown>; reviewReport: Record<string, unknown> };
+    const plain = JSON.parse(JSON.stringify(result));
+
+    expect(plain.lorebook).toMatchObject({
+      name: 'テスト物語',
+      characters: [{ id: 'alice' }, { id: 'bob' }],
+      conditionalMemories: [{ id: 'promise' }],
+    });
+    expect(evaluate<string[]>(context, 'requestedStages')).toHaveLength(6);
+    expect(evaluate<string[]>(context, 'lorebookManager.validateLorebook(' + JSON.stringify(plain.lorebook) + ')')).toEqual([]);
   });
 
   it('seeds built-in Lorebooks into IndexedDB once and treats deletion as permanent', async () => {
@@ -332,6 +496,8 @@ describe('Lorebook management and analysis boundary', () => {
     expect(html).toContain('id="lorebook-editor-screen"');
     expect(html).toContain('id="toggle-lorebook-analysis-log-btn"');
     expect(html).toContain('id="lorebook-analysis-log-dialog"');
+    expect(html).toContain('id="lorebook-analysis-progress"');
+    expect(html).toContain('id="lorebook-analysis-progress-count"');
     expect(html).toContain('id="close-lorebook-analysis-log-btn"');
     expect(html).toContain('id="lorebook-structured-form"');
     expect(html).toContain('id="toggle-lorebook-json-editor-btn"');
@@ -339,7 +505,10 @@ describe('Lorebook management and analysis boundary', () => {
     expect(html).toContain('id="export-all-lorebooks-btn"');
     expect(manager).toContain('現在入力されている内容は、ファイルの内容で上書きされます。');
     expect(manager).toContain('requestCurrentProviderText');
-    expect(manager).toContain("'抽出・構造化'");
+    expect(manager).toContain("stage: '解析計画'");
+    expect(manager).toContain("stage: `人物設定：${batchNames}`");
+    expect(manager).toContain("stage: `呼称・人間関係：${batchNames}`");
+    expect(manager).toContain("stage: `条件付き記憶：${batchLabels}`");
     expect(manager).toContain("'原文照合'");
     expect(manager).toContain("'構造修復'");
     expect(manager).toContain('state.abortController.abort()');

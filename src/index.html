@@ -2216,6 +2216,15 @@
                     <label id="lorebook-editor-textarea-label" for="lorebook-source-textarea">設定情報：</label>
                     <textarea id="lorebook-source-textarea" class="lorebook-source-textarea"
                         placeholder="人物設定・舞台設定・関係・呼称などを入力…"></textarea>
+                    <section id="lorebook-analysis-progress" class="lorebook-analysis-progress hidden"
+                        aria-labelledby="lorebook-analysis-progress-title">
+                        <div class="lorebook-analysis-progress-heading">
+                            <strong id="lorebook-analysis-progress-title">Lorebookを解析中</strong>
+                            <span id="lorebook-analysis-progress-count">—</span>
+                        </div>
+                        <p id="lorebook-analysis-progress-current">解析計画を作成しています…</p>
+                        <ul id="lorebook-analysis-progress-phases"></ul>
+                    </section>
                     <p id="lorebook-editor-status" class="lorebook-editor-status" role="status" aria-live="polite"></p>
                     <div class="lorebook-editor-actions">
                         <button type="button" id="toggle-lorebook-analysis-log-btn"

@@ -981,6 +981,39 @@ async callDeepSeekApi(apiKey, model, messagesForApi, generationConfig, systemIns
                 return '';
             },
 
+            extractNonStreamingMetadata(provider, data) {
+                if (provider === 'gemini') {
+                    const candidate = data?.candidates?.[0] || {};
+                    return {
+                        finishReason: candidate.finishReason || data?.promptFeedback?.blockReason || null,
+                        finishMessage: candidate.finishMessage || data?.promptFeedback?.blockReasonMessage || null,
+                        usageMetadata: data?.usageMetadata || null,
+                    };
+                }
+                if (provider === 'claude') {
+                    const usage = data?.usage || null;
+                    return {
+                        finishReason: data?.stop_reason || null,
+                        finishMessage: data?.stop_sequence || null,
+                        usageMetadata: usage ? {
+                            candidatesTokenCount: Number(usage.output_tokens) || 0,
+                            totalTokenCount: (Number(usage.input_tokens) || 0) + (Number(usage.output_tokens) || 0),
+                        } : null,
+                    };
+                }
+                const choice = data?.choices?.[0] || {};
+                const usage = data?.usage || null;
+                return {
+                    finishReason: choice.finish_reason || null,
+                    finishMessage: choice.finish_message || null,
+                    usageMetadata: usage ? {
+                        candidatesTokenCount: Number(usage.completion_tokens) || 0,
+                        totalTokenCount: Number(usage.total_tokens)
+                            || ((Number(usage.prompt_tokens) || 0) + (Number(usage.completion_tokens) || 0)),
+                    } : null,
+                };
+            },
+
             async requestCurrentProviderText(systemPrompt, userPrompt, options = {}) {
                 const { provider, apiKey, model } = this.getCurrentProviderRequestContext();
                 if (!apiKey) throw new Error(`${provider} APIキーが設定されていません。`);
@@ -1021,8 +1054,9 @@ async callDeepSeekApi(apiKey, model, messagesForApi, generationConfig, systemIns
                     }
                     const data = await response.json();
                     const text = this.extractNonStreamingText(provider, data).trim();
+                    const metadata = this.extractNonStreamingMetadata(provider, data);
                     if (!text) throw new Error(`${provider} から解析結果が返されませんでした。`);
-                    return { text, provider, model };
+                    return { text, provider, model, ...metadata };
                 } finally {
                     state.abortController = null;
                 }

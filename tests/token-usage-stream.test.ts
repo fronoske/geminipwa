@@ -8,6 +8,31 @@ const readRuntime = (name: string): string =>
   fs.readFileSync(path.join(projectRoot, `.build/runtime/${name}.js`), 'utf8');
 
 describe('streaming token usage', () => {
+  it('extracts non-streaming finish reasons and usage for Lorebook analysis', () => {
+    const context = vm.createContext({});
+    new vm.Script(readRuntime('api-clients')).runInContext(context);
+
+    const gemini = new vm.Script(`apiUtils.extractNonStreamingMetadata('gemini', {
+      candidates: [{ finishReason: 'MAX_TOKENS', finishMessage: 'limit' }],
+      usageMetadata: { candidatesTokenCount: 16384, totalTokenCount: 18000 }
+    })`).runInContext(context);
+    const openai = new vm.Script(`apiUtils.extractNonStreamingMetadata('openai', {
+      choices: [{ finish_reason: 'length' }],
+      usage: { prompt_tokens: 100, completion_tokens: 200, total_tokens: 300 }
+    })`).runInContext(context);
+
+    expect(JSON.parse(JSON.stringify(gemini))).toEqual({
+      finishReason: 'MAX_TOKENS',
+      finishMessage: 'limit',
+      usageMetadata: { candidatesTokenCount: 16384, totalTokenCount: 18000 },
+    });
+    expect(JSON.parse(JSON.stringify(openai))).toEqual({
+      finishReason: 'length',
+      finishMessage: null,
+      usageMetadata: { candidatesTokenCount: 200, totalTokenCount: 300 },
+    });
+  });
+
   it('keeps reading after finish_reason so the final usage-only chunk is retained', async () => {
     const stream = new ReadableStream<Uint8Array>({
       start(controller) {

@@ -45,7 +45,7 @@
         const LOREBOOK_SCHEMA_VERSION = 3;
         const LOREBOOK_PACKAGE_VERSION = 1;
         const LOREBOOK_SEED_REGISTRY_ID = '__geminipwa_lorebook_seed_registry__';
-        const LOREBOOK_ANALYSIS_METHOD_VERSION = 'llm-analysis-v1';
+        const LOREBOOK_ANALYSIS_METHOD_VERSION = 'llm-split-analysis-v2';
         const LOREBOOK_SOURCE_MAX_CHARACTERS = 500_000;
         const DEFAULT_LOREBOOK_RETRIEVAL = Object.freeze({
             scanMessageCount: 10,
