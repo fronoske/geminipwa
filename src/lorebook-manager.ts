@@ -30,6 +30,7 @@ const lorebookManager = {
             indeterminate: true,
             currentPhaseId: 'plan',
             currentLabel: '解析計画を作成しています…',
+            messages: ['解析計画を作成しています…'],
             phases: [{ id: 'plan', label: '解析計画', completed: 0, total: 1 }],
         };
         elements.lorebookAnalysisProgress.classList.remove('hidden');
@@ -38,10 +39,15 @@ const lorebookManager = {
     },
 
     configureAnalysisProgress({ characterCount, memoryTopicCount }) {
+        const messages = Array.isArray(this.analysisProgress?.messages)
+            ? [...this.analysisProgress.messages]
+            : [];
+        if (messages[messages.length - 1] !== '解析計画を作成しました。') messages.push('解析計画を作成しました。');
         this.analysisProgress = {
             indeterminate: false,
             currentPhaseId: null,
             currentLabel: '解析計画を作成しました。',
+            messages,
             phases: [
                 { id: 'plan', label: '解析計画', completed: 1, total: 1 },
                 { id: 'base', label: '舞台・世界観・文体', completed: 0, total: 1 },
@@ -66,6 +72,7 @@ const lorebookManager = {
         if (!this.analysisProgress) return;
         this.analysisProgress.currentPhaseId = phaseId;
         this.analysisProgress.currentLabel = label;
+        this.appendAnalysisProgressMessage(label);
         this.renderAnalysisProgress();
     },
 
@@ -74,7 +81,10 @@ const lorebookManager = {
         const phase = this.analysisProgress.phases.find(item => item.id === phaseId);
         if (phase) phase.completed = Math.min(phase.total, phase.completed + completedCount);
         this.analysisProgress.currentPhaseId = null;
-        if (label) this.analysisProgress.currentLabel = label;
+        if (label) {
+            this.analysisProgress.currentLabel = label;
+            this.appendAnalysisProgressMessage(label);
+        }
         this.renderAnalysisProgress();
     },
 
@@ -82,13 +92,23 @@ const lorebookManager = {
         if (!this.analysisProgress) return;
         this.analysisProgress.currentPhaseId = null;
         this.analysisProgress.currentLabel = label;
+        this.appendAnalysisProgressMessage(label);
         this.renderAnalysisProgress();
     },
 
     updateAnalysisProgressMessage(label) {
         if (!this.analysisProgress) return;
         this.analysisProgress.currentLabel = label;
+        this.appendAnalysisProgressMessage(label);
         this.renderAnalysisProgress();
+    },
+
+    appendAnalysisProgressMessage(label) {
+        if (!this.analysisProgress || !label) return;
+        if (!Array.isArray(this.analysisProgress.messages)) this.analysisProgress.messages = [];
+        if (this.analysisProgress.messages[this.analysisProgress.messages.length - 1] !== label) {
+            this.analysisProgress.messages.push(label);
+        }
     },
 
     renderAnalysisProgress() {
@@ -99,7 +119,11 @@ const lorebookManager = {
         elements.lorebookAnalysisProgressCount.textContent = this.analysisProgress.indeterminate
             ? '—'
             : `${completed} / ${total}`;
-        elements.lorebookAnalysisProgressCurrent.textContent = this.analysisProgress.currentLabel;
+        const messages = Array.isArray(this.analysisProgress.messages) && this.analysisProgress.messages.length > 0
+            ? this.analysisProgress.messages
+            : [this.analysisProgress.currentLabel];
+        elements.lorebookAnalysisProgressCurrent.textContent = messages.join('\n');
+        elements.lorebookAnalysisProgressCurrent.scrollTop = elements.lorebookAnalysisProgressCurrent.scrollHeight;
         elements.lorebookAnalysisProgressPhases.innerHTML = '';
         phases.filter(phase => phase.total > 0).forEach(phase => {
             const item = document.createElement('li');

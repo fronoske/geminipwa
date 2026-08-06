@@ -276,6 +276,7 @@ describe('Lorebook management and analysis boundary', () => {
       };
       lorebookManager.configureAnalysisProgress({ characterCount: 2, memoryTopicCount: 1 });
       lorebookManager.beginAnalysisProgressUnit('characters', '人物設定（1 / 2）：アリス');
+      lorebookManager.updateAnalysisProgressMessage('出力上限を倍増して再試行します。');
       lorebookManager.completeAnalysisProgressUnit('characters', 'アリスを解析しました。');
       return {
         count: elements.lorebookAnalysisProgressCount.textContent,
@@ -285,7 +286,12 @@ describe('Lorebook management and analysis boundary', () => {
     })()`);
 
     expect(result.count).toBe('2 / 10');
-    expect(result.current).toBe('アリスを解析しました。');
+    expect(result.current.split('\n')).toEqual([
+      '解析計画を作成しました。',
+      '人物設定（1 / 2）：アリス',
+      '出力上限を倍増して再試行します。',
+      'アリスを解析しました。',
+    ]);
     expect(Array.from(result.phases)).toContain('人物設定 1 / 2');
   });
 

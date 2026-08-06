@@ -3188,9 +3188,12 @@
         }
 
         .lorebook-analysis-progress > p {
+            max-height: 12em;
             margin: 8px 0;
+            overflow-y: auto;
             color: var(--text-primary);
             line-height: 1.45;
+            white-space: pre-wrap;
         }
 
         .lorebook-analysis-progress ul {
