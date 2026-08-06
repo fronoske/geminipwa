@@ -1991,7 +1991,7 @@ contextはspoken、innerThought、public、privateのいずれかとする。
 
     exportAllLorebooks() {
         const ids = lorebookUtils.getAllLorebooks().map(lorebook => lorebook.id);
-        const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+        const date = formatLocalDateStamp();
         this.downloadJson(
             this.createExportPackage(ids.map(id => this.buildExportEntry(id))),
             `geminipwa-lorebooks-${date}.json`

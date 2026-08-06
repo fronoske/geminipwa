@@ -7423,7 +7423,12 @@ const LIGHT_MODE_MODEL_MESSAGE_COLOR = '#e5e5ea';
 const LIGHT_MODE_SECONDARY_COLOR = '#f0f2f5';
 const LIGHT_MODE_HEADER_COLOR = '#4a90e2';
 const LIGHT_MODE_PRIMARY_COLOR = '#ffffff';
-const APP_VERSION = "2026.08.05-fronoske";
+const APP_VERSION = "2026.08.06-fronoske";
+const formatLocalDateStamp = (date = new Date()) => [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, '0'),
+    String(date.getDate()).padStart(2, '0'),
+].join('');
 const SWIPE_THRESHOLD = 50;
 const ZOOM_THRESHOLD = 1.01;
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -12673,7 +12678,7 @@ contextはspoken、innerThought、public、privateのいずれかとする。
     },
     exportAllLorebooks() {
         const ids = lorebookUtils.getAllLorebooks().map(lorebook => lorebook.id);
-        const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+        const date = formatLocalDateStamp();
         this.downloadJson(this.createExportPackage(ids.map(id => this.buildExportEntry(id))), `geminipwa-lorebooks-${date}.json`);
     },
     extractImportEntries(data) {
@@ -19976,7 +19981,7 @@ Object.assign(appLogic, {
             const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+            const timestamp = formatLocalDateStamp();
             a.href = url;
             a.download = `geminipwa-sessions-${timestamp}.json`;
             document.body.appendChild(a);
@@ -20163,7 +20168,7 @@ Object.assign(appLogic, {
             const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+            const timestamp = formatLocalDateStamp();
             a.href = url;
             a.download = `geminipwa-settings-${timestamp}.json`;
             document.body.appendChild(a);

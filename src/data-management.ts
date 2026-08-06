@@ -180,7 +180,7 @@ Object.assign(appLogic, {
                     const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8' });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
-                    const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+                    const timestamp = formatLocalDateStamp();
                     a.href = url;
                     a.download = `geminipwa-sessions-${timestamp}.json`;
                     document.body.appendChild(a);
@@ -370,7 +370,7 @@ Object.assign(appLogic, {
                     const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8' });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
-                    const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+                    const timestamp = formatLocalDateStamp();
                     a.href = url;
                     a.download = `geminipwa-settings-${timestamp}.json`;
                     document.body.appendChild(a);
