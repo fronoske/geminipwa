@@ -283,14 +283,20 @@ Object.assign(appLogic, {
                     ? currentContextMessages.slice(0, userMessageIndex + 1)
                     : [...currentContextMessages];
 
+                const includeLorebookSourceText = lorebookUtils.shouldIncludeSourceText(messagesToProcess);
                 const lorebookPrompt = lorebookUtils.buildPrompt(
                     state.currentLorebookId,
                     messagesToProcess,
-                    currentContextSystemPrompt
+                    currentContextSystemPrompt,
+                    { includeSourceText: includeLorebookSourceText }
                 );
                 responseModelMetadata.lorebookContext = lorebookUtils.createContextSnapshot(
                     state.currentLorebookId,
-                    lorebookPrompt
+                    lorebookPrompt,
+                    {
+                        sourceTextIncluded: includeLorebookSourceText
+                            && Boolean(lorebookUtils.getSourceText(state.currentLorebookId)),
+                    }
                 );
                 currentContextSystemPrompt = lorebookUtils.appendToSystemPrompt(currentContextSystemPrompt, lorebookPrompt);
 

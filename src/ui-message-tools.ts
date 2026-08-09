@@ -43,7 +43,8 @@ Object.assign(uiUtils, {
                     lorebookStatus = `適用されませんでした${snapshot.lorebookId ? `（未登録ID: ${snapshot.lorebookId}）` : ''}`;
                 } else if (snapshot?.status === 'applied') {
                     const identity = snapshot.lorebookName || snapshot.lorebookId || '名称不明';
-                    lorebookStatus = `${identity}${snapshot.lorebookId ? `（ID: ${snapshot.lorebookId}）` : ''}`;
+                    const sourceTextStatus = snapshot.sourceTextIncluded ? ' / 原文全文を含む' : '';
+                    lorebookStatus = `${identity}${snapshot.lorebookId ? `（ID: ${snapshot.lorebookId}）` : ''}${sourceTextStatus}`;
                     lorebookReference = snapshot.reference;
                 }
 

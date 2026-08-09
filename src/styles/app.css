@@ -3056,6 +3056,15 @@
             font-weight: 700;
         }
 
+        body .message-actions button.response-reference-display {
+            background-color: var(--bg-button-purple);
+        }
+
+        body .message-actions button.response-reference-display:hover,
+        body .message-actions button.response-reference-display:focus-visible {
+            background-color: var(--bg-button-purple-hover);
+        }
+
         .custom-dialog {
             border: 1px solid var(--border-secondary);
             border-radius: 8px;

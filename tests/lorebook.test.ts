@@ -11,9 +11,12 @@ const fixtureLorebooks = JSON.parse(readFile('tests/fixtures/lorebook.json'));
 
 const createLorebookContext = (lorebooks = fixtureLorebooks) => {
   const context = vm.createContext({ LOCAL_LOREBOOKS: lorebooks });
+  new vm.Script(readFile('.build/runtime/app-config.js')).runInContext(context);
   new vm.Script(readFile('.build/runtime/lorebook-data.js')).runInContext(context);
   new vm.Script(`globalThis.state = {
-    lorebookRecords: BUILTIN_LOREBOOKS.map(lorebook => ({ id: lorebook.id, lorebook }))
+    lorebookRecords: BUILTIN_LOREBOOKS.map(lorebook => ({
+      id: lorebook.id, lorebook, sourceText: 'SOURCE TEXT FOR ' + lorebook.id
+    }))
   }`).runInContext(context);
   new vm.Script(readFile('.build/runtime/lorebook.js')).runInContext(context);
   return context;
@@ -104,7 +107,9 @@ describe('Lorebook retrieval', () => {
       none: { status: string; lorebookId: null; reference: string };
       unavailable: { status: string; lorebookId: string; reference: string };
     }>(context, `({
-      applied: lorebookUtils.createContextSnapshot('test-lorebook', '<lorebook-reference>test</lorebook-reference>'),
+      applied: lorebookUtils.createContextSnapshot(
+        'test-lorebook', '<lorebook-reference>test</lorebook-reference>', { sourceTextIncluded: true }
+      ),
       none: lorebookUtils.createContextSnapshot(null, ''),
       unavailable: lorebookUtils.createContextSnapshot('missing-lorebook', '')
     })`);
@@ -113,11 +118,67 @@ describe('Lorebook retrieval', () => {
       status: 'applied',
       lorebookId: 'test-lorebook',
       reference: '<lorebook-reference>test</lorebook-reference>',
+      sourceTextIncluded: true,
     });
     expect({ ...result.none }).toMatchObject({ status: 'none', lorebookId: null, reference: '' });
     expect({ ...result.unavailable }).toMatchObject({
       status: 'unavailable', lorebookId: 'missing-lorebook', reference: '',
     });
+  });
+
+  it('injects the stored source text for the first five user turns only', () => {
+    const context = createLorebookContext();
+    const result = evaluate<{
+      first: string;
+      fifth: string;
+      sixth: string;
+      firstDetected: boolean;
+      fifthDetected: boolean;
+      sixthDetected: boolean;
+      fifthRetryDetected: boolean;
+      sixthRetryDetected: boolean;
+    }>(context, `(() => {
+      const firstMessages = [{ role: 'user', content: '最初の入力' }];
+      const fifthMessages = [
+        { role: 'user', content: '1' }, { role: 'model', content: 'a' },
+        { role: 'user', content: '2' }, { role: 'model', content: 'b' },
+        { role: 'user', content: '3' }, { role: 'model', content: 'c' },
+        { role: 'user', content: '4' }, { role: 'model', content: 'd' },
+        { role: 'user', content: '5' }
+      ];
+      const sixthMessages = [
+        ...fifthMessages, { role: 'model', content: 'e' }, { role: 'user', content: '6' }
+      ];
+      const build = messages => lorebookUtils.buildPrompt(
+        'test-lorebook', messages, '',
+        { includeSourceText: lorebookUtils.shouldIncludeSourceText(messages) }
+      );
+      return {
+        first: build(firstMessages),
+        fifth: build(fifthMessages),
+        sixth: build(sixthMessages),
+        firstDetected: lorebookUtils.shouldIncludeSourceText(firstMessages),
+        fifthDetected: lorebookUtils.shouldIncludeSourceText(fifthMessages),
+        sixthDetected: lorebookUtils.shouldIncludeSourceText(sixthMessages),
+        fifthRetryDetected: lorebookUtils.shouldIncludeSourceText(fifthMessages.slice()),
+        sixthRetryDetected: lorebookUtils.shouldIncludeSourceText(sixthMessages.slice())
+      };
+    })()`);
+
+    expect(result.first).toContain('【Lorebook原文（セッションのユーザー発言5件目まで）】');
+    expect(result.first).toContain('SOURCE TEXT FOR test-lorebook');
+    expect(result.first.match(/<lorebook-reference>/g)).toHaveLength(1);
+    expect(result.first.match(/<\/lorebook-reference>/g)).toHaveLength(1);
+    expect(result.first.indexOf('SOURCE TEXT FOR test-lorebook')).toBeLessThan(
+      result.first.indexOf('【固定ストーリーコア】'),
+    );
+    expect(result.fifth).toContain('SOURCE TEXT FOR test-lorebook');
+    expect(result.sixth).not.toContain('SOURCE TEXT FOR test-lorebook');
+    expect(result.firstDetected).toBe(true);
+    expect(result.fifthDetected).toBe(true);
+    expect(result.sixthDetected).toBe(false);
+    expect(result.fifthRetryDetected).toBe(true);
+    expect(result.sixthRetryDetected).toBe(false);
   });
 
   it('ships two public school Lorebooks with the requested eleven-character balance', () => {

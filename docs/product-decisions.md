@@ -32,10 +32,9 @@ The following features are essential product requirements. They must not be remo
 - Keep canonical and persisted Lorebooks on schema v3, which requires `styleGuide` and excludes the old `conditionalMemories.characters` field; accept schema v2 only at load/import boundaries and migrate it to `anyCharacters` before use.
 - Seed bundled sample Lorebooks into IndexedDB once, then treat every Lorebook identically for editing, deletion, ordering, selection, and individual/all import and export.
 - Track installed seed IDs separately in the Lorebook store so deleting a sample remains effective across reloads; clearing all site data removes this registry and restores the samples on the next launch.
-- Planned: use the complete original Lorebook source as an early full-context seed and add structured, relevant Lorebook reminders near the current turn. The current runtime sends the fixed core, style guide, and selective reminders only.
+- Send the complete saved Lorebook source as a full-context seed with the session's first five user prompts; resend it when retrying one of those turns for reproducibility. Later turns send the fixed core, style guide, and selective reminders only. Keep the turn count in one application constant so it can be tuned later.
 - Preserve global prose and roleplay style as an optional structured `styleGuide` that is always injected; keep invariant setting/world premises in `storyCore` and topic-dependent setting/world details in atomic `conditionalMemories`.
-- Planned with full-context seeding: after a response reaches 90% of the model's context window, stop including the full-context seed for the remainder of that session; keep the fixed core and selective reminders.
-- Planned with full-context seeding: if the selected model's context-window limit is unknown, keep the full-context seed enabled; do not infer a percentage or automatically switch injection modes.
+- Context-window usage does not control full-source injection because the source is limited to the first five user prompts; the 90% threshold remains a visual context-pressure warning only.
 - Save the exact generated `<lorebook-reference>` with each AI response so later inspection reflects what was actually sent even after the Lorebook is edited or deleted.
 - Never require embeddings for the baseline Lorebook retrieval path.
 

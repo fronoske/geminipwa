@@ -404,13 +404,15 @@ appendMessage(role, content, index, isStreamingPlaceholder = false, cascadeInfo 
                     if (role === 'model' && (hasTokenDetails || hasLorebookDetails)) {
                         const detailsButton = document.createElement('button');
                         detailsButton.type = 'button';
-                        detailsButton.classList.add('token-count-display', 'js-response-details-btn');
+                        detailsButton.classList.add('js-response-details-btn');
                         detailsButton.title = '応答の送信情報を表示';
                         detailsButton.setAttribute('aria-label', '応答の送信情報を表示');
                         if (!hasTokenDetails) {
+                            detailsButton.classList.add('response-reference-display');
                             detailsButton.textContent = '参照';
                             actionsDiv.appendChild(detailsButton);
                         } else {
+                            detailsButton.classList.add('token-count-display');
                         const usage = messageData.usageMetadata;
 
                         const totalTokenCount = usage.totalTokenCount;

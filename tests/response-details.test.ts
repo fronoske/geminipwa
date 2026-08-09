@@ -34,14 +34,14 @@ describe('Response send details', () => {
       usageMetadata: { promptTokenCount: 1000, candidatesTokenCount: 200, thoughtsTokenCount: 50, totalTokenCount: 1250 },
       lorebookContext: {
         version: 1, status: 'applied', lorebookId: 'school', lorebookName: '学園',
-        reference: '<lorebook-reference>設定</lorebook-reference>'
+        reference: '<lorebook-reference>設定</lorebook-reference>', sourceTextIncluded: true
       }
     })`);
 
     expect(details.model).toBe('gemini / test-model');
     expect(details.tokens).toContain('合計 1,250 tokens');
     expect(details.tokens).toContain('Context上限 100,000 tokens (1 %)');
-    expect(details.lorebookStatus).toBe('学園（ID: school）');
+    expect(details.lorebookStatus).toBe('学園（ID: school） / 原文全文を含む');
     expect(details.lorebookReference).toBe('<lorebook-reference>設定</lorebook-reference>');
     expect(details.lorebookSize).toContain('文字 / 約');
   });
@@ -64,6 +64,9 @@ describe('Response send details', () => {
   it('provides a full-screen response details dialog and a delegated trigger', () => {
     expect(readFile('src/index.html')).toContain('id="response-details-dialog"');
     expect(readFile('src/ui-message-rendering.ts')).toContain("'js-response-details-btn'");
+    expect(readFile('src/ui-message-rendering.ts')).toContain("detailsButton.classList.add('response-reference-display')");
+    expect(readFile('src/styles/app.css')).toContain('body .message-actions button.response-reference-display');
+    expect(readFile('src/styles/app.css')).toContain('background-color: var(--bg-button-purple);');
     expect(readFile('src/event-wiring.ts')).toContain("button.classList.contains('js-response-details-btn')");
   });
 

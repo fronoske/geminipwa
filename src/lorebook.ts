@@ -18,6 +18,22 @@ const lorebookUtils = {
         return this.getAllLorebooks().find(lorebook => lorebook.id === lorebookId) || null;
     },
 
+    getLorebookRecord(lorebookId) {
+        const normalizedId = this.normalizeStoredLorebookId(lorebookId);
+        if (!normalizedId || typeof state === 'undefined' || !Array.isArray(state.lorebookRecords)) return null;
+        return state.lorebookRecords.find(record => record?.id === normalizedId && record?.lorebook) || null;
+    },
+
+    getSourceText(lorebookId) {
+        const sourceText = this.getLorebookRecord(lorebookId)?.sourceText;
+        return typeof sourceText === 'string' ? sourceText.trim() : '';
+    },
+
+    shouldIncludeSourceText(messages = [], userTurnLimit = LOREBOOK_FULL_SOURCE_USER_TURNS) {
+        const userTurnCount = messages.filter(message => message?.role === 'user').length;
+        return userTurnCount > 0 && userTurnCount <= userTurnLimit;
+    },
+
     normalizeLorebookId(lorebookId) {
         return this.getLorebook(lorebookId)?.id || null;
     },
@@ -202,14 +218,20 @@ const lorebookUtils = {
             .join('\n');
     },
 
-    buildPrompt(lorebookId, messages = [], roleInstruction = '') {
+    buildPrompt(lorebookId, messages = [], roleInstruction = '', { includeSourceText = false } = {}) {
         const selected = this.selectContext(lorebookId, messages, roleInstruction);
         if (!selected) return '';
 
         const sections = [
             '<lorebook-reference>',
-            `【固定ストーリーコア】\n${selected.lorebook.storyCore}`,
         ];
+
+        const sourceText = includeSourceText ? this.getSourceText(lorebookId) : '';
+        if (sourceText) {
+            sections.push(`【Lorebook原文（セッションのユーザー発言${LOREBOOK_FULL_SOURCE_USER_TURNS}件目まで）】\n${sourceText}`);
+        }
+
+        sections.push(`【固定ストーリーコア】\n${selected.lorebook.storyCore}`);
 
         const styleGuide = this.formatStyleGuide(selected.lorebook.styleGuide);
         if (styleGuide) {
@@ -238,7 +260,7 @@ const lorebookUtils = {
         return sections.join('\n\n');
     },
 
-    createContextSnapshot(lorebookId, reference = '') {
+    createContextSnapshot(lorebookId, reference = '', { sourceTextIncluded = false } = {}) {
         const storedLorebookId = this.normalizeStoredLorebookId(lorebookId);
         const lorebook = this.getLorebook(storedLorebookId);
         const prompt = String(reference || '');
@@ -248,6 +270,7 @@ const lorebookUtils = {
             lorebookId: storedLorebookId,
             lorebookName: lorebook?.name || null,
             reference: prompt,
+            sourceTextIncluded: Boolean(prompt && sourceTextIncluded),
         };
     },
 
@@ -262,6 +285,7 @@ const lorebookUtils = {
             lorebookId: this.normalizeStoredLorebookId(snapshot.lorebookId),
             lorebookName: typeof snapshot.lorebookName === 'string' ? snapshot.lorebookName : null,
             reference: typeof snapshot.reference === 'string' ? snapshot.reference : '',
+            sourceTextIncluded: snapshot.sourceTextIncluded === true,
         };
     },
 
