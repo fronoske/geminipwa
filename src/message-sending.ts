@@ -288,6 +288,10 @@ Object.assign(appLogic, {
                     messagesToProcess,
                     currentContextSystemPrompt
                 );
+                responseModelMetadata.lorebookContext = lorebookUtils.createContextSnapshot(
+                    state.currentLorebookId,
+                    lorebookPrompt
+                );
                 currentContextSystemPrompt = lorebookUtils.appendToSystemPrompt(currentContextSystemPrompt, lorebookPrompt);
 
 
@@ -333,6 +337,7 @@ Object.assign(appLogic, {
                                 ...(msg.groundingMetadata && { groundingMetadata: msg.groundingMetadata }),
                                 ...(msg.attachments && msg.attachments.length > 0 && { attachments: msg.attachments.map(att => ({ name: att.name, mimeType: att.mimeType, textData: att.textData })) }),
                                 ...(msg.usageMetadata && { usageMetadata: msg.usageMetadata }),
+                                ...(msg.lorebookContext && { lorebookContext: msg.lorebookContext }),
                                 ...(msg.thoughtSummaryOpen !== undefined && { thoughtSummaryOpen: msg.thoughtSummaryOpen }),
                             })),
                             updatedAt: Date.now(),

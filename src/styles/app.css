@@ -3032,7 +3032,11 @@
             background-color: var(--bg-secondary);
         }
 
-        .message-actions .token-count-display {
+        body .message-actions button.token-count-display {
+            margin: 0;
+            padding: 2px 4px;
+            border: 1px solid transparent;
+            background: transparent;
             font-size: 0.7rem;
             color: var(--text-secondary);
             vertical-align: middle;
@@ -3040,7 +3044,14 @@
             white-space: nowrap;
         }
 
-        .message-actions .token-count-display.context-usage-critical {
+        .message-actions button.token-count-display:hover,
+        .message-actions button.token-count-display:focus-visible {
+            border-color: var(--border-primary);
+            background: var(--bg-button-action-hover);
+            color: var(--text-light);
+        }
+
+        body .message-actions button.token-count-display.context-usage-critical {
             color: var(--text-error);
             font-weight: 700;
         }
@@ -3583,6 +3594,120 @@
             line-height: 1.45;
             overflow-wrap: anywhere;
             white-space: pre-wrap;
+        }
+
+        .response-details-dialog {
+            width: 100vw;
+            max-width: none;
+            height: 100vh;
+            height: 100dvh;
+            max-height: none;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .response-details-dialog::backdrop {
+            background: rgba(0, 0, 0, 0.72);
+        }
+
+        .response-details-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 52px;
+            padding: env(safe-area-inset-top) max(12px, env(safe-area-inset-right)) 0 max(16px, env(safe-area-inset-left));
+            border-bottom: 1px solid var(--border-tertiary);
+            background: var(--bg-secondary);
+        }
+
+        .response-details-header h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .response-details-header button {
+            width: 44px;
+            min-width: 44px;
+            height: 44px;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: var(--text-primary);
+            font-size: 30px;
+            line-height: 1;
+        }
+
+        .response-details-body {
+            box-sizing: border-box;
+            height: calc(100% - 52px - env(safe-area-inset-top));
+            padding: 12px max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+            overflow: auto;
+        }
+
+        .response-details-body section {
+            width: min(900px, 100%);
+            margin: 0 auto 18px;
+        }
+
+        .response-details-body h3 {
+            margin: 0 0 8px;
+            font-size: 15px;
+        }
+
+        .response-details-metadata {
+            display: grid;
+            grid-template-columns: max-content minmax(0, 1fr);
+            gap: 6px 12px;
+            margin: 0;
+            padding: 10px;
+            border: 1px solid var(--border-tertiary);
+            border-radius: 6px;
+            background: var(--bg-secondary);
+            font-size: 12px;
+        }
+
+        .response-details-metadata dt {
+            color: var(--text-secondary);
+        }
+
+        .response-details-metadata dd {
+            margin: 0;
+            overflow-wrap: anywhere;
+        }
+
+        .response-details-lorebook-section > p {
+            margin: 0 0 8px;
+            font-size: 12px;
+        }
+
+        .response-details-secondary {
+            color: var(--text-secondary);
+        }
+
+        #response-details-lorebook-reference {
+            box-sizing: border-box;
+            max-height: 55vh;
+            margin: 0 0 10px;
+            overflow: auto;
+            padding: 10px;
+            border: 1px solid var(--border-tertiary);
+            border-radius: 6px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-family: monospace;
+            font-size: 12px;
+            line-height: 1.45;
+            overflow-wrap: anywhere;
+            white-space: pre-wrap;
+        }
+
+        #copy-response-lorebook-btn {
+            width: auto;
+            background: var(--bg-button-copy);
         }
 
         .lorebook-analysis-dialog {

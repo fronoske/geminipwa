@@ -340,7 +340,9 @@ const dbUtils = {
                             safetyRatings: msg.safetyRatings, promptFeedback: msg.promptFeedback, error: msg.error,
                             isCascaded: msg.isCascaded, isSelected: msg.isSelected, siblingGroupId: msg.siblingGroupId,
                             groundingMetadata: msg.groundingMetadata, attachments: msg.attachments,
-                            usageMetadata: msg.usageMetadata, thoughtSummaryOpen: msg.thoughtSummaryOpen
+                            usageMetadata: msg.usageMetadata,
+                            lorebookContext: msg.lorebookContext,
+                            thoughtSummaryOpen: msg.thoughtSummaryOpen
                         }));
 
                         const executeSave = (chatIdToUse, existingData) => {

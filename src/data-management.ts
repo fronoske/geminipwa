@@ -159,6 +159,7 @@ Object.assign(appLogic, {
                             if (msg.siblingGroupId !== undefined) messageExport.siblingGroupId = msg.siblingGroupId;
                             if (msg.groundingMetadata) messageExport.groundingMetadata = msg.groundingMetadata;
                             if (msg.usageMetadata) messageExport.usageMetadata = msg.usageMetadata;
+                            if (msg.lorebookContext) messageExport.lorebookContext = msg.lorebookContext;
                             if (msg.finishReason) messageExport.finishReason = msg.finishReason;
                             if (msg.finishMessage) messageExport.finishMessage = msg.finishMessage;
                             if (msg.safetyRatings) messageExport.safetyRatings = msg.safetyRatings;
@@ -256,6 +257,7 @@ Object.assign(appLogic, {
                                     })),
                                     groundingMetadata: msg.groundingMetadata || undefined,
                                     usageMetadata: msg.usageMetadata || undefined,
+                                    lorebookContext: lorebookUtils.normalizeContextSnapshot(msg.lorebookContext) || undefined,
                                     finishReason: msg.finishReason || undefined,
                                     finishMessage: msg.finishMessage || undefined,
                                     safetyRatings: msg.safetyRatings || undefined,

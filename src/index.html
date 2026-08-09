@@ -2248,6 +2248,31 @@
         </div>
     </dialog>
 
+    <dialog id="response-details-dialog" class="response-details-dialog"
+        aria-labelledby="response-details-title">
+        <header class="response-details-header">
+            <h2 id="response-details-title">応答の送信情報</h2>
+            <button type="button" id="close-response-details-btn" aria-label="応答の送信情報を閉じる">×</button>
+        </header>
+        <div class="response-details-body">
+            <section>
+                <h3>応答情報</h3>
+                <dl class="response-details-metadata">
+                    <dt>API / モデル</dt><dd id="response-details-model">—</dd>
+                    <dt>終了理由</dt><dd id="response-details-finish">—</dd>
+                    <dt>トークン</dt><dd id="response-details-tokens">記録なし</dd>
+                </dl>
+            </section>
+            <section class="response-details-lorebook-section">
+                <h3>Lorebook</h3>
+                <p id="response-details-lorebook-status">送信時の記録なし</p>
+                <p id="response-details-lorebook-size" class="response-details-secondary hidden"></p>
+                <pre id="response-details-lorebook-reference" class="hidden" tabindex="0"></pre>
+                <button type="button" id="copy-response-lorebook-btn" class="hidden">参照情報をコピー</button>
+            </section>
+        </div>
+    </dialog>
+
     <dialog id="alertDialog" class="custom-dialog">
         <p class="dialog-message"></p>
         <div class="dialog-actions">

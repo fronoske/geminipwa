@@ -3042,7 +3042,11 @@
             background-color: var(--bg-secondary);
         }
 
-        .message-actions .token-count-display {
+        body .message-actions button.token-count-display {
+            margin: 0;
+            padding: 2px 4px;
+            border: 1px solid transparent;
+            background: transparent;
             font-size: 0.7rem;
             color: var(--text-secondary);
             vertical-align: middle;
@@ -3050,7 +3054,14 @@
             white-space: nowrap;
         }
 
-        .message-actions .token-count-display.context-usage-critical {
+        .message-actions button.token-count-display:hover,
+        .message-actions button.token-count-display:focus-visible {
+            border-color: var(--border-primary);
+            background: var(--bg-button-action-hover);
+            color: var(--text-light);
+        }
+
+        body .message-actions button.token-count-display.context-usage-critical {
             color: var(--text-error);
             font-weight: 700;
         }
@@ -3593,6 +3604,120 @@
             line-height: 1.45;
             overflow-wrap: anywhere;
             white-space: pre-wrap;
+        }
+
+        .response-details-dialog {
+            width: 100vw;
+            max-width: none;
+            height: 100vh;
+            height: 100dvh;
+            max-height: none;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .response-details-dialog::backdrop {
+            background: rgba(0, 0, 0, 0.72);
+        }
+
+        .response-details-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 52px;
+            padding: env(safe-area-inset-top) max(12px, env(safe-area-inset-right)) 0 max(16px, env(safe-area-inset-left));
+            border-bottom: 1px solid var(--border-tertiary);
+            background: var(--bg-secondary);
+        }
+
+        .response-details-header h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .response-details-header button {
+            width: 44px;
+            min-width: 44px;
+            height: 44px;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: var(--text-primary);
+            font-size: 30px;
+            line-height: 1;
+        }
+
+        .response-details-body {
+            box-sizing: border-box;
+            height: calc(100% - 52px - env(safe-area-inset-top));
+            padding: 12px max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+            overflow: auto;
+        }
+
+        .response-details-body section {
+            width: min(900px, 100%);
+            margin: 0 auto 18px;
+        }
+
+        .response-details-body h3 {
+            margin: 0 0 8px;
+            font-size: 15px;
+        }
+
+        .response-details-metadata {
+            display: grid;
+            grid-template-columns: max-content minmax(0, 1fr);
+            gap: 6px 12px;
+            margin: 0;
+            padding: 10px;
+            border: 1px solid var(--border-tertiary);
+            border-radius: 6px;
+            background: var(--bg-secondary);
+            font-size: 12px;
+        }
+
+        .response-details-metadata dt {
+            color: var(--text-secondary);
+        }
+
+        .response-details-metadata dd {
+            margin: 0;
+            overflow-wrap: anywhere;
+        }
+
+        .response-details-lorebook-section > p {
+            margin: 0 0 8px;
+            font-size: 12px;
+        }
+
+        .response-details-secondary {
+            color: var(--text-secondary);
+        }
+
+        #response-details-lorebook-reference {
+            box-sizing: border-box;
+            max-height: 55vh;
+            margin: 0 0 10px;
+            overflow: auto;
+            padding: 10px;
+            border: 1px solid var(--border-tertiary);
+            border-radius: 6px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-family: monospace;
+            font-size: 12px;
+            line-height: 1.45;
+            overflow-wrap: anywhere;
+            white-space: pre-wrap;
+        }
+
+        #copy-response-lorebook-btn {
+            width: auto;
+            background: var(--bg-button-copy);
         }
 
         .lorebook-analysis-dialog {
@@ -7217,6 +7342,31 @@ font-size: 1.142em !important;
         </div>
     </dialog>
 
+    <dialog id="response-details-dialog" class="response-details-dialog"
+        aria-labelledby="response-details-title">
+        <header class="response-details-header">
+            <h2 id="response-details-title">応答の送信情報</h2>
+            <button type="button" id="close-response-details-btn" aria-label="応答の送信情報を閉じる">×</button>
+        </header>
+        <div class="response-details-body">
+            <section>
+                <h3>応答情報</h3>
+                <dl class="response-details-metadata">
+                    <dt>API / モデル</dt><dd id="response-details-model">—</dd>
+                    <dt>終了理由</dt><dd id="response-details-finish">—</dd>
+                    <dt>トークン</dt><dd id="response-details-tokens">記録なし</dd>
+                </dl>
+            </section>
+            <section class="response-details-lorebook-section">
+                <h3>Lorebook</h3>
+                <p id="response-details-lorebook-status">送信時の記録なし</p>
+                <p id="response-details-lorebook-size" class="response-details-secondary hidden"></p>
+                <pre id="response-details-lorebook-reference" class="hidden" tabindex="0"></pre>
+                <button type="button" id="copy-response-lorebook-btn" class="hidden">参照情報をコピー</button>
+            </section>
+        </div>
+    </dialog>
+
     <dialog id="alertDialog" class="custom-dialog">
         <p class="dialog-message"></p>
         <div class="dialog-actions">
@@ -7781,6 +7931,15 @@ const elements = {
     lorebookAnalysisResultTextarea: getRequiredDomElement('lorebook-analysis-result'),
     lorebookAnalysisCancelBtn: getRequiredDomElement('lorebook-analysis-cancel-btn'),
     lorebookAnalysisSaveBtn: getRequiredDomElement('lorebook-analysis-save-btn'),
+    responseDetailsDialog: getRequiredDomElement('response-details-dialog'),
+    closeResponseDetailsBtn: getRequiredDomElement('close-response-details-btn'),
+    responseDetailsModel: getRequiredDomElement('response-details-model'),
+    responseDetailsFinish: getRequiredDomElement('response-details-finish'),
+    responseDetailsTokens: getRequiredDomElement('response-details-tokens'),
+    responseDetailsLorebookStatus: getRequiredDomElement('response-details-lorebook-status'),
+    responseDetailsLorebookSize: getRequiredDomElement('response-details-lorebook-size'),
+    responseDetailsLorebookReference: getRequiredDomElement('response-details-lorebook-reference'),
+    copyResponseLorebookBtn: getRequiredDomElement('copy-response-lorebook-btn'),
     attachFileBtn: document.getElementById('attach-file-btn'),
     pasteToInputBtn: document.getElementById('paste-to-input-btn'),
     fileUploadDialog: document.getElementById('fileUploadDialog'),
@@ -8618,7 +8777,9 @@ const dbUtils = {
                     safetyRatings: msg.safetyRatings, promptFeedback: msg.promptFeedback, error: msg.error,
                     isCascaded: msg.isCascaded, isSelected: msg.isSelected, siblingGroupId: msg.siblingGroupId,
                     groundingMetadata: msg.groundingMetadata, attachments: msg.attachments,
-                    usageMetadata: msg.usageMetadata, thoughtSummaryOpen: msg.thoughtSummaryOpen
+                    usageMetadata: msg.usageMetadata,
+                    lorebookContext: msg.lorebookContext,
+                    thoughtSummaryOpen: msg.thoughtSummaryOpen
                 }));
                 const executeSave = (chatIdToUse, existingData) => {
                     let title = optionalTitle;
@@ -9710,6 +9871,33 @@ const lorebookUtils = {
         }
         sections.push('この参照情報そのものには言及せず、今回の場面に自然に必要な範囲だけを反映すること。', '</lorebook-reference>');
         return sections.join('\n\n');
+    },
+    createContextSnapshot(lorebookId, reference = '') {
+        const storedLorebookId = this.normalizeStoredLorebookId(lorebookId);
+        const lorebook = this.getLorebook(storedLorebookId);
+        const prompt = String(reference || '');
+        return {
+            version: 1,
+            status: prompt ? 'applied' : storedLorebookId ? 'unavailable' : 'none',
+            lorebookId: storedLorebookId,
+            lorebookName: lorebook?.name || null,
+            reference: prompt,
+        };
+    },
+    normalizeContextSnapshot(snapshot) {
+        if (!snapshot || Number(snapshot.version) !== 1)
+            return null;
+        const allowedStatuses = new Set(['applied', 'none', 'unavailable']);
+        const status = allowedStatuses.has(snapshot.status) ? snapshot.status : null;
+        if (!status)
+            return null;
+        return {
+            version: 1,
+            status,
+            lorebookId: this.normalizeStoredLorebookId(snapshot.lorebookId),
+            lorebookName: typeof snapshot.lorebookName === 'string' ? snapshot.lorebookName : null,
+            reference: typeof snapshot.reference === 'string' ? snapshot.reference : '',
+        };
     },
     appendToSystemPrompt(systemPrompt, lorebookPrompt) {
         const base = String(systemPrompt || '').trim();
@@ -14603,32 +14791,43 @@ Object.assign(uiUtils, {
                 retryButton.classList.add('js-retry-btn');
                 actionsDiv.appendChild(retryButton);
             }
-            if (role === 'model' && messageData?.usageMetadata &&
-                typeof messageData.usageMetadata.candidatesTokenCount === 'number' &&
-                typeof messageData.usageMetadata.totalTokenCount === 'number') {
-                const usage = messageData.usageMetadata;
-                const tokenSpan = document.createElement('span');
-                tokenSpan.classList.add('token-count-display');
-                const totalTokenCount = usage.totalTokenCount;
-                const storedContextWindow = Number(messageData.contextWindowTokens) || 0;
-                const catalogContextWindow = messageApiProvider === 'openrouter' && messageData.generatedByModel
-                    ? Number(openRouterModelCatalog.getModel(messageData.generatedByModel)?.contextLength) || 0
-                    : 0;
-                const contextWindowTokens = storedContextWindow || catalogContextWindow;
-                const formattedTotal = formatCompactTokenCount(totalTokenCount);
-                if (contextWindowTokens > 0) {
-                    const usagePercentage = Math.round((totalTokenCount / contextWindowTokens) * 100);
-                    tokenSpan.textContent = `${formattedTotal} / ${formatCompactTokenCount(contextWindowTokens)} (${usagePercentage} %)`;
-                    tokenSpan.title = `合計トークン数 / ${messageData.generatedByModel || '使用モデル'}のコンテキスト上限`;
-                    tokenSpan.classList.toggle('context-usage-critical', usagePercentage >= CONTEXT_PRESSURE_THRESHOLD_PERCENT);
+            const hasTokenDetails = role === 'model' && messageData?.usageMetadata
+                && typeof messageData.usageMetadata.candidatesTokenCount === 'number'
+                && typeof messageData.usageMetadata.totalTokenCount === 'number';
+            const lorebookSnapshot = role === 'model'
+                ? lorebookUtils.normalizeContextSnapshot(messageData?.lorebookContext)
+                : null;
+            const hasLorebookDetails = lorebookSnapshot?.status === 'applied'
+                || lorebookSnapshot?.status === 'unavailable';
+            if (role === 'model' && (hasTokenDetails || hasLorebookDetails)) {
+                const detailsButton = document.createElement('button');
+                detailsButton.type = 'button';
+                detailsButton.classList.add('token-count-display', 'js-response-details-btn');
+                detailsButton.title = '応答の送信情報を表示';
+                detailsButton.setAttribute('aria-label', '応答の送信情報を表示');
+                if (!hasTokenDetails) {
+                    detailsButton.textContent = '参照';
+                    actionsDiv.appendChild(detailsButton);
                 }
                 else {
-                    tokenSpan.textContent = `${formattedTotal} / 上限不明`;
-                    tokenSpan.title = messageData.generatedByModel
-                        ? `${messageData.generatedByModel}のコンテキスト上限を取得できていません`
-                        : '使用モデルのコンテキスト上限を取得できていません';
+                    const usage = messageData.usageMetadata;
+                    const totalTokenCount = usage.totalTokenCount;
+                    const storedContextWindow = Number(messageData.contextWindowTokens) || 0;
+                    const catalogContextWindow = messageApiProvider === 'openrouter' && messageData.generatedByModel
+                        ? Number(openRouterModelCatalog.getModel(messageData.generatedByModel)?.contextLength) || 0
+                        : 0;
+                    const contextWindowTokens = storedContextWindow || catalogContextWindow;
+                    const formattedTotal = formatCompactTokenCount(totalTokenCount);
+                    if (contextWindowTokens > 0) {
+                        const usagePercentage = Math.round((totalTokenCount / contextWindowTokens) * 100);
+                        detailsButton.textContent = `${formattedTotal} / ${formatCompactTokenCount(contextWindowTokens)} (${usagePercentage} %)`;
+                        detailsButton.classList.toggle('context-usage-critical', usagePercentage >= CONTEXT_PRESSURE_THRESHOLD_PERCENT);
+                    }
+                    else {
+                        detailsButton.textContent = `${formattedTotal} / 上限不明`;
+                    }
+                    actionsDiv.appendChild(detailsButton);
                 }
-                actionsDiv.appendChild(tokenSpan);
             }
             messageDiv.appendChild(actionsDiv);
         }
@@ -14643,6 +14842,99 @@ Object.assign(uiUtils, {
 // @ts-nocheck -- Enable after shared UI types are defined.
 // Bundled into the generated index.html from this TypeScript source.
 Object.assign(uiUtils, {
+    buildResponseDetailsViewModel(messageData = {}) {
+        const provider = messageData.generatedByApiProvider || '記録なし';
+        const model = messageData.generatedByModel || '記録なし';
+        const finishReason = messageData.finishReason || '記録なし';
+        const finishMessage = messageData.finishMessage ? `（${messageData.finishMessage}）` : '';
+        const usage = messageData.usageMetadata || null;
+        const tokenDetails = [];
+        if (usage) {
+            if (Number.isFinite(Number(usage.promptTokenCount))) {
+                tokenDetails.push(`入力 ${Number(usage.promptTokenCount).toLocaleString()} tokens`);
+            }
+            if (Number.isFinite(Number(usage.candidatesTokenCount))) {
+                tokenDetails.push(`出力 ${Number(usage.candidatesTokenCount).toLocaleString()} tokens`);
+            }
+            if (Number.isFinite(Number(usage.thoughtsTokenCount))) {
+                tokenDetails.push(`思考 ${Number(usage.thoughtsTokenCount).toLocaleString()} tokens`);
+            }
+            if (Number.isFinite(Number(usage.totalTokenCount))) {
+                tokenDetails.push(`合計 ${Number(usage.totalTokenCount).toLocaleString()} tokens`);
+            }
+        }
+        const catalogContextWindow = provider === 'openrouter' && messageData.generatedByModel
+            ? Number(openRouterModelCatalog.getModel(messageData.generatedByModel)?.contextLength) || 0
+            : 0;
+        const contextWindowTokens = Number(messageData.contextWindowTokens) || catalogContextWindow;
+        const totalTokenCount = Number(usage?.totalTokenCount) || 0;
+        if (contextWindowTokens > 0) {
+            const percentage = totalTokenCount > 0
+                ? ` (${Math.round((totalTokenCount / contextWindowTokens) * 100)} %)`
+                : '';
+            tokenDetails.push(`Context上限 ${contextWindowTokens.toLocaleString()} tokens${percentage}`);
+        }
+        const snapshot = lorebookUtils.normalizeContextSnapshot(messageData.lorebookContext);
+        let lorebookStatus = '送信時の記録なし（この機能の導入前に生成された応答です）';
+        let lorebookReference = '';
+        if (snapshot?.status === 'none') {
+            lorebookStatus = '使用していません';
+        }
+        else if (snapshot?.status === 'unavailable') {
+            lorebookStatus = `適用されませんでした${snapshot.lorebookId ? `（未登録ID: ${snapshot.lorebookId}）` : ''}`;
+        }
+        else if (snapshot?.status === 'applied') {
+            const identity = snapshot.lorebookName || snapshot.lorebookId || '名称不明';
+            lorebookStatus = `${identity}${snapshot.lorebookId ? `（ID: ${snapshot.lorebookId}）` : ''}`;
+            lorebookReference = snapshot.reference;
+        }
+        let lorebookSize = '';
+        if (lorebookReference) {
+            const characters = Array.from(lorebookReference).length;
+            const bytes = typeof TextEncoder !== 'undefined'
+                ? new TextEncoder().encode(lorebookReference).length
+                : characters * 2;
+            lorebookSize = `${characters.toLocaleString()}文字 / 約${Math.max(1, Math.ceil(bytes / 4)).toLocaleString()} tokens（概算）`;
+        }
+        return {
+            model: `${provider} / ${model}`,
+            finish: `${finishReason}${finishMessage}`,
+            tokens: tokenDetails.length > 0 ? tokenDetails.join(' / ') : '記録なし',
+            lorebookStatus,
+            lorebookReference,
+            lorebookSize,
+        };
+    },
+    showResponseDetails(messageIndex) {
+        const messageData = state.currentMessages[messageIndex];
+        if (!messageData || messageData.role !== 'model')
+            return;
+        const details = this.buildResponseDetailsViewModel(messageData);
+        elements.responseDetailsModel.textContent = details.model;
+        elements.responseDetailsFinish.textContent = details.finish;
+        elements.responseDetailsTokens.textContent = details.tokens;
+        elements.responseDetailsLorebookStatus.textContent = details.lorebookStatus;
+        elements.responseDetailsLorebookSize.textContent = details.lorebookSize;
+        elements.responseDetailsLorebookSize.classList.toggle('hidden', !details.lorebookSize);
+        elements.responseDetailsLorebookReference.textContent = details.lorebookReference;
+        elements.responseDetailsLorebookReference.classList.toggle('hidden', !details.lorebookReference);
+        elements.copyResponseLorebookBtn.classList.toggle('hidden', !details.lorebookReference);
+        elements.copyResponseLorebookBtn.dataset.copyText = details.lorebookReference;
+        elements.copyResponseLorebookBtn.textContent = '参照情報をコピー';
+        elements.responseDetailsDialog.showModal();
+    },
+    async copyResponseLorebookReference() {
+        const text = elements.copyResponseLorebookBtn.dataset.copyText || '';
+        if (!text)
+            return;
+        try {
+            await navigator.clipboard.writeText(text);
+            elements.copyResponseLorebookBtn.textContent = 'コピーしました';
+        }
+        catch (error) {
+            await this.showCustomAlert(`参照情報をコピーできませんでした: ${error.message || error}`);
+        }
+    },
     updateMemoStackHeightSettingsVisibility() {
         const showMemoBtn = elements.showMemoButtonToggle.checked;
         const showClipboardStackBtn = elements.showClipboardStackButtonToggle.checked;
@@ -17202,6 +17494,8 @@ Object.assign(appLogic, {
             window.addEventListener('resize', () => this.updateMessageNavigationPosition());
         }
         elements.pasteToInputBtn.addEventListener('click', () => this.pasteToUserInput());
+        elements.closeResponseDetailsBtn.addEventListener('click', () => elements.responseDetailsDialog.close());
+        elements.copyResponseLorebookBtn.addEventListener('click', () => uiUtils.copyResponseLorebookReference());
         elements.headerMenuBtn.addEventListener('click', (event) => {
             event.stopPropagation();
             uiUtils.toggleHeaderMenu();
@@ -17671,6 +17965,10 @@ Object.assign(appLogic, {
                     const userIndexForRetry = (role === 'model' && index > 0) ? appLogic.findPreviousUserIndex(index) : index;
                     if (userIndexForRetry !== -1)
                         appLogic.retryFromMessage(userIndexForRetry);
+                    return;
+                }
+                if (button.classList.contains('js-response-details-btn')) {
+                    uiUtils.showResponseDetails(index);
                     return;
                 }
             }
@@ -19126,6 +19424,7 @@ Object.assign(appLogic, {
             ? currentContextMessages.slice(0, userMessageIndex + 1)
             : [...currentContextMessages];
         const lorebookPrompt = lorebookUtils.buildPrompt(state.currentLorebookId, messagesToProcess, currentContextSystemPrompt);
+        responseModelMetadata.lorebookContext = lorebookUtils.createContextSnapshot(state.currentLorebookId, lorebookPrompt);
         currentContextSystemPrompt = lorebookUtils.appendToSystemPrompt(currentContextSystemPrompt, lorebookPrompt);
         try {
             let titleToSave = null;
@@ -19167,6 +19466,7 @@ Object.assign(appLogic, {
                     ...(msg.groundingMetadata && { groundingMetadata: msg.groundingMetadata }),
                     ...(msg.attachments && msg.attachments.length > 0 && { attachments: msg.attachments.map(att => ({ name: att.name, mimeType: att.mimeType, textData: att.textData })) }),
                     ...(msg.usageMetadata && { usageMetadata: msg.usageMetadata }),
+                    ...(msg.lorebookContext && { lorebookContext: msg.lorebookContext }),
                     ...(msg.thoughtSummaryOpen !== undefined && { thoughtSummaryOpen: msg.thoughtSummaryOpen }),
                 })),
                 updatedAt: Date.now(),
@@ -19982,6 +20282,8 @@ Object.assign(appLogic, {
                         messageExport.groundingMetadata = msg.groundingMetadata;
                     if (msg.usageMetadata)
                         messageExport.usageMetadata = msg.usageMetadata;
+                    if (msg.lorebookContext)
+                        messageExport.lorebookContext = msg.lorebookContext;
                     if (msg.finishReason)
                         messageExport.finishReason = msg.finishReason;
                     if (msg.finishMessage)
@@ -20080,6 +20382,7 @@ Object.assign(appLogic, {
                             })),
                             groundingMetadata: msg.groundingMetadata || undefined,
                             usageMetadata: msg.usageMetadata || undefined,
+                            lorebookContext: lorebookUtils.normalizeContextSnapshot(msg.lorebookContext) || undefined,
                             finishReason: msg.finishReason || undefined,
                             finishMessage: msg.finishMessage || undefined,
                             safetyRatings: msg.safetyRatings || undefined,

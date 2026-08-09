@@ -97,6 +97,29 @@ describe('Lorebook retrieval', () => {
     expect(prompt).toContain('避ける表現・展開:\n- 設定を説明的に列挙しない');
   });
 
+  it('records whether a Lorebook reference was applied for an individual response', () => {
+    const context = createLorebookContext();
+    const result = evaluate<{
+      applied: { status: string; lorebookId: string; reference: string };
+      none: { status: string; lorebookId: null; reference: string };
+      unavailable: { status: string; lorebookId: string; reference: string };
+    }>(context, `({
+      applied: lorebookUtils.createContextSnapshot('test-lorebook', '<lorebook-reference>test</lorebook-reference>'),
+      none: lorebookUtils.createContextSnapshot(null, ''),
+      unavailable: lorebookUtils.createContextSnapshot('missing-lorebook', '')
+    })`);
+
+    expect({ ...result.applied }).toMatchObject({
+      status: 'applied',
+      lorebookId: 'test-lorebook',
+      reference: '<lorebook-reference>test</lorebook-reference>',
+    });
+    expect({ ...result.none }).toMatchObject({ status: 'none', lorebookId: null, reference: '' });
+    expect({ ...result.unavailable }).toMatchObject({
+      status: 'unavailable', lorebookId: 'missing-lorebook', reference: '',
+    });
+  });
+
   it('ships two public school Lorebooks with the requested eleven-character balance', () => {
     const context = createLorebookContext([]);
     const lorebooks = evaluate<Array<{ id: string; name: string; characters: Array<{ core: string }> }>>(

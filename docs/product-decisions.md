@@ -32,10 +32,11 @@ The following features are essential product requirements. They must not be remo
 - Keep canonical and persisted Lorebooks on schema v3, which requires `styleGuide` and excludes the old `conditionalMemories.characters` field; accept schema v2 only at load/import boundaries and migrate it to `anyCharacters` before use.
 - Seed bundled sample Lorebooks into IndexedDB once, then treat every Lorebook identically for editing, deletion, ordering, selection, and individual/all import and export.
 - Track installed seed IDs separately in the Lorebook store so deleting a sample remains effective across reloads; clearing all site data removes this registry and restores the samples on the next launch.
-- Use the complete original Lorebook source as an early full-context seed and add structured, relevant Lorebook reminders near the current turn.
+- Planned: use the complete original Lorebook source as an early full-context seed and add structured, relevant Lorebook reminders near the current turn. The current runtime sends the fixed core, style guide, and selective reminders only.
 - Preserve global prose and roleplay style as an optional structured `styleGuide` that is always injected; keep invariant setting/world premises in `storyCore` and topic-dependent setting/world details in atomic `conditionalMemories`.
-- After a response reaches 90% of the model's context window, stop including the full-context seed for the remainder of that session; keep the fixed core and selective reminders.
-- If the selected model's context-window limit is unknown, keep the full-context seed enabled; do not infer a percentage or automatically switch injection modes.
+- Planned with full-context seeding: after a response reaches 90% of the model's context window, stop including the full-context seed for the remainder of that session; keep the fixed core and selective reminders.
+- Planned with full-context seeding: if the selected model's context-window limit is unknown, keep the full-context seed enabled; do not infer a percentage or automatically switch injection modes.
+- Save the exact generated `<lorebook-reference>` with each AI response so later inspection reflects what was actually sent even after the Lorebook is edited or deleted.
 - Never require embeddings for the baseline Lorebook retrieval path.
 
 ### Common Dummy User prompt

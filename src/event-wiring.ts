@@ -33,6 +33,8 @@ Object.assign(appLogic, {
                     window.addEventListener('resize', () => this.updateMessageNavigationPosition());
                 }
                 elements.pasteToInputBtn.addEventListener('click', () => this.pasteToUserInput());
+                elements.closeResponseDetailsBtn.addEventListener('click', () => elements.responseDetailsDialog.close());
+                elements.copyResponseLorebookBtn.addEventListener('click', () => uiUtils.copyResponseLorebookReference());
 
                 elements.headerMenuBtn.addEventListener('click', (event) => {
                     event.stopPropagation();
@@ -504,6 +506,10 @@ Object.assign(appLogic, {
                             const role = clickedMessage.classList.contains('model') ? 'model' : 'user';
                             const userIndexForRetry = (role === 'model' && index > 0) ? appLogic.findPreviousUserIndex(index) : index;
                             if (userIndexForRetry !== -1) appLogic.retryFromMessage(userIndexForRetry);
+                            return;
+                        }
+                        if (button.classList.contains('js-response-details-btn')) {
+                            uiUtils.showResponseDetails(index);
                             return;
                         }
                     }

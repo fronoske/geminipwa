@@ -392,12 +392,26 @@ appendMessage(role, content, index, isStreamingPlaceholder = false, cascadeInfo 
                         actionsDiv.appendChild(retryButton);
                     }
 
-                    if (role === 'model' && messageData?.usageMetadata &&
-                        typeof messageData.usageMetadata.candidatesTokenCount === 'number' &&
-                        typeof messageData.usageMetadata.totalTokenCount === 'number') {
+                    const hasTokenDetails = role === 'model' && messageData?.usageMetadata
+                        && typeof messageData.usageMetadata.candidatesTokenCount === 'number'
+                        && typeof messageData.usageMetadata.totalTokenCount === 'number';
+                    const lorebookSnapshot = role === 'model'
+                        ? lorebookUtils.normalizeContextSnapshot(messageData?.lorebookContext)
+                        : null;
+                    const hasLorebookDetails = lorebookSnapshot?.status === 'applied'
+                        || lorebookSnapshot?.status === 'unavailable';
+
+                    if (role === 'model' && (hasTokenDetails || hasLorebookDetails)) {
+                        const detailsButton = document.createElement('button');
+                        detailsButton.type = 'button';
+                        detailsButton.classList.add('token-count-display', 'js-response-details-btn');
+                        detailsButton.title = '応答の送信情報を表示';
+                        detailsButton.setAttribute('aria-label', '応答の送信情報を表示');
+                        if (!hasTokenDetails) {
+                            detailsButton.textContent = '参照';
+                            actionsDiv.appendChild(detailsButton);
+                        } else {
                         const usage = messageData.usageMetadata;
-                        const tokenSpan = document.createElement('span');
-                        tokenSpan.classList.add('token-count-display');
 
                         const totalTokenCount = usage.totalTokenCount;
                         const storedContextWindow = Number(messageData.contextWindowTokens) || 0;
@@ -409,16 +423,13 @@ appendMessage(role, content, index, isStreamingPlaceholder = false, cascadeInfo 
 
                         if (contextWindowTokens > 0) {
                             const usagePercentage = Math.round((totalTokenCount / contextWindowTokens) * 100);
-                            tokenSpan.textContent = `${formattedTotal} / ${formatCompactTokenCount(contextWindowTokens)} (${usagePercentage} %)`;
-                            tokenSpan.title = `合計トークン数 / ${messageData.generatedByModel || '使用モデル'}のコンテキスト上限`;
-                            tokenSpan.classList.toggle('context-usage-critical', usagePercentage >= CONTEXT_PRESSURE_THRESHOLD_PERCENT);
+                            detailsButton.textContent = `${formattedTotal} / ${formatCompactTokenCount(contextWindowTokens)} (${usagePercentage} %)`;
+                            detailsButton.classList.toggle('context-usage-critical', usagePercentage >= CONTEXT_PRESSURE_THRESHOLD_PERCENT);
                         } else {
-                            tokenSpan.textContent = `${formattedTotal} / 上限不明`;
-                            tokenSpan.title = messageData.generatedByModel
-                                ? `${messageData.generatedByModel}のコンテキスト上限を取得できていません`
-                                : '使用モデルのコンテキスト上限を取得できていません';
+                            detailsButton.textContent = `${formattedTotal} / 上限不明`;
                         }
-                        actionsDiv.appendChild(tokenSpan);
+                        actionsDiv.appendChild(detailsButton);
+                        }
                     }
                     messageDiv.appendChild(actionsDiv);
                 }

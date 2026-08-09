@@ -1,6 +1,100 @@
 // @ts-nocheck -- Enable after shared UI types are defined.
 // Bundled into the generated index.html from this TypeScript source.
 Object.assign(uiUtils, {
+            buildResponseDetailsViewModel(messageData = {}) {
+                const provider = messageData.generatedByApiProvider || '記録なし';
+                const model = messageData.generatedByModel || '記録なし';
+                const finishReason = messageData.finishReason || '記録なし';
+                const finishMessage = messageData.finishMessage ? `（${messageData.finishMessage}）` : '';
+                const usage = messageData.usageMetadata || null;
+                const tokenDetails = [];
+                if (usage) {
+                    if (Number.isFinite(Number(usage.promptTokenCount))) {
+                        tokenDetails.push(`入力 ${Number(usage.promptTokenCount).toLocaleString()} tokens`);
+                    }
+                    if (Number.isFinite(Number(usage.candidatesTokenCount))) {
+                        tokenDetails.push(`出力 ${Number(usage.candidatesTokenCount).toLocaleString()} tokens`);
+                    }
+                    if (Number.isFinite(Number(usage.thoughtsTokenCount))) {
+                        tokenDetails.push(`思考 ${Number(usage.thoughtsTokenCount).toLocaleString()} tokens`);
+                    }
+                    if (Number.isFinite(Number(usage.totalTokenCount))) {
+                        tokenDetails.push(`合計 ${Number(usage.totalTokenCount).toLocaleString()} tokens`);
+                    }
+                }
+                const catalogContextWindow = provider === 'openrouter' && messageData.generatedByModel
+                    ? Number(openRouterModelCatalog.getModel(messageData.generatedByModel)?.contextLength) || 0
+                    : 0;
+                const contextWindowTokens = Number(messageData.contextWindowTokens) || catalogContextWindow;
+                const totalTokenCount = Number(usage?.totalTokenCount) || 0;
+                if (contextWindowTokens > 0) {
+                    const percentage = totalTokenCount > 0
+                        ? ` (${Math.round((totalTokenCount / contextWindowTokens) * 100)} %)`
+                        : '';
+                    tokenDetails.push(`Context上限 ${contextWindowTokens.toLocaleString()} tokens${percentage}`);
+                }
+
+                const snapshot = lorebookUtils.normalizeContextSnapshot(messageData.lorebookContext);
+                let lorebookStatus = '送信時の記録なし（この機能の導入前に生成された応答です）';
+                let lorebookReference = '';
+                if (snapshot?.status === 'none') {
+                    lorebookStatus = '使用していません';
+                } else if (snapshot?.status === 'unavailable') {
+                    lorebookStatus = `適用されませんでした${snapshot.lorebookId ? `（未登録ID: ${snapshot.lorebookId}）` : ''}`;
+                } else if (snapshot?.status === 'applied') {
+                    const identity = snapshot.lorebookName || snapshot.lorebookId || '名称不明';
+                    lorebookStatus = `${identity}${snapshot.lorebookId ? `（ID: ${snapshot.lorebookId}）` : ''}`;
+                    lorebookReference = snapshot.reference;
+                }
+
+                let lorebookSize = '';
+                if (lorebookReference) {
+                    const characters = Array.from(lorebookReference).length;
+                    const bytes = typeof TextEncoder !== 'undefined'
+                        ? new TextEncoder().encode(lorebookReference).length
+                        : characters * 2;
+                    lorebookSize = `${characters.toLocaleString()}文字 / 約${Math.max(1, Math.ceil(bytes / 4)).toLocaleString()} tokens（概算）`;
+                }
+
+                return {
+                    model: `${provider} / ${model}`,
+                    finish: `${finishReason}${finishMessage}`,
+                    tokens: tokenDetails.length > 0 ? tokenDetails.join(' / ') : '記録なし',
+                    lorebookStatus,
+                    lorebookReference,
+                    lorebookSize,
+                };
+            },
+
+            showResponseDetails(messageIndex) {
+                const messageData = state.currentMessages[messageIndex];
+                if (!messageData || messageData.role !== 'model') return;
+                const details = this.buildResponseDetailsViewModel(messageData);
+                elements.responseDetailsModel.textContent = details.model;
+                elements.responseDetailsFinish.textContent = details.finish;
+                elements.responseDetailsTokens.textContent = details.tokens;
+                elements.responseDetailsLorebookStatus.textContent = details.lorebookStatus;
+                elements.responseDetailsLorebookSize.textContent = details.lorebookSize;
+                elements.responseDetailsLorebookSize.classList.toggle('hidden', !details.lorebookSize);
+                elements.responseDetailsLorebookReference.textContent = details.lorebookReference;
+                elements.responseDetailsLorebookReference.classList.toggle('hidden', !details.lorebookReference);
+                elements.copyResponseLorebookBtn.classList.toggle('hidden', !details.lorebookReference);
+                elements.copyResponseLorebookBtn.dataset.copyText = details.lorebookReference;
+                elements.copyResponseLorebookBtn.textContent = '参照情報をコピー';
+                elements.responseDetailsDialog.showModal();
+            },
+
+            async copyResponseLorebookReference() {
+                const text = elements.copyResponseLorebookBtn.dataset.copyText || '';
+                if (!text) return;
+                try {
+                    await navigator.clipboard.writeText(text);
+                    elements.copyResponseLorebookBtn.textContent = 'コピーしました';
+                } catch (error) {
+                    await this.showCustomAlert(`参照情報をコピーできませんでした: ${error.message || error}`);
+                }
+            },
+
             updateMemoStackHeightSettingsVisibility() {
                 const showMemoBtn = elements.showMemoButtonToggle.checked;
                 const showClipboardStackBtn = elements.showClipboardStackButtonToggle.checked;

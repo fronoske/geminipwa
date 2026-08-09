@@ -238,6 +238,33 @@ const lorebookUtils = {
         return sections.join('\n\n');
     },
 
+    createContextSnapshot(lorebookId, reference = '') {
+        const storedLorebookId = this.normalizeStoredLorebookId(lorebookId);
+        const lorebook = this.getLorebook(storedLorebookId);
+        const prompt = String(reference || '');
+        return {
+            version: 1,
+            status: prompt ? 'applied' : storedLorebookId ? 'unavailable' : 'none',
+            lorebookId: storedLorebookId,
+            lorebookName: lorebook?.name || null,
+            reference: prompt,
+        };
+    },
+
+    normalizeContextSnapshot(snapshot) {
+        if (!snapshot || Number(snapshot.version) !== 1) return null;
+        const allowedStatuses = new Set(['applied', 'none', 'unavailable']);
+        const status = allowedStatuses.has(snapshot.status) ? snapshot.status : null;
+        if (!status) return null;
+        return {
+            version: 1,
+            status,
+            lorebookId: this.normalizeStoredLorebookId(snapshot.lorebookId),
+            lorebookName: typeof snapshot.lorebookName === 'string' ? snapshot.lorebookName : null,
+            reference: typeof snapshot.reference === 'string' ? snapshot.reference : '',
+        };
+    },
+
     appendToSystemPrompt(systemPrompt, lorebookPrompt) {
         const base = String(systemPrompt || '').trim();
         const lore = String(lorebookPrompt || '').trim();
