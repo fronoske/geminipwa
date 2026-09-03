@@ -2,6 +2,8 @@ node_modules/
 dist/
 .build/
 *.tsbuildinfo
+.env
+*.checkpoint.json
 
 # Private local Lorebook source and generated runtime data
 story-settings.md

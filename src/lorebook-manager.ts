@@ -1153,7 +1153,7 @@ conditionalMemoriesの人物条件は allCharacters、anyCharacters のうち意
 創作、常識による補完、関係性からの呼称の推測をしてはならない。
 原文の情報を圧縮せず、人物、別名、関係、舞台、世界観、秘密、出来事、一人称、口調、呼称、文体、視点、描写、台詞、出力形式、避ける表現を抽出する。
 呼称は話者→相手の方向を維持し、逆方向を推測しない。発話、内心、人前、二人きりで異なる場合は文脈別にする。
-物語全体で常に成立する舞台・世界観の大前提はstoryCoreへ、条件が成立するときだけ必要な詳細はconditionalMemoriesへ分類する。
+物語全体で常時参照する舞台、中心構図、主要テーマ、継続的な関係・葛藤、秘密の知識範囲、継続原則はstoryCoreへ、条件が成立するときだけ必要な詳細はconditionalMemoriesへ分類する。
 人物登場時に必要な情報はcharactersへ、常時適用する文体・視点・描写・台詞・形式・禁止事項はstyleGuideへ分類する。
 不明点や矛盾は勝手に決めず、原文との対応を維持する。
 指定された小さなJSONだけを返し、Markdown、コードフェンス、解説を付けない。`;
@@ -1163,13 +1163,17 @@ conditionalMemoriesの人物条件は allCharacters、anyCharacters のうち意
         return `${this.buildAnalysisCommonPrompt()}
 原文全体の詳細をまだ構造化せず、後続処理のための索引だけを作る。
 すべての登場人物と、条件付き記憶に分けるべき話題を漏れなく列挙する。
+文体、視点、描写、台詞の扱い、表記、出力形式、禁止事項はstyleGuideの担当であり、memoryTopicsへ含めない。
 次の形だけを返す:
 {"characters":[{"id":"ascii-kebab-id","name":"正式名","aliases":["正式名","別名"]}],"memoryTopics":[{"id":"ascii-kebab-id","label":"話題名","keywords":["原文上の手掛かり"]}]}`;
     },
 
     buildBaseExtractionPrompt() {
         return `${this.buildAnalysisCommonPrompt()}
-舞台、世界観、作品全体の前提、文体、視点、台詞、表記、禁止事項だけを抽出する。人物ごとの詳細、個別の呼称、条件付き記憶は出力しない。
+storyCoreは単なる世界設定欄ではなく、小説執筆中に常時参照するコンパクトな物語運用コアとする。
+舞台、中心人物と集団の構図、作品の主要テーマ・葛藤、物語を動かす継続的な関係や恋愛、秘密を知る人物の範囲、セッション内で成立した出来事を優先する継続原則を、原文全体から選んで統合する。
+全人物の詳細を列挙せず、制服、服装、外見、個別の嗜好、細かな日課など、特定の人物・場面でだけ必要な局所情報をstoryCoreへ含めない。それらはcharactersまたはconditionalMemoriesへ分類する。
+文体、視点、描写、台詞の扱い、表記、出力形式、禁止事項はstyleGuideにだけ抽出する。人物ごとの詳細、個別の呼称、条件付き記憶は出力しない。
 次の形だけを返す:
 {"name":"Lorebook名","description":"短い説明","storyCore":"固定ストーリーコア","styleGuide":{"narration":["規則"],"dialogue":["規則"],"formatting":["規則"],"avoid":["規則"]},"addressingInstruction":"個別呼称を適用する原則"}`;
     },
@@ -1192,14 +1196,30 @@ contextはspoken、innerThought、public、privateのいずれかとする。
     buildMemoryExtractionPrompt() {
         return `${this.buildAnalysisCommonPrompt()}
 指定された各話題について、条件成立時だけ必要な情報を原子的な記憶へ分ける。指定された全topicIdを一件ずつ返す。
+文体、視点、描写、台詞の扱い、表記、出力形式、禁止事項はconditionalMemoriesへ出力しない。
 人物条件はallCharacters、anyCharactersのうち意味に合うものだけを使う。話題依存ならkeywordsを付け、priorityは0〜100とする。
 次の形だけを返す:
 {"topicResults":[{"topicId":"指定話題ID","memories":[{"id":"ascii-kebab-id","allCharacters":["人物ID"],"keywords":["検索語"],"priority":50,"content":"一つの情報"}]}]}`;
     },
 
+    buildCharacterCoverageAuditPrompt() {
+        return `${this.buildAnalysisCommonPrompt()}
+指定された一人物の原文章を、現在の人物coreと関連する条件付き記憶に対して項目ごとに照合する網羅性監査である。
+原文に明記されているのに、現在のcoreにも条件付き記憶にも意味として収録されていない項目だけをadditionsへ返す。既存情報の削除、置換、要約し直し、言い換えだけの重複追加をしてはならない。
+人物が登場する場面で常に必要な安定情報はdestinationをcoreにする。特定状況、話題、過去、秘密、日課、嗜好など条件成立時だけ必要な情報はdestinationをconditionalMemoryにする。
+conditionalMemoryには対象人物IDをanyCharactersへ入れるか、適切なkeywordsを付け、必ず発火条件を設定する。
+呼称規則は専用のaddressingで抽出済みなので追加しない。文体、出力形式、創作した情報も追加しない。原文の矛盾は解決せず、矛盾した記述を勝手に統合しない。
+sourceExcerptにはsourceSection内に実在する一つの連続した文字列をコピー＆ペーストする。要約、言い換え、省略記号、複数箇所の結合は禁止する。迷う場合は根拠となる箇条書き一行を先頭記号も含めてそのまま使う。destinationがcoreなら人物条件とkeywordsは空配列、priorityは50とする。
+次の形だけを返す:
+{"characterId":"指定人物ID","additions":[{"sourceExcerpt":"原文抜粋","destination":"core","content":"追加する一つの情報","allCharacters":[],"anyCharacters":[],"keywords":[],"priority":50}]}`;
+    },
+
     buildAuditPrompt() {
         return `${this.buildAnalysisCommonPrompt()}
 原文とcandidateを照合し、呼称、重要な関係、秘密の知識範囲、舞台・世界観、文体・スタイルの欠落や創作を検査する。
+storyCoreが、舞台だけでなく中心構図、主要テーマ・葛藤、継続的な関係、秘密の知識範囲、継続原則を簡潔に統合した物語運用コアになっているかを検査する。
+制服、服装、外見、個別の嗜好、細かな日課などの局所情報がstoryCoreに混入していれば除去する。
+文体、視点、描写、台詞の扱い、表記、出力形式、禁止事項はstyleGuideだけに置き、conditionalMemoriesにあれば削除する。
 変更不要なデータはcorrectionsへ再出力しない。修正・追加が必要な完全な項目だけを返す。
 次の形だけを返す:
 {"reviewReport":{"warnings":["警告"],"unresolvedQuestions":["未解決事項"],"sourceAddressingCount":0,"structuredAddressingCount":0},"corrections":{"name":null,"description":null,"storyCore":null,"styleGuide":null,"removeCharacterIds":[],"characters":[],"addressing":{"instruction":null,"removeExactRules":[{"speakerId":"id","targetId":"id"}],"exactRules":[],"removeFallbackRules":[{"speakerId":"id","targetDescription":"説明","context":"spoken"}],"fallbackRules":[]},"removeConditionalMemoryIds":[],"conditionalMemories":[]}}`;
