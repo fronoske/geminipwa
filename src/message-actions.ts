@@ -119,6 +119,7 @@ Object.assign(appLogic, {
                 editArea.appendChild(actionsDiv);
 
                 messageElement.classList.add('editing');
+                state.editingMessageIndex = index;
                 if (contentDiv) contentDiv.classList.add('hidden');
                 if (cascadeControls) cascadeControls.classList.add('hidden');
                 editArea.classList.remove('hidden');
@@ -283,6 +284,9 @@ Object.assign(appLogic, {
 
                 messageElement.style.removeProperty('width');
                 messageElement.classList.remove('editing');
+                if (state.editingMessageIndex === Number(messageElement.dataset.index)) {
+                    state.editingMessageIndex = null;
+                }
                 if (contentDiv) contentDiv.classList.remove('hidden');
                 if (cascadeControls) cascadeControls.classList.remove('hidden');
                 if (editArea) {

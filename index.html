@@ -5028,6 +5028,115 @@ font-size: 1.142em !important;
         background: var(--bg-button-save);
         color: var(--text-light);
       }
+
+      .string-replacement-dialog {
+        width: min(520px, calc(100vw - 32px));
+        max-height: calc(100dvh - 32px);
+        position: fixed;
+        inset: 0;
+        margin: auto;
+        overflow-y: auto;
+      }
+
+      .string-replacement-dialog form {
+        display: grid;
+        gap: 12px;
+      }
+
+      .string-replacement-dialog h2 {
+        margin: 0 0 4px;
+      }
+
+      .string-replacement-dialog label {
+        margin: 0;
+      }
+
+      .string-replacement-dialog .dialog-input {
+        width: 100%;
+        box-sizing: border-box;
+        margin: -6px 0 0;
+      }
+
+      .string-replacement-dialog fieldset {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 18px;
+        margin: 0;
+        padding: 10px 12px;
+        border: 1px solid var(--border-secondary);
+        border-radius: 8px;
+      }
+
+      .string-replacement-dialog fieldset label {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-weight: normal;
+      }
+
+      .string-replacement-bar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-top: 1px solid var(--border-primary);
+        background: var(--bg-secondary);
+        box-shadow: 0 -2px 8px var(--shadow-primary);
+        z-index: 20;
+      }
+
+      .string-replacement-bar.hidden {
+        display: none;
+      }
+
+      .string-replacement-bar span {
+        margin-right: 4px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      .string-replacement-bar output {
+        min-width: 3.5em;
+        font-variant-numeric: tabular-nums;
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      .string-replacement-bar button {
+        min-width: 56px;
+        padding: 7px 10px;
+        border: none;
+        border-radius: 6px;
+        background: var(--bg-button-action);
+        color: var(--text-light);
+      }
+
+      .string-replacement-bar button:hover,
+      .string-replacement-bar button:focus-visible {
+        background: var(--bg-button-action-hover);
+      }
+
+      .replacement-preview-active .message-edit-actions {
+        display: none;
+      }
+
+      .replacement-preview-active .edit-textarea::selection {
+        background: var(--bg-button-gold);
+        color: var(--text-primary);
+      }
+
+      @media (max-width: 420px) {
+        .string-replacement-bar {
+          gap: 5px;
+          padding-inline: 6px;
+        }
+
+        .string-replacement-bar button {
+          min-width: 48px;
+          padding-inline: 7px;
+        }
+      }
     </style>
 
     <script src="marked.js"></script>
@@ -5144,6 +5253,7 @@ font-size: 1.142em !important;
                         <button id="header-menu-new-chat-btn" type="button" role="menuitem">新規チャット</button>
                         <button id="header-menu-clear-btn" type="button" role="menuitem" class="danger-menu-item">全削除（先頭を除く）</button>
                         <button id="header-menu-copy-btn" type="button" role="menuitem">全コピー</button>
+                        <button id="header-menu-string-replacement-btn" type="button" role="menuitem">検索・置換</button>
                         <button id="attach-file-btn" type="button" role="menuitem">ファイル添付<span
                                 class="attachment-badge" aria-hidden="true"></span></button>
                     </div>
@@ -5194,6 +5304,17 @@ font-size: 1.142em !important;
                     title="前の入力項目の末尾へ">↑</button>
                 <button id="message-navigation-down-btn" type="button" aria-label="次の入力項目の末尾へ"
                     title="次の入力項目の末尾へ">↓</button>
+            </div>
+            <div id="string-replacement-bar" class="string-replacement-bar hidden" role="group"
+                aria-label="逐次置換操作">
+                <span id="string-replacement-prompt">置換？</span>
+                <output id="string-replacement-progress" aria-live="polite">0/0</output>
+                <button id="string-replacement-yes-btn" type="button">Yes</button>
+                <button id="string-replacement-no-btn" type="button">No</button>
+                <button id="string-replacement-all-btn" type="button">All</button>
+                <button id="string-replacement-previous-btn" type="button" class="hidden">前へ</button>
+                <button id="string-replacement-next-btn" type="button" class="hidden">次へ</button>
+                <button id="string-replacement-stop-btn" type="button">Cancel</button>
             </div>
             <footer class="chat-input-area">
                 <button id="paste-to-input-btn" title="入力欄に貼り付け" class="footer-action-button">貼</button>
@@ -7400,6 +7521,35 @@ font-size: 1.142em !important;
         </div>
     </dialog>
 
+    <dialog id="string-replacement-dialog" class="custom-dialog string-replacement-dialog"
+        aria-labelledby="string-replacement-title">
+        <form id="string-replacement-form">
+            <h2 id="string-replacement-title">検索・置換</h2>
+            <label for="string-replacement-search">検索ワード</label>
+            <input type="text" id="string-replacement-search" class="dialog-input" required>
+            <label for="string-replacement-replacement">置換ワード（空なら検索のみ）</label>
+            <input type="text" id="string-replacement-replacement" class="dialog-input">
+            <fieldset>
+                <legend>検索対象</legend>
+                <label><input type="radio" id="string-replacement-scope-all"
+                    name="string-replacement-scope" value="all" checked> 全体</label>
+                <label><input type="radio" id="string-replacement-scope-editing"
+                    name="string-replacement-scope" value="editing"> 編集中の応答</label>
+            </fieldset>
+            <fieldset>
+                <legend>置換方法</legend>
+                <label><input type="radio" id="string-replacement-mode-batch"
+                    name="string-replacement-mode" value="batch" checked> 一括置換</label>
+                <label><input type="radio" id="string-replacement-mode-sequential"
+                    name="string-replacement-mode" value="sequential"> 逐次置換</label>
+            </fieldset>
+            <div class="dialog-actions">
+                <button type="button" id="string-replacement-cancel-btn" class="dialog-cancel-btn">Cancel</button>
+                <button type="submit" class="dialog-ok-btn">OK</button>
+            </div>
+        </form>
+    </dialog>
+
     <dialog id="lorebookDialog" class="custom-dialog lorebook-selection-dialog">
         <h2>Lorebookを選択</h2>
         <p class="dialog-message">現在のセッションで使用するLorebookを選んでください。次の送信から反映されます。</p>
@@ -7870,6 +8020,7 @@ const elements = {
     headerMenuLorebookName: document.getElementById('header-menu-lorebook-name'),
     headerMenuClearBtn: document.getElementById('header-menu-clear-btn'),
     headerMenuCopyBtn: document.getElementById('header-menu-copy-btn'),
+    headerMenuStringReplacementBtn: document.getElementById('header-menu-string-replacement-btn'),
     scrollToTopBtn: document.getElementById('scroll-to-top-btn'),
     scrollToBottomBtn: document.getElementById('scroll-to-bottom-btn'),
     messageNavigationControls: document.getElementById('message-navigation-controls'),
@@ -7902,6 +8053,24 @@ const elements = {
     promptInput: getRequiredDomElement('promptDialog').querySelector('.dialog-input'),
     promptOkBtn: getRequiredDomElement('promptDialog').querySelector('.dialog-ok-btn'),
     promptCancelBtn: getRequiredDomElement('promptDialog').querySelector('.dialog-cancel-btn'),
+    stringReplacementDialog: getRequiredDomElement('string-replacement-dialog'),
+    stringReplacementForm: getRequiredDomElement('string-replacement-form'),
+    stringReplacementSearch: getRequiredDomElement('string-replacement-search'),
+    stringReplacementReplacement: getRequiredDomElement('string-replacement-replacement'),
+    stringReplacementScopeAll: getRequiredDomElement('string-replacement-scope-all'),
+    stringReplacementScopeEditing: getRequiredDomElement('string-replacement-scope-editing'),
+    stringReplacementModeBatch: getRequiredDomElement('string-replacement-mode-batch'),
+    stringReplacementModeSequential: getRequiredDomElement('string-replacement-mode-sequential'),
+    stringReplacementCancelBtn: getRequiredDomElement('string-replacement-cancel-btn'),
+    stringReplacementBar: getRequiredDomElement('string-replacement-bar'),
+    stringReplacementPrompt: getRequiredDomElement('string-replacement-prompt'),
+    stringReplacementProgress: getRequiredDomElement('string-replacement-progress'),
+    stringReplacementAllBtn: getRequiredDomElement('string-replacement-all-btn'),
+    stringReplacementYesBtn: getRequiredDomElement('string-replacement-yes-btn'),
+    stringReplacementNoBtn: getRequiredDomElement('string-replacement-no-btn'),
+    stringReplacementPreviousBtn: getRequiredDomElement('string-replacement-previous-btn'),
+    stringReplacementNextBtn: getRequiredDomElement('string-replacement-next-btn'),
+    stringReplacementStopBtn: getRequiredDomElement('string-replacement-stop-btn'),
     lorebookDialog: getRequiredDomElement('lorebookDialog'),
     lorebookSelect: getRequiredDomElement('lorebookSelect'),
     lorebookDescription: getRequiredDomElement('lorebookDescription'),
@@ -17568,6 +17737,23 @@ Object.assign(appLogic, {
             this.confirmClearCurrentSession();
         });
         elements.headerMenuCopyBtn.addEventListener('click', () => this.copyCurrentSessionText());
+        elements.headerMenuStringReplacementBtn.addEventListener('click', () => {
+            uiUtils.setHeaderMenuOpen(false);
+            this.openStringReplacementDialog();
+        });
+        elements.stringReplacementForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            this.confirmStringReplacementDialog();
+        });
+        elements.stringReplacementCancelBtn.addEventListener('click', () => {
+            elements.stringReplacementDialog.close('cancel');
+        });
+        elements.stringReplacementAllBtn.addEventListener('click', () => this.handleSequentialStringReplacement('all'));
+        elements.stringReplacementYesBtn.addEventListener('click', () => this.handleSequentialStringReplacement('yes'));
+        elements.stringReplacementNoBtn.addEventListener('click', () => this.handleSequentialStringReplacement('no'));
+        elements.stringReplacementPreviousBtn.addEventListener('click', () => this.handleSequentialStringReplacement('previous'));
+        elements.stringReplacementNextBtn.addEventListener('click', () => this.handleSequentialStringReplacement('next'));
+        elements.stringReplacementStopBtn.addEventListener('click', () => this.handleSequentialStringReplacement('cancel'));
         document.addEventListener('click', (event) => {
             if (!elements.headerMenuContainer.contains(event.target)) {
                 uiUtils.setHeaderMenuOpen(false);
@@ -21138,6 +21324,7 @@ Object.assign(appLogic, {
         editArea.appendChild(textarea);
         editArea.appendChild(actionsDiv);
         messageElement.classList.add('editing');
+        state.editingMessageIndex = index;
         if (contentDiv)
             contentDiv.classList.add('hidden');
         if (cascadeControls)
@@ -21287,6 +21474,9 @@ Object.assign(appLogic, {
         const textarea = messageElement.querySelector('.edit-textarea');
         messageElement.style.removeProperty('width');
         messageElement.classList.remove('editing');
+        if (state.editingMessageIndex === Number(messageElement.dataset.index)) {
+            state.editingMessageIndex = null;
+        }
         if (contentDiv)
             contentDiv.classList.remove('hidden');
         if (cascadeControls)
@@ -21994,6 +22184,377 @@ Object.assign(appLogic, {
         requestAnimationFrame(() => {
             uiUtils.scrollToBottom();
         });
+    },
+});
+
+/* source: string-replacement.ts */
+// @ts-nocheck -- Enable after shared application types are defined.
+// Bundled into the generated index.html from this TypeScript source.
+const stringReplacementRuntime = {
+    active: null,
+};
+const countLiteralMatches = (text, searchWord) => {
+    if (!searchWord)
+        return 0;
+    let count = 0;
+    let offset = 0;
+    while (true) {
+        const matchIndex = text.indexOf(searchWord, offset);
+        if (matchIndex === -1)
+            return count;
+        count += 1;
+        offset = matchIndex + searchWord.length;
+    }
+};
+const replaceLiteralMatches = (text, searchWord, replacementWord) => {
+    const count = countLiteralMatches(text, searchWord);
+    if (count === 0)
+        return { text, count: 0 };
+    return { text: text.split(searchWord).join(replacementWord), count };
+};
+Object.assign(appLogic, {
+    getStringReplacementTargetIndices(scope) {
+        if (scope === 'editing') {
+            return state.editingMessageIndex === null ? [] : [state.editingMessageIndex];
+        }
+        return state.currentMessages
+            .map((message, index) => ({ message, index }))
+            .filter(({ message }) => (typeof message?.content === 'string'
+            && !(message.role === 'model' && message.isCascaded && !message.isSelected)))
+            .map(({ index }) => index);
+    },
+    getStringReplacementEditorSnapshot() {
+        if (state.editingMessageIndex === null)
+            return null;
+        const index = state.editingMessageIndex;
+        const messageElement = elements.messageContainer.querySelector(`.message[data-index="${index}"]`);
+        const textarea = messageElement?.querySelector('.edit-textarea');
+        if (!textarea)
+            return null;
+        return { index, value: textarea.value };
+    },
+    async openStringReplacementDialog() {
+        if (state.isSending) {
+            await uiUtils.showCustomAlert('送信中は文字列置換を実行できません。');
+            return;
+        }
+        if (stringReplacementRuntime.active)
+            return;
+        const editorSnapshot = this.getStringReplacementEditorSnapshot();
+        elements.stringReplacementScopeEditing.disabled = !editorSnapshot;
+        if (!editorSnapshot && elements.stringReplacementScopeEditing.checked) {
+            elements.stringReplacementScopeAll.checked = true;
+        }
+        elements.stringReplacementDialog.showModal();
+        requestAnimationFrame(() => {
+            elements.stringReplacementSearch.focus();
+            elements.stringReplacementSearch.select();
+        });
+    },
+    async confirmStringReplacementDialog() {
+        const searchWord = elements.stringReplacementSearch.value;
+        if (!searchWord) {
+            elements.stringReplacementSearch.focus();
+            return;
+        }
+        const scope = elements.stringReplacementScopeEditing.checked ? 'editing' : 'all';
+        const editorSnapshot = this.getStringReplacementEditorSnapshot();
+        if (scope === 'editing' && !editorSnapshot) {
+            await uiUtils.showCustomAlert('編集中の応答がありません。');
+            return;
+        }
+        const options = {
+            searchWord,
+            replacementWord: elements.stringReplacementReplacement.value,
+            scope,
+            editorSnapshot,
+        };
+        elements.stringReplacementDialog.close('ok');
+        if (!options.replacementWord || elements.stringReplacementModeSequential.checked) {
+            await this.startSequentialStringReplacement({
+                ...options,
+                searchOnly: !options.replacementWord,
+            });
+        }
+        else {
+            await this.replaceAllStrings(options);
+        }
+    },
+    createStringReplacementWorkingContents(indices, editorSnapshot) {
+        const contents = new Map();
+        indices.forEach(index => {
+            contents.set(index, String(state.currentMessages[index]?.content ?? ''));
+        });
+        if (editorSnapshot && contents.has(editorSnapshot.index)) {
+            contents.set(editorSnapshot.index, editorSnapshot.value);
+        }
+        return contents;
+    },
+    commitStringReplacementContents(workingContents, changedIndices) {
+        const timestamp = Date.now();
+        changedIndices.forEach(index => {
+            const message = state.currentMessages[index];
+            if (!message)
+                return;
+            message.content = workingContents.get(index) ?? '';
+            message.timestamp = timestamp;
+            delete message.error;
+        });
+    },
+    async restoreStringReplacementEditor(editorSnapshot, workingContents, changedIndices) {
+        uiUtils.renderChatMessages(true);
+        if (!editorSnapshot || !state.currentMessages[editorSnapshot.index])
+            return;
+        const messageElement = elements.messageContainer.querySelector(`.message[data-index="${editorSnapshot.index}"]`);
+        if (!messageElement)
+            return;
+        await this.startEditMessage(editorSnapshot.index, messageElement);
+        const textarea = messageElement.querySelector('.edit-textarea');
+        if (!textarea)
+            return;
+        textarea.value = changedIndices.has(editorSnapshot.index)
+            ? workingContents.get(editorSnapshot.index)
+            : editorSnapshot.value;
+        uiUtils.adjustTextareaHeight(textarea, 400);
+    },
+    async saveStringReplacementResult(workingContents, changedIndices, editorSnapshot) {
+        this.commitStringReplacementContents(workingContents, changedIndices);
+        if (changedIndices.size > 0) {
+            try {
+                await dbUtils.saveChat();
+            }
+            catch (error) {
+                await this.restoreStringReplacementEditor(editorSnapshot, workingContents, changedIndices);
+                await uiUtils.showCustomAlert('文字列置換後のチャット保存に失敗しました。');
+                return false;
+            }
+        }
+        await this.restoreStringReplacementEditor(editorSnapshot, workingContents, changedIndices);
+        return true;
+    },
+    async replaceAllStrings({ searchWord, replacementWord, scope, editorSnapshot }) {
+        const indices = this.getStringReplacementTargetIndices(scope);
+        const workingContents = this.createStringReplacementWorkingContents(indices, editorSnapshot);
+        const changedIndices = new Set();
+        let replacementCount = 0;
+        indices.forEach(index => {
+            const result = replaceLiteralMatches(workingContents.get(index) ?? '', searchWord, replacementWord);
+            if (result.count === 0)
+                return;
+            workingContents.set(index, result.text);
+            changedIndices.add(index);
+            replacementCount += result.count;
+        });
+        const saved = await this.saveStringReplacementResult(workingContents, changedIndices, editorSnapshot);
+        if (saved)
+            await uiUtils.showCustomAlert(`${replacementCount}件置換しました`);
+    },
+    async startSequentialStringReplacement({ searchWord, replacementWord, scope, editorSnapshot, searchOnly = false }) {
+        const indices = this.getStringReplacementTargetIndices(scope);
+        const workingContents = this.createStringReplacementWorkingContents(indices, editorSnapshot);
+        const searchMatches = [];
+        indices.forEach(messageIndex => {
+            const content = workingContents.get(messageIndex) ?? '';
+            let matchStart = content.indexOf(searchWord);
+            while (matchStart !== -1) {
+                searchMatches.push({ messageIndex, matchStart });
+                matchStart = content.indexOf(searchWord, matchStart + searchWord.length);
+            }
+        });
+        const totalMatches = searchMatches.length;
+        stringReplacementRuntime.active = {
+            searchWord,
+            replacementWord,
+            searchOnly,
+            searchMatches,
+            searchMatchPosition: 0,
+            indices,
+            workingContents,
+            changedIndices: new Set(),
+            editorSnapshot,
+            targetPosition: 0,
+            searchOffset: 0,
+            currentMatch: null,
+            currentMatchOrdinal: 0,
+            totalMatches,
+            replacementCount: 0,
+        };
+        elements.stringReplacementPrompt.textContent = searchOnly ? '検索：' : '置換？';
+        elements.stringReplacementYesBtn.classList.toggle('hidden', searchOnly);
+        elements.stringReplacementNoBtn.classList.toggle('hidden', searchOnly);
+        elements.stringReplacementAllBtn.classList.toggle('hidden', searchOnly);
+        elements.stringReplacementPreviousBtn.classList.toggle('hidden', !searchOnly);
+        elements.stringReplacementNextBtn.classList.toggle('hidden', !searchOnly);
+        elements.stringReplacementProgress.textContent = `0/${totalMatches}`;
+        elements.stringReplacementBar.classList.remove('hidden');
+        await this.showNextSequentialStringReplacementMatch();
+    },
+    centerSequentialStringReplacementMatch(textarea, matchStart, matchLength) {
+        const computedStyle = window.getComputedStyle(textarea);
+        const mirror = document.createElement('div');
+        const copiedProperties = [
+            'borderTopWidth', 'borderRightWidth', 'borderBottomWidth', 'borderLeftWidth',
+            'fontFamily', 'fontSize', 'fontStyle', 'fontWeight', 'letterSpacing', 'lineHeight',
+            'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft',
+            'tabSize', 'textIndent', 'textTransform', 'wordBreak', 'wordSpacing',
+        ];
+        copiedProperties.forEach(property => {
+            mirror.style[property] = computedStyle[property];
+        });
+        Object.assign(mirror.style, {
+            boxSizing: computedStyle.boxSizing,
+            overflowWrap: computedStyle.overflowWrap,
+            position: 'absolute',
+            visibility: 'hidden',
+            whiteSpace: 'pre-wrap',
+            width: `${textarea.clientWidth}px`,
+            left: '-100000px',
+            top: '0',
+        });
+        mirror.appendChild(document.createTextNode(textarea.value.slice(0, matchStart)));
+        const marker = document.createElement('span');
+        marker.textContent = textarea.value.slice(matchStart, matchStart + matchLength) || '\u200b';
+        mirror.appendChild(marker);
+        document.body.appendChild(mirror);
+        const centeredScrollTop = marker.offsetTop - (textarea.clientHeight / 2) + (marker.offsetHeight / 2);
+        textarea.scrollTop = Math.max(0, Math.min(centeredScrollTop, textarea.scrollHeight - textarea.clientHeight));
+        mirror.remove();
+        textarea.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    },
+    async showNextSequentialStringReplacementMatch() {
+        const active = stringReplacementRuntime.active;
+        if (!active)
+            return;
+        if (active.searchOnly) {
+            if (active.searchMatches.length === 0) {
+                await this.finishSequentialStringReplacement(false);
+                await uiUtils.showCustomAlert('一致する文字列はありません。');
+                return;
+            }
+            const match = active.searchMatches[active.searchMatchPosition];
+            await this.showSequentialStringReplacementMatch(active, match.messageIndex, match.matchStart, active.searchMatchPosition + 1);
+            return;
+        }
+        while (active.targetPosition < active.indices.length) {
+            const messageIndex = active.indices[active.targetPosition];
+            const content = active.workingContents.get(messageIndex) ?? '';
+            const matchStart = content.indexOf(active.searchWord, active.searchOffset);
+            if (matchStart !== -1) {
+                const shown = await this.showSequentialStringReplacementMatch(active, messageIndex, matchStart, active.currentMatchOrdinal + 1);
+                if (!shown) {
+                    active.targetPosition += 1;
+                    active.searchOffset = 0;
+                    continue;
+                }
+                return;
+            }
+            active.targetPosition += 1;
+            active.searchOffset = 0;
+        }
+        await this.finishSequentialStringReplacement(true);
+    },
+    async showSequentialStringReplacementMatch(active, messageIndex, matchStart, ordinal) {
+        const content = active.workingContents.get(messageIndex) ?? '';
+        active.currentMatch = { messageIndex, matchStart };
+        uiUtils.renderChatMessages(true);
+        const messageElement = elements.messageContainer.querySelector(`.message[data-index="${messageIndex}"]`);
+        if (!messageElement)
+            return false;
+        await this.startEditMessage(messageIndex, messageElement);
+        const textarea = messageElement.querySelector('.edit-textarea');
+        if (!textarea)
+            return false;
+        active.currentMatchOrdinal = ordinal;
+        elements.stringReplacementProgress.textContent = `${ordinal}/${active.totalMatches}`;
+        textarea.value = content;
+        messageElement.classList.add('replacement-preview-active');
+        uiUtils.adjustTextareaHeight(textarea, 400);
+        textarea.focus({ preventScroll: true });
+        textarea.setSelectionRange(matchStart, matchStart + active.searchWord.length);
+        requestAnimationFrame(() => {
+            this.centerSequentialStringReplacementMatch(textarea, matchStart, active.searchWord.length);
+        });
+        return true;
+    },
+    async handleSequentialStringReplacement(action) {
+        const active = stringReplacementRuntime.active;
+        if (!active?.currentMatch)
+            return;
+        const { messageIndex, matchStart } = active.currentMatch;
+        const content = active.workingContents.get(messageIndex) ?? '';
+        if (action === 'cancel') {
+            await this.finishSequentialStringReplacement(false, true);
+            return;
+        }
+        if (active.searchOnly && (action === 'previous' || action === 'next')) {
+            const direction = action === 'previous' ? -1 : 1;
+            active.searchMatchPosition = (active.searchMatchPosition + direction + active.searchMatches.length) % active.searchMatches.length;
+            await this.showNextSequentialStringReplacementMatch();
+            return;
+        }
+        if (active.searchOnly)
+            return;
+        if (action === 'yes') {
+            const updatedContent = content.slice(0, matchStart)
+                + active.replacementWord
+                + content.slice(matchStart + active.searchWord.length);
+            active.workingContents.set(messageIndex, updatedContent);
+            active.changedIndices.add(messageIndex);
+            active.replacementCount += 1;
+            active.searchOffset = matchStart + active.replacementWord.length;
+            await this.showNextSequentialStringReplacementMatch();
+            return;
+        }
+        if (action === 'no') {
+            active.searchOffset = matchStart + active.searchWord.length;
+            await this.showNextSequentialStringReplacementMatch();
+            return;
+        }
+        if (action === 'all') {
+            const currentTail = replaceLiteralMatches(content.slice(matchStart), active.searchWord, active.replacementWord);
+            active.workingContents.set(messageIndex, content.slice(0, matchStart) + currentTail.text);
+            active.changedIndices.add(messageIndex);
+            active.replacementCount += currentTail.count;
+            for (let position = active.targetPosition + 1; position < active.indices.length; position += 1) {
+                const laterIndex = active.indices[position];
+                const result = replaceLiteralMatches(active.workingContents.get(laterIndex) ?? '', active.searchWord, active.replacementWord);
+                if (result.count === 0)
+                    continue;
+                active.workingContents.set(laterIndex, result.text);
+                active.changedIndices.add(laterIndex);
+                active.replacementCount += result.count;
+            }
+            await this.finishSequentialStringReplacement(true);
+        }
+    },
+    async finishSequentialStringReplacement(showSummary, preserveCurrentEditor = false) {
+        const active = stringReplacementRuntime.active;
+        if (!active)
+            return;
+        stringReplacementRuntime.active = null;
+        elements.stringReplacementBar.classList.add('hidden');
+        if (preserveCurrentEditor && active.currentMatch) {
+            this.commitStringReplacementContents(active.workingContents, active.changedIndices);
+            if (active.changedIndices.size > 0) {
+                try {
+                    await dbUtils.saveChat();
+                }
+                catch (error) {
+                    await uiUtils.showCustomAlert('文字列置換後のチャット保存に失敗しました。');
+                }
+            }
+            const messageElement = elements.messageContainer.querySelector(`.message[data-index="${active.currentMatch.messageIndex}"]`);
+            const textarea = messageElement?.querySelector('.edit-textarea');
+            if (textarea) {
+                textarea.value = active.workingContents.get(active.currentMatch.messageIndex) ?? textarea.value;
+            }
+            messageElement?.classList.remove('replacement-preview-active');
+            return;
+        }
+        const saved = await this.saveStringReplacementResult(active.workingContents, active.changedIndices, active.editorSnapshot);
+        if (saved && showSummary) {
+            await uiUtils.showCustomAlert(`${active.replacementCount}件置換しました`);
+        }
     },
 });
 

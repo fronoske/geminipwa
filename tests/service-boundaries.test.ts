@@ -32,6 +32,7 @@ const controllerFeatures = [
   ['message-sending', 'appLogic'],
   ['data-management', 'appLogic'],
   ['message-actions', 'appLogic'],
+  ['string-replacement', 'appLogic'],
 ] as const;
 
 describe('application service boundaries', () => {
@@ -82,7 +83,7 @@ describe('application service boundaries', () => {
     ],
     [
       'appLogic',
-      85,
+      100,
       [
         'app-initialization',
         'event-wiring',
@@ -91,6 +92,7 @@ describe('application service boundaries', () => {
         'message-sending',
         'data-management',
         'message-actions',
+        'string-replacement',
       ],
     ],
   ] as const)('preserves all %s controller methods', (globalName, expectedCount, filenames) => {

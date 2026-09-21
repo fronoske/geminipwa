@@ -33,6 +33,7 @@
     "message-sending",
     "data-management",
     "message-actions",
+    "string-replacement",
     "main"
   ]
 }

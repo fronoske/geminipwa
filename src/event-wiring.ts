@@ -55,6 +55,23 @@ Object.assign(appLogic, {
                     this.confirmClearCurrentSession();
                 });
                 elements.headerMenuCopyBtn.addEventListener('click', () => this.copyCurrentSessionText());
+                elements.headerMenuStringReplacementBtn.addEventListener('click', () => {
+                    uiUtils.setHeaderMenuOpen(false);
+                    this.openStringReplacementDialog();
+                });
+                elements.stringReplacementForm.addEventListener('submit', (event) => {
+                    event.preventDefault();
+                    this.confirmStringReplacementDialog();
+                });
+                elements.stringReplacementCancelBtn.addEventListener('click', () => {
+                    elements.stringReplacementDialog.close('cancel');
+                });
+                elements.stringReplacementAllBtn.addEventListener('click', () => this.handleSequentialStringReplacement('all'));
+                elements.stringReplacementYesBtn.addEventListener('click', () => this.handleSequentialStringReplacement('yes'));
+                elements.stringReplacementNoBtn.addEventListener('click', () => this.handleSequentialStringReplacement('no'));
+                elements.stringReplacementPreviousBtn.addEventListener('click', () => this.handleSequentialStringReplacement('previous'));
+                elements.stringReplacementNextBtn.addEventListener('click', () => this.handleSequentialStringReplacement('next'));
+                elements.stringReplacementStopBtn.addEventListener('click', () => this.handleSequentialStringReplacement('cancel'));
                 document.addEventListener('click', (event) => {
                     if (!elements.headerMenuContainer.contains(event.target)) {
                         uiUtils.setHeaderMenuOpen(false);

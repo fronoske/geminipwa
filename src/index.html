@@ -41,6 +41,7 @@
                         <button id="header-menu-new-chat-btn" type="button" role="menuitem">新規チャット</button>
                         <button id="header-menu-clear-btn" type="button" role="menuitem" class="danger-menu-item">全削除（先頭を除く）</button>
                         <button id="header-menu-copy-btn" type="button" role="menuitem">全コピー</button>
+                        <button id="header-menu-string-replacement-btn" type="button" role="menuitem">検索・置換</button>
                         <button id="attach-file-btn" type="button" role="menuitem">ファイル添付<span
                                 class="attachment-badge" aria-hidden="true"></span></button>
                     </div>
@@ -91,6 +92,17 @@
                     title="前の入力項目の末尾へ">↑</button>
                 <button id="message-navigation-down-btn" type="button" aria-label="次の入力項目の末尾へ"
                     title="次の入力項目の末尾へ">↓</button>
+            </div>
+            <div id="string-replacement-bar" class="string-replacement-bar hidden" role="group"
+                aria-label="逐次置換操作">
+                <span id="string-replacement-prompt">置換？</span>
+                <output id="string-replacement-progress" aria-live="polite">0/0</output>
+                <button id="string-replacement-yes-btn" type="button">Yes</button>
+                <button id="string-replacement-no-btn" type="button">No</button>
+                <button id="string-replacement-all-btn" type="button">All</button>
+                <button id="string-replacement-previous-btn" type="button" class="hidden">前へ</button>
+                <button id="string-replacement-next-btn" type="button" class="hidden">次へ</button>
+                <button id="string-replacement-stop-btn" type="button">Cancel</button>
             </div>
             <footer class="chat-input-area">
                 <button id="paste-to-input-btn" title="入力欄に貼り付け" class="footer-action-button">貼</button>
@@ -2295,6 +2307,35 @@
             <button value="cancel" class="dialog-cancel-btn">キャンセル</button>
             <button value="ok" class="dialog-ok-btn">OK</button>
         </div>
+    </dialog>
+
+    <dialog id="string-replacement-dialog" class="custom-dialog string-replacement-dialog"
+        aria-labelledby="string-replacement-title">
+        <form id="string-replacement-form">
+            <h2 id="string-replacement-title">検索・置換</h2>
+            <label for="string-replacement-search">検索ワード</label>
+            <input type="text" id="string-replacement-search" class="dialog-input" required>
+            <label for="string-replacement-replacement">置換ワード（空なら検索のみ）</label>
+            <input type="text" id="string-replacement-replacement" class="dialog-input">
+            <fieldset>
+                <legend>検索対象</legend>
+                <label><input type="radio" id="string-replacement-scope-all"
+                    name="string-replacement-scope" value="all" checked> 全体</label>
+                <label><input type="radio" id="string-replacement-scope-editing"
+                    name="string-replacement-scope" value="editing"> 編集中の応答</label>
+            </fieldset>
+            <fieldset>
+                <legend>置換方法</legend>
+                <label><input type="radio" id="string-replacement-mode-batch"
+                    name="string-replacement-mode" value="batch" checked> 一括置換</label>
+                <label><input type="radio" id="string-replacement-mode-sequential"
+                    name="string-replacement-mode" value="sequential"> 逐次置換</label>
+            </fieldset>
+            <div class="dialog-actions">
+                <button type="button" id="string-replacement-cancel-btn" class="dialog-cancel-btn">Cancel</button>
+                <button type="submit" class="dialog-ok-btn">OK</button>
+            </div>
+        </form>
     </dialog>
 
     <dialog id="lorebookDialog" class="custom-dialog lorebook-selection-dialog">

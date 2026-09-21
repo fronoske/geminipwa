@@ -5018,3 +5018,112 @@ font-size: 1.142em !important;
         background: var(--bg-button-save);
         color: var(--text-light);
       }
+
+      .string-replacement-dialog {
+        width: min(520px, calc(100vw - 32px));
+        max-height: calc(100dvh - 32px);
+        position: fixed;
+        inset: 0;
+        margin: auto;
+        overflow-y: auto;
+      }
+
+      .string-replacement-dialog form {
+        display: grid;
+        gap: 12px;
+      }
+
+      .string-replacement-dialog h2 {
+        margin: 0 0 4px;
+      }
+
+      .string-replacement-dialog label {
+        margin: 0;
+      }
+
+      .string-replacement-dialog .dialog-input {
+        width: 100%;
+        box-sizing: border-box;
+        margin: -6px 0 0;
+      }
+
+      .string-replacement-dialog fieldset {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 18px;
+        margin: 0;
+        padding: 10px 12px;
+        border: 1px solid var(--border-secondary);
+        border-radius: 8px;
+      }
+
+      .string-replacement-dialog fieldset label {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-weight: normal;
+      }
+
+      .string-replacement-bar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-top: 1px solid var(--border-primary);
+        background: var(--bg-secondary);
+        box-shadow: 0 -2px 8px var(--shadow-primary);
+        z-index: 20;
+      }
+
+      .string-replacement-bar.hidden {
+        display: none;
+      }
+
+      .string-replacement-bar span {
+        margin-right: 4px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      .string-replacement-bar output {
+        min-width: 3.5em;
+        font-variant-numeric: tabular-nums;
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      .string-replacement-bar button {
+        min-width: 56px;
+        padding: 7px 10px;
+        border: none;
+        border-radius: 6px;
+        background: var(--bg-button-action);
+        color: var(--text-light);
+      }
+
+      .string-replacement-bar button:hover,
+      .string-replacement-bar button:focus-visible {
+        background: var(--bg-button-action-hover);
+      }
+
+      .replacement-preview-active .message-edit-actions {
+        display: none;
+      }
+
+      .replacement-preview-active .edit-textarea::selection {
+        background: var(--bg-button-gold);
+        color: var(--text-primary);
+      }
+
+      @media (max-width: 420px) {
+        .string-replacement-bar {
+          gap: 5px;
+          padding-inline: 6px;
+        }
+
+        .string-replacement-bar button {
+          min-width: 48px;
+          padding-inline: 7px;
+        }
+      }
