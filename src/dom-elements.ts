@@ -422,5 +422,6 @@ elevationHoverOption: document.getElementById('elevation-hover-option'),
             stripedHistoryListToggle: document.getElementById('striped-history-list-toggle'),
             inputPresetSettingsList: document.getElementById('input-preset-settings-list'),
             addInputPresetBtn: document.getElementById('add-input-preset-btn'),
+            inputPresetAlwaysVisibleToggle: document.getElementById('input-preset-always-visible-toggle'),
             inputPresetPopup: document.getElementById('input-preset-popup'),
         };

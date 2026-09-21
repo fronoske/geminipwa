@@ -2067,6 +2067,10 @@
             transition: background-color 0.2s ease, height 0.2s ease, width 0.2s ease, font-size 0.2s ease;
         }
 
+        .chat-input-area button#send-button:disabled {
+            pointer-events: none;
+        }
+
         .chat-input-area button#send-button.sending {
             background-color: #ffc107;
             color: #333;
@@ -7294,8 +7298,11 @@ font-size: 1.142em !important;
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
                         入力プリセット</summary>
                     <div style="margin-top:10px;">
+                        <label class="checkbox-label" style="margin-bottom: 12px;">
+                            <input type="checkbox" id="input-preset-always-visible-toggle"> 常に表示
+                        </label>
                         <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">
-                            ラベルと本文を編集できます。本文は改行に対応し、<code>{|}</code>を置いた位置へ挿入後のカーソルが移動します。
+                            ラベルと本文を編集できます。本文は改行に対応し、<code>{|}</code>を置いた位置へ入力済みテキストが移動します。
                         </p>
                         <div id="input-preset-settings-list" class="input-preset-settings-list"></div>
                         <button type="button" id="add-input-preset-btn" class="add-input-preset-btn">プリセットを追加</button>
@@ -7736,7 +7743,7 @@ const LIGHT_MODE_MODEL_MESSAGE_COLOR = '#e5e5ea';
 const LIGHT_MODE_SECONDARY_COLOR = '#f0f2f5';
 const LIGHT_MODE_HEADER_COLOR = '#4a90e2';
 const LIGHT_MODE_PRIMARY_COLOR = '#ffffff';
-const APP_VERSION = "2026.08.09-fronoske";
+const APP_VERSION = "2026.09.22-fronoske";
 const formatLocalDateStamp = (date = new Date()) => [
     date.getFullYear(),
     String(date.getMonth() + 1).padStart(2, '0'),
@@ -8205,6 +8212,7 @@ const elements = {
     stripedHistoryListToggle: document.getElementById('striped-history-list-toggle'),
     inputPresetSettingsList: document.getElementById('input-preset-settings-list'),
     addInputPresetBtn: document.getElementById('add-input-preset-btn'),
+    inputPresetAlwaysVisibleToggle: document.getElementById('input-preset-always-visible-toggle'),
     inputPresetPopup: document.getElementById('input-preset-popup'),
 };
 
@@ -8230,6 +8238,7 @@ const state = {
         enableCommonDummyModel: true,
         concatCommonDummyModel: false,
         inputPresets: DEFAULT_INPUT_PRESETS.map(preset => ({ ...preset })),
+        inputPresetAlwaysVisible: false,
         geminiSystemPrompt: '',
         geminiEnableSystemPromptDefault: true,
         geminiTemperature: null,
@@ -9333,6 +9342,9 @@ const inputPresetUtils = {
             : content.slice(0, markerIndex).split(INPUT_PRESET_CURSOR_MARKER).join('').length;
         return { text, cursorOffset };
     },
+    shouldShowPopup(inputValue, alwaysVisible) {
+        return alwaysVisible === true || String(inputValue ?? '').trim() === '';
+    },
     initialize() {
         if (this.initialized) {
             this.refresh();
@@ -9348,9 +9360,13 @@ const inputPresetUtils = {
             this.notifySettingsChanged();
             elements.inputPresetSettingsList.lastElementChild?.querySelector('.input-preset-label')?.focus();
         });
+        elements.inputPresetAlwaysVisibleToggle.addEventListener('change', () => {
+            state.settings.inputPresetAlwaysVisible = elements.inputPresetAlwaysVisibleToggle.checked;
+        });
         elements.userInput.addEventListener('focus', () => {
-            if (elements.userInput.value.trim() === '')
+            if (this.shouldShowPopup(elements.userInput.value, state.settings.inputPresetAlwaysVisible)) {
                 this.showPopup();
+            }
         });
         elements.userInput.addEventListener('blur', () => {
             setTimeout(() => this.hidePopup(), 160);
@@ -9378,6 +9394,7 @@ const inputPresetUtils = {
     },
     refresh() {
         state.settings.inputPresets = this.normalizePresets(state.settings.inputPresets);
+        elements.inputPresetAlwaysVisibleToggle.checked = state.settings.inputPresetAlwaysVisible === true;
         this.renderSettings();
         this.renderPopup();
     },
@@ -9455,8 +9472,7 @@ const inputPresetUtils = {
             button.addEventListener('mousedown', event => event.preventDefault());
             button.addEventListener('click', event => {
                 event.preventDefault();
-                const parsed = this.parseTemplate(preset.content);
-                this.insertAtCursor(elements.userInput, parsed.text, parsed.cursorOffset);
+                this.insertPreset(elements.userInput, preset.content);
                 this.hidePopup();
                 elements.userInput.focus();
                 if (preset.autoSend) {
@@ -9483,14 +9499,21 @@ const inputPresetUtils = {
     hidePopup() {
         elements.inputPresetPopup.classList.add('hidden');
     },
-    insertAtCursor(textarea, text, cursorOffset) {
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
-        const before = textarea.value.substring(0, start);
-        const after = textarea.value.substring(end);
-        textarea.value = before + text + after;
-        const newPosition = before.length + Math.max(0, Math.min(cursorOffset, text.length));
-        textarea.setSelectionRange(newPosition, newPosition);
+    insertPreset(textarea, template) {
+        const existingText = textarea.value;
+        const parsed = this.parseTemplate(template);
+        const hasCursorMarker = typeof template === 'string' && template.includes(INPUT_PRESET_CURSOR_MARKER);
+        if (hasCursorMarker) {
+            const before = parsed.text.slice(0, parsed.cursorOffset);
+            const after = parsed.text.slice(parsed.cursorOffset);
+            textarea.value = before + existingText + after;
+            const newPosition = before.length + existingText.length;
+            textarea.setSelectionRange(newPosition, newPosition);
+        }
+        else {
+            textarea.value = existingText + parsed.text;
+            textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+        }
         textarea.dispatchEvent(new Event('input', { bubbles: true }));
     },
 };
@@ -18318,6 +18341,17 @@ Object.assign(appLogic, {
         const footer = document.querySelector('.chat-input-area');
         if (footer) {
             footer.addEventListener('click', (e) => {
+                if (elements.sendButton.disabled) {
+                    const sendButtonRect = elements.sendButton.getBoundingClientRect();
+                    const tappedDisabledSendButton = e.clientX >= sendButtonRect.left
+                        && e.clientX <= sendButtonRect.right
+                        && e.clientY >= sendButtonRect.top
+                        && e.clientY <= sendButtonRect.bottom;
+                    if (tappedDisabledSendButton) {
+                        this.scrollToBottom();
+                        return;
+                    }
+                }
                 if (!state.settings.footerTapScrollToBottom)
                     return;
                 if (e.target.tagName === 'BUTTON' || e.target.closest('button') || e.target.tagName === 'TEXTAREA')
@@ -20925,6 +20959,7 @@ Object.assign(appLogic, {
         newSettings.enableCommonDummyModel = elements.enableCommonDummyModelCheckbox.checked;
         newSettings.concatCommonDummyModel = elements.concatCommonDummyModelCheckbox.checked;
         newSettings.inputPresets = inputPresetUtils.readSettingsFromUI();
+        newSettings.inputPresetAlwaysVisible = elements.inputPresetAlwaysVisibleToggle.checked;
         newSettings.modelName = elements.geminiModelNameSelect.value;
         newSettings.additionalModels = elements.geminiAdditionalModelsTextarea.value.trim();
         newSettings.geminiSystemPrompt = elements.geminiSystemPromptDefaultTextarea.value.trim();

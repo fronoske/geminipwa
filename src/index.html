@@ -2082,8 +2082,11 @@
                         style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
                         入力プリセット</summary>
                     <div style="margin-top:10px;">
+                        <label class="checkbox-label" style="margin-bottom: 12px;">
+                            <input type="checkbox" id="input-preset-always-visible-toggle"> 常に表示
+                        </label>
                         <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">
-                            ラベルと本文を編集できます。本文は改行に対応し、<code>{|}</code>を置いた位置へ挿入後のカーソルが移動します。
+                            ラベルと本文を編集できます。本文は改行に対応し、<code>{|}</code>を置いた位置へ入力済みテキストが移動します。
                         </p>
                         <div id="input-preset-settings-list" class="input-preset-settings-list"></div>
                         <button type="button" id="add-input-preset-btn" class="add-input-preset-btn">プリセットを追加</button>

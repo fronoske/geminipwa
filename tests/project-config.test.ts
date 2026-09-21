@@ -162,6 +162,15 @@ describe('project configuration', () => {
     expect(styles).toMatch(/\.app-container\.minimized-ui \.chat-input-area textarea \{[\s\S]*?min-height: 32px;[\s\S]*?height: 32px;/);
   });
 
+  it('scrolls to the bottom when the disabled send button area is tapped', () => {
+    const eventWiring = readFile('src/event-wiring.ts');
+    expect(eventWiring).toContain('if (elements.sendButton.disabled)');
+    expect(eventWiring).toContain('elements.sendButton.getBoundingClientRect()');
+    expect(eventWiring).toContain('if (tappedDisabledSendButton)');
+    expect(eventWiring).toMatch(/if \(tappedDisabledSendButton\) \{\s*this\.scrollToBottom\(\);\s*return;/);
+    expect(readFile('src/styles/app.css')).toMatch(/#send-button:disabled \{\s*pointer-events: none;/);
+  });
+
   it('does not expose provider, API key, or paste visibility options in the footer', () => {
     const html = readFile('src/index.html');
     expect(html).not.toMatch(/id="(?:footer-secondary-actions|footer-api-provider-toggle-btn|footer-cycle-api-key-btn)"/);
@@ -493,6 +502,7 @@ describe('project configuration', () => {
     expect(readFile('src/index.html')).toContain('id="input-preset-popup"');
     expect(readFile('src/index.html')).toContain('id="input-preset-settings-list"');
     expect(readFile('src/index.html')).toContain('id="add-input-preset-btn"');
+    expect(readFile('src/index.html')).toContain('id="input-preset-always-visible-toggle"');
     const appConfig = readFile('src/app-config.ts');
     expect(appConfig).toContain("label: '続'");
     expect(appConfig).toContain("label: '展'");
@@ -503,6 +513,7 @@ describe('project configuration', () => {
     expect(presetSource).toContain("document.createElement('textarea')");
     expect(presetSource).toContain("this.textareaResizeObserver.observe(elements.userInput)");
     expect(readFile('src/app-state.ts')).toContain('inputPresets: DEFAULT_INPUT_PRESETS');
+    expect(readFile('src/app-state.ts')).toContain('inputPresetAlwaysVisible: false');
     expect(readFile('docs/product-decisions.md')).toContain('Input presets');
   });
 
@@ -565,7 +576,7 @@ describe('project configuration', () => {
   });
 
   it('uses the current release date as the application version', () => {
-    expect(readFile('src/app-config.ts')).toContain('const APP_VERSION = "2026.08.09-fronoske"');
+    expect(readFile('src/app-config.ts')).toContain('const APP_VERSION = "2026.09.22-fronoske"');
   });
 
   it('uses the device-local calendar date in timestamped export filenames', () => {

@@ -41,6 +41,10 @@ const inputPresetUtils = {
     return { text, cursorOffset };
   },
 
+  shouldShowPopup(inputValue, alwaysVisible) {
+    return alwaysVisible === true || String(inputValue ?? '').trim() === '';
+  },
+
   initialize() {
     if (this.initialized) {
       this.refresh();
@@ -58,8 +62,14 @@ const inputPresetUtils = {
       elements.inputPresetSettingsList.lastElementChild?.querySelector('.input-preset-label')?.focus();
     });
 
+    elements.inputPresetAlwaysVisibleToggle.addEventListener('change', () => {
+      state.settings.inputPresetAlwaysVisible = elements.inputPresetAlwaysVisibleToggle.checked;
+    });
+
     elements.userInput.addEventListener('focus', () => {
-      if (elements.userInput.value.trim() === '') this.showPopup();
+      if (this.shouldShowPopup(elements.userInput.value, state.settings.inputPresetAlwaysVisible)) {
+        this.showPopup();
+      }
     });
     elements.userInput.addEventListener('blur', () => {
       setTimeout(() => this.hidePopup(), 160);
@@ -85,6 +95,7 @@ const inputPresetUtils = {
 
   refresh() {
     state.settings.inputPresets = this.normalizePresets(state.settings.inputPresets);
+    elements.inputPresetAlwaysVisibleToggle.checked = state.settings.inputPresetAlwaysVisible === true;
     this.renderSettings();
     this.renderPopup();
   },
@@ -174,8 +185,7 @@ const inputPresetUtils = {
         button.addEventListener('mousedown', event => event.preventDefault());
         button.addEventListener('click', event => {
           event.preventDefault();
-          const parsed = this.parseTemplate(preset.content);
-          this.insertAtCursor(elements.userInput, parsed.text, parsed.cursorOffset);
+          this.insertPreset(elements.userInput, preset.content);
           this.hidePopup();
           elements.userInput.focus();
           if (preset.autoSend) {
@@ -205,14 +215,22 @@ const inputPresetUtils = {
     elements.inputPresetPopup.classList.add('hidden');
   },
 
-  insertAtCursor(textarea, text, cursorOffset) {
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const before = textarea.value.substring(0, start);
-    const after = textarea.value.substring(end);
-    textarea.value = before + text + after;
-    const newPosition = before.length + Math.max(0, Math.min(cursorOffset, text.length));
-    textarea.setSelectionRange(newPosition, newPosition);
+  insertPreset(textarea, template) {
+    const existingText = textarea.value;
+    const parsed = this.parseTemplate(template);
+    const hasCursorMarker = typeof template === 'string' && template.includes(INPUT_PRESET_CURSOR_MARKER);
+
+    if (hasCursorMarker) {
+      const before = parsed.text.slice(0, parsed.cursorOffset);
+      const after = parsed.text.slice(parsed.cursorOffset);
+      textarea.value = before + existingText + after;
+      const newPosition = before.length + existingText.length;
+      textarea.setSelectionRange(newPosition, newPosition);
+    } else {
+      textarea.value = existingText + parsed.text;
+      textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+    }
+
     textarea.dispatchEvent(new Event('input', { bubbles: true }));
   },
 };

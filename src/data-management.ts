@@ -567,6 +567,7 @@ Object.assign(appLogic, {
                 newSettings.enableCommonDummyModel = elements.enableCommonDummyModelCheckbox.checked;
                 newSettings.concatCommonDummyModel = elements.concatCommonDummyModelCheckbox.checked;
                 newSettings.inputPresets = inputPresetUtils.readSettingsFromUI();
+                newSettings.inputPresetAlwaysVisible = elements.inputPresetAlwaysVisibleToggle.checked;
 
                 newSettings.modelName = elements.geminiModelNameSelect.value;
                 newSettings.additionalModels = elements.geminiAdditionalModelsTextarea.value.trim();

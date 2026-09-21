@@ -35,27 +35,43 @@ describe('input presets', () => {
     expect(result).toEqual({ text: 'line 1\nline 2', cursorOffset: 13 });
   });
 
-  it('inserts multiline text at the current selection and moves the cursor', () => {
+  it('shows the popup for blank input, or for any input when always visible is enabled', () => {
+    const context = createPresetContext();
+
+    expect(new vm.Script("inputPresetUtils.shouldShowPopup('  \\n', false)").runInContext(context)).toBe(true);
+    expect(new vm.Script("inputPresetUtils.shouldShowPopup('入力済み', false)").runInContext(context)).toBe(false);
+    expect(new vm.Script("inputPresetUtils.shouldShowPopup('入力済み', true)").runInContext(context)).toBe(true);
+  });
+
+  it('appends a preset without a cursor marker after the existing input', () => {
     const dispatchEvent = vi.fn();
     const setSelectionRange = vi.fn();
     const context = createPresetContext();
     Object.assign(context, {
       Event: class TestEvent {},
-      textarea: {
-        value: 'before-after',
-        selectionStart: 7,
-        selectionEnd: 7,
-        dispatchEvent,
-        setSelectionRange,
-      },
+      textarea: { value: '入力済み', dispatchEvent, setSelectionRange },
     });
 
-    new vm.Script(
-      "inputPresetUtils.insertAtCursor(textarea, 'line 1\\nline 2', 7)",
-    ).runInContext(context);
+    new vm.Script("inputPresetUtils.insertPreset(textarea, 'プリセット')").runInContext(context);
 
-    expect(context.textarea.value).toBe('before-line 1\nline 2after');
-    expect(setSelectionRange).toHaveBeenCalledWith(14, 14);
+    expect(context.textarea.value).toBe('入力済みプリセット');
+    expect(setSelectionRange).toHaveBeenCalledWith(9, 9);
+    expect(dispatchEvent).toHaveBeenCalledOnce();
+  });
+
+  it('moves the existing input to the cursor marker in the preset', () => {
+    const dispatchEvent = vi.fn();
+    const setSelectionRange = vi.fn();
+    const context = createPresetContext();
+    Object.assign(context, {
+      Event: class TestEvent {},
+      textarea: { value: '入力済み', dispatchEvent, setSelectionRange },
+    });
+
+    new vm.Script("inputPresetUtils.insertPreset(textarea, '前文{|}後文')").runInContext(context);
+
+    expect(context.textarea.value).toBe('前文入力済み後文');
+    expect(setSelectionRange).toHaveBeenCalledWith(6, 6);
     expect(dispatchEvent).toHaveBeenCalledOnce();
   });
 });

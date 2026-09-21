@@ -639,6 +639,17 @@ Object.assign(appLogic, {
                 const footer = document.querySelector('.chat-input-area');
                 if (footer) {
                     footer.addEventListener('click', (e) => {
+                        if (elements.sendButton.disabled) {
+                            const sendButtonRect = elements.sendButton.getBoundingClientRect();
+                            const tappedDisabledSendButton = e.clientX >= sendButtonRect.left
+                                && e.clientX <= sendButtonRect.right
+                                && e.clientY >= sendButtonRect.top
+                                && e.clientY <= sendButtonRect.bottom;
+                            if (tappedDisabledSendButton) {
+                                this.scrollToBottom();
+                                return;
+                            }
+                        }
                         if (!state.settings.footerTapScrollToBottom) return;
                         if (e.target.tagName === 'BUTTON' || e.target.closest('button') || e.target.tagName === 'TEXTAREA') return;
                         if (state.currentScreen === 'chat') this.scrollToBottom();

@@ -2057,6 +2057,10 @@
             transition: background-color 0.2s ease, height 0.2s ease, width 0.2s ease, font-size 0.2s ease;
         }
 
+        .chat-input-area button#send-button:disabled {
+            pointer-events: none;
+        }
+
         .chat-input-area button#send-button.sending {
             background-color: #ffc107;
             color: #333;

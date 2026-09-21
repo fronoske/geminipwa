@@ -19,6 +19,7 @@
                 enableCommonDummyModel: true,
                 concatCommonDummyModel: false,
                 inputPresets: DEFAULT_INPUT_PRESETS.map(preset => ({ ...preset })),
+                inputPresetAlwaysVisible: false,
                 geminiSystemPrompt: '',
                 geminiEnableSystemPromptDefault: true,
                 geminiTemperature: null,
