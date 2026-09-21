@@ -294,7 +294,7 @@ Object.assign(appLogic, {
         uiUtils.renderChatMessages(true);
         const messageElement = elements.messageContainer.querySelector(`.message[data-index="${messageIndex}"]`);
         if (!messageElement) return false;
-        await this.startEditMessage(messageIndex, messageElement);
+        await this.startEditMessage(messageIndex, messageElement, { focus: false });
         const textarea = messageElement.querySelector('.edit-textarea');
         if (!textarea) return false;
 
@@ -303,6 +303,8 @@ Object.assign(appLogic, {
         textarea.value = content;
         messageElement.classList.add('replacement-preview-active');
         uiUtils.adjustTextareaHeight(textarea, 400);
+        textarea.readOnly = true;
+        textarea.inputMode = 'none';
         textarea.focus({ preventScroll: true });
         textarea.setSelectionRange(matchStart, matchStart + active.searchWord.length);
         requestAnimationFrame(() => {
@@ -385,6 +387,17 @@ Object.assign(appLogic, {
         if (!active) return;
         stringReplacementRuntime.active = null;
         elements.stringReplacementBar.classList.add('hidden');
+
+        if (active.currentMatch) {
+            const currentMessageElement = elements.messageContainer.querySelector(
+                `.message[data-index="${active.currentMatch.messageIndex}"]`,
+            );
+            const currentTextarea = currentMessageElement?.querySelector('.edit-textarea');
+            if (currentTextarea) {
+                currentTextarea.readOnly = false;
+                currentTextarea.inputMode = '';
+            }
+        }
 
         if (preserveCurrentEditor && active.currentMatch) {
             this.commitStringReplacementContents(active.workingContents, active.changedIndices);

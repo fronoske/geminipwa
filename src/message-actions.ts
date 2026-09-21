@@ -1,13 +1,13 @@
 // @ts-nocheck -- Enable after shared application types are defined.
 // Bundled into the generated index.html from this TypeScript source.
 Object.assign(appLogic, {
-            async startEditMessage(index, messageElement) {
+            async startEditMessage(index, messageElement, { focus = true } = {}) {
                 if (state.isSending) {
                     await uiUtils.showCustomAlert("送信中は編集できません。");
                     return;
                 }
                 if (state.editingMessageIndex === index) {
-                    messageElement.querySelector('.edit-textarea')?.focus();
+                    if (focus) messageElement.querySelector('.edit-textarea')?.focus();
                     return;
                 }
 
@@ -125,8 +125,10 @@ Object.assign(appLogic, {
                 editArea.classList.remove('hidden');
 
                 uiUtils.adjustTextareaHeight(textarea, 400);
-                textarea.focus();
-                textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+                if (focus) {
+                    textarea.focus();
+                    textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+                }
 
                 this.uncollapseMessage(index, messageElement);
             },

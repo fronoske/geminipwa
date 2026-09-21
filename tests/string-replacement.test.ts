@@ -127,6 +127,8 @@ describe('string replacement', () => {
     const { context } = createContext([{ role: 'user', content: 'before cat after cat' }]);
     const textarea = {
       value: '',
+      readOnly: false,
+      inputMode: '',
       focus: vi.fn(),
       setSelectionRange: vi.fn(),
     };
@@ -148,6 +150,10 @@ describe('string replacement', () => {
     });
 
     expect(context.elements.stringReplacementProgress.textContent).toBe('1/2');
+    expect(context.appLogic.startEditMessage).toHaveBeenCalledWith(0, messageElement, { focus: false });
+    expect(textarea.readOnly).toBe(true);
+    expect(textarea.inputMode).toBe('none');
+    expect(textarea.focus).toHaveBeenCalledWith({ preventScroll: true });
     expect(textarea.setSelectionRange).toHaveBeenCalledWith(7, 10);
     expect(context.appLogic.centerSequentialStringReplacementMatch).toHaveBeenCalledWith(textarea, 7, 3);
   });
@@ -155,7 +161,9 @@ describe('string replacement', () => {
   it('uses shared match display for search-only previous and next navigation', async () => {
     const messages = [{ role: 'user', content: 'cat then cat' }];
     const { context } = createContext(messages);
-    const textarea = { value: '', focus: vi.fn(), setSelectionRange: vi.fn() };
+    const textarea = {
+      value: '', readOnly: false, inputMode: '', focus: vi.fn(), setSelectionRange: vi.fn(),
+    };
     const classList = { add: vi.fn(), remove: vi.fn() };
     const messageElement = { classList, querySelector: vi.fn(() => textarea) };
     context.elements.messageContainer = { querySelector: vi.fn(() => messageElement) };
@@ -188,7 +196,9 @@ describe('string replacement', () => {
   it('keeps the current editor and scroll position path on cancel', async () => {
     const messages = [{ role: 'model', content: 'cat cat' }];
     const { context } = createContext(messages);
-    const textarea = { value: 'cat cat', focus: vi.fn(), setSelectionRange: vi.fn() };
+    const textarea = {
+      value: 'cat cat', readOnly: false, inputMode: '', focus: vi.fn(), setSelectionRange: vi.fn(),
+    };
     const classList = { add: vi.fn(), remove: vi.fn() };
     const messageElement = { classList, querySelector: vi.fn(() => textarea) };
     context.elements.messageContainer = { querySelector: vi.fn(() => messageElement) };
@@ -210,6 +220,8 @@ describe('string replacement', () => {
     expect(context.uiUtils.renderChatMessages).toHaveBeenCalledTimes(rendersBeforeCancel);
     expect(context.state.editingMessageIndex).toBe(0);
     expect(textarea.value).toBe('dog cat');
+    expect(textarea.readOnly).toBe(false);
+    expect(textarea.inputMode).toBe('');
     expect(messages[0].content).toBe('dog cat');
     expect(classList.remove).toHaveBeenCalledWith('replacement-preview-active');
   });
