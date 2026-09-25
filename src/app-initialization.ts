@@ -179,7 +179,6 @@ _setupParamSlider(paramId, defaultValue, storageKey) {
                         mermaid.initialize({ startOnLoad: false, theme: 'default', securityLevel: 'loose', fontFamily: 'var(--font-family)', flowchart: { useMaxWidth: true, htmlLabels: true }, sequence: { useMaxWidth: true }, gantt: { useMaxWidth: true }, journey: { useMaxWidth: true }, pie: { useMaxWidth: true } });
                     }
                     elements.appVersionSpan.textContent = APP_VERSION;
-                    window.addEventListener('beforeinstallprompt', (event) => { event.preventDefault(); });
                     registerServiceWorker();
 
                     if (navigator.storage && navigator.storage.persist) {

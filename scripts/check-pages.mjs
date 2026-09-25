@@ -19,6 +19,9 @@ if (failures.length === 0) {
   if (/\b(?:src|href)=["']src\//.test(html)) {
     failures.push('index.htmlにsrc配下への外部参照が残っています');
   }
+  if (/<script\b[^>]*\bsrc=["']lorebook\.local\.js["']/i.test(html)) {
+    failures.push('公開用index.htmlが非公開のローカルLorebookを参照しています');
+  }
   if (!html.includes('<style>')) failures.push('CSSがindex.htmlにインライン化されていません');
   if (!html.includes('/* source: main.ts */')) {
     failures.push('TypeScriptランタイムがindex.htmlにバンドルされていません');

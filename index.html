@@ -5157,8 +5157,6 @@ font-size: 1.142em !important;
     <script src="marked.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.5/dist/purify.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
-    <!-- Optional local-only Lorebook data. The app works normally when this file is absent. -->
-    <script src="lorebook.local.js" onerror="this.remove()"></script>
 </head>
 
 <body>
@@ -17560,7 +17558,6 @@ Object.assign(appLogic, {
                 mermaid.initialize({ startOnLoad: false, theme: 'default', securityLevel: 'loose', fontFamily: 'var(--font-family)', flowchart: { useMaxWidth: true, htmlLabels: true }, sequence: { useMaxWidth: true }, gantt: { useMaxWidth: true }, journey: { useMaxWidth: true }, pie: { useMaxWidth: true } });
             }
             elements.appVersionSpan.textContent = APP_VERSION;
-            window.addEventListener('beforeinstallprompt', (event) => { event.preventDefault(); });
             registerServiceWorker();
             if (navigator.storage && navigator.storage.persist) {
                 try {
