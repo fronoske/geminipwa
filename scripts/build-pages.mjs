@@ -9,6 +9,23 @@ const stylesheet = fs.readFileSync(path.join(projectRoot, 'src/styles/app.css'),
 const runtimeManifest = JSON.parse(
   fs.readFileSync(path.join(projectRoot, 'scripts/runtime-scripts.json'), 'utf8'),
 );
+const measurementId = (process.env.GA_MEASUREMENT_ID ?? 'G-LYK4N70WLR').trim();
+
+if (measurementId && !/^G-[A-Z0-9]+$/.test(measurementId)) {
+  throw new Error('GA_MEASUREMENT_ID must be a GA4 measurement ID (G- followed by letters and digits)');
+}
+
+const analyticsTag = measurementId ? `<!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=${measurementId}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '${measurementId}', {
+        page_title: 'GeminiPWA',
+        page_location: location.origin + location.pathname
+      });
+    </script>` : '';
 
 function readRuntimeScript(name) {
   const source = fs.readFileSync(path.join(runtimeDirectory, `${name}.js`), 'utf8');
@@ -27,11 +44,12 @@ function replaceMarker(html, marker, content) {
 const earlyScripts = runtimeManifest.early.map(readRuntimeScript).join('\n\n');
 const applicationScripts = runtimeManifest.application.map(readRuntimeScript).join('\n\n');
 
-let output = replaceMarker(template, 'APP_STYLES', `<style>\n${stylesheet.trim()}\n    </style>`);
+let output = replaceMarker(template, 'GOOGLE_ANALYTICS', analyticsTag);
+output = replaceMarker(output, 'APP_STYLES', `<style>\n${stylesheet.trim()}\n    </style>`);
 output = replaceMarker(output, 'RECOVERY_SCRIPT', `<script>\n${earlyScripts}\n    </script>`);
 output = replaceMarker(output, 'APP_SCRIPTS', `<script>\n${applicationScripts}\n    </script>`);
 
-if (/<!-- (?:APP_STYLES|RECOVERY_SCRIPT|APP_SCRIPTS) -->/.test(output)) {
+if (/<!-- (?:GOOGLE_ANALYTICS|APP_STYLES|RECOVERY_SCRIPT|APP_SCRIPTS) -->/.test(output)) {
   throw new Error('Generated HTML still contains build markers');
 }
 

@@ -1,5 +1,13 @@
 # 実装要件
 
+## Google Analytics
+
+- GitHub Pages 用の `index.html` には GA4 測定 ID `G-LYK4N70WLR` を設定し、Google タグでページビューを計測する。
+- `GA_MEASUREMENT_ID` 環境変数でビルド時の測定 ID を変更できるようにする。
+- チャット名を含む動的なページタイトルと URL のクエリ文字列を Analytics へ送らない。
+- `GA_MEASUREMENT_ID` に空文字列を指定したビルドでは Google タグを含めない。
+- Service Worker のキャッシュを更新し、既存の PWA インストールにも新しい公開用 HTML を届ける。
+
 ## チャット入力
 
 - 入力が空で添付ファイルもなく「送」ボタンが非アクティブの場合、そのボタン領域をタップするとチャットを最下部までスクロールする。

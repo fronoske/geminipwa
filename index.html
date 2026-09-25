@@ -7,6 +7,17 @@
     <title>GeminiPWA</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" id="theme-color-meta" content="#4a90e2">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-LYK4N70WLR"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LYK4N70WLR', {
+        page_title: 'GeminiPWA',
+        page_location: location.origin + location.pathname
+      });
+    </script>
     <style>
 :root {
             --bg-primary: #ffffff;
