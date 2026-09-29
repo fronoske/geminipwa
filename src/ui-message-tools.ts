@@ -696,6 +696,7 @@ const getCurrentMermaidTheme = () => {
             },
             async renderHistoryList() {
                 try {
+                    if (state.pendingMessageEditSave) await state.pendingMessageEditSave;
                     const chats = await dbUtils.getAllChats(state.settings.historySortOrder);
                     elements.historyList.querySelectorAll('.history-item:not(.js-history-item-template)').forEach(item => item.remove());
                     this.updateHistoryHeaderButtonVisibility();

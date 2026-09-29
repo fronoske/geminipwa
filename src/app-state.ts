@@ -5,6 +5,7 @@
             currentLorebookId: null,
             lorebookRecords: [],
             currentMessages: [],
+            pendingMessageEditSave: null,
             settings: {
                 apiKey: '',
                 modelName: DEFAULT_MODEL,

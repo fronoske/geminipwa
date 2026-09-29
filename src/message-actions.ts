@@ -155,6 +155,7 @@ Object.assign(appLogic, {
                     return;
                 }
 
+                const previousAutoTitle = originalMessage.content.substring(0, 50) || "無題のチャット";
                 originalMessage.content = newRawContent;
                 originalMessage.timestamp = Date.now();
                 delete originalMessage.error;
@@ -191,19 +192,19 @@ Object.assign(appLogic, {
                                 const previewBtn = document.createElement('button');
                                 previewBtn.textContent = '表示';
                                 previewBtn.classList.add('attachment-preview-btn');
-                                previewBtn.onclick = (e) => { e.preventDefault(); appLogic.previewAttachment(index, attachmentIndex); };
+                                previewBtn.onclick = (e) => { e.preventDefault(); appLogic.previewAttachment(currentIndex, attachmentIndex); };
                                 actionsDiv.appendChild(previewBtn);
                             }
 
                             const editBtn = document.createElement('button');
                             editBtn.textContent = '編集';
                             editBtn.classList.add('attachment-edit-btn');
-                            editBtn.onclick = (e) => { e.preventDefault(); appLogic.editAttachment(index, attachmentIndex); };
+                            editBtn.onclick = (e) => { e.preventDefault(); appLogic.editAttachment(currentIndex, attachmentIndex); };
 
                             const removeBtn = document.createElement('button');
                             removeBtn.textContent = '削除';
                             removeBtn.classList.add('attachment-remove-btn');
-                            removeBtn.onclick = (e) => { e.preventDefault(); appLogic.removeAttachment(index, attachmentIndex, listItem); };
+                            removeBtn.onclick = (e) => { e.preventDefault(); appLogic.removeAttachment(currentIndex, attachmentIndex, listItem); };
 
                             actionsDiv.appendChild(editBtn);
                             actionsDiv.appendChild(removeBtn);
@@ -217,7 +218,7 @@ Object.assign(appLogic, {
                         const addMoreBtn = document.createElement('button');
                         addMoreBtn.textContent = 'ファイルを追加';
                         addMoreBtn.classList.add('add-more-attachments-btn');
-                        addMoreBtn.onclick = (e) => { e.preventDefault(); appLogic.addMoreAttachments(index, list); };
+                        addMoreBtn.onclick = (e) => { e.preventDefault(); appLogic.addMoreAttachments(currentIndex, list); };
                         details.appendChild(addMoreBtn);
 
                         contentDiv.appendChild(details);
@@ -251,20 +252,30 @@ Object.assign(appLogic, {
 
                 this.finishEditing(messageElement);
 
-                const isFirstUserMessage = (index === state.currentMessages.findIndex(m => m.role === 'user'));
-                let titleForSave = null;
-
-                try {
-                    if (isFirstUserMessage) {
-                        const existingChat = state.currentChatId ? await dbUtils.getChat(state.currentChatId) : null;
-                        titleForSave = existingChat?.title || newRawContent.substring(0, 50) || "無題のチャット";
+                const isFirstUserMessage = currentIndex === state.currentMessages.findIndex(m => m.role === 'user');
+                const previousSave = state.pendingMessageEditSave;
+                const savePromise = (async () => {
+                    try {
+                        if (previousSave) await previousSave;
+                        let titleForSave = null;
+                        if (isFirstUserMessage) {
+                            const existingChat = state.currentChatId ? await dbUtils.getChat(state.currentChatId) : null;
+                            titleForSave = existingChat?.title && existingChat.title !== previousAutoTitle
+                                ? existingChat.title
+                                : newRawContent.substring(0, 50) || "無題のチャット";
+                        }
+                        await dbUtils.saveChat(titleForSave);
+                        if (isFirstUserMessage) {
+                            uiUtils.updateChatTitle(titleForSave);
+                        }
+                    } catch (error) {
+                        await uiUtils.showCustomAlert("メッセージ編集後のチャット保存に失敗しました。");
                     }
-                    await dbUtils.saveChat(titleForSave);
-                    if (isFirstUserMessage) {
-                        uiUtils.updateChatTitle(titleForSave);
-                    }
-                } catch (error) {
-                    await uiUtils.showCustomAlert("メッセージ編集後のチャット保存に失敗しました。");
+                })();
+                state.pendingMessageEditSave = savePromise;
+                await savePromise;
+                if (state.pendingMessageEditSave === savePromise) {
+                    state.pendingMessageEditSave = null;
                 }
             },
             cancelEditMessage(index, messageElement = null) {
