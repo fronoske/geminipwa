@@ -576,7 +576,7 @@ describe('project configuration', () => {
   });
 
   it('uses the current release date as the application version', () => {
-    expect(readFile('src/app-config.ts')).toContain('const APP_VERSION = "2026.09.22-fronoske"');
+    expect(readFile('src/app-config.ts')).toContain('const APP_VERSION = "2026.09.29-fronoske"');
   });
 
   it('uses the device-local calendar date in timestamped export filenames', () => {

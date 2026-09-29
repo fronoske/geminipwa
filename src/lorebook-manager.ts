@@ -512,6 +512,9 @@ const lorebookManager = {
         this.resetAnalysisProgress();
         const isStructured = this.editorState.mode === 'structured';
         elements.lorebookEditorTitle.textContent = record ? `Lorebookを編集：${record.lorebook.name}` : '新規Lorebookを追加';
+        elements.lorebookDynamicCharacterLimit.value = String(
+            record?.lorebook.retrieval?.maxDynamicCharacters ?? DEFAULT_LOREBOOK_RETRIEVAL.maxDynamicCharacters
+        );
         elements.lorebookSourceTextarea.value = isStructured ? JSON.stringify(record.lorebook, null, 2) : '';
         elements.lorebookSourceTextarea.classList.toggle('structured', isStructured);
         elements.lorebookSourceTextarea.spellcheck = !isStructured;
@@ -520,7 +523,7 @@ const lorebookManager = {
         elements.lorebookStructuredEditorToolbar.classList.toggle('hidden', !isStructured);
         elements.toggleLorebookAnalysisLogBtn.classList.toggle('hidden', isStructured);
         elements.lorebookEditorInstructions.textContent = isStructured
-            ? '構造化済みLorebookをフォームで編集します。各項目は折り畳んで表示できます。ID、スキーマ、解析情報、検索上限はアプリが管理します。'
+            ? '構造化済みLorebookをフォームで編集します。各項目は折り畳んで表示できます。ID、スキーマ、解析情報とその他の検索上限はアプリが管理します。'
             : '人物、舞台、関係、呼称などの設定情報を入力してください。ファイルをロードすると入力内容はファイルの内容に置き換わります。';
         elements.lorebookEditorTextareaLabel.textContent = isStructured ? '構造化済みLorebook（JSON）：' : '設定情報：';
         elements.lorebookSourceTextarea.placeholder = isStructured
@@ -545,6 +548,15 @@ const lorebookManager = {
         } else {
             elements.lorebookSourceTextarea.focus();
         }
+    },
+
+    getDynamicCharacterLimit() {
+        const rawValue = elements.lorebookDynamicCharacterLimit.value.trim();
+        const value = Number(rawValue);
+        if (!Number.isSafeInteger(value) || value < 1) {
+            throw new Error('動的情報の文字数上限は1以上の整数で入力してください。');
+        }
+        return value;
     },
 
     createStructuredField(labelText, control, hint = '') {
@@ -987,7 +999,16 @@ const lorebookManager = {
     async toggleStructuredJsonEditor() {
         if (this.editorState?.mode !== 'structured') return;
         if (!this.editorState.jsonAdvanced) {
+            let maxDynamicCharacters;
+            try {
+                maxDynamicCharacters = this.getDynamicCharacterLimit();
+            } catch (error) {
+                await uiUtils.showCustomAlert(error.message);
+                elements.lorebookDynamicCharacterLimit.focus();
+                return;
+            }
             const lorebook = this.collectStructuredForm();
+            lorebook.retrieval.maxDynamicCharacters = maxDynamicCharacters;
             this.editorState.structuredLorebook = lorebook;
             elements.lorebookSourceTextarea.value = JSON.stringify(lorebook, null, 2);
             this.editorState.jsonAdvanced = true;
@@ -998,7 +1019,10 @@ const lorebookManager = {
                 lorebook.id = record.id;
                 lorebook.schemaVersion = LOREBOOK_SCHEMA_VERSION;
                 lorebook.analysis = this.clone(record.lorebook.analysis);
-                lorebook.retrieval = this.clone(record.lorebook.retrieval);
+                lorebook.retrieval = {
+                    ...this.clone(record.lorebook.retrieval),
+                    maxDynamicCharacters: this.getDynamicCharacterLimit(),
+                };
                 const errors = this.validateLorebook(lorebook);
                 if (errors.length > 0) throw new Error(errors.join('\n'));
                 this.editorState.structuredLorebook = this.migrateLorebookToCurrent(lorebook);
@@ -1052,7 +1076,10 @@ const lorebookManager = {
             editedLorebook.id = record.id;
             editedLorebook.schemaVersion = LOREBOOK_SCHEMA_VERSION;
             editedLorebook.analysis = this.clone(record.lorebook.analysis);
-            editedLorebook.retrieval = this.clone(record.lorebook.retrieval);
+            editedLorebook.retrieval = {
+                ...this.clone(record.lorebook.retrieval),
+                maxDynamicCharacters: this.getDynamicCharacterLimit(),
+            };
             const errors = this.validateLorebook(editedLorebook);
             if (errors.length > 0) throw new Error(errors.join('\n'));
 
@@ -1923,6 +1950,14 @@ storyCoreが、舞台だけでなく中心構図、主要テーマ・葛藤、�
             await uiUtils.showCustomAlert(`設定情報は${LOREBOOK_SOURCE_MAX_CHARACTERS.toLocaleString()}文字以内にしてください。`);
             return;
         }
+        let maxDynamicCharacters;
+        try {
+            maxDynamicCharacters = this.getDynamicCharacterLimit();
+        } catch (error) {
+            await uiUtils.showCustomAlert(error.message);
+            elements.lorebookDynamicCharacterLimit.focus();
+            return;
+        }
         this.isAnalyzing = true;
         this.analysisCancelRequested = false;
         this.resetAnalysisLog({ hide: false });
@@ -1934,7 +1969,8 @@ storyCoreが、舞台だけでなく中心構図、主要テーマ・葛藤、�
                 this.editorState?.recordId,
                 this.editorState?.sourceLabel || 'manual-input'
             );
-            this.pendingAnalysis = { ...result, sourceText };
+            result.lorebook.retrieval.maxDynamicCharacters = maxDynamicCharacters;
+            this.pendingAnalysis = { ...result, sourceText, maxDynamicCharacters };
             elements.lorebookAnalysisResultTextarea.value = JSON.stringify(result.lorebook, null, 2);
             elements.lorebookAnalysisReport.textContent = this.formatAnalysisReport(result);
             elements.lorebookAnalysisDialog.showModal();
@@ -1960,7 +1996,10 @@ storyCoreが、舞台だけでなく中心構図、主要テーマ・葛藤、�
             editedLorebook.id = this.pendingAnalysis.lorebook.id;
             editedLorebook.schemaVersion = LOREBOOK_SCHEMA_VERSION;
             editedLorebook.analysis = { ...this.pendingAnalysis.lorebook.analysis };
-            editedLorebook.retrieval = { ...DEFAULT_LOREBOOK_RETRIEVAL };
+            editedLorebook.retrieval = {
+                ...DEFAULT_LOREBOOK_RETRIEVAL,
+                maxDynamicCharacters: this.pendingAnalysis.maxDynamicCharacters,
+            };
             const errors = this.validateLorebook(editedLorebook);
             if (errors.length > 0) {
                 await uiUtils.showCustomAlert(`修正後のLorebookに問題があります:\n${errors.join('\n')}`);

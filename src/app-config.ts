@@ -50,7 +50,7 @@
         const LOREBOOK_FULL_SOURCE_USER_TURNS = 5;
         const DEFAULT_LOREBOOK_RETRIEVAL = Object.freeze({
             scanMessageCount: 10,
-            maxDynamicCharacters: 2600,
+            maxDynamicCharacters: 12000,
             maxCharacterCores: 5,
             maxAddressingRules: 14,
             maxAddressingCharacters: 1000,
@@ -129,7 +129,7 @@ const PASTEL_RAINBOW_THEME_COLOR = '#ffadad';
         const LIGHT_MODE_HEADER_COLOR = '#4a90e2';
         const LIGHT_MODE_PRIMARY_COLOR = '#ffffff';
 
-        const APP_VERSION = "2026.09.22-fronoske";
+        const APP_VERSION = "2026.09.29-fronoske";
         const formatLocalDateStamp = (date = new Date()) => [
             date.getFullYear(),
             String(date.getMonth() + 1).padStart(2, '0'),

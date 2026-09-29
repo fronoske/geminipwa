@@ -2219,6 +2219,11 @@
                     <p id="lorebook-editor-instructions" class="lorebook-management-note">
                         人物、舞台、関係、呼称などの設定情報を入力してください。ファイルをロードすると入力内容はファイルの内容に置き換わります。
                     </p>
+                    <label class="lorebook-form-field lorebook-dynamic-limit-field" for="lorebook-dynamic-character-limit">
+                        <span class="lorebook-form-label">動的情報の文字数上限</span>
+                        <input type="number" id="lorebook-dynamic-character-limit" min="1" step="1" inputmode="numeric" required>
+                        <small>呼称ルール・人物コア・条件付き記憶に共通する上限です。</small>
+                    </label>
                     <div id="lorebook-editor-file-actions" class="lorebook-editor-file-actions">
                         <button type="button" id="load-lorebook-source-btn">ファイルをロード</button>
                         <input type="file" id="lorebook-source-file-input"

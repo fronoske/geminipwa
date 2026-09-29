@@ -519,6 +519,7 @@ describe('Lorebook management and analysis boundary', () => {
       const classes = { add() {}, remove() {} };
       globalThis.elements = {
         lorebookSourceTextarea: { value: JSON.stringify(edited), classList: classes },
+        lorebookDynamicCharacterLimit: { value: '12000' },
         lorebookEditorStatus: { textContent: '' },
         analyzeLorebookBtn: { textContent: '', disabled: false, classList: classes }
       };
@@ -532,16 +533,44 @@ describe('Lorebook management and analysis boundary', () => {
     })()`);
 
     await new vm.Script('lorebookManager.saveStructuredLorebook()').runInContext(context);
-    const result = evaluate<{ description: string; sourceText: string; analyzedBy?: unknown }>(context, `({
+    const result = evaluate<{ description: string; sourceText: string; maxDynamicCharacters: number }>(context, `({
       description: state.lorebookRecords[0].lorebook.description,
       sourceText: state.lorebookRecords[0].sourceText,
-      analyzedBy: state.lorebookRecords[0].analyzedBy
+      maxDynamicCharacters: state.lorebookRecords[0].lorebook.retrieval.maxDynamicCharacters
     })`);
 
     expect({ ...result }).toMatchObject({
       description: '構造化編集後',
       sourceText: '保持する原文',
+      maxDynamicCharacters: 12000,
     });
+  });
+
+  it('keeps a chosen dynamic character limit when saving an analyzed Lorebook', async () => {
+    const context = createContext();
+    evaluate(context, `(() => {
+      const lorebook = JSON.parse(JSON.stringify(BUILTIN_LOREBOOKS[0]));
+      lorebook.id = 'new-custom-limit';
+      globalThis.state = { currentScreen: 'settings', lorebookRecords: [] };
+      globalThis.elements = {
+        lorebookAnalysisResultTextarea: { value: JSON.stringify(lorebook) },
+        lorebookAnalysisDialog: { close() {} }
+      };
+      globalThis.dbUtils = { putLorebookRecord: async record => { globalThis.savedRecord = record; } };
+      globalThis.uiUtils = { showCustomAlert: async () => {}, updateLorebookMenuItem() {} };
+      lorebookManager.pendingAnalysis = {
+        lorebook, sourceText: '保存する原文', reviewReport: {},
+        provider: 'gemini', model: 'test-model', maxDynamicCharacters: 12000
+      };
+      lorebookManager.renderManagementList = () => {};
+    })()`);
+
+    await new vm.Script('lorebookManager.confirmAnalyzedLorebook()').runInContext(context);
+    const result = evaluate<{ maxDynamicCharacters: number; sourceText: string }>(context, `({
+      maxDynamicCharacters: savedRecord.lorebook.retrieval.maxDynamicCharacters,
+      sourceText: savedRecord.sourceText
+    })`);
+    expect({ ...result }).toEqual({ maxDynamicCharacters: 12000, sourceText: '保存する原文' });
   });
 
   it('defines persistent records, import/export controls, and a full-screen editor', () => {
