@@ -244,12 +244,21 @@ Object.assign(appLogic, {
                 let messagesToProcess;
 
                 if (!isRetry) {
+                    const initialPromptRecord = !currentContextMessages.some(message => message.role === 'user')
+                        ? initialPromptUtils.getRecord(state.currentInitialPromptId)
+                        : null;
                     const userMessage = {
                         role: 'user', content: text, timestamp: Date.now(),
                         attachments: attachmentsToSend,
+                        ...(initialPromptRecord && { initialPrompt: {
+                            id: initialPromptRecord.id,
+                            title: initialPromptRecord.title,
+                            text: initialPromptRecord.text,
+                        } }),
                         generatedByApiProvider: null
                     };
                     state.currentMessages.push(userMessage);
+                    uiUtils.updateInitialPromptMenuItem();
                     userMessageIndex = state.currentMessages.length - 1;
                     state.messageCollapsedStates.set(userMessageIndex, false);
                     uiUtils.appendMessage(userMessage.role, userMessage.content, userMessageIndex, false, null, userMessage.attachments);
@@ -320,7 +329,7 @@ Object.assign(appLogic, {
 
                         if (isNewChatForDBSave || !titleToSave) {
                             const firstUserMsg = currentContextMessages.find(m => m.role === 'user');
-                            titleToSave = firstUserMsg ? firstUserMsg.content.substring(0, 50) : "無題のチャット";
+                            titleToSave = firstUserMsg?.content?.substring(0, 50) || "無題のチャット";
                         }
 
                         const chatToSave = {
@@ -344,6 +353,7 @@ Object.assign(appLogic, {
                                 ...(msg.attachments && msg.attachments.length > 0 && { attachments: msg.attachments.map(att => ({ name: att.name, mimeType: att.mimeType, textData: att.textData })) }),
                                 ...(msg.usageMetadata && { usageMetadata: msg.usageMetadata }),
                                 ...(msg.lorebookContext && { lorebookContext: msg.lorebookContext }),
+                                ...(msg.initialPrompt && { initialPrompt: msg.initialPrompt }),
                                 ...(msg.thoughtSummaryOpen !== undefined && { thoughtSummaryOpen: msg.thoughtSummaryOpen }),
                             })),
                             updatedAt: Date.now(),
@@ -386,8 +396,9 @@ Object.assign(appLogic, {
                     })
                     .map(msg => {
                         const parts = [];
-                        if (msg.content && msg.content.trim() !== '') {
-                            parts.push({ text: msg.content });
+                        const messageText = msg.role === 'user' ? initialPromptUtils.formatUserText(msg) : msg.content;
+                        if (messageText && messageText.trim() !== '') {
+                            parts.push({ text: messageText });
                         }
                         if (msg.role === 'user' && msg.attachments && msg.attachments.length > 0) {
                             msg.attachments.forEach(att => {

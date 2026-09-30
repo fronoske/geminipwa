@@ -38,6 +38,8 @@
                     <div id="header-submenu" class="header-submenu hidden" role="menu">
                         <button id="header-menu-lorebook-btn" type="button" role="menuitem">Lorebook：<span
                                 id="header-menu-lorebook-name">使用しない</span></button>
+                        <button id="header-menu-initial-prompt-btn" type="button" role="menuitem">初回プロンプト：<span
+                                id="header-menu-initial-prompt-name">使用しない</span></button>
                         <button id="header-menu-clear-btn" type="button" role="menuitem" class="danger-menu-item">全削除（先頭を除く）</button>
                         <button id="header-menu-copy-btn" type="button" role="menuitem">全コピー</button>
                         <button id="header-menu-string-replacement-btn" type="button" role="menuitem">検索・置換</button>
@@ -2122,6 +2124,20 @@
                     </p>
                 </details>
 
+                <details class="settings-group" id="settings-group-initial-prompts">
+                    <summary
+                        style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
+                        初回ユーザープロンプト</summary>
+                    <div class="lorebook-management-toolbar">
+                        <button type="button" id="add-initial-prompt-btn" class="settings-action-button">新規</button>
+                        <button type="button" id="import-initial-prompts-btn" class="settings-action-button">JSON取込</button>
+                        <button type="button" id="export-initial-prompts-btn" class="settings-action-button">JSON一括出力</button>
+                        <input type="file" id="import-initial-prompts-input" accept=".json,application/json" class="hidden">
+                    </div>
+                    <div id="initial-prompt-management-list" class="lorebook-management-list"></div>
+                    <p id="no-initial-prompts-message" class="lorebook-management-note">保存されている初回ユーザープロンプトはありません。</p>
+                </details>
+
                 <div style="display: flex; justify-content: center; flex-wrap: nowrap; gap: 10px; margin: 14px 0 18px;">
                     <button id="export-settings-btn" class="settings-import-export-button history-action-button gold" title="APIキーを含むテキスト設定をJSON形式で出力">設定出力</button>
                     <button id="import-settings-btn" class="settings-import-export-button history-action-button purple" title="APIキーを含むテキスト設定をJSON形式で取込">設定取込</button>
@@ -2197,9 +2213,9 @@
                         <p style="font-size: 11px; color: var(--text-secondary); margin-top:5px; margin-bottom: 10px;">
                             ※ ブラウザに保存されているチャット履歴を全て削除します。設定は保持されます。<BR>
                         </p>
-                        <button id="clear-data-btn">⚠⚠⚠全データクリア (履歴・設定・Lorebook)⚠⚠⚠</button>
+                    <button id="clear-data-btn">⚠⚠⚠全データクリア (履歴・設定・Lorebook・初回プロンプト)⚠⚠⚠</button>
                         <p style="font-size: 11px; color: var(--text-secondary); margin-top:5px; margin-bottom: 10px;">
-                            ※ ブラウザに保存されている設定・履歴・Lorebookを全て削除。<BR>
+                            ※ ブラウザに保存されている設定・履歴・Lorebook・初回プロンプトを全て削除。<BR>
                             ！！間違えて押そうとしていないか注意！！
                         </p>
                         <details style="margin-top: 15px; border-top: 1px dashed var(--border-secondary); padding-top: 10px;">
@@ -2262,6 +2278,24 @@
                         <button type="button" id="analyze-lorebook-btn" class="lorebook-analyze-button" disabled>解析</button>
                     </div>
                 </div>
+            </main>
+        </div>
+
+        <div id="initial-prompt-editor-screen" class="screen">
+            <header class="app-header">
+                <button id="back-from-initial-prompt-editor" class="header-button" aria-label="初回ユーザープロンプト管理へ戻る">＜</button>
+                <h1 id="initial-prompt-editor-heading">新規初回ユーザープロンプトを追加</h1>
+            </header>
+            <main class="main-content lorebook-editor-content">
+                <form id="initial-prompt-editor-form" class="lorebook-editor-panel">
+                    <label for="initial-prompt-title">タイトル</label>
+                    <input id="initial-prompt-title" type="text" maxlength="200" required>
+                    <label for="initial-prompt-body">本文</label>
+                    <textarea id="initial-prompt-body" class="lorebook-source-textarea" required></textarea>
+                    <div class="lorebook-editor-actions">
+                        <button type="submit">保存</button>
+                    </div>
+                </form>
             </main>
         </div>
     </div>
@@ -2366,6 +2400,18 @@
         <div class="dialog-actions">
             <button value="cancel" class="dialog-cancel-btn">キャンセル</button>
             <button value="ok" class="dialog-ok-btn">決定</button>
+        </div>
+    </dialog>
+
+    <dialog id="initialPromptDialog" class="custom-dialog lorebook-selection-dialog">
+        <h2>初回プロンプトを選択</h2>
+        <p class="dialog-message">最初の送信時に、選択した本文をユーザー入力の前へ追加します。</p>
+        <select id="initialPromptSelect" class="dialog-input" aria-label="使用する初回プロンプト">
+            <option value="">使用しない</option>
+        </select>
+        <div class="dialog-actions">
+            <button type="button" id="initial-prompt-cancel-btn" class="dialog-cancel-btn">キャンセル</button>
+            <button type="button" id="initial-prompt-ok-btn" class="dialog-ok-btn">決定</button>
         </div>
     </dialog>
 

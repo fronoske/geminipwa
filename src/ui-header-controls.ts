@@ -69,6 +69,7 @@ Object.assign(uiUtils, {
             },
             setHeaderMenuOpen(isOpen) {
                 this.updateLorebookMenuItem();
+                this.updateInitialPromptMenuItem();
                 elements.headerSubmenu.classList.toggle('hidden', !isOpen);
                 elements.headerMenuBtn.setAttribute('aria-expanded', String(isOpen));
                 if (isOpen) {
@@ -87,6 +88,9 @@ Object.assign(uiUtils, {
                 elements.headerMenuLorebookBtn.title = state.isSending
                     ? '応答中はLorebookを変更できません'
                     : `現在のLorebook: ${name}${!lorebook && storedLorebookId ? `（ID: ${storedLorebookId}）` : ''}`;
+            },
+            updateInitialPromptMenuItem() {
+                initialPromptUtils.updateMenuItem();
             },
             updateProviderToggleButtons() {
                 const providerMap = {

@@ -53,7 +53,11 @@ const lorebookUtils = {
     messageText(message) {
         if (!message) return '';
         const parts = [];
-        if (typeof message.content === 'string') parts.push(message.content);
+        if (typeof message.content === 'string') {
+            parts.push(message.role === 'user' && message.initialPrompt
+                ? initialPromptUtils.formatUserText(message)
+                : message.content);
+        }
         if (Array.isArray(message.parts)) {
             message.parts.forEach(part => {
                 if (part && typeof part.text === 'string') parts.push(part.text);

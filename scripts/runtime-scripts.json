@@ -15,6 +15,7 @@
     "lorebook",
     "api-clients",
     "lorebook-manager",
+    "initial-prompts",
     "backend-manager",
     "error-recovery",
     "api-key-manager",

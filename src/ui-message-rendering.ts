@@ -201,6 +201,8 @@ appendMessage(role, content, index, isStreamingPlaceholder = false, cascadeInfo 
                     }
                 }
 
+                if (role === 'user') initialPromptUtils.appendReference(contentDiv, messageData?.initialPrompt);
+
                 if (role === 'user' && attachments && attachments.length > 0) {
                     const details = document.createElement('details');
                     details.classList.add('attachment-details');

@@ -574,7 +574,7 @@ describe('project configuration', () => {
   it('preserves the IndexedDB identity during the build migration', () => {
     const appConfig = readFile('src/app-config.ts');
     expect(appConfig).toContain("const DB_NAME = 'GeminiPWA_DB'");
-    expect(appConfig).toContain('const DB_VERSION = 9');
+    expect(appConfig).toContain('const DB_VERSION = 10');
   });
 
   it('uses the current release date as the application version', () => {

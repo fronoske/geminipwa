@@ -49,6 +49,9 @@ const dbUtils = {
                         if (!db.objectStoreNames.contains(LOREBOOKS_STORE)) {
                             db.createObjectStore(LOREBOOKS_STORE, { keyPath: 'id' });
                         }
+                        if (!db.objectStoreNames.contains(INITIAL_PROMPTS_STORE)) {
+                            db.createObjectStore(INITIAL_PROMPTS_STORE, { keyPath: 'id' });
+                        }
                         let chatStore;
                         if (!db.objectStoreNames.contains(CHATS_STORE)) {
                             chatStore = db.createObjectStore(CHATS_STORE, { keyPath: 'id', autoIncrement: true });
@@ -342,6 +345,7 @@ const dbUtils = {
                             groundingMetadata: msg.groundingMetadata, attachments: msg.attachments,
                             usageMetadata: msg.usageMetadata,
                             lorebookContext: msg.lorebookContext,
+                            initialPrompt: msg.initialPrompt,
                             thoughtSummaryOpen: msg.thoughtSummaryOpen
                         }));
 
@@ -351,7 +355,7 @@ const dbUtils = {
                                 if (existingData && existingData.title) title = existingData.title;
                                 else {
                                     const firstUserMessage = state.currentMessages.find(m => m.role === 'user');
-                                    title = firstUserMessage ? firstUserMessage.content.substring(0, 50) : "無題のチャット";
+                                    title = firstUserMessage?.content?.substring(0, 50) || "無題のチャット";
                                 }
                             }
 
@@ -554,11 +558,41 @@ const dbUtils = {
                 });
             },
 
+            async getAllInitialPrompts() {
+                await this.openDB();
+                return new Promise((resolve, reject) => {
+                    const request = this._getStore(INITIAL_PROMPTS_STORE).getAll();
+                    request.onsuccess = () => resolve(request.result || []);
+                    request.onerror = () => reject(request.error);
+                });
+            },
+
+            async putInitialPrompt(record) {
+                await this.openDB();
+                return new Promise((resolve, reject) => {
+                    const request = this._getStore(INITIAL_PROMPTS_STORE, 'readwrite').put(record);
+                    request.onsuccess = () => resolve();
+                    request.onerror = () => reject(request.error);
+                });
+            },
+
+            async putInitialPrompts(records) {
+                await this.openDB();
+                return new Promise((resolve, reject) => {
+                    const transaction = state.db.transaction([INITIAL_PROMPTS_STORE], 'readwrite');
+                    const store = transaction.objectStore(INITIAL_PROMPTS_STORE);
+                    transaction.oncomplete = () => resolve();
+                    transaction.onerror = () => reject(transaction.error);
+                    transaction.onabort = () => reject(transaction.error);
+                    records.forEach(record => store.put(record));
+                });
+            },
+
             async clearAllData() {
                 await this.openDB();
                 return new Promise((resolve, reject) => {
                     try {
-                        const transaction = state.db.transaction([SETTINGS_STORE, CHATS_STORE, LOREBOOKS_STORE], 'readwrite');
+                        const transaction = state.db.transaction([SETTINGS_STORE, CHATS_STORE, LOREBOOKS_STORE, INITIAL_PROMPTS_STORE], 'readwrite');
                         const settingsStore = transaction.objectStore(SETTINGS_STORE);
                         const chatsStore = transaction.objectStore(CHATS_STORE);
                         const lorebooksStore = transaction.objectStore(LOREBOOKS_STORE);
@@ -569,6 +603,7 @@ const dbUtils = {
                         settingsStore.clear();
                         chatsStore.clear();
                         lorebooksStore.clear();
+                        transaction.objectStore(INITIAL_PROMPTS_STORE).clear();
                     } catch (error) {
                         reject(error);
                     }

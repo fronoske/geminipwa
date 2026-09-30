@@ -16,7 +16,8 @@ const createContext = () => {
     updatedAt: 200,
     collapsedStates: { 0: true },
     messages: [
-      { role: 'user', content: 'question', timestamp: 110, attachments: [
+      { role: 'user', content: 'question', timestamp: 110,
+        initialPrompt: { id: 'opening-1', title: '導入', text: '前提を確認してください。' }, attachments: [
         { name: 'notes.txt', mimeType: 'text/plain', textData: 'attached text', base64Data: 'binary-omitted' },
       ] },
       { role: 'model', content: 'answer', timestamp: 120, isCascaded: true, isSelected: true,
@@ -59,6 +60,7 @@ const createContext = () => {
     CHATS_STORE: 'chats', IMPORT_PREFIX: '(取込) ', formatLocalDateStamp: () => '20260930',
   });
   new vm.Script(runtime('data-management')).runInContext(context);
+  new vm.Script(runtime('initial-prompts')).runInContext(context);
   new vm.Script(runtime('chat-sessions')).runInContext(context);
   return { context, chat, saved, blobs, alerts, dbUtils, uiUtils };
 };
@@ -77,6 +79,7 @@ describe('single session JSON', () => {
     expect(single.lorebookId).toBe('lorebook-1');
     expect(single.collapsedStates).toEqual({ 0: true });
     expect(single.messages[0].attachments[0].textData).toBe('attached text');
+    expect(single.messages[0].initialPrompt).toEqual({ id: 'opening-1', title: '導入', text: '前提を確認してください。' });
     expect(single.messages[0].attachments[0]).not.toHaveProperty('base64Data');
     expect(single.messages[1].lorebookContext).toEqual({ referenceText: 'reference' });
 
@@ -92,6 +95,7 @@ describe('single session JSON', () => {
     expect(saved[0].lorebookId).toBe('lorebook-1');
     expect(saved[0].collapsedStates).toEqual({ 0: true });
     expect((saved[0].messages as any[])[0].attachments[0].textData).toBe('attached text');
+    expect((saved[0].messages as any[])[0].initialPrompt).toEqual(single.messages[0].initialPrompt);
     expect((saved[0].messages as any[])[1].isSelected).toBe(true);
     expect((saved[0].messages as any[])[1].lorebookContext).toEqual({ referenceText: 'reference' });
     expect(uiUtils.renderHistoryList).toHaveBeenCalledOnce();

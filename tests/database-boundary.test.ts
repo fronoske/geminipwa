@@ -33,6 +33,9 @@ describe('database boundary', () => {
       'putLorebookRecord',
       'putLorebookRecords',
       'deleteLorebookRecord',
+      'getAllInitialPrompts',
+      'putInitialPrompt',
+      'putInitialPrompts',
       'clearAllData',
       'clearAllChatsStore',
     ]);

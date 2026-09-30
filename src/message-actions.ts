@@ -164,6 +164,7 @@ Object.assign(appLogic, {
 
                 if (originalMessage.role === 'user') {
                     contentDiv.innerHTML = '';
+                    if (originalMessage.initialPrompt) initialPromptUtils.appendReference(contentDiv, originalMessage.initialPrompt);
                     if (originalMessage.attachments && originalMessage.attachments.length > 0) {
                         const details = document.createElement('details');
                         details.classList.add('attachment-details');
@@ -313,7 +314,7 @@ Object.assign(appLogic, {
                 const message = state.currentMessages[index];
                 if (!message) return;
 
-                let textToCopy = message.content;
+                let textToCopy = message.role === 'user' ? initialPromptUtils.formatUserText(message) : message.content;
                 if (!textToCopy && message.role === 'user' && message.attachments && message.attachments.length > 0) {
                     textToCopy = `[添付ファイル: ${message.attachments.map(a => a.name).join(', ')}]`;
                 } else if (!textToCopy) {

@@ -34,6 +34,7 @@ Object.assign(appLogic, {
             startNewChat() {
                 state.currentChatId = null;
                 state.currentLorebookId = null;
+                state.currentInitialPromptId = null;
                 state.currentMessages = [];
                 if (state.settings.commonSystemPrompt && state.settings.commonSystemPrompt.trim() !== '') {
                 }
@@ -55,6 +56,7 @@ Object.assign(appLogic, {
                 uiUtils.adjustTextareaHeight();
                 uiUtils.setSendingState(false);
                 uiUtils.updateLorebookMenuItem();
+                uiUtils.updateInitialPromptMenuItem();
                 uiUtils.updateAttachmentBadgeVisibility();
                 if (state.settings.autoScrollOnNewMessage) {
                     uiUtils.scrollToBottom();
@@ -84,6 +86,7 @@ Object.assign(appLogic, {
                     if (chat) {
                         state.currentChatId = chat.id;
                         state.currentLorebookId = lorebookUtils.normalizeStoredLorebookId(chat.lorebookId);
+                        state.currentInitialPromptId = chat.messages?.find(message => message.initialPrompt)?.initialPrompt?.id || null;
                         const unavailableLorebookId = state.currentLorebookId
                             && !lorebookUtils.getLorebook(state.currentLorebookId)
                             ? state.currentLorebookId
@@ -129,6 +132,7 @@ Object.assign(appLogic, {
                         uiUtils.adjustTextareaHeight();
                         uiUtils.setSendingState(false);
                         uiUtils.updateLorebookMenuItem();
+                        uiUtils.updateInitialPromptMenuItem();
                         uiUtils.updateAttachmentBadgeVisibility();
                         elements.memoEditor.value = '';
                         if (needsSave) {
@@ -341,7 +345,7 @@ Object.assign(appLogic, {
                     } else if (msg.role === 'error') {
                         sessionText += `エラー:\n`;
                     }
-                    sessionText += `${msg.content}\n\n`;
+                    sessionText += `${msg.role === 'user' ? initialPromptUtils.formatUserText(msg) : msg.content}\n\n`;
                     if (msg.attachments && msg.attachments.length > 0) {
                         sessionText += `  [添付ファイル: ${msg.attachments.map(a => a.name).join(', ')}]\n\n`;
                     }

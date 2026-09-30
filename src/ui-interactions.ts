@@ -21,15 +21,16 @@ Object.assign(uiUtils, {
                     if (screenName === 'settings') {
                         this.applySettingsUIDetailsOpenStates();
                         lorebookManager.renderManagementList();
+                        initialPromptUtils.renderList();
                     }
                     return;
                 }
 
-                const allScreens = [elements.chatScreen, elements.historyScreen, elements.settingsScreen, elements.lorebookEditorScreen];
+                const allScreens = [elements.chatScreen, elements.historyScreen, elements.settingsScreen, elements.lorebookEditorScreen, elements.initialPromptEditorScreen];
                 let activeScreen = null;
 
                 if (!fromPopState) {
-                    if (screenName === 'history' || screenName === 'settings' || screenName === 'lorebook-editor') {
+                    if (screenName === 'history' || screenName === 'settings' || screenName === 'lorebook-editor' || screenName === 'initial-prompt-editor') {
                         history.pushState({ screen: screenName }, '', `#${screenName}`);
                     } else if (screenName === 'chat') {
                         history.replaceState({ screen: 'chat' }, '', '#chat');
@@ -49,6 +50,7 @@ Object.assign(uiUtils, {
                     elements.historyScreen.style.transform = 'translateX(-100%)';
                     elements.settingsScreen.style.transform = 'translateX(100%)';
                     elements.lorebookEditorScreen.style.transform = 'translateX(200%)';
+                    elements.initialPromptEditorScreen.style.transform = 'translateX(200%)';
                     requestAnimationFrame(() => {
                         this.adjustTextareaHeight();
                         this.updateChatScreenElementVisibility();
@@ -59,6 +61,7 @@ Object.assign(uiUtils, {
                     elements.historyScreen.style.transform = 'translateX(0)';
                     elements.settingsScreen.style.transform = 'translateX(200%)';
                     elements.lorebookEditorScreen.style.transform = 'translateX(300%)';
+                    elements.initialPromptEditorScreen.style.transform = 'translateX(300%)';
                     this.renderHistoryList();
                 } else if (screenName === 'settings') {
                     activeScreen = elements.settingsScreen;
@@ -66,14 +69,24 @@ Object.assign(uiUtils, {
                     elements.historyScreen.style.transform = 'translateX(-200%)';
                     elements.settingsScreen.style.transform = 'translateX(0)';
                     elements.lorebookEditorScreen.style.transform = 'translateX(100%)';
+                    elements.initialPromptEditorScreen.style.transform = 'translateX(100%)';
                     this.applySettingsToUI();
                     lorebookManager.renderManagementList();
+                    initialPromptUtils.renderList();
                 } else if (screenName === 'lorebook-editor') {
                     activeScreen = elements.lorebookEditorScreen;
                     elements.chatScreen.style.transform = 'translateX(-200%)';
                     elements.historyScreen.style.transform = 'translateX(-300%)';
                     elements.settingsScreen.style.transform = 'translateX(-100%)';
                     elements.lorebookEditorScreen.style.transform = 'translateX(0)';
+                    elements.initialPromptEditorScreen.style.transform = 'translateX(100%)';
+                } else if (screenName === 'initial-prompt-editor') {
+                    activeScreen = elements.initialPromptEditorScreen;
+                    elements.chatScreen.style.transform = 'translateX(-200%)';
+                    elements.historyScreen.style.transform = 'translateX(-300%)';
+                    elements.settingsScreen.style.transform = 'translateX(-100%)';
+                    elements.lorebookEditorScreen.style.transform = 'translateX(100%)';
+                    elements.initialPromptEditorScreen.style.transform = 'translateX(0)';
                 }
 
                 requestAnimationFrame(() => {
@@ -110,6 +123,7 @@ Object.assign(uiUtils, {
                     this.adjustTextareaHeight();
                 }
                 this.updateLorebookMenuItem();
+                this.updateInitialPromptMenuItem();
                 this.updateLoadingIndicator();
             },
 

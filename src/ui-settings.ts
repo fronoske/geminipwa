@@ -570,6 +570,7 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                     topLevelDetails.open = ![
                         'settings-group-input-presets',
                         'settings-group-lorebooks',
+                        'settings-group-initial-prompts',
                     ].includes(topLevelDetails.id);
                     topLevelDetails.querySelectorAll('details').forEach(nestedDetails => {
                         nestedDetails.open = false;

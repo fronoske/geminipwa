@@ -4,6 +4,8 @@
             currentChatId: null,
             currentLorebookId: null,
             lorebookRecords: [],
+            currentInitialPromptId: null,
+            initialPromptRecords: [],
             currentMessages: [],
             pendingMessageEditSave: null,
             settings: {

@@ -196,6 +196,7 @@ _setupParamSlider(paramId, defaultValue, storageKey) {
                     await dbUtils.openDB();
                     await dbUtils.loadSettings();
                     await lorebookManager.loadRecords();
+                    await initialPromptUtils.loadRecords();
                     if (navigator.storage && navigator.storage.persist) { navigator.storage.persist(); }
                     uiUtils.applyTheme();
                     uiUtils.applyFontFamily();
@@ -306,9 +307,9 @@ _setupParamSlider(paramId, defaultValue, storageKey) {
                             </div>
 
                             <div>
-                                <button id="recovery-clear-data-btn" style="width: 100%; padding: 10px; background-color: var(--bg-button-delete); color: var(--text-light); border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">⚠⚠⚠全データクリア (履歴と設定)⚠⚠⚠</button>
+                                <button id="recovery-clear-data-btn" style="width: 100%; padding: 10px; background-color: var(--bg-button-delete); color: var(--text-light); border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">⚠⚠⚠全データクリア (履歴・設定・Lorebook・初回プロンプト)⚠⚠⚠</button>
                                 <p style="font-size: 12px; color: var(--text-secondary); margin-top: 5px;">
-                                    ※ ブラウザに保存されている設定や履歴を全て削除。<br>！！間違えて押そうとしていないか注意！！
+                                    ※ ブラウザに保存されている設定・履歴・Lorebook・初回プロンプトを全て削除。<br>！！間違えて押そうとしていないか注意！！
                                 </p>
                             </div>
 

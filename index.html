@@ -1192,6 +1192,42 @@
             transform: translateX(100%);
         }
 
+        #initial-prompt-editor-screen {
+            transform: translateX(100%);
+        }
+
+        #initial-prompt-editor-form {
+            gap: 10px;
+        }
+
+        #initial-prompt-title {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-tertiary);
+            border-radius: 6px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font: inherit;
+        }
+
+        #initial-prompt-body {
+            flex: 1;
+            min-height: 240px;
+        }
+
+        .initial-prompt-reference {
+            margin-bottom: 12px;
+            padding: 8px;
+            border: 1px solid var(--border-tertiary);
+            border-radius: 6px;
+        }
+
+        .initial-prompt-reference pre {
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
         #chat-screen {
             position: relative;
             z-index: 0;
@@ -5280,6 +5316,8 @@ font-size: 1.142em !important;
                     <div id="header-submenu" class="header-submenu hidden" role="menu">
                         <button id="header-menu-lorebook-btn" type="button" role="menuitem">Lorebook：<span
                                 id="header-menu-lorebook-name">使用しない</span></button>
+                        <button id="header-menu-initial-prompt-btn" type="button" role="menuitem">初回プロンプト：<span
+                                id="header-menu-initial-prompt-name">使用しない</span></button>
                         <button id="header-menu-clear-btn" type="button" role="menuitem" class="danger-menu-item">全削除（先頭を除く）</button>
                         <button id="header-menu-copy-btn" type="button" role="menuitem">全コピー</button>
                         <button id="header-menu-string-replacement-btn" type="button" role="menuitem">検索・置換</button>
@@ -7364,6 +7402,20 @@ font-size: 1.142em !important;
                     </p>
                 </details>
 
+                <details class="settings-group" id="settings-group-initial-prompts">
+                    <summary
+                        style="font-size: 16px; color: var(--text-link); border-bottom: 1px solid var(--border-tertiary); padding-bottom: 5px; margin-bottom: 15px; display: list-item; list-style: revert; cursor:pointer; font-weight: bold;">
+                        初回ユーザープロンプト</summary>
+                    <div class="lorebook-management-toolbar">
+                        <button type="button" id="add-initial-prompt-btn" class="settings-action-button">新規</button>
+                        <button type="button" id="import-initial-prompts-btn" class="settings-action-button">JSON取込</button>
+                        <button type="button" id="export-initial-prompts-btn" class="settings-action-button">JSON一括出力</button>
+                        <input type="file" id="import-initial-prompts-input" accept=".json,application/json" class="hidden">
+                    </div>
+                    <div id="initial-prompt-management-list" class="lorebook-management-list"></div>
+                    <p id="no-initial-prompts-message" class="lorebook-management-note">保存されている初回ユーザープロンプトはありません。</p>
+                </details>
+
                 <div style="display: flex; justify-content: center; flex-wrap: nowrap; gap: 10px; margin: 14px 0 18px;">
                     <button id="export-settings-btn" class="settings-import-export-button history-action-button gold" title="APIキーを含むテキスト設定をJSON形式で出力">設定出力</button>
                     <button id="import-settings-btn" class="settings-import-export-button history-action-button purple" title="APIキーを含むテキスト設定をJSON形式で取込">設定取込</button>
@@ -7439,9 +7491,9 @@ font-size: 1.142em !important;
                         <p style="font-size: 11px; color: var(--text-secondary); margin-top:5px; margin-bottom: 10px;">
                             ※ ブラウザに保存されているチャット履歴を全て削除します。設定は保持されます。<BR>
                         </p>
-                        <button id="clear-data-btn">⚠⚠⚠全データクリア (履歴・設定・Lorebook)⚠⚠⚠</button>
+                    <button id="clear-data-btn">⚠⚠⚠全データクリア (履歴・設定・Lorebook・初回プロンプト)⚠⚠⚠</button>
                         <p style="font-size: 11px; color: var(--text-secondary); margin-top:5px; margin-bottom: 10px;">
-                            ※ ブラウザに保存されている設定・履歴・Lorebookを全て削除。<BR>
+                            ※ ブラウザに保存されている設定・履歴・Lorebook・初回プロンプトを全て削除。<BR>
                             ！！間違えて押そうとしていないか注意！！
                         </p>
                         <details style="margin-top: 15px; border-top: 1px dashed var(--border-secondary); padding-top: 10px;">
@@ -7504,6 +7556,24 @@ font-size: 1.142em !important;
                         <button type="button" id="analyze-lorebook-btn" class="lorebook-analyze-button" disabled>解析</button>
                     </div>
                 </div>
+            </main>
+        </div>
+
+        <div id="initial-prompt-editor-screen" class="screen">
+            <header class="app-header">
+                <button id="back-from-initial-prompt-editor" class="header-button" aria-label="初回ユーザープロンプト管理へ戻る">＜</button>
+                <h1 id="initial-prompt-editor-heading">新規初回ユーザープロンプトを追加</h1>
+            </header>
+            <main class="main-content lorebook-editor-content">
+                <form id="initial-prompt-editor-form" class="lorebook-editor-panel">
+                    <label for="initial-prompt-title">タイトル</label>
+                    <input id="initial-prompt-title" type="text" maxlength="200" required>
+                    <label for="initial-prompt-body">本文</label>
+                    <textarea id="initial-prompt-body" class="lorebook-source-textarea" required></textarea>
+                    <div class="lorebook-editor-actions">
+                        <button type="submit">保存</button>
+                    </div>
+                </form>
             </main>
         </div>
     </div>
@@ -7611,6 +7681,18 @@ font-size: 1.142em !important;
         </div>
     </dialog>
 
+    <dialog id="initialPromptDialog" class="custom-dialog lorebook-selection-dialog">
+        <h2>初回プロンプトを選択</h2>
+        <p class="dialog-message">最初の送信時に、選択した本文をユーザー入力の前へ追加します。</p>
+        <select id="initialPromptSelect" class="dialog-input" aria-label="使用する初回プロンプト">
+            <option value="">使用しない</option>
+        </select>
+        <div class="dialog-actions">
+            <button type="button" id="initial-prompt-cancel-btn" class="dialog-cancel-btn">キャンセル</button>
+            <button type="button" id="initial-prompt-ok-btn" class="dialog-ok-btn">決定</button>
+        </div>
+    </dialog>
+
     <dialog id="lorebookAnalysisDialog" class="custom-dialog lorebook-analysis-dialog">
         <h2>解析結果の確認</h2>
         <p class="dialog-message">警告と構造化結果を確認・修正してから保存してください。</p>
@@ -7664,10 +7746,11 @@ font-size: 1.142em !important;
 /* source: app-config.ts */
 // Bundled into the generated index.html from this TypeScript source.
 const DB_NAME = 'GeminiPWA_DB';
-const DB_VERSION = 9;
+const DB_VERSION = 10;
 const SETTINGS_STORE = 'settings';
 const CHATS_STORE = 'chats';
 const LOREBOOKS_STORE = 'lorebooks';
+const INITIAL_PROMPTS_STORE = 'initialPrompts';
 const CHAT_UPDATEDAT_INDEX = 'updatedAtIndex';
 const CHAT_CREATEDAT_INDEX = 'createdAtIndex';
 const API_PROVIDERS = [
@@ -7858,6 +7941,7 @@ const elements = {
     historyScreen: document.getElementById('history-screen'),
     settingsScreen: document.getElementById('settings-screen'),
     lorebookEditorScreen: document.getElementById('lorebook-editor-screen'),
+    initialPromptEditorScreen: getRequiredDomElement('initial-prompt-editor-screen'),
     chatTitle: document.getElementById('chat-title'),
     messageContainer: document.getElementById('message-container'),
     userInput: document.getElementById('user-input'),
@@ -8070,6 +8154,8 @@ const elements = {
     headerSubmenu: document.getElementById('header-submenu'),
     headerMenuLorebookBtn: document.getElementById('header-menu-lorebook-btn'),
     headerMenuLorebookName: document.getElementById('header-menu-lorebook-name'),
+    headerMenuInitialPromptBtn: getRequiredDomElement('header-menu-initial-prompt-btn'),
+    headerMenuInitialPromptName: getRequiredDomElement('header-menu-initial-prompt-name'),
     headerMenuClearBtn: document.getElementById('header-menu-clear-btn'),
     headerMenuCopyBtn: document.getElementById('header-menu-copy-btn'),
     headerMenuStringReplacementBtn: document.getElementById('header-menu-string-replacement-btn'),
@@ -8139,6 +8225,21 @@ const elements = {
     exportAllLorebooksBtn: getRequiredDomElement('export-all-lorebooks-btn'),
     lorebookManagementList: getRequiredDomElement('lorebook-management-list'),
     noLorebooksMessage: getRequiredDomElement('no-lorebooks-message'),
+    addInitialPromptBtn: getRequiredDomElement('add-initial-prompt-btn'),
+    importInitialPromptsBtn: getRequiredDomElement('import-initial-prompts-btn'),
+    importInitialPromptsInput: getRequiredDomElement('import-initial-prompts-input'),
+    exportInitialPromptsBtn: getRequiredDomElement('export-initial-prompts-btn'),
+    initialPromptManagementList: getRequiredDomElement('initial-prompt-management-list'),
+    noInitialPromptsMessage: getRequiredDomElement('no-initial-prompts-message'),
+    backFromInitialPromptEditorBtn: getRequiredDomElement('back-from-initial-prompt-editor'),
+    initialPromptEditorHeading: getRequiredDomElement('initial-prompt-editor-heading'),
+    initialPromptEditorForm: getRequiredDomElement('initial-prompt-editor-form'),
+    initialPromptTitle: getRequiredDomElement('initial-prompt-title'),
+    initialPromptBody: getRequiredDomElement('initial-prompt-body'),
+    initialPromptDialog: getRequiredDomElement('initialPromptDialog'),
+    initialPromptSelect: getRequiredDomElement('initialPromptSelect'),
+    initialPromptCancelBtn: getRequiredDomElement('initial-prompt-cancel-btn'),
+    initialPromptOkBtn: getRequiredDomElement('initial-prompt-ok-btn'),
     backFromLorebookEditorBtn: getRequiredDomElement('back-from-lorebook-editor'),
     lorebookEditorTitle: getRequiredDomElement('lorebook-editor-title'),
     lorebookEditorProviderRow: getRequiredDomElement('lorebook-editor-provider-row'),
@@ -8274,6 +8375,8 @@ const state = {
     currentChatId: null,
     currentLorebookId: null,
     lorebookRecords: [],
+    currentInitialPromptId: null,
+    initialPromptRecords: [],
     currentMessages: [],
     pendingMessageEditSave: null,
     settings: {
@@ -8726,6 +8829,9 @@ const dbUtils = {
                 if (!db.objectStoreNames.contains(LOREBOOKS_STORE)) {
                     db.createObjectStore(LOREBOOKS_STORE, { keyPath: 'id' });
                 }
+                if (!db.objectStoreNames.contains(INITIAL_PROMPTS_STORE)) {
+                    db.createObjectStore(INITIAL_PROMPTS_STORE, { keyPath: 'id' });
+                }
                 let chatStore;
                 if (!db.objectStoreNames.contains(CHATS_STORE)) {
                     chatStore = db.createObjectStore(CHATS_STORE, { keyPath: 'id', autoIncrement: true });
@@ -9019,6 +9125,7 @@ const dbUtils = {
                     groundingMetadata: msg.groundingMetadata, attachments: msg.attachments,
                     usageMetadata: msg.usageMetadata,
                     lorebookContext: msg.lorebookContext,
+                    initialPrompt: msg.initialPrompt,
                     thoughtSummaryOpen: msg.thoughtSummaryOpen
                 }));
                 const executeSave = (chatIdToUse, existingData) => {
@@ -9028,7 +9135,7 @@ const dbUtils = {
                             title = existingData.title;
                         else {
                             const firstUserMessage = state.currentMessages.find(m => m.role === 'user');
-                            title = firstUserMessage ? firstUserMessage.content.substring(0, 50) : "無題のチャット";
+                            title = firstUserMessage?.content?.substring(0, 50) || "無題のチャット";
                         }
                     }
                     const chatData = {
@@ -9228,11 +9335,38 @@ const dbUtils = {
             }
         });
     },
+    async getAllInitialPrompts() {
+        await this.openDB();
+        return new Promise((resolve, reject) => {
+            const request = this._getStore(INITIAL_PROMPTS_STORE).getAll();
+            request.onsuccess = () => resolve(request.result || []);
+            request.onerror = () => reject(request.error);
+        });
+    },
+    async putInitialPrompt(record) {
+        await this.openDB();
+        return new Promise((resolve, reject) => {
+            const request = this._getStore(INITIAL_PROMPTS_STORE, 'readwrite').put(record);
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
+    },
+    async putInitialPrompts(records) {
+        await this.openDB();
+        return new Promise((resolve, reject) => {
+            const transaction = state.db.transaction([INITIAL_PROMPTS_STORE], 'readwrite');
+            const store = transaction.objectStore(INITIAL_PROMPTS_STORE);
+            transaction.oncomplete = () => resolve();
+            transaction.onerror = () => reject(transaction.error);
+            transaction.onabort = () => reject(transaction.error);
+            records.forEach(record => store.put(record));
+        });
+    },
     async clearAllData() {
         await this.openDB();
         return new Promise((resolve, reject) => {
             try {
-                const transaction = state.db.transaction([SETTINGS_STORE, CHATS_STORE, LOREBOOKS_STORE], 'readwrite');
+                const transaction = state.db.transaction([SETTINGS_STORE, CHATS_STORE, LOREBOOKS_STORE, INITIAL_PROMPTS_STORE], 'readwrite');
                 const settingsStore = transaction.objectStore(SETTINGS_STORE);
                 const chatsStore = transaction.objectStore(CHATS_STORE);
                 const lorebooksStore = transaction.objectStore(LOREBOOKS_STORE);
@@ -9241,6 +9375,7 @@ const dbUtils = {
                 settingsStore.clear();
                 chatsStore.clear();
                 lorebooksStore.clear();
+                transaction.objectStore(INITIAL_PROMPTS_STORE).clear();
             }
             catch (error) {
                 reject(error);
@@ -9951,8 +10086,11 @@ const lorebookUtils = {
         if (!message)
             return '';
         const parts = [];
-        if (typeof message.content === 'string')
-            parts.push(message.content);
+        if (typeof message.content === 'string') {
+            parts.push(message.role === 'user' && message.initialPrompt
+                ? initialPromptUtils.formatUserText(message)
+                : message.content);
+        }
         if (Array.isArray(message.parts)) {
             message.parts.forEach(part => {
                 if (part && typeof part.text === 'string')
@@ -13318,6 +13456,208 @@ storyCoreが、舞台だけでなく中心構図、主要テーマ・葛藤、�
     },
 };
 
+/* source: initial-prompts.ts */
+// @ts-nocheck -- Bundled with the shared browser application.
+const initialPromptUtils = {
+    editingId: null,
+    getRecord(id) {
+        return state.initialPromptRecords.find(record => record.id === id) || null;
+    },
+    normalizeSnapshot(value) {
+        if (!value || typeof value !== 'object')
+            return null;
+        const id = typeof value.id === 'string' ? value.id.trim() : '';
+        const title = typeof value.title === 'string' ? value.title.trim() : '';
+        const text = typeof value.text === 'string' ? value.text.trim() : '';
+        return id && title && text ? { id, title, text } : null;
+    },
+    formatUserText(message) {
+        const snapshot = this.normalizeSnapshot(message?.initialPrompt);
+        if (!snapshot)
+            return String(message?.content || '');
+        const input = String(message.content || '');
+        return `【初回プロンプト：${snapshot.title}】\n${snapshot.text}\n\n【ユーザー入力】\n${input}`;
+    },
+    appendReference(container, value) {
+        const snapshot = this.normalizeSnapshot(value);
+        if (!snapshot)
+            return;
+        const details = document.createElement('details');
+        details.className = 'initial-prompt-reference';
+        details.open = true;
+        const summary = document.createElement('summary');
+        summary.textContent = `初回プロンプト：${snapshot.title}`;
+        const body = document.createElement('pre');
+        body.textContent = snapshot.text;
+        details.append(summary, body);
+        container.appendChild(details);
+    },
+    async loadRecords() {
+        state.initialPromptRecords = (await dbUtils.getAllInitialPrompts())
+            .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+        this.renderList();
+    },
+    initialize() {
+        elements.addInitialPromptBtn.addEventListener('click', () => this.openEditor());
+        elements.backFromInitialPromptEditorBtn.addEventListener('click', () => history.back());
+        elements.initialPromptEditorForm.addEventListener('submit', event => {
+            event.preventDefault();
+            this.saveEditor();
+        });
+        elements.importInitialPromptsBtn.addEventListener('click', () => elements.importInitialPromptsInput.click());
+        elements.importInitialPromptsInput.addEventListener('change', async (event) => {
+            const file = event.target.files?.[0];
+            event.target.value = '';
+            if (file)
+                await this.importAll(file);
+        });
+        elements.exportInitialPromptsBtn.addEventListener('click', () => this.exportAll());
+        elements.headerMenuInitialPromptBtn.addEventListener('click', () => {
+            uiUtils.setHeaderMenuOpen(false);
+            this.selectForChat();
+        });
+        elements.initialPromptOkBtn.addEventListener('click', () => {
+            elements.initialPromptDialog.close(elements.initialPromptSelect.value || 'none');
+        });
+        elements.initialPromptCancelBtn.addEventListener('click', () => elements.initialPromptDialog.close('cancel'));
+    },
+    renderList() {
+        const list = elements.initialPromptManagementList;
+        list.replaceChildren();
+        for (const record of state.initialPromptRecords) {
+            const row = document.createElement('div');
+            row.className = 'lorebook-management-item';
+            const title = document.createElement('strong');
+            title.textContent = record.title;
+            const details = document.createElement('div');
+            details.className = 'lorebook-management-details';
+            details.appendChild(title);
+            const edit = document.createElement('button');
+            edit.type = 'button';
+            edit.textContent = '編集';
+            edit.addEventListener('click', () => this.openEditor(record.id));
+            const actions = document.createElement('div');
+            actions.className = 'lorebook-management-actions';
+            actions.appendChild(edit);
+            row.append(details, actions);
+            list.appendChild(row);
+        }
+        elements.noInitialPromptsMessage.classList.toggle('hidden', state.initialPromptRecords.length > 0);
+    },
+    openEditor(id = null) {
+        const record = id ? this.getRecord(id) : null;
+        this.editingId = record?.id || null;
+        elements.initialPromptEditorHeading.textContent = record ? '初回ユーザープロンプトを編集' : '新規初回ユーザープロンプトを追加';
+        elements.initialPromptTitle.value = record?.title || '';
+        elements.initialPromptBody.value = record?.text || '';
+        uiUtils.showScreen('initial-prompt-editor');
+        elements.initialPromptTitle.focus();
+    },
+    async saveEditor() {
+        const title = elements.initialPromptTitle.value.trim();
+        const text = elements.initialPromptBody.value.trim();
+        if (!title || !text) {
+            await uiUtils.showCustomAlert('タイトルと本文を入力してください。');
+            return;
+        }
+        const previous = this.editingId ? this.getRecord(this.editingId) : null;
+        const now = Date.now();
+        const record = {
+            id: previous?.id || (crypto.randomUUID ? crypto.randomUUID() : `prompt-${now}-${Math.random().toString(36).slice(2)}`),
+            title,
+            text,
+            createdAt: previous?.createdAt || now,
+            updatedAt: now,
+        };
+        try {
+            await dbUtils.putInitialPrompt(record);
+            state.initialPromptRecords = previous
+                ? state.initialPromptRecords.map(item => item.id === record.id ? record : item)
+                : [...state.initialPromptRecords, record];
+            this.renderList();
+            uiUtils.updateInitialPromptMenuItem();
+            if (state.currentScreen === 'initial-prompt-editor')
+                history.back();
+        }
+        catch (error) {
+            await uiUtils.showCustomAlert(`保存に失敗しました: ${error}`);
+        }
+    },
+    exportAll() {
+        const data = { format: 'GeminiPWA Initial Prompts', version: 1, prompts: state.initialPromptRecords };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `geminipwa-initial-prompts-${formatLocalDateStamp()}.json`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 0);
+    },
+    async importAll(file) {
+        try {
+            const data = JSON.parse(await file.text());
+            if (data?.format !== 'GeminiPWA Initial Prompts' || data.version !== 1 || !Array.isArray(data.prompts)) {
+                throw new Error('対応していないJSON形式です。');
+            }
+            const ids = new Set();
+            const records = data.prompts.map(item => {
+                if (!item || typeof item.id !== 'string' || !item.id.trim()
+                    || typeof item.title !== 'string' || !item.title.trim()
+                    || typeof item.text !== 'string' || !item.text.trim()
+                    || !Number.isFinite(item.createdAt) || !Number.isFinite(item.updatedAt)) {
+                    throw new Error('ID、タイトル、本文、日時を確認してください。');
+                }
+                const id = item.id.trim();
+                if (ids.has(id))
+                    throw new Error(`ID「${id}」が重複しています。`);
+                ids.add(id);
+                return { id, title: item.title.trim(), text: item.text.trim(), createdAt: item.createdAt, updatedAt: item.updatedAt };
+            });
+            const existingIds = new Set(state.initialPromptRecords.map(item => item.id));
+            const count = records.filter(item => existingIds.has(item.id)).length;
+            if (count && !(await uiUtils.showCustomConfirm(`同じIDの初回プロンプトが${count}件あります。上書きしますか？`)))
+                return;
+            await dbUtils.putInitialPrompts(records);
+            const importedIds = new Set(records.map(item => item.id));
+            state.initialPromptRecords = [...state.initialPromptRecords.filter(item => !importedIds.has(item.id)), ...records]
+                .sort((a, b) => a.createdAt - b.createdAt);
+            this.renderList();
+            uiUtils.updateInitialPromptMenuItem();
+            await uiUtils.showCustomAlert(`${records.length}件の初回プロンプトを取り込みました。`);
+        }
+        catch (error) {
+            await uiUtils.showCustomAlert(`JSON取込に失敗しました: ${error.message || error}`);
+        }
+    },
+    updateMenuItem() {
+        const selected = this.getRecord(state.currentInitialPromptId);
+        const snapshot = state.currentMessages.find(message => message.initialPrompt)?.initialPrompt;
+        const title = snapshot?.title || selected?.title || (state.currentInitialPromptId ? '未登録の初回プロンプト' : '使用しない');
+        elements.headerMenuInitialPromptName.textContent = title;
+        const locked = state.isSending || state.currentMessages.some(message => message.role === 'user');
+        elements.headerMenuInitialPromptBtn.disabled = locked;
+        elements.headerMenuInitialPromptBtn.title = locked ? '初回送信後は変更できません' : `初回プロンプト: ${title}`;
+    },
+    async selectForChat() {
+        if (state.isSending || state.currentMessages.some(message => message.role === 'user'))
+            return;
+        const select = elements.initialPromptSelect;
+        select.replaceChildren();
+        const none = new Option('使用しない', 'none');
+        select.appendChild(none);
+        state.initialPromptRecords.forEach(record => select.appendChild(new Option(record.title, record.id)));
+        select.value = this.getRecord(state.currentInitialPromptId)?.id || 'none';
+        elements.initialPromptDialog.returnValue = '';
+        const result = await uiUtils.showCustomDialog(elements.initialPromptDialog, select);
+        if (!result || result === 'cancel')
+            return;
+        state.currentInitialPromptId = result === 'none' ? null : this.getRecord(result)?.id || null;
+        this.updateMenuItem();
+    },
+};
+
 /* source: backend-manager.ts */
 // @ts-nocheck -- Enable after shared application service types are defined.
 // Bundled into the generated index.html from this TypeScript source.
@@ -14969,6 +15309,8 @@ Object.assign(uiUtils, {
                 toggleButtonTopElement.setAttribute('aria-label', 'メッセージを展開');
             }
         }
+        if (role === 'user')
+            initialPromptUtils.appendReference(contentDiv, messageData?.initialPrompt);
         if (role === 'user' && attachments && attachments.length > 0) {
             const details = document.createElement('details');
             details.classList.add('attachment-details');
@@ -16480,6 +16822,7 @@ Object.assign(uiUtils, {
             topLevelDetails.open = ![
                 'settings-group-input-presets',
                 'settings-group-lorebooks',
+                'settings-group-initial-prompts',
             ].includes(topLevelDetails.id);
             topLevelDetails.querySelectorAll('details').forEach(nestedDetails => {
                 nestedDetails.open = false;
@@ -16585,6 +16928,7 @@ Object.assign(uiUtils, {
     },
     setHeaderMenuOpen(isOpen) {
         this.updateLorebookMenuItem();
+        this.updateInitialPromptMenuItem();
         elements.headerSubmenu.classList.toggle('hidden', !isOpen);
         elements.headerMenuBtn.setAttribute('aria-expanded', String(isOpen));
         if (isOpen) {
@@ -16603,6 +16947,9 @@ Object.assign(uiUtils, {
         elements.headerMenuLorebookBtn.title = state.isSending
             ? '応答中はLorebookを変更できません'
             : `現在のLorebook: ${name}${!lorebook && storedLorebookId ? `（ID: ${storedLorebookId}）` : ''}`;
+    },
+    updateInitialPromptMenuItem() {
+        initialPromptUtils.updateMenuItem();
     },
     updateProviderToggleButtons() {
         const providerMap = {
@@ -16910,13 +17257,14 @@ Object.assign(uiUtils, {
             if (screenName === 'settings') {
                 this.applySettingsUIDetailsOpenStates();
                 lorebookManager.renderManagementList();
+                initialPromptUtils.renderList();
             }
             return;
         }
-        const allScreens = [elements.chatScreen, elements.historyScreen, elements.settingsScreen, elements.lorebookEditorScreen];
+        const allScreens = [elements.chatScreen, elements.historyScreen, elements.settingsScreen, elements.lorebookEditorScreen, elements.initialPromptEditorScreen];
         let activeScreen = null;
         if (!fromPopState) {
-            if (screenName === 'history' || screenName === 'settings' || screenName === 'lorebook-editor') {
+            if (screenName === 'history' || screenName === 'settings' || screenName === 'lorebook-editor' || screenName === 'initial-prompt-editor') {
                 history.pushState({ screen: screenName }, '', `#${screenName}`);
             }
             else if (screenName === 'chat') {
@@ -16935,6 +17283,7 @@ Object.assign(uiUtils, {
             elements.historyScreen.style.transform = 'translateX(-100%)';
             elements.settingsScreen.style.transform = 'translateX(100%)';
             elements.lorebookEditorScreen.style.transform = 'translateX(200%)';
+            elements.initialPromptEditorScreen.style.transform = 'translateX(200%)';
             requestAnimationFrame(() => {
                 this.adjustTextareaHeight();
                 this.updateChatScreenElementVisibility();
@@ -16946,6 +17295,7 @@ Object.assign(uiUtils, {
             elements.historyScreen.style.transform = 'translateX(0)';
             elements.settingsScreen.style.transform = 'translateX(200%)';
             elements.lorebookEditorScreen.style.transform = 'translateX(300%)';
+            elements.initialPromptEditorScreen.style.transform = 'translateX(300%)';
             this.renderHistoryList();
         }
         else if (screenName === 'settings') {
@@ -16954,8 +17304,10 @@ Object.assign(uiUtils, {
             elements.historyScreen.style.transform = 'translateX(-200%)';
             elements.settingsScreen.style.transform = 'translateX(0)';
             elements.lorebookEditorScreen.style.transform = 'translateX(100%)';
+            elements.initialPromptEditorScreen.style.transform = 'translateX(100%)';
             this.applySettingsToUI();
             lorebookManager.renderManagementList();
+            initialPromptUtils.renderList();
         }
         else if (screenName === 'lorebook-editor') {
             activeScreen = elements.lorebookEditorScreen;
@@ -16963,6 +17315,15 @@ Object.assign(uiUtils, {
             elements.historyScreen.style.transform = 'translateX(-300%)';
             elements.settingsScreen.style.transform = 'translateX(-100%)';
             elements.lorebookEditorScreen.style.transform = 'translateX(0)';
+            elements.initialPromptEditorScreen.style.transform = 'translateX(100%)';
+        }
+        else if (screenName === 'initial-prompt-editor') {
+            activeScreen = elements.initialPromptEditorScreen;
+            elements.chatScreen.style.transform = 'translateX(-200%)';
+            elements.historyScreen.style.transform = 'translateX(-300%)';
+            elements.settingsScreen.style.transform = 'translateX(-100%)';
+            elements.lorebookEditorScreen.style.transform = 'translateX(100%)';
+            elements.initialPromptEditorScreen.style.transform = 'translateX(0)';
         }
         requestAnimationFrame(() => {
             allScreens.forEach(screen => {
@@ -16997,6 +17358,7 @@ Object.assign(uiUtils, {
             this.adjustTextareaHeight();
         }
         this.updateLorebookMenuItem();
+        this.updateInitialPromptMenuItem();
         this.updateLoadingIndicator();
     },
     updateLoadingIndicator() {
@@ -17699,6 +18061,7 @@ Object.assign(appLogic, {
             await dbUtils.openDB();
             await dbUtils.loadSettings();
             await lorebookManager.loadRecords();
+            await initialPromptUtils.loadRecords();
             if (navigator.storage && navigator.storage.persist) {
                 navigator.storage.persist();
             }
@@ -17803,9 +18166,9 @@ Object.assign(appLogic, {
                             </div>
 
                             <div>
-                                <button id="recovery-clear-data-btn" style="width: 100%; padding: 10px; background-color: var(--bg-button-delete); color: var(--text-light); border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">⚠⚠⚠全データクリア (履歴と設定)⚠⚠⚠</button>
+                                <button id="recovery-clear-data-btn" style="width: 100%; padding: 10px; background-color: var(--bg-button-delete); color: var(--text-light); border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">⚠⚠⚠全データクリア (履歴・設定・Lorebook・初回プロンプト)⚠⚠⚠</button>
                                 <p style="font-size: 12px; color: var(--text-secondary); margin-top: 5px;">
-                                    ※ ブラウザに保存されている設定や履歴を全て削除。<br>！！間違えて押そうとしていないか注意！！
+                                    ※ ブラウザに保存されている設定・履歴・Lorebook・初回プロンプトを全て削除。<br>！！間違えて押そうとしていないか注意！！
                                 </p>
                             </div>
 
@@ -18629,6 +18992,7 @@ Object.assign(appLogic, {
         multiBackendUtils.initialize();
         openRouterModelCatalog.initialize();
         lorebookManager.initialize();
+        initialPromptUtils.initialize();
         elements.geminiApiKeyInput.addEventListener('input', () => multiApiKeyUtils.syncMainApiKeyInput('gemini'));
         elements.deepSeekApiKeyInput.addEventListener('input', () => multiApiKeyUtils.syncMainApiKeyInput('deepseek'));
         elements.claudeApiKeyInput.addEventListener('input', () => multiApiKeyUtils.syncMainApiKeyInput('claude'));
@@ -19144,6 +19508,7 @@ Object.assign(appLogic, {
     startNewChat() {
         state.currentChatId = null;
         state.currentLorebookId = null;
+        state.currentInitialPromptId = null;
         state.currentMessages = [];
         if (state.settings.commonSystemPrompt && state.settings.commonSystemPrompt.trim() !== '') {
         }
@@ -19164,6 +19529,7 @@ Object.assign(appLogic, {
         uiUtils.adjustTextareaHeight();
         uiUtils.setSendingState(false);
         uiUtils.updateLorebookMenuItem();
+        uiUtils.updateInitialPromptMenuItem();
         uiUtils.updateAttachmentBadgeVisibility();
         if (state.settings.autoScrollOnNewMessage) {
             uiUtils.scrollToBottom();
@@ -19195,6 +19561,7 @@ Object.assign(appLogic, {
             if (chat) {
                 state.currentChatId = chat.id;
                 state.currentLorebookId = lorebookUtils.normalizeStoredLorebookId(chat.lorebookId);
+                state.currentInitialPromptId = chat.messages?.find(message => message.initialPrompt)?.initialPrompt?.id || null;
                 const unavailableLorebookId = state.currentLorebookId
                     && !lorebookUtils.getLorebook(state.currentLorebookId)
                     ? state.currentLorebookId
@@ -19239,6 +19606,7 @@ Object.assign(appLogic, {
                 uiUtils.adjustTextareaHeight();
                 uiUtils.setSendingState(false);
                 uiUtils.updateLorebookMenuItem();
+                uiUtils.updateInitialPromptMenuItem();
                 uiUtils.updateAttachmentBadgeVisibility();
                 elements.memoEditor.value = '';
                 if (needsSave) {
@@ -19467,7 +19835,7 @@ Object.assign(appLogic, {
             else if (msg.role === 'error') {
                 sessionText += `エラー:\n`;
             }
-            sessionText += `${msg.content}\n\n`;
+            sessionText += `${msg.role === 'user' ? initialPromptUtils.formatUserText(msg) : msg.content}\n\n`;
             if (msg.attachments && msg.attachments.length > 0) {
                 sessionText += `  [添付ファイル: ${msg.attachments.map(a => a.name).join(', ')}]\n\n`;
             }
@@ -19813,12 +20181,21 @@ Object.assign(appLogic, {
         let siblingGroupIdToUse = null;
         let messagesToProcess;
         if (!isRetry) {
+            const initialPromptRecord = !currentContextMessages.some(message => message.role === 'user')
+                ? initialPromptUtils.getRecord(state.currentInitialPromptId)
+                : null;
             const userMessage = {
                 role: 'user', content: text, timestamp: Date.now(),
                 attachments: attachmentsToSend,
+                ...(initialPromptRecord && { initialPrompt: {
+                        id: initialPromptRecord.id,
+                        title: initialPromptRecord.title,
+                        text: initialPromptRecord.text,
+                    } }),
                 generatedByApiProvider: null
             };
             state.currentMessages.push(userMessage);
+            uiUtils.updateInitialPromptMenuItem();
             userMessageIndex = state.currentMessages.length - 1;
             state.messageCollapsedStates.set(userMessageIndex, false);
             uiUtils.appendMessage(userMessage.role, userMessage.content, userMessageIndex, false, null, userMessage.attachments);
@@ -19877,7 +20254,7 @@ Object.assign(appLogic, {
             }
             if (isNewChatForDBSave || !titleToSave) {
                 const firstUserMsg = currentContextMessages.find(m => m.role === 'user');
-                titleToSave = firstUserMsg ? firstUserMsg.content.substring(0, 50) : "無題のチャット";
+                titleToSave = firstUserMsg?.content?.substring(0, 50) || "無題のチャット";
             }
             const chatToSave = {
                 messages: currentContextMessages.map(msg => ({
@@ -19900,6 +20277,7 @@ Object.assign(appLogic, {
                     ...(msg.attachments && msg.attachments.length > 0 && { attachments: msg.attachments.map(att => ({ name: att.name, mimeType: att.mimeType, textData: att.textData })) }),
                     ...(msg.usageMetadata && { usageMetadata: msg.usageMetadata }),
                     ...(msg.lorebookContext && { lorebookContext: msg.lorebookContext }),
+                    ...(msg.initialPrompt && { initialPrompt: msg.initialPrompt }),
                     ...(msg.thoughtSummaryOpen !== undefined && { thoughtSummaryOpen: msg.thoughtSummaryOpen }),
                 })),
                 updatedAt: Date.now(),
@@ -19942,8 +20320,9 @@ Object.assign(appLogic, {
         })
             .map(msg => {
             const parts = [];
-            if (msg.content && msg.content.trim() !== '') {
-                parts.push({ text: msg.content });
+            const messageText = msg.role === 'user' ? initialPromptUtils.formatUserText(msg) : msg.content;
+            if (messageText && messageText.trim() !== '') {
+                parts.push({ text: messageText });
             }
             if (msg.role === 'user' && msg.attachments && msg.attachments.length > 0) {
                 msg.attachments.forEach(att => {
@@ -20620,6 +20999,8 @@ Object.assign(appLogic, {
                     messageExport.usageMetadata = msg.usageMetadata;
                 if (msg.lorebookContext)
                     messageExport.lorebookContext = msg.lorebookContext;
+                if (msg.initialPrompt)
+                    messageExport.initialPrompt = msg.initialPrompt;
                 if (msg.finishReason)
                     messageExport.finishReason = msg.finishReason;
                 if (msg.finishMessage)
@@ -20706,6 +21087,7 @@ Object.assign(appLogic, {
                 groundingMetadata: msg.groundingMetadata || undefined,
                 usageMetadata: msg.usageMetadata || undefined,
                 lorebookContext: lorebookUtils.normalizeContextSnapshot(msg.lorebookContext) || undefined,
+                initialPrompt: msg.initialPrompt ? initialPromptUtils.normalizeSnapshot(msg.initialPrompt) || undefined : undefined,
                 finishReason: msg.finishReason || undefined,
                 finishMessage: msg.finishMessage || undefined,
                 safetyRatings: msg.safetyRatings || undefined,
@@ -21274,7 +21656,7 @@ Object.assign(appLogic, {
         });
     },
     async confirmClearAllData() {
-        const confirmed = await uiUtils.showCustomConfirm("本当にすべてのデータ（チャット履歴・設定・保存済みLorebook）を削除しますか？この操作は元に戻せません。");
+        const confirmed = await uiUtils.showCustomConfirm("本当にすべてのデータ（チャット履歴・設定・保存済みLorebook・初回プロンプト）を削除しますか？この操作は元に戻せません。");
         if (confirmed) {
             try {
                 await dbUtils.clearAllData();
@@ -21510,6 +21892,8 @@ Object.assign(appLogic, {
         const contentDiv = messageElement.querySelector('.message-content');
         if (originalMessage.role === 'user') {
             contentDiv.innerHTML = '';
+            if (originalMessage.initialPrompt)
+                initialPromptUtils.appendReference(contentDiv, originalMessage.initialPrompt);
             if (originalMessage.attachments && originalMessage.attachments.length > 0) {
                 const details = document.createElement('details');
                 details.classList.add('attachment-details');
@@ -21651,7 +22035,7 @@ Object.assign(appLogic, {
         const message = state.currentMessages[index];
         if (!message)
             return;
-        let textToCopy = message.content;
+        let textToCopy = message.role === 'user' ? initialPromptUtils.formatUserText(message) : message.content;
         if (!textToCopy && message.role === 'user' && message.attachments && message.attachments.length > 0) {
             textToCopy = `[添付ファイル: ${message.attachments.map(a => a.name).join(', ')}]`;
         }

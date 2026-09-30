@@ -60,6 +60,7 @@ Object.assign(appLogic, {
                         if (msg.groundingMetadata) messageExport.groundingMetadata = msg.groundingMetadata;
                         if (msg.usageMetadata) messageExport.usageMetadata = msg.usageMetadata;
                         if (msg.lorebookContext) messageExport.lorebookContext = msg.lorebookContext;
+                        if (msg.initialPrompt) messageExport.initialPrompt = msg.initialPrompt;
                         if (msg.finishReason) messageExport.finishReason = msg.finishReason;
                         if (msg.finishMessage) messageExport.finishMessage = msg.finishMessage;
                         if (msg.safetyRatings) messageExport.safetyRatings = msg.safetyRatings;
@@ -139,6 +140,7 @@ Object.assign(appLogic, {
                         groundingMetadata: msg.groundingMetadata || undefined,
                         usageMetadata: msg.usageMetadata || undefined,
                         lorebookContext: lorebookUtils.normalizeContextSnapshot(msg.lorebookContext) || undefined,
+                        initialPrompt: msg.initialPrompt ? initialPromptUtils.normalizeSnapshot(msg.initialPrompt) || undefined : undefined,
                         finishReason: msg.finishReason || undefined,
                         finishMessage: msg.finishMessage || undefined,
                         safetyRatings: msg.safetyRatings || undefined,
@@ -742,7 +744,7 @@ newSettings.headerTapScrollToTop = elements.headerTapScrollToTopToggle.checked;
                 });
             },
             async confirmClearAllData() {
-                const confirmed = await uiUtils.showCustomConfirm("本当にすべてのデータ（チャット履歴・設定・保存済みLorebook）を削除しますか？この操作は元に戻せません。");
+                const confirmed = await uiUtils.showCustomConfirm("本当にすべてのデータ（チャット履歴・設定・保存済みLorebook・初回プロンプト）を削除しますか？この操作は元に戻せません。");
                 if (confirmed) {
                     try {
                         await dbUtils.clearAllData();

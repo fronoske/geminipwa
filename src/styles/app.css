@@ -1171,6 +1171,42 @@
             transform: translateX(100%);
         }
 
+        #initial-prompt-editor-screen {
+            transform: translateX(100%);
+        }
+
+        #initial-prompt-editor-form {
+            gap: 10px;
+        }
+
+        #initial-prompt-title {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-tertiary);
+            border-radius: 6px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font: inherit;
+        }
+
+        #initial-prompt-body {
+            flex: 1;
+            min-height: 240px;
+        }
+
+        .initial-prompt-reference {
+            margin-bottom: 12px;
+            padding: 8px;
+            border: 1px solid var(--border-tertiary);
+            border-radius: 6px;
+        }
+
+        .initial-prompt-reference pre {
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
         #chat-screen {
             position: relative;
             z-index: 0;

@@ -1,9 +1,10 @@
 // Bundled into the generated index.html from this TypeScript source.
         const DB_NAME = 'GeminiPWA_DB';
-        const DB_VERSION = 9;
+        const DB_VERSION = 10;
         const SETTINGS_STORE = 'settings';
         const CHATS_STORE = 'chats';
         const LOREBOOKS_STORE = 'lorebooks';
+        const INITIAL_PROMPTS_STORE = 'initialPrompts';
         const CHAT_UPDATEDAT_INDEX = 'updatedAtIndex';
         const CHAT_CREATEDAT_INDEX = 'createdAtIndex';
         const API_PROVIDERS = [
