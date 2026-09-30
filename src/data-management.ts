@@ -564,7 +564,6 @@ newSettings.deepSeekModelName = elements.deepSeekModelNameSelect.value;
 
                 newSettings.openrouterModelName = elements.openrouterModelNameSelect.value;
                 newSettings.openrouterSelectedModels = [...state.settings.openrouterSelectedModels];
-                newSettings.openrouterAdditionalModels = elements.openrouterAdditionalModelsTextarea.value.trim();
                 newSettings.openrouterSystemPrompt = elements.openrouterSystemPromptDefaultTextarea.value.trim();
                 newSettings.openrouterEnableSystemPromptDefault = elements.openrouterEnableSystemPromptDefaultCheckbox.checked;
                 newSettings.openrouterMaxTokens = getParamValue('openrouter-max-tokens', true, 1);

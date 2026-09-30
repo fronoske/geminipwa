@@ -217,7 +217,6 @@ const dbUtils = {
                                 }
                                 const migratedOpenRouterSettings = {
                                     openrouterModelName: 'llmAggregatorModelName',
-                                    openrouterAdditionalModels: 'llmAggregatorAdditionalModels',
                                     openrouterSystemPrompt: 'llmAggregatorSystemPrompt',
                                     openrouterEnableSystemPromptDefault: 'llmAggregatorEnableSystemPromptDefault',
                                     openrouterTemperature: 'llmAggregatorTemperature',

@@ -446,7 +446,10 @@ describe('project configuration', () => {
     expect(openRouterSettings).toContain('id="fetch-openrouter-models-btn"');
     expect(openRouterSettings).toContain('最新のモデル一覧を取得');
     expect(openRouterSettings).toContain('id="openrouter-selected-models-group"');
-    expect(openRouterSettings).toContain('id="openrouter-user-defined-models-group"');
+    expect(openRouterSettings).not.toContain('id="openrouter-user-defined-models-group"');
+    expect(openRouterSettings).not.toContain('id="openrouter-additional-models"');
+    expect(readFile('src/app-state.ts')).not.toContain('openrouterAdditionalModels');
+    expect(readFile('src/data-management.ts')).not.toContain('openrouterAdditionalModels');
     expect(openRouterSettings).not.toContain('value="openrouter/auto"');
     expect(openRouterSettings).toContain('id="openrouter-model-provider-options"');
     expect(openRouterSettings).toContain('id="select-all-openrouter-providers-btn"');

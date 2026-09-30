@@ -248,19 +248,13 @@ Object.assign(uiUtils, {
             },
             updateOpenRouterUserModelOptions() {
                 const selectedGroup = elements.openrouterSelectedModelsGroup;
-                const manualGroup = elements.openrouterUserDefinedModelsGroup;
                 const currentModelId = elements.openrouterModelNameSelect.value
                     || state.settings.openrouterModelName
                     || DEFAULT_OPENROUTER_MODEL;
                 selectedGroup.innerHTML = '';
-                manualGroup.innerHTML = '';
                 const selectedModels = Array.isArray(state.settings.openrouterSelectedModels)
                     ? [...new Set(state.settings.openrouterSelectedModels.filter(Boolean))]
                     : [];
-                const manualModels = (state.settings.openrouterAdditionalModels || '')
-                    .split(',')
-                    .map(model => model.trim())
-                    .filter(Boolean);
 
                 selectedModels.forEach(modelId => {
                     const option = document.createElement('option');
@@ -270,15 +264,7 @@ Object.assign(uiUtils, {
                         : modelId;
                     selectedGroup.appendChild(option);
                 });
-                const selectedIds = new Set(selectedModels);
-                manualModels.filter((modelId) => !selectedIds.has(modelId)).forEach(modelId => {
-                    const option = document.createElement('option');
-                    option.value = modelId;
-                    option.textContent = modelId;
-                    manualGroup.appendChild(option);
-                });
                 selectedGroup.disabled = selectedGroup.children.length === 0;
-                manualGroup.disabled = manualGroup.children.length === 0;
                 const availableOptions = Array.from(elements.openrouterModelNameSelect.options);
                 const nextModelId = availableOptions.some(option => option.value === currentModelId)
                     ? currentModelId

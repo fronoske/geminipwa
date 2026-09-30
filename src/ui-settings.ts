@@ -240,7 +240,6 @@ elements.deepSeekModelNameSelect.value = state.settings.deepSeekModelName || DEF
                 elements.openaiAdditionalModelsTextarea.value = state.settings.openaiAdditionalModels || '';
                 elements.openrouterApiKeyInput.value = state.settings.openrouterApiKey || '';
                 elements.openrouterModelNameSelect.value = state.settings.openrouterModelName || DEFAULT_OPENROUTER_MODEL;
-                elements.openrouterAdditionalModelsTextarea.value = state.settings.openrouterAdditionalModels || '';
                 elements.xaiApiKeyInput.value = state.settings.xaiApiKey || '';
                 elements.xaiModelNameSelect.value = state.settings.xaiModelName || DEFAULT_XAI_MODEL;
                 elements.xaiAdditionalModelsTextarea.value = state.settings.xaiAdditionalModels || '';
@@ -530,7 +529,6 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 setupModelListener(elements.deepSeekAdditionalModelsTextarea, 'deepSeekAdditionalModels', uiUtils.updateDeepSeekUserModelOptions);
                 setupModelListener(elements.claudeAdditionalModelsTextarea, 'claudeAdditionalModels', uiUtils.updateClaudeUserModelOptions);
                 setupModelListener(elements.openaiAdditionalModelsTextarea, 'openaiAdditionalModels', uiUtils.updateOpenAIUserModelOptions);
-                setupModelListener(elements.openrouterAdditionalModelsTextarea, 'openrouterAdditionalModels', uiUtils.updateOpenRouterUserModelOptions);
                 setupModelListener(elements.xaiAdditionalModelsTextarea, 'xaiAdditionalModels', uiUtils.updateXaiUserModelOptions);
                 setupModelListener(elements.llmAggregatorAdditionalModelsTextarea, 'llmAggregatorAdditionalModels', uiUtils.updateLlmAggregatorUserModelOptions);
 

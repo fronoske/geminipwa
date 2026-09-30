@@ -243,6 +243,40 @@ describe('OpenRouter model catalog', () => {
     expect(new vm.Script("openRouterModelCatalog.getDisplayLabel('manual/model-id')").runInContext(context)).toBe('manual/model-id');
   });
 
+  it('ignores legacy manual models and selects an available checked model', () => {
+    const selectedGroup = {
+      children: [] as Array<{ value: string; textContent: string }>,
+      disabled: false,
+      set innerHTML(_value: string) { this.children = []; },
+      appendChild(option: { value: string; textContent: string }) { this.children.push(option); },
+    };
+    const modelSelect = {
+      value: 'manual/legacy-model',
+      get options() { return selectedGroup.children; },
+    };
+    const state = { settings: {
+      openrouterSelectedModels: ['google/available-model'],
+      openrouterAdditionalModels: 'manual/legacy-model',
+      openrouterModelName: 'manual/legacy-model',
+    } };
+    const context = createContext({
+      state,
+      elements: {
+        openrouterSelectedModelsGroup: selectedGroup,
+        openrouterModelNameSelect: modelSelect,
+        openrouterSelectedModelCount: { textContent: '' },
+      },
+      document: { createElement: () => ({ value: '', textContent: '' }) },
+      uiUtils: {},
+    });
+    new vm.Script(readRuntime('ui-header-controls')).runInContext(context);
+    new vm.Script('uiUtils.updateOpenRouterUserModelOptions()').runInContext(context);
+
+    expect(selectedGroup.children.map((option) => option.value)).toEqual(['google/available-model']);
+    expect(modelSelect.value).toBe('google/available-model');
+    expect(state.settings.openrouterModelName).toBe('google/available-model');
+  });
+
   it('filters available models by name or ID', () => {
     const searchInput = { value: '' };
     const providerOptions = {
