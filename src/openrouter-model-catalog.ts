@@ -10,7 +10,7 @@ const openRouterModelCatalog = {
     sortReversed: false,
 
     classifyProvider(modelId) {
-        const author = String(modelId || '').split('/')[0].toLowerCase();
+        const author = String(modelId || '').split('/')[0].toLowerCase().replace(/^~/, '');
         const provider = OPENROUTER_MODEL_PROVIDERS.find((candidate) =>
             candidate.value !== 'other' && candidate.prefixes.includes(author)
         );

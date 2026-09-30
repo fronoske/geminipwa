@@ -83,8 +83,13 @@ describe('OpenRouter model catalog', () => {
     );
   });
 
-  it('puts unknown model authors into the other provider group', () => {
+  it('classifies latest aliases by their author while keeping unknown authors in the other group', () => {
     const context = createContext();
+    expect(new vm.Script("openRouterModelCatalog.classifyProvider('openai/gpt-terra-latest')").runInContext(context)).toBe('openai');
+    expect(new vm.Script("openRouterModelCatalog.classifyProvider('~openai/gpt-terra-latest')").runInContext(context)).toBe('openai');
+    expect(new vm.Script("openRouterModelCatalog.classifyProvider('~google/model')").runInContext(context)).toBe('google');
+    expect(new vm.Script("openRouterModelCatalog.classifyProvider('~new-vendor/model')").runInContext(context)).toBe('other');
+    expect(new vm.Script("openRouterModelCatalog.classifyProvider('~~openai/model')").runInContext(context)).toBe('other');
     expect(new vm.Script("openRouterModelCatalog.classifyProvider('new-vendor/model')").runInContext(context)).toBe('other');
     expect(new vm.Script("openRouterModelCatalog.classifyProvider('z-ai/model')").runInContext(context)).toBe('zai');
     expect(new vm.Script("openRouterModelCatalog.classifyProvider('meta-llama/model')").runInContext(context)).toBe('other');
@@ -162,16 +167,24 @@ describe('OpenRouter model catalog', () => {
     const context = createContext({
       state: {
         settings: {
-          openrouterModelCatalog: [{
-            id: 'google/model-id',
-            name: 'Google: Display Name',
-            created: 123,
-            contextLength: 2000000,
-            provider: 'incorrect-value',
-            inputModalities: ['text', 'image'],
-            supportedParameters: ['reasoning'],
-            pricing: { prompt: '0.000001', completion: '0.000002' },
-          }],
+          openrouterModelCatalog: [
+            {
+              id: 'google/model-id',
+              name: 'Google: Display Name',
+              created: 123,
+              contextLength: 2000000,
+              provider: 'incorrect-value',
+              inputModalities: ['text', 'image'],
+              supportedParameters: ['reasoning'],
+              pricing: { prompt: '0.000001', completion: '0.000002' },
+            },
+            {
+              id: '~openai/gpt-terra-latest',
+              name: 'OpenAI: GPT Terra Latest',
+              contextLength: 1050000,
+              provider: 'other',
+            },
+          ],
           openrouterModelCatalogFetchedAt: 123456789,
         },
       },
@@ -184,6 +197,10 @@ describe('OpenRouter model catalog', () => {
       contextLength: 2000000,
       supportsVision: true,
       supportsReasoning: true,
+    });
+    expect(models.find((model: { id: string }) => model.id === '~openai/gpt-terra-latest')).toMatchObject({
+      id: '~openai/gpt-terra-latest',
+      provider: 'openai',
     });
     expect(new vm.Script('openRouterModelCatalog.lastFetchedAt.getTime()').runInContext(context)).toBe(123456789);
     expect(new vm.Script("openRouterModelCatalog.getDisplayLabel('google/model-id')").runInContext(context)).toBe('Display Name — $2.00/M');
