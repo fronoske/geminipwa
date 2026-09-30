@@ -164,7 +164,6 @@ Object.assign(appLogic, {
 
                 if (originalMessage.role === 'user') {
                     contentDiv.innerHTML = '';
-                    if (originalMessage.initialPrompt) initialPromptUtils.appendReference(contentDiv, originalMessage.initialPrompt);
                     if (originalMessage.attachments && originalMessage.attachments.length > 0) {
                         const details = document.createElement('details');
                         details.classList.add('attachment-details');

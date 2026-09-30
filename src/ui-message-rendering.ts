@@ -76,6 +76,14 @@ renderChatMessages(maintainScroll = false) {
                     }
                 }
 
+                if (!state.currentMessages.some(message => message.role === 'user')) {
+                    initialPromptUtils.appendReference(
+                        elements.messageContainer,
+                        initialPromptUtils.getRecord(state.currentInitialPromptId),
+                        { preview: true }
+                    );
+                }
+
                 elements.messageContainer.appendChild(fragment);
 
 
@@ -86,6 +94,10 @@ renderChatMessages(maintainScroll = false) {
                 }
             },
 appendMessage(role, content, index, isStreamingPlaceholder = false, cascadeInfo = null, attachments = null) {
+                if (role === 'user') {
+                    elements.messageContainer.querySelector('.initial-prompt-preview')?.remove();
+                    initialPromptUtils.appendReference(elements.messageContainer, state.currentMessages[index]?.initialPrompt);
+                }
                 const messageDiv = document.createElement('div');
                 messageDiv.classList.add('message', role);
                 messageDiv.dataset.index = index;
@@ -200,8 +212,6 @@ appendMessage(role, content, index, isStreamingPlaceholder = false, cascadeInfo 
                         toggleButtonTopElement.setAttribute('aria-label', 'メッセージを展開');
                     }
                 }
-
-                if (role === 'user') initialPromptUtils.appendReference(contentDiv, messageData?.initialPrompt);
 
                 if (role === 'user' && attachments && attachments.length > 0) {
                     const details = document.createElement('details');

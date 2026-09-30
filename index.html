@@ -1227,13 +1227,32 @@
         }
 
         .initial-prompt-reference {
-            margin-bottom: 12px;
-            padding: 8px;
-            border: 1px solid var(--border-tertiary);
-            border-radius: 6px;
+            margin: 0;
+        }
+
+        .message.initial-prompt-message {
+            margin-bottom: 0;
+        }
+
+        .message.initial-prompt-message + .message.user {
+            margin-top: 8px;
+        }
+
+        .app-container.reduced-message-spacing .message.initial-prompt-message {
+            margin-bottom: 0;
+        }
+
+        .app-container.reduced-message-spacing .message.initial-prompt-message + .message.user {
+            margin-top: 8px;
+        }
+
+        .initial-prompt-reference summary {
+            cursor: pointer;
+            overflow-wrap: anywhere;
         }
 
         .initial-prompt-reference pre {
+            padding-top: 8px;
             white-space: pre-wrap;
             overflow-wrap: anywhere;
         }
@@ -13482,19 +13501,28 @@ const initialPromptUtils = {
         const input = String(message.content || '');
         return `【初回プロンプト：${snapshot.title}】\n${snapshot.text}\n\n【ユーザー入力】\n${input}`;
     },
-    appendReference(container, value) {
+    appendReference(container, value, { preview = false } = {}) {
         const snapshot = this.normalizeSnapshot(value);
         if (!snapshot)
             return;
+        const message = document.createElement('div');
+        message.classList.add('message', 'user', 'initial-prompt-message');
+        if (preview)
+            message.classList.add('initial-prompt-preview');
+        if (state.areAllMessagesHidden)
+            message.classList.add('message-hidden-by-toggle');
+        const content = document.createElement('div');
+        content.classList.add('message-content');
         const details = document.createElement('details');
         details.className = 'initial-prompt-reference';
-        details.open = true;
         const summary = document.createElement('summary');
-        summary.textContent = `初回プロンプト：${snapshot.title}`;
+        summary.textContent = `初回プロンプト：${snapshot.title}${preview ? '（未送信）' : ''}`;
         const body = document.createElement('pre');
         body.textContent = snapshot.text;
         details.append(summary, body);
-        container.appendChild(details);
+        content.appendChild(details);
+        message.appendChild(content);
+        container.appendChild(message);
     },
     async loadRecords() {
         state.initialPromptRecords = (await dbUtils.getAllInitialPrompts())
@@ -13659,6 +13687,7 @@ const initialPromptUtils = {
             return;
         state.currentInitialPromptId = result === 'none' ? null : this.getRecord(result)?.id || null;
         this.updateMenuItem();
+        uiUtils.renderChatMessages(true);
     },
 };
 
@@ -15207,6 +15236,9 @@ Object.assign(uiUtils, {
                 this.appendMessage(msg.role, msg.content, i, false, null, msg.attachments, fragment);
             }
         }
+        if (!state.currentMessages.some(message => message.role === 'user')) {
+            initialPromptUtils.appendReference(elements.messageContainer, initialPromptUtils.getRecord(state.currentInitialPromptId), { preview: true });
+        }
         elements.messageContainer.appendChild(fragment);
         if (maintainScroll && oldScrollTop !== null) {
             requestAnimationFrame(() => {
@@ -15215,6 +15247,10 @@ Object.assign(uiUtils, {
         }
     },
     appendMessage(role, content, index, isStreamingPlaceholder = false, cascadeInfo = null, attachments = null) {
+        if (role === 'user') {
+            elements.messageContainer.querySelector('.initial-prompt-preview')?.remove();
+            initialPromptUtils.appendReference(elements.messageContainer, state.currentMessages[index]?.initialPrompt);
+        }
         const messageDiv = document.createElement('div');
         messageDiv.classList.add('message', role);
         messageDiv.dataset.index = index;
@@ -15320,8 +15356,6 @@ Object.assign(uiUtils, {
                 toggleButtonTopElement.setAttribute('aria-label', 'メッセージを展開');
             }
         }
-        if (role === 'user')
-            initialPromptUtils.appendReference(contentDiv, messageData?.initialPrompt);
         if (role === 'user' && attachments && attachments.length > 0) {
             const details = document.createElement('details');
             details.classList.add('attachment-details');
@@ -21894,8 +21928,6 @@ Object.assign(appLogic, {
         const contentDiv = messageElement.querySelector('.message-content');
         if (originalMessage.role === 'user') {
             contentDiv.innerHTML = '';
-            if (originalMessage.initialPrompt)
-                initialPromptUtils.appendReference(contentDiv, originalMessage.initialPrompt);
             if (originalMessage.attachments && originalMessage.attachments.length > 0) {
                 const details = document.createElement('details');
                 details.classList.add('attachment-details');

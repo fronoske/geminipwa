@@ -8,7 +8,7 @@ const runtime = fs.readFileSync(
 );
 
 const createContext = () => {
-  const state = { initialPromptRecords: [] as any[], currentInitialPromptId: null, currentMessages: [], isSending: false, currentScreen: 'initial-prompt-editor' };
+  const state = { initialPromptRecords: [] as any[], currentInitialPromptId: null, currentMessages: [], isSending: false, areAllMessagesHidden: false, currentScreen: 'initial-prompt-editor' };
   const saved: any[][] = [];
   const alerts: string[] = [];
   const dbUtils = {
@@ -20,10 +20,16 @@ const createContext = () => {
     showCustomAlert: vi.fn(async (message: string) => { alerts.push(message); }),
     updateInitialPromptMenuItem: vi.fn(),
   };
-  const node = () => ({
-    className: '', textContent: '', type: '',
-    addEventListener: vi.fn(), append: vi.fn(), appendChild: vi.fn(),
-  });
+  const node = () => {
+    const children: any[] = [];
+    return {
+      className: '', textContent: '', type: '', open: false, children,
+      classList: { add: vi.fn() },
+      addEventListener: vi.fn(),
+      append: vi.fn((...items: any[]) => children.push(...items)),
+      appendChild: vi.fn((item: any) => children.push(item)),
+    };
+  };
   const elements = {
     initialPromptManagementList: { replaceChildren: vi.fn(), appendChild: vi.fn() },
     noInitialPromptsMessage: { classList: { toggle: vi.fn() } },
@@ -50,6 +56,29 @@ describe('初回ユーザープロンプト', () => {
     );
     expect(utils.formatUserText({ role: 'user', content: '通常の質問' })).toBe('通常の質問');
     expect(utils.normalizeSnapshot({ id: 'a', title: '', text: 'body' })).toBeNull();
+  });
+
+  it('shows an applied prompt as a collapsed user bubble before the typed input', () => {
+    const { utils, state } = createContext();
+    const container = { appendChild: vi.fn() };
+    const snapshot = { id: 'opening-1', title: '相談', text: '背景を踏まえて答えてください。' };
+
+    utils.appendReference(container, snapshot);
+    const bubble = container.appendChild.mock.calls[0][0];
+    expect(bubble.classList.add).toHaveBeenCalledWith('message', 'user', 'initial-prompt-message');
+    const details = bubble.children[0].children[0];
+    expect(details.open).toBe(false);
+    expect(details.children[0].textContent).toBe('初回プロンプト：相談');
+    expect(details.children[1].textContent).toBe(snapshot.text);
+
+    state.areAllMessagesHidden = true;
+    utils.appendReference(container, snapshot);
+    expect(container.appendChild.mock.calls[1][0].classList.add).toHaveBeenCalledWith('message-hidden-by-toggle');
+
+    utils.appendReference(container, snapshot, { preview: true });
+    const preview = container.appendChild.mock.calls[2][0];
+    expect(preview.classList.add).toHaveBeenCalledWith('initial-prompt-preview');
+    expect(preview.children[0].children[0].children[0].textContent).toBe('初回プロンプト：相談（未送信）');
   });
 
   it('validates the entire JSON before an atomic import and confirms ID collisions', async () => {

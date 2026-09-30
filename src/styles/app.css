@@ -1206,13 +1206,32 @@
         }
 
         .initial-prompt-reference {
-            margin-bottom: 12px;
-            padding: 8px;
-            border: 1px solid var(--border-tertiary);
-            border-radius: 6px;
+            margin: 0;
+        }
+
+        .message.initial-prompt-message {
+            margin-bottom: 0;
+        }
+
+        .message.initial-prompt-message + .message.user {
+            margin-top: 8px;
+        }
+
+        .app-container.reduced-message-spacing .message.initial-prompt-message {
+            margin-bottom: 0;
+        }
+
+        .app-container.reduced-message-spacing .message.initial-prompt-message + .message.user {
+            margin-top: 8px;
+        }
+
+        .initial-prompt-reference summary {
+            cursor: pointer;
+            overflow-wrap: anywhere;
         }
 
         .initial-prompt-reference pre {
+            padding-top: 8px;
             white-space: pre-wrap;
             overflow-wrap: anywhere;
         }

@@ -21,18 +21,25 @@ const initialPromptUtils = {
         return `【初回プロンプト：${snapshot.title}】\n${snapshot.text}\n\n【ユーザー入力】\n${input}`;
     },
 
-    appendReference(container, value) {
+    appendReference(container, value, { preview = false } = {}) {
         const snapshot = this.normalizeSnapshot(value);
         if (!snapshot) return;
+        const message = document.createElement('div');
+        message.classList.add('message', 'user', 'initial-prompt-message');
+        if (preview) message.classList.add('initial-prompt-preview');
+        if (state.areAllMessagesHidden) message.classList.add('message-hidden-by-toggle');
+        const content = document.createElement('div');
+        content.classList.add('message-content');
         const details = document.createElement('details');
         details.className = 'initial-prompt-reference';
-        details.open = true;
         const summary = document.createElement('summary');
-        summary.textContent = `初回プロンプト：${snapshot.title}`;
+        summary.textContent = `初回プロンプト：${snapshot.title}${preview ? '（未送信）' : ''}`;
         const body = document.createElement('pre');
         body.textContent = snapshot.text;
         details.append(summary, body);
-        container.appendChild(details);
+        content.appendChild(details);
+        message.appendChild(content);
+        container.appendChild(message);
     },
 
     async loadRecords() {
@@ -198,5 +205,6 @@ const initialPromptUtils = {
         if (!result || result === 'cancel') return;
         state.currentInitialPromptId = result === 'none' ? null : this.getRecord(result)?.id || null;
         this.updateMenuItem();
+        uiUtils.renderChatMessages(true);
     },
 };
