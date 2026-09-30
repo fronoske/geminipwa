@@ -112,7 +112,7 @@ describe('project configuration', () => {
     expect(readFile('src/ui-settings.ts')).not.toMatch(retiredFeaturePattern);
   });
 
-  it('uses one configurable header menu for chat-wide actions', () => {
+  it('always shows the chat menu and bulk history actions', () => {
     const html = readFile('src/index.html');
     for (const id of ['header-menu-btn', 'attach-file-btn', 'header-menu-lorebook-btn', 'header-menu-clear-btn', 'header-menu-copy-btn']) {
       expect(html).toContain(`id="${id}"`);
@@ -125,10 +125,13 @@ describe('project configuration', () => {
     expect(html.indexOf('id="header-menu-clear-btn"')).toBeLessThan(html.indexOf('id="header-menu-copy-btn"'));
     expect(html.indexOf('id="header-menu-copy-btn"')).toBeLessThan(html.indexOf('id="attach-file-btn"'));
     expect(html).toContain('全削除（先頭を除く）');
-    expect(html).toContain('id="show-header-menu-button-toggle"');
+    expect(html).toContain('id="import-all-sessions-btn"');
+    expect(html).toContain('id="export-all-sessions-btn"');
+    expect(html).not.toContain('id="show-header-menu-button-toggle"');
+    expect(html).not.toContain('id="show-bulk-history-actions-toggle"');
     expect(html).not.toMatch(/id="(?:new-chat|delete-session|copy-session)-btn"/);
     expect(html).not.toMatch(/id="show-(?:new-chat|delete-session|copy-session)-button-toggle"/);
-    expect(readFile('src/app-state.ts')).toContain('showHeaderMenuButton: true');
+    expect(readFile('src/app-state.ts')).not.toMatch(/showHeaderMenuButton|showBulkHistoryActions/);
   });
 
   it('provides configurable floating message navigation controls', () => {

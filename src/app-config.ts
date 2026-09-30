@@ -45,6 +45,9 @@
             { value: 'other', text: 'その他', prefixes: [] },
         ];
         const DEFAULT_XAI_MODEL = 'grok-4-1-fast-non-reasoning';
+        const XAI_REASONING_EFFORT_MODELS = ['grok-3-mini', 'grok-3-mini-fast'];
+        const isXaiReasoningEffortAvailable = (model = '', includeThoughts = false) =>
+            includeThoughts && XAI_REASONING_EFFORT_MODELS.includes(model);
         const DEFAULT_LLMAGGREGATOR_MODEL = 'google/gemma-4-31b-it:free';
         const DEFAULT_STREAMING_SPEED = 12;
         const LOREBOOK_SCHEMA_VERSION = 3;

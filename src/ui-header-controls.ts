@@ -9,7 +9,6 @@ Object.assign(uiUtils, {
                 const updateVisibility = () => {
                     const toggleableButtons = [
                         { id: '#show-chat-title-toggle', element: elements.chatTitle },
-                        { id: '#show-header-menu-button-toggle', element: elements.headerMenuContainer },
                         { id: '#show-api-provider-toggle-header', element: elements.headerApiProviderToggleBtn },
                        { id: '#show-header-cycle-api-key-btn-toggle', element: elements.headerCycleApiKeyBtn },
                         { id: '#show-scroll-to-top-button-toggle', element: elements.scrollToTopBtn },
@@ -25,9 +24,6 @@ Object.assign(uiUtils, {
                             item.element.classList.toggle('hidden', !checkbox.checked);
                         }
                     });
-                    if (!state.settings.showHeaderMenuButton) {
-                        this.setHeaderMenuOpen(false);
-                    }
 
                     this.adjustHeaderLayout();
                     this.updateProviderToggleButtons();
@@ -123,12 +119,11 @@ Object.assign(uiUtils, {
                 });
             },
             updateHistoryHeaderButtonVisibility() {
-                const showBulkActions = state.settings.showBulkHistoryActions;
                 if (elements.exportAllSessionsBtn) {
-                    elements.exportAllSessionsBtn.classList.toggle('hidden', !showBulkActions);
+                    elements.exportAllSessionsBtn.classList.remove('hidden');
                 }
                 if (elements.importAllSessionsBtn) {
-                    elements.importAllSessionsBtn.classList.toggle('hidden', !showBulkActions);
+                    elements.importAllSessionsBtn.classList.remove('hidden');
                 }
             },
             setHistoryMenuOpen(isOpen, restoreFocus = false) {

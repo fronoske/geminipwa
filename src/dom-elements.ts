@@ -207,11 +207,9 @@ headerTapScrollToTopToggle: document.getElementById('header-tap-scroll-to-top-to
                         reduceMessageSpacingToggle: document.getElementById('reduce-message-spacing-toggle'),
 
             showChatTitleToggle: document.getElementById('show-chat-title-toggle'),
-            showHeaderMenuButtonToggle: document.getElementById('show-header-menu-button-toggle'),
             showScrollToTopButtonToggle: document.getElementById('show-scroll-to-top-button-toggle'),
             showScrollToBottomButtonToggle: document.getElementById('show-scroll-to-bottom-button-toggle'),
             showToggleAllContentButtonToggle: document.getElementById('show-toggle-all-content-button-toggle'),
-            showBulkHistoryActionsToggle: document.getElementById('show-bulk-history-actions-toggle'),
             showPasteButtonInEditToggle: document.getElementById('show-paste-button-in-edit-toggle'),
             messageBubbleOpacityInput: document.getElementById('message-bubble-opacity'),
             chatOverlayOpacityInput: document.getElementById('chat-overlay-opacity'),

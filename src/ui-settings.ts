@@ -213,6 +213,13 @@ document.body.classList.remove('dark-mode', 'light-mode-forced', 'pastel-pink-mo
         document.body.classList.toggle('elevation-hover-enabled', state.settings.enableElevationHover);
     },
 
+            updateXaiReasoningEffortAvailability() {
+                elements.xaiReasoningEffortSelect.disabled = !isXaiReasoningEffortAvailable(
+                    elements.xaiModelNameSelect.value,
+                    elements.xaiIncludeThoughtsToggle.checked
+                );
+            },
+
             applySettingsToUI() {
                 this.toggleApiSettingsVisibility(state.settings.apiProvider);
                 elements.apiProviderSelect.value = state.settings.apiProvider;
@@ -419,7 +426,6 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 elements.extendUserBubbleWidthToggle.checked = state.settings.extendUserBubbleWidth;
                                 elements.reduceMessageSpacingToggle.checked = state.settings.reduceMessageSpacing;
                 elements.showChatTitleToggle.checked = state.settings.showChatTitle;
-                elements.showHeaderMenuButtonToggle.checked = state.settings.showHeaderMenuButton;
                 if (!['always', 'hidden', 'scroll'].includes(state.settings.messageNavigationButtonMode)) {
                     state.settings.messageNavigationButtonMode = 'scroll';
                 }
@@ -427,7 +433,6 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 elements.showScrollToTopButtonToggle.checked = state.settings.showScrollToTopButton;
                 elements.showScrollToBottomButtonToggle.checked = state.settings.showScrollToBottomButton;
                 elements.showToggleAllContentButtonToggle.checked = state.settings.showToggleAllContentButton;
-                elements.showBulkHistoryActionsToggle.checked = state.settings.showBulkHistoryActions;
                 elements.showPasteButtonInEditToggle.checked = state.settings.showPasteButtonInEdit;
                elements.messageBubbleOpacityInput.value = state.settings.messageBubbleOpacity ?? DEFAULT_MESSAGE_BUBBLE_OPACITY;
                 elements.chatOverlayOpacityInput.value = state.settings.chatOverlayOpacity ?? DEFAULT_CHAT_OVERLAY_OPACITY;
@@ -504,6 +509,7 @@ elements.footerTapScrollToBottomToggle.checked = state.settings.footerTapScrollT
                 this.updateOpenAIUserModelOptions();
                 this.updateOpenRouterUserModelOptions();
                 this.updateXaiUserModelOptions();
+                this.updateXaiReasoningEffortAvailability();
                 this.updateLlmAggregatorUserModelOptions();
                 this.applyTheme();
                 this.applyFontFamily();

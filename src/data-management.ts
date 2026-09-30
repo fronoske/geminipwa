@@ -642,12 +642,10 @@ newSettings.headerTapScrollToTop = elements.headerTapScrollToTopToggle.checked;
 
 
                 newSettings.showChatTitle = elements.showChatTitleToggle.checked;
-                newSettings.showHeaderMenuButton = elements.showHeaderMenuButtonToggle.checked;
                 newSettings.messageNavigationButtonMode = elements.messageNavigationModeSelect.value;
                 newSettings.showScrollToTopButton = elements.showScrollToTopButtonToggle.checked;
                 newSettings.showScrollToBottomButton = elements.showScrollToBottomButtonToggle.checked;
                 newSettings.showToggleAllContentButton = elements.showToggleAllContentButtonToggle.checked;
-                newSettings.showBulkHistoryActions = elements.showBulkHistoryActionsToggle.checked;
                 newSettings.showHistoryPreviewBubble = elements.showHistoryPreviewBubbleToggle.checked;
                 newSettings.stripedHistoryList = elements.stripedHistoryListToggle.checked;
                 newSettings.showPasteButtonInEdit = elements.showPasteButtonInEditToggle.checked;

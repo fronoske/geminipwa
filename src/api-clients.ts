@@ -891,8 +891,7 @@ async callDeepSeekApi(apiKey, model, messagesForApi, generationConfig, systemIns
                     generationConfig
                 );
 
-                const reasoningModels = ['grok-3-mini', 'grok-3-mini-fast'];
-                if (state.settings.xaiIncludeThoughts && reasoningModels.includes(body.model)) {
+                if (isXaiReasoningEffortAvailable(body.model, state.settings.xaiIncludeThoughts)) {
                     body.reasoning_effort = state.settings.xaiReasoningEffort;
                 }
 

@@ -1211,14 +1211,14 @@
                                 </label>
                                 <div style="margin-top: 10px;">
                                     <label for="xai-reasoning-effort">Reasoning Effort:</label>
-                                    <select id="xai-reasoning-effort" style="width: auto; margin-bottom: 0;">
+                                    <select id="xai-reasoning-effort" style="width: auto; margin-bottom: 0;" disabled>
                                         <option value="low">low</option>
                                         <option value="high">high</option>
                                     </select>
                                 </div>
                                 <p
                                     style="font-size: 11px; color: var(--text-secondary); margin-top: 5px; margin-bottom: 10px;">
-                                    ※ grok-3-mini, grok-3-mini-fast のみ対応。
+                                    ※ grok-3-mini または grok-3-mini-fast を選び、Include Thoughts を有効にした場合のみ設定できます。
                                 </p>
                             </div>
                         </details>
@@ -1800,10 +1800,6 @@
                                                 <input type="checkbox" id="striped-history-list-toggle">
                                                 履歴リストを縞模様（ストライプ）にする
                                             </label>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="show-bulk-history-actions-toggle">
-                                                履歴画面のメニューに「一括JSON出力」「一括JSON取込」を表示する
-                                            </label>
                                         </div>
                                     </details>
 
@@ -1815,10 +1811,6 @@
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="show-chat-title-toggle">
                                                 チャットタイトルを表示する
-                                            </label>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="show-header-menu-button-toggle">
-                                                ハンバーガーメニューボタンを表示する
                                             </label>
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="show-api-provider-toggle-header">

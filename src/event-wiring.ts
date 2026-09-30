@@ -234,6 +234,8 @@ Object.assign(appLogic, {
                         uiUtils.toggleApiSettingsVisibility(selectedProvider);
                     });
                 }
+                elements.xaiModelNameSelect.addEventListener('change', () => uiUtils.updateXaiReasoningEffortAvailability());
+                elements.xaiIncludeThoughtsToggle.addEventListener('change', () => uiUtils.updateXaiReasoningEffortAvailability());
                 elements.setThinkingBudgetBtns.forEach(button => {
                     button.addEventListener('click', () => {
                         const value = button.dataset.value;
@@ -343,10 +345,6 @@ Object.assign(appLogic, {
                     uiUtils.updateChatScreenElementVisibility();
                     uiUtils.updateMemoStackHeightSettingsVisibility();
                 });
-                elements.showHeaderMenuButtonToggle.addEventListener('change', () => {
-                    state.settings.showHeaderMenuButton = elements.showHeaderMenuButtonToggle.checked;
-                    uiUtils.updateChatScreenElementVisibility();
-                });
                 elements.showScrollToTopButtonToggle.addEventListener('change', () => {
                     state.settings.showScrollToTopButton = elements.showScrollToTopButtonToggle.checked;
                     uiUtils.updateChatScreenElementVisibility();
@@ -412,10 +410,6 @@ Object.assign(appLogic, {
                 elements.showToggleAllContentButtonToggle.addEventListener('change', () => {
                     state.settings.showToggleAllContentButton = elements.showToggleAllContentButtonToggle.checked;
                     uiUtils.updateChatScreenElementVisibility();
-                });
-                elements.showBulkHistoryActionsToggle.addEventListener('change', () => {
-                    state.settings.showBulkHistoryActions = elements.showBulkHistoryActionsToggle.checked;
-                    uiUtils.updateHistoryHeaderButtonVisibility();
                 });
                 elements.showHistoryPreviewBubbleToggle.checked = state.settings.showHistoryPreviewBubble;
                 elements.showHistoryPreviewBubbleToggle.addEventListener('change', () => {

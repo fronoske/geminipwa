@@ -6519,14 +6519,14 @@ font-size: 1.142em !important;
                                 </label>
                                 <div style="margin-top: 10px;">
                                     <label for="xai-reasoning-effort">Reasoning Effort:</label>
-                                    <select id="xai-reasoning-effort" style="width: auto; margin-bottom: 0;">
+                                    <select id="xai-reasoning-effort" style="width: auto; margin-bottom: 0;" disabled>
                                         <option value="low">low</option>
                                         <option value="high">high</option>
                                     </select>
                                 </div>
                                 <p
                                     style="font-size: 11px; color: var(--text-secondary); margin-top: 5px; margin-bottom: 10px;">
-                                    ※ grok-3-mini, grok-3-mini-fast のみ対応。
+                                    ※ grok-3-mini または grok-3-mini-fast を選び、Include Thoughts を有効にした場合のみ設定できます。
                                 </p>
                             </div>
                         </details>
@@ -7108,10 +7108,6 @@ font-size: 1.142em !important;
                                                 <input type="checkbox" id="striped-history-list-toggle">
                                                 履歴リストを縞模様（ストライプ）にする
                                             </label>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="show-bulk-history-actions-toggle">
-                                                履歴画面のメニューに「一括JSON出力」「一括JSON取込」を表示する
-                                            </label>
                                         </div>
                                     </details>
 
@@ -7123,10 +7119,6 @@ font-size: 1.142em !important;
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="show-chat-title-toggle">
                                                 チャットタイトルを表示する
-                                            </label>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" id="show-header-menu-button-toggle">
-                                                ハンバーガーメニューボタンを表示する
                                             </label>
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="show-api-provider-toggle-header">
@@ -7817,6 +7809,8 @@ const OPENROUTER_MODEL_PROVIDERS = [
     { value: 'other', text: 'その他', prefixes: [] },
 ];
 const DEFAULT_XAI_MODEL = 'grok-4-1-fast-non-reasoning';
+const XAI_REASONING_EFFORT_MODELS = ['grok-3-mini', 'grok-3-mini-fast'];
+const isXaiReasoningEffortAvailable = (model = '', includeThoughts = false) => includeThoughts && XAI_REASONING_EFFORT_MODELS.includes(model);
 const DEFAULT_LLMAGGREGATOR_MODEL = 'google/gemma-4-31b-it:free';
 const DEFAULT_STREAMING_SPEED = 12;
 const LOREBOOK_SCHEMA_VERSION = 3;
@@ -8152,11 +8146,9 @@ const elements = {
     extendUserBubbleWidthToggle: document.getElementById('extend-user-bubble-width-toggle'),
     reduceMessageSpacingToggle: document.getElementById('reduce-message-spacing-toggle'),
     showChatTitleToggle: document.getElementById('show-chat-title-toggle'),
-    showHeaderMenuButtonToggle: document.getElementById('show-header-menu-button-toggle'),
     showScrollToTopButtonToggle: document.getElementById('show-scroll-to-top-button-toggle'),
     showScrollToBottomButtonToggle: document.getElementById('show-scroll-to-bottom-button-toggle'),
     showToggleAllContentButtonToggle: document.getElementById('show-toggle-all-content-button-toggle'),
-    showBulkHistoryActionsToggle: document.getElementById('show-bulk-history-actions-toggle'),
     showPasteButtonInEditToggle: document.getElementById('show-paste-button-in-edit-toggle'),
     messageBubbleOpacityInput: document.getElementById('message-bubble-opacity'),
     chatOverlayOpacityInput: document.getElementById('chat-overlay-opacity'),
@@ -8554,12 +8546,10 @@ const state = {
         extendUserBubbleWidth: false,
         reduceMessageSpacing: false,
         showChatTitle: true,
-        showHeaderMenuButton: true,
         messageNavigationButtonMode: 'scroll',
         showScrollToTopButton: false,
         showScrollToBottomButton: true,
         showToggleAllContentButton: false,
-        showBulkHistoryActions: true,
         showPasteButtonInEdit: false,
         showMemoButton: false,
         memoHeight: DEFAULT_MEMO_HEIGHT,
@@ -9101,7 +9091,7 @@ const dbUtils = {
                     }
                     const removedSettingKeys = settingsArray
                         .map((item) => item.key)
-                        .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine|enableSessionLinking|showSessionLinkingSettings|enableCryscroller|cryscroller|enableSettingsCryscroller|enableHistoryCryscroller|enableImmersiveScrolling|enableDynamicScrollMarkerColor|enableProofreading|showProofreadingSettings|proofreading|activeProofreadingConfigId|enableImageUrlReplacement|imageUrlReplacementBase|enableAutoBaseUrlDetection|enableFuzzySearchNormalization|fuzzySearchThreshold|characterNamesList|enableRomajiToKatakanaConversion|dummyErrorDebugMode|dummyDummyModel|dummyEnableDummyModel|showDiceButton|diceMinValue|diceMaxValue|backgroundImageBlob|historyBackgroundImageBlob|settingsBackgroundImageBlob|showUserIcon|userIconBlob|showUserName|userName|showAiIcon|aiIconBlob|showAiName|aiName|iconName|messageIcon|dummyUser|enableDummyUser|dummyModel|enableDummyModel|concatDummyModel|(?:gemini|deepSeek|claude|openai|xai|llmAggregator)(?:DummyUser|EnableDummyUser|DummyModel|EnableDummyModel|ConcatDummyModel)|webhookUrl|webhookFormat|enableWebhookNotification|webhooks|showNewChatButton|showDeleteSessionButton|showCopySessionButton|disableLoadChatConfirmationWhileSending|autoCloseOtherSettings|autoCloseDisplaySettings|showApiProviderToggleFooter|showFooterCycleApiKeyBtn|showPasteButtonInFooter|showSettingsScrollToTopButton|showSettingsScrollToBottomButton)/.test(key));
+                        .filter((key) => /^(?:twinEngine|showTwinEngine|showFooterTwinEngine|showFooterResummarize|dummyTwinEngine|enableSessionLinking|showSessionLinkingSettings|enableCryscroller|cryscroller|enableSettingsCryscroller|enableHistoryCryscroller|enableImmersiveScrolling|enableDynamicScrollMarkerColor|enableProofreading|showProofreadingSettings|proofreading|activeProofreadingConfigId|enableImageUrlReplacement|imageUrlReplacementBase|enableAutoBaseUrlDetection|enableFuzzySearchNormalization|fuzzySearchThreshold|characterNamesList|enableRomajiToKatakanaConversion|dummyErrorDebugMode|dummyDummyModel|dummyEnableDummyModel|showDiceButton|diceMinValue|diceMaxValue|backgroundImageBlob|historyBackgroundImageBlob|settingsBackgroundImageBlob|showUserIcon|userIconBlob|showUserName|userName|showAiIcon|aiIconBlob|showAiName|aiName|iconName|messageIcon|dummyUser|enableDummyUser|dummyModel|enableDummyModel|concatDummyModel|(?:gemini|deepSeek|claude|openai|xai|llmAggregator)(?:DummyUser|EnableDummyUser|DummyModel|EnableDummyModel|ConcatDummyModel)|webhookUrl|webhookFormat|enableWebhookNotification|webhooks|showNewChatButton|showDeleteSessionButton|showCopySessionButton|showHeaderMenuButton|showBulkHistoryActions|disableLoadChatConfirmationWhileSending|autoCloseOtherSettings|autoCloseDisplaySettings|showApiProviderToggleFooter|showFooterCycleApiKeyBtn|showPasteButtonInFooter|showSettingsScrollToTopButton|showSettingsScrollToBottomButton)/.test(key));
                     if (removedSettingKeys.length > 0) {
                         try {
                             const cleanupStore = this._getStore(SETTINGS_STORE, 'readwrite');
@@ -11226,8 +11216,7 @@ const apiUtils = {
             "Authorization": `Bearer ${apiKey}`
         };
         const body = this._createOpenAICompatibleRequestBody(model, messagesForApi, systemInstruction, useStreaming, enableVision, generationConfig);
-        const reasoningModels = ['grok-3-mini', 'grok-3-mini-fast'];
-        if (state.settings.xaiIncludeThoughts && reasoningModels.includes(body.model)) {
+        if (isXaiReasoningEffortAvailable(body.model, state.settings.xaiIncludeThoughts)) {
             body.reasoning_effort = state.settings.xaiReasoningEffort;
         }
         const baseUrl = XAI_API_BASE_URL;
@@ -16594,6 +16583,9 @@ Object.assign(uiUtils, {
         document.body.classList.toggle('elevation-enabled', state.settings.enableElevation);
         document.body.classList.toggle('elevation-hover-enabled', state.settings.enableElevationHover);
     },
+    updateXaiReasoningEffortAvailability() {
+        elements.xaiReasoningEffortSelect.disabled = !isXaiReasoningEffortAvailable(elements.xaiModelNameSelect.value, elements.xaiIncludeThoughtsToggle.checked);
+    },
     applySettingsToUI() {
         this.toggleApiSettingsVisibility(state.settings.apiProvider);
         elements.apiProviderSelect.value = state.settings.apiProvider;
@@ -16786,7 +16778,6 @@ Object.assign(uiUtils, {
         elements.extendUserBubbleWidthToggle.checked = state.settings.extendUserBubbleWidth;
         elements.reduceMessageSpacingToggle.checked = state.settings.reduceMessageSpacing;
         elements.showChatTitleToggle.checked = state.settings.showChatTitle;
-        elements.showHeaderMenuButtonToggle.checked = state.settings.showHeaderMenuButton;
         if (!['always', 'hidden', 'scroll'].includes(state.settings.messageNavigationButtonMode)) {
             state.settings.messageNavigationButtonMode = 'scroll';
         }
@@ -16794,7 +16785,6 @@ Object.assign(uiUtils, {
         elements.showScrollToTopButtonToggle.checked = state.settings.showScrollToTopButton;
         elements.showScrollToBottomButtonToggle.checked = state.settings.showScrollToBottomButton;
         elements.showToggleAllContentButtonToggle.checked = state.settings.showToggleAllContentButton;
-        elements.showBulkHistoryActionsToggle.checked = state.settings.showBulkHistoryActions;
         elements.showPasteButtonInEditToggle.checked = state.settings.showPasteButtonInEdit;
         elements.messageBubbleOpacityInput.value = state.settings.messageBubbleOpacity ?? DEFAULT_MESSAGE_BUBBLE_OPACITY;
         elements.chatOverlayOpacityInput.value = state.settings.chatOverlayOpacity ?? DEFAULT_CHAT_OVERLAY_OPACITY;
@@ -16865,6 +16855,7 @@ Object.assign(uiUtils, {
         this.updateOpenAIUserModelOptions();
         this.updateOpenRouterUserModelOptions();
         this.updateXaiUserModelOptions();
+        this.updateXaiReasoningEffortAvailability();
         this.updateLlmAggregatorUserModelOptions();
         this.applyTheme();
         this.applyFontFamily();
@@ -16974,7 +16965,6 @@ Object.assign(uiUtils, {
         const updateVisibility = () => {
             const toggleableButtons = [
                 { id: '#show-chat-title-toggle', element: elements.chatTitle },
-                { id: '#show-header-menu-button-toggle', element: elements.headerMenuContainer },
                 { id: '#show-api-provider-toggle-header', element: elements.headerApiProviderToggleBtn },
                 { id: '#show-header-cycle-api-key-btn-toggle', element: elements.headerCycleApiKeyBtn },
                 { id: '#show-scroll-to-top-button-toggle', element: elements.scrollToTopBtn },
@@ -16989,9 +16979,6 @@ Object.assign(uiUtils, {
                     item.element.classList.toggle('hidden', !checkbox.checked);
                 }
             });
-            if (!state.settings.showHeaderMenuButton) {
-                this.setHeaderMenuOpen(false);
-            }
             this.adjustHeaderLayout();
             this.updateProviderToggleButtons();
         };
@@ -17083,12 +17070,11 @@ Object.assign(uiUtils, {
         });
     },
     updateHistoryHeaderButtonVisibility() {
-        const showBulkActions = state.settings.showBulkHistoryActions;
         if (elements.exportAllSessionsBtn) {
-            elements.exportAllSessionsBtn.classList.toggle('hidden', !showBulkActions);
+            elements.exportAllSessionsBtn.classList.remove('hidden');
         }
         if (elements.importAllSessionsBtn) {
-            elements.importAllSessionsBtn.classList.toggle('hidden', !showBulkActions);
+            elements.importAllSessionsBtn.classList.remove('hidden');
         }
     },
     setHistoryMenuOpen(isOpen, restoreFocus = false) {
@@ -18533,6 +18519,8 @@ Object.assign(appLogic, {
                 uiUtils.toggleApiSettingsVisibility(selectedProvider);
             });
         }
+        elements.xaiModelNameSelect.addEventListener('change', () => uiUtils.updateXaiReasoningEffortAvailability());
+        elements.xaiIncludeThoughtsToggle.addEventListener('change', () => uiUtils.updateXaiReasoningEffortAvailability());
         elements.setThinkingBudgetBtns.forEach(button => {
             button.addEventListener('click', () => {
                 const value = button.dataset.value;
@@ -18634,10 +18622,6 @@ Object.assign(appLogic, {
             uiUtils.updateChatScreenElementVisibility();
             uiUtils.updateMemoStackHeightSettingsVisibility();
         });
-        elements.showHeaderMenuButtonToggle.addEventListener('change', () => {
-            state.settings.showHeaderMenuButton = elements.showHeaderMenuButtonToggle.checked;
-            uiUtils.updateChatScreenElementVisibility();
-        });
         elements.showScrollToTopButtonToggle.addEventListener('change', () => {
             state.settings.showScrollToTopButton = elements.showScrollToTopButtonToggle.checked;
             uiUtils.updateChatScreenElementVisibility();
@@ -18703,10 +18687,6 @@ Object.assign(appLogic, {
         elements.showToggleAllContentButtonToggle.addEventListener('change', () => {
             state.settings.showToggleAllContentButton = elements.showToggleAllContentButtonToggle.checked;
             uiUtils.updateChatScreenElementVisibility();
-        });
-        elements.showBulkHistoryActionsToggle.addEventListener('change', () => {
-            state.settings.showBulkHistoryActions = elements.showBulkHistoryActionsToggle.checked;
-            uiUtils.updateHistoryHeaderButtonVisibility();
         });
         elements.showHistoryPreviewBubbleToggle.checked = state.settings.showHistoryPreviewBubble;
         elements.showHistoryPreviewBubbleToggle.addEventListener('change', () => {
@@ -21655,12 +21635,10 @@ Object.assign(appLogic, {
         newSettings.extendUserBubbleWidth = elements.extendUserBubbleWidthToggle.checked;
         newSettings.reduceMessageSpacing = elements.reduceMessageSpacingToggle.checked;
         newSettings.showChatTitle = elements.showChatTitleToggle.checked;
-        newSettings.showHeaderMenuButton = elements.showHeaderMenuButtonToggle.checked;
         newSettings.messageNavigationButtonMode = elements.messageNavigationModeSelect.value;
         newSettings.showScrollToTopButton = elements.showScrollToTopButtonToggle.checked;
         newSettings.showScrollToBottomButton = elements.showScrollToBottomButtonToggle.checked;
         newSettings.showToggleAllContentButton = elements.showToggleAllContentButtonToggle.checked;
-        newSettings.showBulkHistoryActions = elements.showBulkHistoryActionsToggle.checked;
         newSettings.showHistoryPreviewBubble = elements.showHistoryPreviewBubbleToggle.checked;
         newSettings.stripedHistoryList = elements.stripedHistoryListToggle.checked;
         newSettings.showPasteButtonInEdit = elements.showPasteButtonInEditToggle.checked;
