@@ -83,6 +83,24 @@ describe('OpenRouter model catalog', () => {
     );
   });
 
+  it('excludes batch variants by ID from fresh and cached catalogs', () => {
+    const context = createContext();
+    const freshBatch = new vm.Script(`openRouterModelCatalog.normalizeModel({
+      id: 'openai/model:batch', name: 'Ordinary Label', context_length: 1000000,
+      architecture: { output_modalities: ['text'] }
+    })`).runInContext(context);
+    const cachedBatch = new vm.Script(`openRouterModelCatalog.normalizeCachedModel({
+      id: 'openai/model:BATCH', name: 'Ordinary Label', contextLength: 1000000
+    })`).runInContext(context);
+    const ordinary = new vm.Script(`openRouterModelCatalog.normalizeModel({
+      id: 'openai/batch-research', name: 'Batch Research', context_length: 1000000,
+      architecture: { output_modalities: ['text'] }
+    })`).runInContext(context);
+    expect(freshBatch).toBeNull();
+    expect(cachedBatch).toBeNull();
+    expect(ordinary).toMatchObject({ id: 'openai/batch-research' });
+  });
+
   it('classifies latest aliases by their author while keeping unknown authors in the other group', () => {
     const context = createContext();
     expect(new vm.Script("openRouterModelCatalog.classifyProvider('openai/gpt-terra-latest')").runInContext(context)).toBe('openai');
@@ -304,10 +322,10 @@ describe('OpenRouter model catalog', () => {
 
   });
 
-  it('deletes only IDs absent from a successful OpenRouter response and persists the selection', async () => {
+  it('removes unavailable and batch IDs after a successful response while preserving other variants', async () => {
     const saveSetting = vi.fn(async () => undefined);
     const state = { settings: {
-      openrouterSelectedModels: ['google/removed', 'google/available', 'google/image-only'],
+      openrouterSelectedModels: ['google/removed', 'google/available', 'google/image-only', 'google/available:batch'],
       openrouterModelName: 'google/removed',
     } };
     const count = { textContent: '' };
@@ -318,6 +336,7 @@ describe('OpenRouter model catalog', () => {
         json: async () => ({ data: [
           { id: 'google/available', context_length: 1000000, architecture: { output_modalities: ['text'] } },
           { id: 'google/image-only', context_length: 1000000, architecture: { output_modalities: ['image'] } },
+          { id: 'google/available:batch', context_length: 1000000, architecture: { output_modalities: ['text'] } },
         ] }),
       })),
       elements: { openrouterSelectedModelCount: count },
@@ -331,12 +350,12 @@ describe('OpenRouter model catalog', () => {
       },
     });
     expect(await new vm.Script('openRouterModelCatalog.pruneUnavailableSelectedModels()').runInContext(context)).toBe(0);
-    expect(state.settings.openrouterSelectedModels).toHaveLength(3);
+    expect(state.settings.openrouterSelectedModels).toHaveLength(4);
     expect(saveSetting).not.toHaveBeenCalled();
     await new vm.Script("openRouterModelCatalog.fetchModels('secret-key')").runInContext(context);
 
     const removedCount = await new vm.Script('openRouterModelCatalog.pruneUnavailableSelectedModels()').runInContext(context);
-    expect(removedCount).toBe(1);
+    expect(removedCount).toBe(2);
     expect(state.settings.openrouterSelectedModels).toEqual(['google/available', 'google/image-only']);
     expect(state.settings.openrouterModelName).toBe('google/available');
     expect(count.textContent).toBe('2');

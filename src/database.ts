@@ -271,7 +271,7 @@ const dbUtils = {
                             } else {
                                 state.settings.openrouterSelectedModels = [...new Set(
                                     state.settings.openrouterSelectedModels
-                                        .filter((modelId) => typeof modelId === 'string' && modelId.trim())
+                                        .filter((modelId) => typeof modelId === 'string' && modelId.trim() && !/:batch$/i.test(modelId.trim()))
                                         .map((modelId) => modelId.trim())
                                 )];
                             }
@@ -283,7 +283,8 @@ const dbUtils = {
                                 && openrouterCatalogFetchedAt > 0
                                 ? openrouterCatalogFetchedAt
                                 : null;
-                            if (state.settings.openrouterModelName === 'openrouter/auto') {
+                            if (state.settings.openrouterModelName === 'openrouter/auto'
+                                || /:batch$/i.test(String(state.settings.openrouterModelName || '').trim())) {
                                 state.settings.openrouterModelName = DEFAULT_OPENROUTER_MODEL;
                             }
                             if (state.settings.apiProviderCycle && typeof state.settings.apiProviderCycle === 'object') {

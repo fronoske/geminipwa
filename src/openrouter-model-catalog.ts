@@ -27,9 +27,14 @@ const openRouterModelCatalog = {
             && completionPrice === 0;
     },
 
+    isBatchModelId(modelId) {
+        return /:batch$/i.test(String(modelId || '').trim());
+    },
+
     normalizeModel(rawModel) {
         if (!rawModel || typeof rawModel.id !== 'string' || !rawModel.id.trim()) return null;
         if (rawModel.id.trim() === 'openrouter/auto') return null;
+        if (this.isBatchModelId(rawModel.id)) return null;
         const outputModalities = Array.isArray(rawModel.architecture?.output_modalities)
             ? rawModel.architecture.output_modalities
             : [];
@@ -69,6 +74,7 @@ const openRouterModelCatalog = {
     normalizeCachedModel(rawModel) {
         if (!rawModel || typeof rawModel.id !== 'string' || !rawModel.id.trim()) return null;
         if (rawModel.id.trim() === 'openrouter/auto') return null;
+        if (this.isBatchModelId(rawModel.id)) return null;
         const inputModalities = Array.isArray(rawModel.inputModalities)
             ? rawModel.inputModalities.filter((value) => typeof value === 'string')
             : [];
@@ -240,7 +246,7 @@ const openRouterModelCatalog = {
         const uniqueModels = new Map();
         const latestModelIds = new Set();
         payload.data.forEach((rawModel) => {
-            if (typeof rawModel?.id === 'string' && rawModel.id.trim()) {
+            if (typeof rawModel?.id === 'string' && rawModel.id.trim() && !this.isBatchModelId(rawModel.id)) {
                 latestModelIds.add(rawModel.id.trim());
             }
             const model = this.normalizeModel(rawModel);
@@ -300,7 +306,7 @@ const openRouterModelCatalog = {
 
     setSelectedIds(modelIds) {
         state.settings.openrouterSelectedModels = [...new Set(
-            modelIds.filter((modelId) => typeof modelId === 'string' && modelId && modelId !== 'openrouter/auto')
+            modelIds.filter((modelId) => typeof modelId === 'string' && modelId && modelId !== 'openrouter/auto' && !this.isBatchModelId(modelId))
         )];
         uiUtils.updateOpenRouterUserModelOptions();
         this.updateSelectedCount();
@@ -500,7 +506,7 @@ const openRouterModelCatalog = {
             const removedCount = await this.pruneUnavailableSelectedModels();
             elements.openrouterModelCatalogControls.classList.remove('hidden');
             elements.openrouterModelFetchStatus.textContent = `${models.length}件のTextモデルを取得しました（${this.lastFetchedAt.toLocaleString()}）。`
-                + (removedCount ? ` OpenRouterにない選択済みモデルを${removedCount}件削除しました。` : '');
+                + (removedCount ? ` 一覧の対象外となった選択済みモデルを${removedCount}件削除しました。` : '');
             this.renderModelList();
             uiUtils.updateOpenRouterUserModelOptions();
         } catch (error) {
