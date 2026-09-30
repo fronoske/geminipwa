@@ -5386,7 +5386,7 @@ font-size: 1.142em !important;
                             </div>
                             <div class="history-item-actions">
                                 <button class="js-edit-title-btn" title="タイトル編集">✎</button>
-                                <button class="js-export-btn" title="JSON出力">JSON出力</button>
+                                <button class="js-export-btn" title="JSON出力">出力</button>
                                 <button class="js-duplicate-btn" title="複製">複製</button>
                                 <button class="js-delete-btn" title="削除">削除</button>
                             </div>
@@ -17932,10 +17932,7 @@ Object.assign(appLogic, {
         });
         elements.historyMenuNewChatBtn.addEventListener('click', () => {
             uiUtils.setHistoryMenuOpen(false, true);
-            uiUtils.showCustomConfirm("現在のチャットを保存して新規チャットを開始しますか？").then(confirmed => {
-                if (confirmed)
-                    this.confirmStartNewChat();
-            });
+            this.confirmStartNewChat();
         });
         elements.importHistoryBtn.addEventListener('click', () => {
             uiUtils.setHistoryMenuOpen(false, true);

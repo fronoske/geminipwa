@@ -132,9 +132,7 @@ Object.assign(appLogic, {
                 });
                 elements.historyMenuNewChatBtn.addEventListener('click', () => {
                     uiUtils.setHistoryMenuOpen(false, true);
-                    uiUtils.showCustomConfirm("現在のチャットを保存して新規チャットを開始しますか？").then(confirmed => {
-                        if (confirmed) this.confirmStartNewChat();
-                    });
+                    this.confirmStartNewChat();
                 });
                 elements.importHistoryBtn.addEventListener('click', () => {
                     uiUtils.setHistoryMenuOpen(false, true);
