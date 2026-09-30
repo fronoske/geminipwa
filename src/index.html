@@ -116,15 +116,22 @@
                 <button id="back-to-chat-from-history" class="header-button" aria-label="チャットへ戻る">＞</button>
                 <h1 id="history-title">履歴一覧</h1>
 
-                <button id="export-all-sessions-btn" class="header-save-button history-action-button gold"
-
-                    title="全セッションをJSON形式で出力">全出力</button>
-
-                <button id="import-all-sessions-btn" class="header-save-button history-action-button purple"
-                    title="全セッションをJSON形式で取込">全取込</button>
+                <div id="history-menu-container" class="header-menu-container">
+                    <button id="history-menu-btn" class="header-save-button header-menu-button" type="button"
+                        aria-haspopup="menu" aria-expanded="false" aria-controls="history-submenu">操作 ▾</button>
+                    <div id="history-submenu" class="header-submenu hidden" role="menu" aria-label="履歴の操作">
+                        <button id="import-history-btn" type="button" role="menuitem"
+                            title="単一履歴をテキスト形式で取込">テキスト取込（TXT）</button>
+                        <button id="import-all-sessions-btn" type="button" role="menuitem"
+                            title="ファイル内のセッションをJSON形式で一括取込">一括取込（JSON）</button>
+                        <button id="export-all-sessions-btn" type="button" role="menuitem"
+                            title="全セッションをJSON形式で一括出力">一括出力（JSON）</button>
+                        <div class="history-menu-separator" role="separator"></div>
+                        <button id="delete-all-sessions-btn" type="button" role="menuitem"
+                            class="danger-menu-item" title="全セッションを削除">全削除</button>
+                    </div>
+                </div>
                 <input type="file" id="import-all-sessions-input" accept=".json" class="hidden">
-
-                <button id="import-history-btn" class="header-save-button" title="単一履歴をテキスト形式でインポート">インポート</button>
                 <input type="file" id="import-history-input" accept=".txt" class="hidden">
             </header>
             <main class="main-content">
@@ -1716,7 +1723,7 @@
                                         <div style="padding-left: 15px; margin-top: 10px;">
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="add-prefix-on-import-toggle">
-                                                履歴インポート時にタイトルへ接頭辞を付与する
+                                                履歴取込時にタイトルへ接頭辞を付与する
                                             </label>
                                         </div>
                                     </details>
@@ -1794,7 +1801,7 @@
                                             </label>
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="show-bulk-history-actions-toggle">
-                                                履歴画面に「全出力」「全取込」ボタンを表示する
+                                                履歴画面の操作メニューに「一括出力」「一括取込」を表示する
                                             </label>
                                         </div>
                                     </details>

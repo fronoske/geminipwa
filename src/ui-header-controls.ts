@@ -120,6 +120,15 @@ Object.assign(uiUtils, {
                     elements.importAllSessionsBtn.classList.toggle('hidden', !showBulkActions);
                 }
             },
+            setHistoryMenuOpen(isOpen, restoreFocus = false) {
+                elements.historySubmenu.classList.toggle('hidden', !isOpen);
+                elements.historyMenuBtn.setAttribute('aria-expanded', String(isOpen));
+                if (isOpen) {
+                    elements.historySubmenu.querySelector('[role="menuitem"]:not(.hidden):not(:disabled)')?.focus();
+                } else if (restoreFocus) {
+                    elements.historyMenuBtn.focus();
+                }
+            },
             updateUserModelOptions() {
                 const group = elements.geminiUserDefinedModelsGroup;
                 group.innerHTML = '';

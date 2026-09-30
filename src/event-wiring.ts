@@ -76,6 +76,9 @@ Object.assign(appLogic, {
                     if (!elements.headerMenuContainer.contains(event.target)) {
                         uiUtils.setHeaderMenuOpen(false);
                     }
+                    if (!elements.historyMenuContainer.contains(event.target)) {
+                        uiUtils.setHistoryMenuOpen(false);
+                    }
                 });
                 document.addEventListener('keydown', (event) => {
                     if (event.key === 'Escape' && !elements.headerSubmenu.classList.contains('hidden')) {
@@ -102,14 +105,54 @@ Object.assign(appLogic, {
                 });
                 elements.userInput.addEventListener('input', () => uiUtils.updateAttachmentBadgeVisibility());
 
-                elements.importHistoryBtn.addEventListener('click', () => elements.importHistoryInput.click());
+                elements.historyMenuBtn.addEventListener('click', () => {
+                    uiUtils.setHistoryMenuOpen(elements.historySubmenu.classList.contains('hidden'));
+                });
+                elements.historyMenuContainer.addEventListener('keydown', (event) => {
+                    const isOpen = !elements.historySubmenu.classList.contains('hidden');
+                    if (event.key === 'Escape' && isOpen) {
+                        event.preventDefault();
+                        uiUtils.setHistoryMenuOpen(false, true);
+                    } else if (event.key === 'Tab' && isOpen) {
+                        uiUtils.setHistoryMenuOpen(false, true);
+                    } else if (['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) {
+                        event.preventDefault();
+                        if (!isOpen) uiUtils.setHistoryMenuOpen(true);
+                        const items = Array.from(elements.historySubmenu.querySelectorAll('[role="menuitem"]:not(.hidden):not(:disabled)'));
+                        const index = items.indexOf(document.activeElement);
+                        const nextIndex = event.key === 'Home' ? 0
+                            : event.key === 'End' ? items.length - 1
+                            : !isOpen ? (event.key === 'ArrowUp' ? items.length - 1 : 0)
+                            : (index + (event.key === 'ArrowUp' ? -1 : 1) + items.length) % items.length;
+                        items[nextIndex]?.focus();
+                    }
+                });
+                elements.historyMenuContainer.addEventListener('focusout', (event) => {
+                    if (!elements.historyMenuContainer.contains(event.relatedTarget)) {
+                        uiUtils.setHistoryMenuOpen(false);
+                    }
+                });
+                elements.deleteAllSessionsBtn.addEventListener('click', () => {
+                    uiUtils.setHistoryMenuOpen(false, true);
+                    this.confirmClearAllHistory();
+                });
+                elements.importHistoryBtn.addEventListener('click', () => {
+                    uiUtils.setHistoryMenuOpen(false, true);
+                    elements.importHistoryInput.click();
+                });
                 elements.importHistoryInput.addEventListener('change', (event) => {
                     const file = event.target.files[0];
                     if (file) this.handleHistoryImport(file);
                     event.target.value = null;
                 });
-                elements.exportAllSessionsBtn.addEventListener('click', () => this.exportAllSessions());
-                elements.importAllSessionsBtn.addEventListener('click', () => elements.importAllSessionsInput.click());
+                elements.exportAllSessionsBtn.addEventListener('click', () => {
+                    uiUtils.setHistoryMenuOpen(false, true);
+                    this.exportAllSessions();
+                });
+                elements.importAllSessionsBtn.addEventListener('click', () => {
+                    uiUtils.setHistoryMenuOpen(false, true);
+                    elements.importAllSessionsInput.click();
+                });
                 elements.importAllSessionsInput.addEventListener('change', (event) => {
                     const file = event.target.files[0];
                     if (file) this.handleAllSessionsImport(file);

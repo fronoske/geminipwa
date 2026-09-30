@@ -67,10 +67,10 @@ Object.assign(appLogic, {
                             request.onsuccess = (event) => resolve(event.target.result);
                             request.onerror = (event) => reject(event.target.error);
                         });
-                        await uiUtils.showCustomAlert(`履歴「${newChatData.title}」をインポートしました。`);
+                        await uiUtils.showCustomAlert(`履歴「${newChatData.title}」を取り込みました。`);
                         uiUtils.renderHistoryList();
                     } catch (error) {
-                        await uiUtils.showCustomAlert(`履歴のインポート中にエラーが発生しました: ${error.message}`);
+                        await uiUtils.showCustomAlert(`履歴の取込中にエラーが発生しました: ${error.message}`);
                     }
                 };
                 reader.onerror = async (event) => {
@@ -127,18 +127,18 @@ Object.assign(appLogic, {
                 try {
                     await this.exportAllSessions();
                 } catch (error) {
-                    alert(`エクスポートに失敗しました。データベースにアクセスできない可能性があります。\n\nエラー詳細: ${error.message}`);
+                    alert(`一括出力に失敗しました。データベースにアクセスできない可能性があります。\n\nエラー詳細: ${error.message}`);
                 }
             },
 
             async exportAllSessions() {
-                const confirmed = await uiUtils.showCustomConfirm("全てのセッションを1つのJSONファイルとしてエクスポートしますか？");
+                const confirmed = await uiUtils.showCustomConfirm("全てのセッションを1つのJSONファイルとして一括出力しますか？");
                 if (!confirmed) return;
 
                 try {
                     const chats = await dbUtils.getAllChats();
                     if (!chats || chats.length === 0) {
-                        await uiUtils.showCustomAlert("エクスポートするセッションがありません。");
+                        await uiUtils.showCustomAlert("出力するセッションがありません。");
                         return;
                     }
 
@@ -188,9 +188,9 @@ Object.assign(appLogic, {
                     a.click();
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
-                    await uiUtils.showCustomAlert(`${chats.length}件のセッションをエクスポートしました。`);
+                    await uiUtils.showCustomAlert(`${chats.length}件のセッションを一括出力しました。`);
                 } catch (error) {
-                    await uiUtils.showCustomAlert(`全セッションのエクスポート中にエラーが発生しました: ${error.message || error}`);
+                    await uiUtils.showCustomAlert(`セッションの一括出力中にエラーが発生しました: ${error.message || error}`);
                 }
             },
             async handleAllSessionsImport(file) {
@@ -213,12 +213,12 @@ Object.assign(appLogic, {
                         }
 
                         if (importedData.length === 0) {
-                            await uiUtils.showCustomAlert("ファイルにインポート対象のセッションデータが含まれていません。");
+                            await uiUtils.showCustomAlert("ファイルに取込対象のセッションデータが含まれていません。");
                             return;
                         }
 
                         const confirmed = await uiUtils.showCustomConfirm(
-                            `${importedData.length}件のセッションをインポートしますか？\n(既存の履歴とタイトルが重複する場合、別履歴として追加されます)`
+                            `${importedData.length}件のセッションを一括取込しますか？\n(既存の履歴とタイトルが重複する場合、別履歴として追加されます)`
                         );
                         if (!confirmed) return;
 
@@ -302,7 +302,7 @@ Object.assign(appLogic, {
                             }
                         }
 
-                        let message = `${importedCount}件のセッションをインポートしました。`;
+                        let message = `${importedCount}件のセッションを取り込みました。`;
                         if (skippedCount > 0) {
                             message += ` ${skippedCount}件は形式エラー等でスキップされました。`;
                         }
@@ -312,7 +312,7 @@ Object.assign(appLogic, {
                         }
 
                     } catch (error) {
-                        await uiUtils.showCustomAlert(`全セッションのインポート中にエラーが発生しました: ${error.message || error}`);
+                        await uiUtils.showCustomAlert(`セッションの一括取込中にエラーが発生しました: ${error.message || error}`);
                     }
                 };
                 reader.onerror = async () => {
@@ -837,15 +837,38 @@ newSettings.headerTapScrollToTop = elements.headerTapScrollToTopToggle.checked;
             },
 
             async confirmClearAllHistory() {
-                const confirmed = await uiUtils.showCustomConfirm("本当にすべてのチャット履歴を削除しますか？\nこの操作は元に戻せません。設定は保持されます。");
-                if (confirmed) {
-                    try {
-                        await dbUtils.clearAllChatsStore();
-                        await uiUtils.showCustomAlert("すべてのチャット履歴が削除されました。画面をリロードします。");
-                        window.location.reload();
-                    } catch (error) {
-                        await uiUtils.showCustomAlert(`チャット履歴の削除中にエラーが発生しました: ${error}`);
+                if (this.isClearingAllHistory) return;
+                this.isClearingAllHistory = true;
+                try {
+                    if (state.isSending) {
+                        await uiUtils.showCustomAlert("応答中は全削除できません。応答を停止してから実行してください。");
+                        return;
                     }
+                    if (state.pendingMessageEditSave) await state.pendingMessageEditSave;
+                    const chats = await dbUtils.getAllChats();
+                    if (chats.length === 0) {
+                        await uiUtils.showCustomAlert("削除するセッションがありません。");
+                        return;
+                    }
+                    const confirmed = await uiUtils.showCustomConfirm(
+                        `全${chats.length}件のセッションを削除します。この操作は取り消せません。\n` +
+                        "現在のセッションも新規状態に戻ります。設定と登録済みLorebookは保持されます。"
+                    );
+                    if (!confirmed) return;
+                    if (state.isSending) {
+                        await uiUtils.showCustomAlert("応答中は全削除できません。応答を停止してから実行してください。");
+                        return;
+                    }
+                    if (state.pendingMessageEditSave) await state.pendingMessageEditSave;
+                    await dbUtils.clearAllChatsStore();
+                    state.editingMessageIndex = null;
+                    this.startNewChat();
+                    await uiUtils.renderHistoryList();
+                    await uiUtils.showCustomAlert("すべてのセッションを削除しました。");
+                } catch (error) {
+                    await uiUtils.showCustomAlert(`セッションの全削除中にエラーが発生しました: ${error}`);
+                } finally {
+                    this.isClearingAllHistory = false;
                 }
             },
 

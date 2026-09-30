@@ -580,9 +580,10 @@ const dbUtils = {
                 return new Promise((resolve, reject) => {
                     try {
                         const store = this._getStore(CHATS_STORE, 'readwrite');
-                        const request = store.clear();
-                        request.onsuccess = () => resolve();
-                        request.onerror = (e) => reject(`履歴全消去エラー: ${e.target.error}`);
+                        store.transaction.oncomplete = () => resolve();
+                        store.transaction.onerror = (e) => reject(`履歴全消去エラー: ${e.target.error}`);
+                        store.transaction.onabort = (e) => reject(`履歴全消去が中断されました: ${e.target.error || ''}`);
+                        store.clear();
                     } catch (error) {
                         reject(error);
                     }

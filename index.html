@@ -929,26 +929,31 @@
             order: 1;
             transition: font-size 0.2s ease;
             flex-grow: 1;
+            min-width: 0;
         }
 
         #history-screen .app-header #back-to-chat-from-history {
             order: 100;
         }
 
-        #history-screen .app-header #export-all-sessions-btn {
+        #history-screen .app-header #history-menu-container {
             order: 2;
-            padding: 4px 8px;
         }
 
-        #history-screen .app-header #import-all-sessions-btn {
-            order: 3;
-            padding: 4px 8px;
+        #history-menu-btn {
+            margin: 0;
+            white-space: nowrap;
         }
 
-        #history-screen .app-header #import-history-btn {
-            order: 4;
-            margin-right: 0;
-            padding: 4px 8px;
+        #history-submenu {
+            max-width: calc(100vw - 30px);
+            max-height: calc(100dvh - 90px);
+            overflow-y: auto;
+        }
+
+        .history-menu-separator {
+            margin: 6px 0;
+            border-top: 1px solid var(--border-primary);
         }
 
         .history-action-button.gold {
@@ -5349,15 +5354,22 @@ font-size: 1.142em !important;
                 <button id="back-to-chat-from-history" class="header-button" aria-label="チャットへ戻る">＞</button>
                 <h1 id="history-title">履歴一覧</h1>
 
-                <button id="export-all-sessions-btn" class="header-save-button history-action-button gold"
-
-                    title="全セッションをJSON形式で出力">全出力</button>
-
-                <button id="import-all-sessions-btn" class="header-save-button history-action-button purple"
-                    title="全セッションをJSON形式で取込">全取込</button>
+                <div id="history-menu-container" class="header-menu-container">
+                    <button id="history-menu-btn" class="header-save-button header-menu-button" type="button"
+                        aria-haspopup="menu" aria-expanded="false" aria-controls="history-submenu">操作 ▾</button>
+                    <div id="history-submenu" class="header-submenu hidden" role="menu" aria-label="履歴の操作">
+                        <button id="import-history-btn" type="button" role="menuitem"
+                            title="単一履歴をテキスト形式で取込">テキスト取込（TXT）</button>
+                        <button id="import-all-sessions-btn" type="button" role="menuitem"
+                            title="ファイル内のセッションをJSON形式で一括取込">一括取込（JSON）</button>
+                        <button id="export-all-sessions-btn" type="button" role="menuitem"
+                            title="全セッションをJSON形式で一括出力">一括出力（JSON）</button>
+                        <div class="history-menu-separator" role="separator"></div>
+                        <button id="delete-all-sessions-btn" type="button" role="menuitem"
+                            class="danger-menu-item" title="全セッションを削除">全削除</button>
+                    </div>
+                </div>
                 <input type="file" id="import-all-sessions-input" accept=".json" class="hidden">
-
-                <button id="import-history-btn" class="header-save-button" title="単一履歴をテキスト形式でインポート">インポート</button>
                 <input type="file" id="import-history-input" accept=".txt" class="hidden">
             </header>
             <main class="main-content">
@@ -6949,7 +6961,7 @@ font-size: 1.142em !important;
                                         <div style="padding-left: 15px; margin-top: 10px;">
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="add-prefix-on-import-toggle">
-                                                履歴インポート時にタイトルへ接頭辞を付与する
+                                                履歴取込時にタイトルへ接頭辞を付与する
                                             </label>
                                         </div>
                                     </details>
@@ -7027,7 +7039,7 @@ font-size: 1.142em !important;
                                             </label>
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="show-bulk-history-actions-toggle">
-                                                履歴画面に「全出力」「全取込」ボタンを表示する
+                                                履歴画面の操作メニューに「一括出力」「一括取込」を表示する
                                             </label>
                                         </div>
                                     </details>
@@ -8066,6 +8078,10 @@ const elements = {
     clearDataBtn: document.getElementById('clear-data-btn'),
     clearHistoryBtn: document.getElementById('clear-history-btn'),
     importHistoryBtn: document.getElementById('import-history-btn'),
+    historyMenuContainer: document.getElementById('history-menu-container'),
+    historyMenuBtn: document.getElementById('history-menu-btn'),
+    historySubmenu: document.getElementById('history-submenu'),
+    deleteAllSessionsBtn: document.getElementById('delete-all-sessions-btn'),
     importHistoryInput: document.getElementById('import-history-input'),
     exportAllSessionsBtn: document.getElementById('export-all-sessions-btn'),
     importAllSessionsBtn: document.getElementById('import-all-sessions-btn'),
@@ -9224,9 +9240,10 @@ const dbUtils = {
         return new Promise((resolve, reject) => {
             try {
                 const store = this._getStore(CHATS_STORE, 'readwrite');
-                const request = store.clear();
-                request.onsuccess = () => resolve();
-                request.onerror = (e) => reject(`履歴全消去エラー: ${e.target.error}`);
+                store.transaction.oncomplete = () => resolve();
+                store.transaction.onerror = (e) => reject(`履歴全消去エラー: ${e.target.error}`);
+                store.transaction.onabort = (e) => reject(`履歴全消去が中断されました: ${e.target.error || ''}`);
+                store.clear();
             }
             catch (error) {
                 reject(error);
@@ -16575,6 +16592,16 @@ Object.assign(uiUtils, {
             elements.importAllSessionsBtn.classList.toggle('hidden', !showBulkActions);
         }
     },
+    setHistoryMenuOpen(isOpen, restoreFocus = false) {
+        elements.historySubmenu.classList.toggle('hidden', !isOpen);
+        elements.historyMenuBtn.setAttribute('aria-expanded', String(isOpen));
+        if (isOpen) {
+            elements.historySubmenu.querySelector('[role="menuitem"]:not(.hidden):not(:disabled)')?.focus();
+        }
+        else if (restoreFocus) {
+            elements.historyMenuBtn.focus();
+        }
+    },
     updateUserModelOptions() {
         const group = elements.geminiUserDefinedModelsGroup;
         group.innerHTML = '';
@@ -16820,6 +16847,7 @@ Object.assign(uiUtils, {
 // Bundled into the generated index.html from this TypeScript source.
 Object.assign(uiUtils, {
     showScreen(screenName, fromPopState = false) {
+        this.setHistoryMenuOpen(false);
         if (state.currentScreen === 'lorebook-editor'
             && screenName !== 'lorebook-editor'
             && lorebookManager.isAnalyzing) {
@@ -17844,6 +17872,9 @@ Object.assign(appLogic, {
             if (!elements.headerMenuContainer.contains(event.target)) {
                 uiUtils.setHeaderMenuOpen(false);
             }
+            if (!elements.historyMenuContainer.contains(event.target)) {
+                uiUtils.setHistoryMenuOpen(false);
+            }
         });
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape' && !elements.headerSubmenu.classList.contains('hidden')) {
@@ -17871,15 +17902,58 @@ Object.assign(appLogic, {
             }
         });
         elements.userInput.addEventListener('input', () => uiUtils.updateAttachmentBadgeVisibility());
-        elements.importHistoryBtn.addEventListener('click', () => elements.importHistoryInput.click());
+        elements.historyMenuBtn.addEventListener('click', () => {
+            uiUtils.setHistoryMenuOpen(elements.historySubmenu.classList.contains('hidden'));
+        });
+        elements.historyMenuContainer.addEventListener('keydown', (event) => {
+            const isOpen = !elements.historySubmenu.classList.contains('hidden');
+            if (event.key === 'Escape' && isOpen) {
+                event.preventDefault();
+                uiUtils.setHistoryMenuOpen(false, true);
+            }
+            else if (event.key === 'Tab' && isOpen) {
+                uiUtils.setHistoryMenuOpen(false, true);
+            }
+            else if (['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) {
+                event.preventDefault();
+                if (!isOpen)
+                    uiUtils.setHistoryMenuOpen(true);
+                const items = Array.from(elements.historySubmenu.querySelectorAll('[role="menuitem"]:not(.hidden):not(:disabled)'));
+                const index = items.indexOf(document.activeElement);
+                const nextIndex = event.key === 'Home' ? 0
+                    : event.key === 'End' ? items.length - 1
+                        : !isOpen ? (event.key === 'ArrowUp' ? items.length - 1 : 0)
+                            : (index + (event.key === 'ArrowUp' ? -1 : 1) + items.length) % items.length;
+                items[nextIndex]?.focus();
+            }
+        });
+        elements.historyMenuContainer.addEventListener('focusout', (event) => {
+            if (!elements.historyMenuContainer.contains(event.relatedTarget)) {
+                uiUtils.setHistoryMenuOpen(false);
+            }
+        });
+        elements.deleteAllSessionsBtn.addEventListener('click', () => {
+            uiUtils.setHistoryMenuOpen(false, true);
+            this.confirmClearAllHistory();
+        });
+        elements.importHistoryBtn.addEventListener('click', () => {
+            uiUtils.setHistoryMenuOpen(false, true);
+            elements.importHistoryInput.click();
+        });
         elements.importHistoryInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
             if (file)
                 this.handleHistoryImport(file);
             event.target.value = null;
         });
-        elements.exportAllSessionsBtn.addEventListener('click', () => this.exportAllSessions());
-        elements.importAllSessionsBtn.addEventListener('click', () => elements.importAllSessionsInput.click());
+        elements.exportAllSessionsBtn.addEventListener('click', () => {
+            uiUtils.setHistoryMenuOpen(false, true);
+            this.exportAllSessions();
+        });
+        elements.importAllSessionsBtn.addEventListener('click', () => {
+            uiUtils.setHistoryMenuOpen(false, true);
+            elements.importAllSessionsInput.click();
+        });
         elements.importAllSessionsInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
             if (file)
@@ -19312,7 +19386,7 @@ Object.assign(appLogic, {
             URL.revokeObjectURL(url);
         }
         catch (error) {
-            await uiUtils.showCustomAlert(`エクスポートエラー: ${error}`);
+            await uiUtils.showCustomAlert(`出力エラー: ${error}`);
         }
     },
     async confirmClearCurrentSession() {
@@ -20526,11 +20600,11 @@ Object.assign(appLogic, {
                     request.onsuccess = (event) => resolve(event.target.result);
                     request.onerror = (event) => reject(event.target.error);
                 });
-                await uiUtils.showCustomAlert(`履歴「${newChatData.title}」をインポートしました。`);
+                await uiUtils.showCustomAlert(`履歴「${newChatData.title}」を取り込みました。`);
                 uiUtils.renderHistoryList();
             }
             catch (error) {
-                await uiUtils.showCustomAlert(`履歴のインポート中にエラーが発生しました: ${error.message}`);
+                await uiUtils.showCustomAlert(`履歴の取込中にエラーが発生しました: ${error.message}`);
             }
         };
         reader.onerror = async (event) => {
@@ -20586,17 +20660,17 @@ Object.assign(appLogic, {
             await this.exportAllSessions();
         }
         catch (error) {
-            alert(`エクスポートに失敗しました。データベースにアクセスできない可能性があります。\n\nエラー詳細: ${error.message}`);
+            alert(`一括出力に失敗しました。データベースにアクセスできない可能性があります。\n\nエラー詳細: ${error.message}`);
         }
     },
     async exportAllSessions() {
-        const confirmed = await uiUtils.showCustomConfirm("全てのセッションを1つのJSONファイルとしてエクスポートしますか？");
+        const confirmed = await uiUtils.showCustomConfirm("全てのセッションを1つのJSONファイルとして一括出力しますか？");
         if (!confirmed)
             return;
         try {
             const chats = await dbUtils.getAllChats();
             if (!chats || chats.length === 0) {
-                await uiUtils.showCustomAlert("エクスポートするセッションがありません。");
+                await uiUtils.showCustomAlert("出力するセッションがありません。");
                 return;
             }
             const exportableChats = chats.map(chat => ({
@@ -20657,10 +20731,10 @@ Object.assign(appLogic, {
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            await uiUtils.showCustomAlert(`${chats.length}件のセッションをエクスポートしました。`);
+            await uiUtils.showCustomAlert(`${chats.length}件のセッションを一括出力しました。`);
         }
         catch (error) {
-            await uiUtils.showCustomAlert(`全セッションのエクスポート中にエラーが発生しました: ${error.message || error}`);
+            await uiUtils.showCustomAlert(`セッションの一括出力中にエラーが発生しました: ${error.message || error}`);
         }
     },
     async handleAllSessionsImport(file) {
@@ -20682,10 +20756,10 @@ Object.assign(appLogic, {
                     return;
                 }
                 if (importedData.length === 0) {
-                    await uiUtils.showCustomAlert("ファイルにインポート対象のセッションデータが含まれていません。");
+                    await uiUtils.showCustomAlert("ファイルに取込対象のセッションデータが含まれていません。");
                     return;
                 }
-                const confirmed = await uiUtils.showCustomConfirm(`${importedData.length}件のセッションをインポートしますか？\n(既存の履歴とタイトルが重複する場合、別履歴として追加されます)`);
+                const confirmed = await uiUtils.showCustomConfirm(`${importedData.length}件のセッションを一括取込しますか？\n(既存の履歴とタイトルが重複する場合、別履歴として追加されます)`);
                 if (!confirmed)
                     return;
                 let importedCount = 0;
@@ -20765,7 +20839,7 @@ Object.assign(appLogic, {
                         skippedCount++;
                     }
                 }
-                let message = `${importedCount}件のセッションをインポートしました。`;
+                let message = `${importedCount}件のセッションを取り込みました。`;
                 if (skippedCount > 0) {
                     message += ` ${skippedCount}件は形式エラー等でスキップされました。`;
                 }
@@ -20775,7 +20849,7 @@ Object.assign(appLogic, {
                 }
             }
             catch (error) {
-                await uiUtils.showCustomAlert(`全セッションのインポート中にエラーが発生しました: ${error.message || error}`);
+                await uiUtils.showCustomAlert(`セッションの一括取込中にエラーが発生しました: ${error.message || error}`);
             }
         };
         reader.onerror = async () => {
@@ -21271,16 +21345,42 @@ Object.assign(appLogic, {
         }
     },
     async confirmClearAllHistory() {
-        const confirmed = await uiUtils.showCustomConfirm("本当にすべてのチャット履歴を削除しますか？\nこの操作は元に戻せません。設定は保持されます。");
-        if (confirmed) {
-            try {
-                await dbUtils.clearAllChatsStore();
-                await uiUtils.showCustomAlert("すべてのチャット履歴が削除されました。画面をリロードします。");
-                window.location.reload();
+        if (this.isClearingAllHistory)
+            return;
+        this.isClearingAllHistory = true;
+        try {
+            if (state.isSending) {
+                await uiUtils.showCustomAlert("応答中は全削除できません。応答を停止してから実行してください。");
+                return;
             }
-            catch (error) {
-                await uiUtils.showCustomAlert(`チャット履歴の削除中にエラーが発生しました: ${error}`);
+            if (state.pendingMessageEditSave)
+                await state.pendingMessageEditSave;
+            const chats = await dbUtils.getAllChats();
+            if (chats.length === 0) {
+                await uiUtils.showCustomAlert("削除するセッションがありません。");
+                return;
             }
+            const confirmed = await uiUtils.showCustomConfirm(`全${chats.length}件のセッションを削除します。この操作は取り消せません。\n` +
+                "現在のセッションも新規状態に戻ります。設定と登録済みLorebookは保持されます。");
+            if (!confirmed)
+                return;
+            if (state.isSending) {
+                await uiUtils.showCustomAlert("応答中は全削除できません。応答を停止してから実行してください。");
+                return;
+            }
+            if (state.pendingMessageEditSave)
+                await state.pendingMessageEditSave;
+            await dbUtils.clearAllChatsStore();
+            state.editingMessageIndex = null;
+            this.startNewChat();
+            await uiUtils.renderHistoryList();
+            await uiUtils.showCustomAlert("すべてのセッションを削除しました。");
+        }
+        catch (error) {
+            await uiUtils.showCustomAlert(`セッションの全削除中にエラーが発生しました: ${error}`);
+        }
+        finally {
+            this.isClearingAllHistory = false;
         }
     },
     async commitAllOpenEdits() {

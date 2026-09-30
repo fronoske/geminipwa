@@ -2,6 +2,7 @@
 // Bundled into the generated index.html from this TypeScript source.
 Object.assign(uiUtils, {
             showScreen(screenName, fromPopState = false) {
+                this.setHistoryMenuOpen(false);
                 if (state.currentScreen === 'lorebook-editor'
                     && screenName !== 'lorebook-editor'
                     && lorebookManager.isAnalyzing) {

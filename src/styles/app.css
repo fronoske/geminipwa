@@ -908,26 +908,31 @@
             order: 1;
             transition: font-size 0.2s ease;
             flex-grow: 1;
+            min-width: 0;
         }
 
         #history-screen .app-header #back-to-chat-from-history {
             order: 100;
         }
 
-        #history-screen .app-header #export-all-sessions-btn {
+        #history-screen .app-header #history-menu-container {
             order: 2;
-            padding: 4px 8px;
         }
 
-        #history-screen .app-header #import-all-sessions-btn {
-            order: 3;
-            padding: 4px 8px;
+        #history-menu-btn {
+            margin: 0;
+            white-space: nowrap;
         }
 
-        #history-screen .app-header #import-history-btn {
-            order: 4;
-            margin-right: 0;
-            padding: 4px 8px;
+        #history-submenu {
+            max-width: calc(100vw - 30px);
+            max-height: calc(100dvh - 90px);
+            overflow-y: auto;
+        }
+
+        .history-menu-separator {
+            margin: 6px 0;
+            border-top: 1px solid var(--border-primary);
         }
 
         .history-action-button.gold {

@@ -298,7 +298,7 @@ Object.assign(appLogic, {
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
                 } catch (error) {
-                    await uiUtils.showCustomAlert(`エクスポートエラー: ${error}`);
+                    await uiUtils.showCustomAlert(`出力エラー: ${error}`);
                 }
             },
             async confirmClearCurrentSession() {
