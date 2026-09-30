@@ -2574,6 +2574,26 @@
             font-size: 0.85em;
         }
 
+        .openrouter-unavailable-models {
+            margin-bottom: 12px;
+            padding: 8px;
+            border: 1px solid var(--border-tertiary);
+            border-radius: 5px;
+        }
+
+        .openrouter-unavailable-models p {
+            margin: 0 0 6px;
+            font-weight: bold;
+        }
+
+        #openrouter-unavailable-model-list .openrouter-model-selection {
+            margin-top: 6px;
+        }
+
+        #openrouter-model-search {
+            margin-bottom: 10px;
+        }
+
         .openrouter-model-provider-filter {
             margin: 0 0 10px;
             padding: 8px;
@@ -5767,6 +5787,12 @@ font-size: 1.142em !important;
                                     一覧はまだ取得されていません。
                                 </p>
                                 <div id="openrouter-model-catalog-controls" class="hidden">
+                                    <div id="openrouter-unavailable-models" class="hidden openrouter-unavailable-models">
+                                        <p>現在のモデル一覧にない選択済みモデル</p>
+                                        <div id="openrouter-unavailable-model-list"></div>
+                                    </div>
+                                    <label for="openrouter-model-search">モデルを検索:</label>
+                                    <input type="search" id="openrouter-model-search" placeholder="名前またはモデルID" autocomplete="off">
                                     <fieldset class="openrouter-model-provider-filter">
                                         <legend>提供元:</legend>
                                         <div id="openrouter-model-provider-options" class="openrouter-model-provider-options"></div>
@@ -7898,6 +7924,9 @@ const elements = {
     fetchOpenrouterModelsBtn: document.getElementById('fetch-openrouter-models-btn'),
     openrouterModelFetchStatus: document.getElementById('openrouter-model-fetch-status'),
     openrouterModelCatalogControls: document.getElementById('openrouter-model-catalog-controls'),
+    openrouterUnavailableModels: document.getElementById('openrouter-unavailable-models'),
+    openrouterUnavailableModelList: document.getElementById('openrouter-unavailable-model-list'),
+    openrouterModelSearchInput: document.getElementById('openrouter-model-search'),
     openrouterModelProviderOptions: document.getElementById('openrouter-model-provider-options'),
     selectAllOpenrouterProvidersBtn: document.getElementById('select-all-openrouter-providers-btn'),
     clearAllOpenrouterProvidersBtn: document.getElementById('clear-all-openrouter-providers-btn'),
@@ -14526,15 +14555,44 @@ const openRouterModelCatalog = {
         state.settings.openrouterSelectedModels = [...new Set(modelIds.filter((modelId) => typeof modelId === 'string' && modelId && modelId !== 'openrouter/auto'))];
         uiUtils.updateOpenRouterUserModelOptions();
         this.updateSelectedCount();
+        this.renderUnavailableModels();
     },
     updateSelectedCount() {
         elements.openrouterSelectedModelCount.textContent = String(this.getSelectedIds().length);
     },
+    getUnavailableSelectedIds() {
+        if (!this.lastFetchedAt)
+            return [];
+        const availableIds = new Set(this.models.map((model) => model.id));
+        return this.getSelectedIds().filter((modelId) => !availableIds.has(modelId));
+    },
+    renderUnavailableModels() {
+        const unavailableIds = this.getUnavailableSelectedIds();
+        elements.openrouterUnavailableModels.classList.toggle('hidden', unavailableIds.length === 0);
+        elements.openrouterUnavailableModelList.innerHTML = '';
+        unavailableIds.forEach((modelId) => {
+            const label = document.createElement('label');
+            label.className = 'openrouter-model-selection';
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = true;
+            checkbox.setAttribute('aria-label', `${modelId}の選択を解除`);
+            checkbox.addEventListener('change', () => {
+                this.setSelectedIds(this.getSelectedIds().filter((selectedId) => selectedId !== modelId));
+            });
+            label.append(checkbox, document.createTextNode(modelId));
+            elements.openrouterUnavailableModelList.appendChild(label);
+        });
+    },
     getFilteredModels() {
+        const searchText = elements.openrouterModelSearchInput.value.trim().toLocaleLowerCase();
         const selectedProviders = new Set([...elements.openrouterModelProviderOptions.querySelectorAll('.openrouter-model-provider-checkbox:checked')]
             .map((checkbox) => checkbox.value));
         const filteredModels = this.models.filter((model) => {
             if (!selectedProviders.has(model.provider))
+                return false;
+            if (searchText && ![model.id, model.name, this.getCleanDisplayName(model)]
+                .some((value) => String(value || '').toLocaleLowerCase().includes(searchText)))
                 return false;
             return true;
         });
@@ -14587,6 +14645,7 @@ const openRouterModelCatalog = {
     renderModelList() {
         const filteredModels = this.getFilteredModels();
         const selectedIds = new Set(this.getSelectedIds());
+        this.renderUnavailableModels();
         this.visibleModelIds = filteredModels.map((model) => model.id);
         elements.openrouterModelCatalogList.innerHTML = '';
         elements.openrouterModelCatalogEmpty.classList.toggle('hidden', filteredModels.length > 0);
@@ -14730,6 +14789,7 @@ const openRouterModelCatalog = {
             uiUtils.updateOpenRouterUserModelOptions();
         }
         elements.fetchOpenrouterModelsBtn.addEventListener('click', () => this.handleFetchButtonClick());
+        elements.openrouterModelSearchInput.addEventListener('input', () => this.renderModelList());
         elements.selectAllOpenrouterProvidersBtn.addEventListener('click', () => this.setAllProvidersSelected(true));
         elements.clearAllOpenrouterProvidersBtn.addEventListener('click', () => this.setAllProvidersSelected(false));
         elements.selectVisibleOpenrouterModelsBtn.addEventListener('click', () => this.setVisibleSelection(true));

@@ -2553,6 +2553,26 @@
             font-size: 0.85em;
         }
 
+        .openrouter-unavailable-models {
+            margin-bottom: 12px;
+            padding: 8px;
+            border: 1px solid var(--border-tertiary);
+            border-radius: 5px;
+        }
+
+        .openrouter-unavailable-models p {
+            margin: 0 0 6px;
+            font-weight: bold;
+        }
+
+        #openrouter-unavailable-model-list .openrouter-model-selection {
+            margin-top: 6px;
+        }
+
+        #openrouter-model-search {
+            margin-bottom: 10px;
+        }
+
         .openrouter-model-provider-filter {
             margin: 0 0 10px;
             padding: 8px;

@@ -280,19 +280,48 @@ const openRouterModelCatalog = {
         )];
         uiUtils.updateOpenRouterUserModelOptions();
         this.updateSelectedCount();
+        this.renderUnavailableModels();
     },
 
     updateSelectedCount() {
         elements.openrouterSelectedModelCount.textContent = String(this.getSelectedIds().length);
     },
 
+    getUnavailableSelectedIds() {
+        if (!this.lastFetchedAt) return [];
+        const availableIds = new Set(this.models.map((model) => model.id));
+        return this.getSelectedIds().filter((modelId) => !availableIds.has(modelId));
+    },
+
+    renderUnavailableModels() {
+        const unavailableIds = this.getUnavailableSelectedIds();
+        elements.openrouterUnavailableModels.classList.toggle('hidden', unavailableIds.length === 0);
+        elements.openrouterUnavailableModelList.innerHTML = '';
+        unavailableIds.forEach((modelId) => {
+            const label = document.createElement('label');
+            label.className = 'openrouter-model-selection';
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = true;
+            checkbox.setAttribute('aria-label', `${modelId}の選択を解除`);
+            checkbox.addEventListener('change', () => {
+                this.setSelectedIds(this.getSelectedIds().filter((selectedId) => selectedId !== modelId));
+            });
+            label.append(checkbox, document.createTextNode(modelId));
+            elements.openrouterUnavailableModelList.appendChild(label);
+        });
+    },
+
     getFilteredModels() {
+        const searchText = elements.openrouterModelSearchInput.value.trim().toLocaleLowerCase();
         const selectedProviders = new Set(
             [...elements.openrouterModelProviderOptions.querySelectorAll('.openrouter-model-provider-checkbox:checked')]
                 .map((checkbox) => checkbox.value)
         );
         const filteredModels = this.models.filter((model) => {
             if (!selectedProviders.has(model.provider)) return false;
+            if (searchText && ![model.id, model.name, this.getCleanDisplayName(model)]
+                .some((value) => String(value || '').toLocaleLowerCase().includes(searchText))) return false;
             return true;
         });
         return this.sortVisibleModels(filteredModels);
@@ -347,6 +376,7 @@ const openRouterModelCatalog = {
     renderModelList() {
         const filteredModels = this.getFilteredModels();
         const selectedIds = new Set(this.getSelectedIds());
+        this.renderUnavailableModels();
         this.visibleModelIds = filteredModels.map((model) => model.id);
         elements.openrouterModelCatalogList.innerHTML = '';
         elements.openrouterModelCatalogEmpty.classList.toggle('hidden', filteredModels.length > 0);
@@ -495,6 +525,7 @@ const openRouterModelCatalog = {
             uiUtils.updateOpenRouterUserModelOptions();
         }
         elements.fetchOpenrouterModelsBtn.addEventListener('click', () => this.handleFetchButtonClick());
+        elements.openrouterModelSearchInput.addEventListener('input', () => this.renderModelList());
         elements.selectAllOpenrouterProvidersBtn.addEventListener('click', () => this.setAllProvidersSelected(true));
         elements.clearAllOpenrouterProvidersBtn.addEventListener('click', () => this.setAllProvidersSelected(false));
         elements.selectVisibleOpenrouterModelsBtn.addEventListener('click', () => this.setVisibleSelection(true));
