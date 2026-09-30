@@ -466,7 +466,7 @@ const lorebookManager = {
         addButton('↑', '上へ移動', () => this.moveRecord(record.id, -1), index <= 0);
         addButton('↓', '下へ移動', () => this.moveRecord(record.id, 1), index >= recordCount - 1);
         addButton('編集', '構造化済みデータを編集', () => this.openEditor(record.id));
-        addButton('エクスポート', 'このLorebookをエクスポート', () => this.exportLorebook(lorebook.id));
+        addButton('JSON出力', 'このLorebookをJSON形式で出力', () => this.exportLorebook(lorebook.id));
         addButton('削除', 'このLorebookを削除', () => this.deleteRecord(record.id), false, 'danger');
         row.append(details, actions);
         return row;

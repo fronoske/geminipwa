@@ -36,6 +36,7 @@ describe('database boundary', () => {
       'getAllInitialPrompts',
       'putInitialPrompt',
       'putInitialPrompts',
+      'deleteInitialPrompt',
       'clearAllData',
       'clearAllChatsStore',
     ]);

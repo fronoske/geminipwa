@@ -8,17 +8,19 @@ const runtime = fs.readFileSync(
 );
 
 const createContext = () => {
-  const state = { initialPromptRecords: [] as any[], currentInitialPromptId: null, currentMessages: [], isSending: false, areAllMessagesHidden: false, currentScreen: 'initial-prompt-editor' };
+  const state = { initialPromptRecords: [] as any[], currentInitialPromptId: null as string | null, currentMessages: [] as any[], isSending: false, areAllMessagesHidden: false, currentScreen: 'initial-prompt-editor' };
   const saved: any[][] = [];
   const alerts: string[] = [];
   const dbUtils = {
     putInitialPrompts: vi.fn(async (records: any[]) => { saved.push(records); }),
     putInitialPrompt: vi.fn(async () => undefined),
+    deleteInitialPrompt: vi.fn(async (_id: string) => undefined),
   };
   const uiUtils = {
     showCustomConfirm: vi.fn(async () => true),
     showCustomAlert: vi.fn(async (message: string) => { alerts.push(message); }),
     updateInitialPromptMenuItem: vi.fn(),
+    renderChatMessages: vi.fn(),
   };
   const node = () => {
     const children: any[] = [];
@@ -121,5 +123,63 @@ describe('初回ユーザープロンプト', () => {
     }));
     expect(state.initialPromptRecords[0].title).toBe('新タイトル');
     expect(history.back).toHaveBeenCalledOnce();
+  });
+
+  it('places JSON export between Edit and Delete and removes a confirmed selected prompt', async () => {
+    const { utils, state, dbUtils, uiUtils, elements } = createContext();
+    state.initialPromptRecords.push({ id: 'a', title: '削除対象', text: '本文', createdAt: 1, updatedAt: 1 });
+    state.currentInitialPromptId = 'a';
+    utils.renderList();
+    const row = (elements.initialPromptManagementList.appendChild as any).mock.calls[0][0];
+    expect(row.children[1].children.map((button: any) => button.textContent)).toEqual(['編集', 'JSON出力', '削除']);
+    expect(row.children[1].children[2].classList.add).toHaveBeenCalledWith('danger');
+
+    uiUtils.showCustomConfirm.mockResolvedValueOnce(false);
+    await utils.deleteRecord('a');
+    expect(dbUtils.deleteInitialPrompt).not.toHaveBeenCalled();
+    expect(state.currentInitialPromptId).toBe('a');
+
+    await utils.deleteRecord('a');
+    expect(dbUtils.deleteInitialPrompt).toHaveBeenCalledWith('a');
+    expect(state.initialPromptRecords).toHaveLength(0);
+    expect(state.currentInitialPromptId).toBeNull();
+    expect(uiUtils.renderChatMessages).toHaveBeenCalledWith(true);
+    expect(uiUtils.updateInitialPromptMenuItem).toHaveBeenCalledOnce();
+  });
+
+  it('exports one prompt in the same JSON envelope accepted by bulk import', async () => {
+    const { utils, state } = createContext();
+    const record = { id: 'a', title: '相談/導入', text: '本文', createdAt: 1, updatedAt: 1 };
+    state.initialPromptRecords.push(record);
+    utils.downloadJson = vi.fn();
+
+    utils.exportOne('a');
+    expect(utils.downloadJson).toHaveBeenCalledWith([record], '相談_導入.initial-prompt.json');
+    utils.exportOne('missing');
+    expect(utils.downloadJson).toHaveBeenCalledOnce();
+
+    const data = JSON.parse(JSON.stringify(utils.createExportData(utils.downloadJson.mock.calls[0][0])));
+    const imported = createContext();
+    await imported.utils.importAll({ text: async () => JSON.stringify(data) });
+    expect(imported.saved[0]).toEqual([record]);
+  });
+
+  it('keeps applied chat snapshots and leaves state unchanged if deletion fails', async () => {
+    const { utils, state, dbUtils, alerts, uiUtils } = createContext();
+    const snapshot = { id: 'a', title: '保存済み', text: '適用本文' };
+    state.initialPromptRecords.push({ ...snapshot, createdAt: 1, updatedAt: 1 });
+    state.currentInitialPromptId = 'a';
+    state.currentMessages.push({ role: 'user', content: '入力', initialPrompt: snapshot });
+
+    dbUtils.deleteInitialPrompt.mockRejectedValueOnce(new Error('保存失敗'));
+    await utils.deleteRecord('a');
+    expect(state.initialPromptRecords).toHaveLength(1);
+    expect(state.currentInitialPromptId).toBe('a');
+    expect(alerts.at(-1)).toContain('削除に失敗');
+
+    await utils.deleteRecord('a');
+    expect(state.currentMessages[0].initialPrompt).toEqual(snapshot);
+    expect(utils.formatUserText(state.currentMessages[0])).toContain('適用本文');
+    expect(uiUtils.renderChatMessages).not.toHaveBeenCalled();
   });
 });

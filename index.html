@@ -7420,7 +7420,7 @@ font-size: 1.142em !important;
                         <input type="file" id="import-lorebooks-input" accept=".json,.lorebook.json,application/json" class="hidden">
                     </div>
                     <p class="lorebook-management-note">
-                        Lorebookは編集・削除・並べ替え・個別エクスポートができます。
+                        Lorebookは編集・削除・並べ替え・個別JSON出力ができます。
                     </p>
                     <div id="lorebook-management-list" class="lorebook-management-list"></div>
                     <p id="no-lorebooks-message" class="lorebook-management-note">
@@ -7897,7 +7897,7 @@ const LIGHT_MODE_MODEL_MESSAGE_COLOR = '#e5e5ea';
 const LIGHT_MODE_SECONDARY_COLOR = '#f0f2f5';
 const LIGHT_MODE_HEADER_COLOR = '#4a90e2';
 const LIGHT_MODE_PRIMARY_COLOR = '#ffffff';
-const APP_VERSION = "2026.09.29-fronoske";
+const APP_VERSION = "2026.09.30-fronoske";
 const formatLocalDateStamp = (date = new Date()) => [
     date.getFullYear(),
     String(date.getMonth() + 1).padStart(2, '0'),
@@ -9383,6 +9383,16 @@ const dbUtils = {
             transaction.onerror = () => reject(transaction.error);
             transaction.onabort = () => reject(transaction.error);
             records.forEach(record => store.put(record));
+        });
+    },
+    async deleteInitialPrompt(id) {
+        await this.openDB();
+        return new Promise((resolve, reject) => {
+            const transaction = state.db.transaction([INITIAL_PROMPTS_STORE], 'readwrite');
+            transaction.oncomplete = () => resolve();
+            transaction.onerror = () => reject(transaction.error);
+            transaction.onabort = () => reject(transaction.error);
+            transaction.objectStore(INITIAL_PROMPTS_STORE).delete(id);
         });
     },
     async clearAllData() {
@@ -11844,7 +11854,7 @@ const lorebookManager = {
         addButton('↑', '上へ移動', () => this.moveRecord(record.id, -1), index <= 0);
         addButton('↓', '下へ移動', () => this.moveRecord(record.id, 1), index >= recordCount - 1);
         addButton('編集', '構造化済みデータを編集', () => this.openEditor(record.id));
-        addButton('エクスポート', 'このLorebookをエクスポート', () => this.exportLorebook(lorebook.id));
+        addButton('JSON出力', 'このLorebookをJSON形式で出力', () => this.exportLorebook(lorebook.id));
         addButton('削除', 'このLorebookを削除', () => this.deleteRecord(record.id), false, 'danger');
         row.append(details, actions);
         return row;
@@ -13571,10 +13581,45 @@ const initialPromptUtils = {
             const actions = document.createElement('div');
             actions.className = 'lorebook-management-actions';
             actions.appendChild(edit);
+            const exportButton = document.createElement('button');
+            exportButton.type = 'button';
+            exportButton.textContent = 'JSON出力';
+            exportButton.title = 'この初回プロンプトをJSON形式で出力';
+            exportButton.addEventListener('click', () => this.exportOne(record.id));
+            actions.appendChild(exportButton);
+            const remove = document.createElement('button');
+            remove.type = 'button';
+            remove.textContent = '削除';
+            remove.classList.add('danger');
+            remove.addEventListener('click', () => this.deleteRecord(record.id));
+            actions.appendChild(remove);
             row.append(details, actions);
             list.appendChild(row);
         }
         elements.noInitialPromptsMessage.classList.toggle('hidden', state.initialPromptRecords.length > 0);
+    },
+    async deleteRecord(id) {
+        const record = this.getRecord(id);
+        if (!record)
+            return;
+        const confirmed = await uiUtils.showCustomConfirm(`初回プロンプト「${record.title}」を削除しますか？既存チャットに適用済みの内容は残ります。`);
+        if (!confirmed)
+            return;
+        try {
+            await dbUtils.deleteInitialPrompt(id);
+            state.initialPromptRecords = state.initialPromptRecords.filter(item => item.id !== id);
+            if (state.currentInitialPromptId === id) {
+                state.currentInitialPromptId = null;
+                if (!state.currentMessages.some(message => message.role === 'user')) {
+                    uiUtils.renderChatMessages(true);
+                }
+            }
+            this.renderList();
+            uiUtils.updateInitialPromptMenuItem();
+        }
+        catch (error) {
+            await uiUtils.showCustomAlert(`初回プロンプトの削除に失敗しました: ${error}`);
+        }
     },
     openEditor(id = null) {
         const record = id ? this.getRecord(id) : null;
@@ -13615,17 +13660,30 @@ const initialPromptUtils = {
             await uiUtils.showCustomAlert(`保存に失敗しました: ${error}`);
         }
     },
-    exportAll() {
-        const data = { format: 'GeminiPWA Initial Prompts', version: 1, prompts: state.initialPromptRecords };
+    createExportData(records) {
+        return { format: 'GeminiPWA Initial Prompts', version: 1, prompts: records };
+    },
+    downloadJson(records, filename) {
+        const data = this.createExportData(records);
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `geminipwa-initial-prompts-${formatLocalDateStamp()}.json`;
+        link.download = filename;
         document.body.appendChild(link);
         link.click();
         link.remove();
         setTimeout(() => URL.revokeObjectURL(url), 0);
+    },
+    exportOne(id) {
+        const record = this.getRecord(id);
+        if (!record)
+            return;
+        const safeName = record.title.replace(/[\\/:*?"<>|\u0000-\u001f]/g, '_').trim().slice(0, 100) || 'initial-prompt';
+        this.downloadJson([record], `${safeName}.initial-prompt.json`);
+    },
+    exportAll() {
+        this.downloadJson(state.initialPromptRecords, `geminipwa-initial-prompts-${formatLocalDateStamp()}.json`);
     },
     async importAll(file) {
         try {

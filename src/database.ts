@@ -588,6 +588,17 @@ const dbUtils = {
                 });
             },
 
+            async deleteInitialPrompt(id) {
+                await this.openDB();
+                return new Promise((resolve, reject) => {
+                    const transaction = state.db.transaction([INITIAL_PROMPTS_STORE], 'readwrite');
+                    transaction.oncomplete = () => resolve();
+                    transaction.onerror = () => reject(transaction.error);
+                    transaction.onabort = () => reject(transaction.error);
+                    transaction.objectStore(INITIAL_PROMPTS_STORE).delete(id);
+                });
+            },
+
             async clearAllData() {
                 await this.openDB();
                 return new Promise((resolve, reject) => {
