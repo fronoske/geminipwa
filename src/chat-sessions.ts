@@ -258,47 +258,29 @@ Object.assign(appLogic, {
                 }
             },
             async exportChat(chatId, chatTitle) {
-                const confirmed = await uiUtils.showCustomConfirm(`チャット「${chatTitle || 'この履歴'}」をテキスト出力しますか？`);
+                const confirmed = await uiUtils.showCustomConfirm(`チャット「${chatTitle || 'この履歴'}」をJSON出力しますか？`);
                 if (!confirmed) return;
 
                 try {
                     const chat = await dbUtils.getChat(chatId);
-                    if (!chat || ((!chat.messages || chat.messages.length === 0))) {
-                        await uiUtils.showCustomAlert("チャットデータが空です。");
+                    if (!chat) {
+                        await uiUtils.showCustomAlert("チャットデータがありません。");
                         return;
                     }
 
-                    let exportText = '';
-                    if (chat.messages) {
-                        chat.messages.forEach(msg => {
-                            if (msg.role === 'user' || msg.role === 'model') {
-                                let attributes = '';
-                                if (msg.role === 'model') {
-                                    if (msg.isCascaded) attributes += ' isCascaded';
-                                    if (msg.isSelected) attributes += ' isSelected';
-                                    if (msg.thoughtSummaryOpen) attributes += ' thoughtOpen';
-                                }
-                                if (msg.role === 'user' && msg.attachments && msg.attachments.length > 0) {
-                                    const fileNames = msg.attachments.map(a => a.name).join(';');
-                                    attributes += ` attachments="${fileNames.replace(/"/g, '"')}"`;
-                                }
-                                exportText += `<|#|${msg.role}|#|${attributes.trim()}>\n${msg.content}\n<|#|/${msg.role}|#|>\n\n`;
-                            }
-                        });
-                    }
-
-                    const blob = new Blob([exportText.trim()], { type: 'text/plain;charset=utf-8' });
+                    const jsonString = JSON.stringify(this.createExportableSession(chat), null, 2);
+                    const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8' });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     const safeTitle = (chatTitle || `chat_${chatId}_export`).replace(/[<>:"/\\|?*\s]/g, '_');
                     a.href = url;
-                    a.download = `${safeTitle}.txt`;
+                    a.download = `${safeTitle}.json`;
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
                 } catch (error) {
-                    await uiUtils.showCustomAlert(`出力エラー: ${error}`);
+                    await uiUtils.showCustomAlert(`JSON出力エラー: ${error}`);
                 }
             },
             async confirmClearCurrentSession() {

@@ -114,13 +114,14 @@ describe('project configuration', () => {
 
   it('uses one configurable header menu for chat-wide actions', () => {
     const html = readFile('src/index.html');
-    for (const id of ['header-menu-btn', 'attach-file-btn', 'header-menu-new-chat-btn', 'header-menu-lorebook-btn', 'header-menu-clear-btn', 'header-menu-copy-btn']) {
+    for (const id of ['header-menu-btn', 'attach-file-btn', 'header-menu-lorebook-btn', 'header-menu-clear-btn', 'header-menu-copy-btn']) {
       expect(html).toContain(`id="${id}"`);
     }
     expect(html).toContain('>ファイル添付<span');
     expect(html).toContain('id="header-menu-lorebook-name">使用しない</span>');
-    expect(html.indexOf('id="header-menu-lorebook-btn"')).toBeLessThan(html.indexOf('id="header-menu-new-chat-btn"'));
-    expect(html.indexOf('id="header-menu-new-chat-btn"')).toBeLessThan(html.indexOf('id="header-menu-clear-btn"'));
+    expect(html).not.toContain('id="header-menu-new-chat-btn"');
+    expect(html).toContain('id="history-menu-new-chat-btn"');
+    expect(html.indexOf('id="header-menu-lorebook-btn"')).toBeLessThan(html.indexOf('id="header-menu-clear-btn"'));
     expect(html.indexOf('id="header-menu-clear-btn"')).toBeLessThan(html.indexOf('id="header-menu-copy-btn"'));
     expect(html.indexOf('id="header-menu-copy-btn"')).toBeLessThan(html.indexOf('id="attach-file-btn"'));
     expect(html).toContain('全削除（先頭を除く）');

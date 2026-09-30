@@ -40,12 +40,6 @@ Object.assign(appLogic, {
                     event.stopPropagation();
                     uiUtils.toggleHeaderMenu();
                 });
-                elements.headerMenuNewChatBtn.addEventListener('click', () => {
-                    uiUtils.setHeaderMenuOpen(false);
-                    uiUtils.showCustomConfirm("現在のチャットを保存して新規チャットを開始しますか？").then(confirmed => {
-                        if (confirmed) this.confirmStartNewChat();
-                    });
-                });
                 elements.headerMenuLorebookBtn.addEventListener('click', () => {
                     uiUtils.setHeaderMenuOpen(false);
                     this.changeCurrentSessionLorebook();
@@ -135,6 +129,12 @@ Object.assign(appLogic, {
                 elements.deleteAllSessionsBtn.addEventListener('click', () => {
                     uiUtils.setHistoryMenuOpen(false, true);
                     this.confirmClearAllHistory();
+                });
+                elements.historyMenuNewChatBtn.addEventListener('click', () => {
+                    uiUtils.setHistoryMenuOpen(false, true);
+                    uiUtils.showCustomConfirm("現在のチャットを保存して新規チャットを開始しますか？").then(confirmed => {
+                        if (confirmed) this.confirmStartNewChat();
+                    });
                 });
                 elements.importHistoryBtn.addEventListener('click', () => {
                     uiUtils.setHistoryMenuOpen(false, true);

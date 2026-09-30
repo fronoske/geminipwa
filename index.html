@@ -5276,7 +5276,6 @@ font-size: 1.142em !important;
                     <div id="header-submenu" class="header-submenu hidden" role="menu">
                         <button id="header-menu-lorebook-btn" type="button" role="menuitem">Lorebook：<span
                                 id="header-menu-lorebook-name">使用しない</span></button>
-                        <button id="header-menu-new-chat-btn" type="button" role="menuitem">新規チャット</button>
                         <button id="header-menu-clear-btn" type="button" role="menuitem" class="danger-menu-item">全削除（先頭を除く）</button>
                         <button id="header-menu-copy-btn" type="button" role="menuitem">全コピー</button>
                         <button id="header-menu-string-replacement-btn" type="button" role="menuitem">検索・置換</button>
@@ -5355,22 +5354,24 @@ font-size: 1.142em !important;
                 <h1 id="history-title">履歴一覧</h1>
 
                 <div id="history-menu-container" class="header-menu-container">
-                    <button id="history-menu-btn" class="header-save-button header-menu-button" type="button"
-                        aria-haspopup="menu" aria-expanded="false" aria-controls="history-submenu">操作 ▾</button>
+                    <button id="history-menu-btn" class="header-button header-menu-button" type="button"
+                        aria-label="履歴メニュー" title="履歴メニュー" aria-haspopup="menu"
+                        aria-expanded="false" aria-controls="history-submenu">☰</button>
                     <div id="history-submenu" class="header-submenu hidden" role="menu" aria-label="履歴の操作">
+                        <button id="history-menu-new-chat-btn" type="button" role="menuitem">新規チャット</button>
                         <button id="import-history-btn" type="button" role="menuitem"
-                            title="単一履歴をテキスト形式で取込">テキスト取込（TXT）</button>
+                            title="単一セッションをJSON形式で取込">JSON取込</button>
                         <button id="import-all-sessions-btn" type="button" role="menuitem"
-                            title="ファイル内のセッションをJSON形式で一括取込">一括取込（JSON）</button>
+                            title="ファイル内のセッションをJSON形式で一括取込">一括JSON取込</button>
                         <button id="export-all-sessions-btn" type="button" role="menuitem"
-                            title="全セッションをJSON形式で一括出力">一括出力（JSON）</button>
+                            title="全セッションをJSON形式で一括出力">一括JSON出力</button>
                         <div class="history-menu-separator" role="separator"></div>
                         <button id="delete-all-sessions-btn" type="button" role="menuitem"
                             class="danger-menu-item" title="全セッションを削除">全削除</button>
                     </div>
                 </div>
                 <input type="file" id="import-all-sessions-input" accept=".json" class="hidden">
-                <input type="file" id="import-history-input" accept=".txt" class="hidden">
+                <input type="file" id="import-history-input" accept=".json,application/json" class="hidden">
             </header>
             <main class="main-content">
                 <ul id="history-list" class="history-list">
@@ -5385,7 +5386,7 @@ font-size: 1.142em !important;
                             </div>
                             <div class="history-item-actions">
                                 <button class="js-edit-title-btn" title="タイトル編集">✎</button>
-                                <button class="js-export-btn" title="出力">出力</button>
+                                <button class="js-export-btn" title="JSON出力">JSON出力</button>
                                 <button class="js-duplicate-btn" title="複製">複製</button>
                                 <button class="js-delete-btn" title="削除">削除</button>
                             </div>
@@ -7039,7 +7040,7 @@ font-size: 1.142em !important;
                                             </label>
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="show-bulk-history-actions-toggle">
-                                                履歴画面の操作メニューに「一括出力」「一括取込」を表示する
+                                                履歴画面のメニューに「一括JSON出力」「一括JSON取込」を表示する
                                             </label>
                                         </div>
                                     </details>
@@ -8056,7 +8057,6 @@ const elements = {
     headerMenuContainer: document.getElementById('header-menu-container'),
     headerMenuBtn: document.getElementById('header-menu-btn'),
     headerSubmenu: document.getElementById('header-submenu'),
-    headerMenuNewChatBtn: document.getElementById('header-menu-new-chat-btn'),
     headerMenuLorebookBtn: document.getElementById('header-menu-lorebook-btn'),
     headerMenuLorebookName: document.getElementById('header-menu-lorebook-name'),
     headerMenuClearBtn: document.getElementById('header-menu-clear-btn'),
@@ -8081,6 +8081,7 @@ const elements = {
     historyMenuContainer: document.getElementById('history-menu-container'),
     historyMenuBtn: document.getElementById('history-menu-btn'),
     historySubmenu: document.getElementById('history-submenu'),
+    historyMenuNewChatBtn: document.getElementById('history-menu-new-chat-btn'),
     deleteAllSessionsBtn: document.getElementById('delete-all-sessions-btn'),
     importHistoryInput: document.getElementById('import-history-input'),
     exportAllSessionsBtn: document.getElementById('export-all-sessions-btn'),
@@ -17835,13 +17836,6 @@ Object.assign(appLogic, {
             event.stopPropagation();
             uiUtils.toggleHeaderMenu();
         });
-        elements.headerMenuNewChatBtn.addEventListener('click', () => {
-            uiUtils.setHeaderMenuOpen(false);
-            uiUtils.showCustomConfirm("現在のチャットを保存して新規チャットを開始しますか？").then(confirmed => {
-                if (confirmed)
-                    this.confirmStartNewChat();
-            });
-        });
         elements.headerMenuLorebookBtn.addEventListener('click', () => {
             uiUtils.setHeaderMenuOpen(false);
             this.changeCurrentSessionLorebook();
@@ -17935,6 +17929,13 @@ Object.assign(appLogic, {
         elements.deleteAllSessionsBtn.addEventListener('click', () => {
             uiUtils.setHistoryMenuOpen(false, true);
             this.confirmClearAllHistory();
+        });
+        elements.historyMenuNewChatBtn.addEventListener('click', () => {
+            uiUtils.setHistoryMenuOpen(false, true);
+            uiUtils.showCustomConfirm("現在のチャットを保存して新規チャットを開始しますか？").then(confirmed => {
+                if (confirmed)
+                    this.confirmStartNewChat();
+            });
         });
         elements.importHistoryBtn.addEventListener('click', () => {
             uiUtils.setHistoryMenuOpen(false, true);
@@ -19344,49 +19345,29 @@ Object.assign(appLogic, {
         }
     },
     async exportChat(chatId, chatTitle) {
-        const confirmed = await uiUtils.showCustomConfirm(`チャット「${chatTitle || 'この履歴'}」をテキスト出力しますか？`);
+        const confirmed = await uiUtils.showCustomConfirm(`チャット「${chatTitle || 'この履歴'}」をJSON出力しますか？`);
         if (!confirmed)
             return;
         try {
             const chat = await dbUtils.getChat(chatId);
-            if (!chat || ((!chat.messages || chat.messages.length === 0))) {
-                await uiUtils.showCustomAlert("チャットデータが空です。");
+            if (!chat) {
+                await uiUtils.showCustomAlert("チャットデータがありません。");
                 return;
             }
-            let exportText = '';
-            if (chat.messages) {
-                chat.messages.forEach(msg => {
-                    if (msg.role === 'user' || msg.role === 'model') {
-                        let attributes = '';
-                        if (msg.role === 'model') {
-                            if (msg.isCascaded)
-                                attributes += ' isCascaded';
-                            if (msg.isSelected)
-                                attributes += ' isSelected';
-                            if (msg.thoughtSummaryOpen)
-                                attributes += ' thoughtOpen';
-                        }
-                        if (msg.role === 'user' && msg.attachments && msg.attachments.length > 0) {
-                            const fileNames = msg.attachments.map(a => a.name).join(';');
-                            attributes += ` attachments="${fileNames.replace(/"/g, '"')}"`;
-                        }
-                        exportText += `<|#|${msg.role}|#|${attributes.trim()}>\n${msg.content}\n<|#|/${msg.role}|#|>\n\n`;
-                    }
-                });
-            }
-            const blob = new Blob([exportText.trim()], { type: 'text/plain;charset=utf-8' });
+            const jsonString = JSON.stringify(this.createExportableSession(chat), null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             const safeTitle = (chatTitle || `chat_${chatId}_export`).replace(/[<>:"/\\|?*\s]/g, '_');
             a.href = url;
-            a.download = `${safeTitle}.txt`;
+            a.download = `${safeTitle}.json`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         }
         catch (error) {
-            await uiUtils.showCustomAlert(`出力エラー: ${error}`);
+            await uiUtils.showCustomAlert(`JSON出力エラー: ${error}`);
         }
     },
     async confirmClearCurrentSession() {
@@ -20536,8 +20517,8 @@ Object.assign(appLogic, {
 // Bundled into the generated index.html from this TypeScript source.
 Object.assign(appLogic, {
     async handleHistoryImport(file) {
-        if (!file || !file.type.startsWith('text/plain')) {
-            await uiUtils.showCustomAlert("テキストファイル (.txt) を選択してください。");
+        if (!file || !/\.json$/i.test(file.name)) {
+            await uiUtils.showCustomAlert("JSONファイル (.json) を選択してください。");
             return;
         }
         const reader = new FileReader();
@@ -20548,123 +20529,92 @@ Object.assign(appLogic, {
                 return;
             }
             try {
-                const { messages: importedMessages } = this.parseImportedHistory(textContent);
-                if (importedMessages.length === 0) {
-                    await uiUtils.showCustomAlert("ファイルから有効なメッセージまたはシステムプロンプトを読み込めませんでした。形式を確認してください。");
+                const chatData = JSON.parse(textContent);
+                if (!chatData || Array.isArray(chatData) || typeof chatData.title !== 'string'
+                    || !Array.isArray(chatData.messages)) {
+                    await uiUtils.showCustomAlert("単一セッションのJSONファイルを選択してください。");
                     return;
                 }
-                let currentGroupId = null;
-                let lastUserIndex = -1;
-                for (let i = 0; i < importedMessages.length; i++) {
-                    const msg = importedMessages[i];
-                    if (msg.role === 'user') {
-                        lastUserIndex = i;
-                        currentGroupId = null;
-                    }
-                    else if (msg.role === 'model' && msg.isCascaded) {
-                        if (currentGroupId === null && lastUserIndex !== -1) {
-                            currentGroupId = `imp-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
-                        }
-                        if (currentGroupId) {
-                            msg.siblingGroupId = currentGroupId;
-                        }
-                    }
-                    else {
-                        currentGroupId = null;
-                    }
-                }
-                const groupIds = new Set(importedMessages.filter(m => m.siblingGroupId).map(m => m.siblingGroupId));
-                groupIds.forEach(gid => {
-                    const siblings = importedMessages.filter(m => m.siblingGroupId === gid);
-                    const selected = siblings.filter(m => m.isSelected);
-                    if (selected.length === 0 && siblings.length > 0) {
-                        siblings[siblings.length - 1].isSelected = true;
-                    }
-                    else if (selected.length > 1) {
-                        selected.slice(0, -1).forEach(m => m.isSelected = false);
-                    }
-                });
-                const fileNameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
                 const titlePrefix = state.settings.addPrefixOnImport ? IMPORT_PREFIX : '';
-                const newTitle = titlePrefix + (fileNameWithoutExt || `Imported_${Date.now()}`);
-                const newChatData = {
-                    messages: importedMessages,
-                    updatedAt: Date.now(),
-                    createdAt: Date.now(),
-                    title: newTitle.substring(0, 100),
-                    lorebookId: null
-                };
-                const newChatId = await new Promise((resolve, reject) => {
+                const newChatData = this.createImportedSession(chatData, titlePrefix, Date.now());
+                await dbUtils.openDB();
+                await new Promise((resolve, reject) => {
                     const store = dbUtils._getStore(CHATS_STORE, 'readwrite');
                     const request = store.add(newChatData);
-                    request.onsuccess = (event) => resolve(event.target.result);
+                    request.onsuccess = () => resolve();
                     request.onerror = (event) => reject(event.target.error);
                 });
                 await uiUtils.showCustomAlert(`履歴「${newChatData.title}」を取り込みました。`);
-                uiUtils.renderHistoryList();
+                await uiUtils.renderHistoryList();
             }
             catch (error) {
-                await uiUtils.showCustomAlert(`履歴の取込中にエラーが発生しました: ${error.message}`);
+                await uiUtils.showCustomAlert(`JSON取込中にエラーが発生しました: ${error.message || error}`);
             }
         };
-        reader.onerror = async (event) => {
+        reader.onerror = async () => {
             await uiUtils.showCustomAlert("ファイルの読み込みに失敗しました。");
         };
         reader.readAsText(file);
     },
-    parseImportedHistory(text) {
-        const messages = [];
-        const blockRegex = /<\|#\|(system|user|model)\|#\|([^>]*)>([\s\S]*?)<\|#\|\/\1\|#\|>/g;
-        let match;
-        while ((match = blockRegex.exec(text)) !== null) {
-            const role = match[1];
-            const attributesString = match[2].trim();
-            const content = match[3].trim();
-            if ((role === 'user' || role === 'model') && (content || attributesString.includes('attachments'))) {
-                const messageData = {
-                    role: role, content: content, timestamp: Date.now(), attachments: []
+    createExportableSession(chat) {
+        return {
+            title: chat.title,
+            lorebookId: lorebookUtils.normalizeStoredLorebookId(chat.lorebookId),
+            messages: chat.messages.map(msg => {
+                const messageExport = {
+                    role: msg.role,
+                    content: msg.content,
+                    timestamp: msg.timestamp,
+                    generatedByApiProvider: msg.generatedByApiProvider || null,
+                    generatedByModel: msg.generatedByModel || null,
+                    contextWindowTokens: Number(msg.contextWindowTokens) || null,
                 };
-                const attributes = {};
-                attributesString.split(/\s+/).forEach(attr => {
-                    const eqIndex = attr.indexOf('=');
-                    if (eqIndex > 0) {
-                        const key = attr.substring(0, eqIndex);
-                        let value = attr.substring(eqIndex + 1);
-                        if (value.startsWith('"') && value.endsWith('"')) {
-                            value = value.substring(1, value.length - 1);
-                        }
-                        attributes[key] = value.replace(/&quot;/g, '"');
-                    }
-                    else if (attr) {
-                        attributes[attr] = true;
-                    }
-                });
-                if (role === 'model') {
-                    messageData.isCascaded = attributes['isCascaded'] === true;
-                    messageData.isSelected = attributes['isSelected'] === true;
-                    messageData.thoughtSummaryOpen = attributes['thoughtOpen'] === true;
+                if (msg.isCascaded !== undefined)
+                    messageExport.isCascaded = msg.isCascaded;
+                if (msg.isSelected !== undefined)
+                    messageExport.isSelected = msg.isSelected;
+                if (msg.siblingGroupId !== undefined)
+                    messageExport.siblingGroupId = msg.siblingGroupId;
+                if (msg.groundingMetadata)
+                    messageExport.groundingMetadata = msg.groundingMetadata;
+                if (msg.usageMetadata)
+                    messageExport.usageMetadata = msg.usageMetadata;
+                if (msg.lorebookContext)
+                    messageExport.lorebookContext = msg.lorebookContext;
+                if (msg.finishReason)
+                    messageExport.finishReason = msg.finishReason;
+                if (msg.finishMessage)
+                    messageExport.finishMessage = msg.finishMessage;
+                if (msg.safetyRatings)
+                    messageExport.safetyRatings = msg.safetyRatings;
+                if (msg.promptFeedback)
+                    messageExport.promptFeedback = msg.promptFeedback;
+                if (msg.thoughtSummary)
+                    messageExport.thoughtSummary = msg.thoughtSummary;
+                if (msg.deepSeekThoughtSummary)
+                    messageExport.deepSeekThoughtSummary = msg.deepSeekThoughtSummary;
+                if (msg.thoughtSummaryOpen !== undefined)
+                    messageExport.thoughtSummaryOpen = msg.thoughtSummaryOpen;
+                if (msg.attachments && msg.attachments.length > 0) {
+                    messageExport.attachments = msg.attachments.map(att => ({ name: att.name, mimeType: att.mimeType, textData: att.textData }));
                 }
-                if (role === 'user' && attributes['attachments']) {
-                    const fileNames = attributes['attachments'].split(';');
-                    messageData.attachments = fileNames.map(name => ({
-                        name: name, mimeType: 'unknown/unknown', base64Data: ''
-                    }));
-                }
-                messages.push(messageData);
-            }
-        }
-        return { messages };
+                return messageExport;
+            }),
+            createdAt: chat.createdAt,
+            updatedAt: chat.updatedAt,
+            ...(state.settings.persistMessageCollapseState && chat.collapsedStates && { collapsedStates: chat.collapsedStates })
+        };
     },
     async safeExportAllSessions() {
         try {
             await this.exportAllSessions();
         }
         catch (error) {
-            alert(`一括出力に失敗しました。データベースにアクセスできない可能性があります。\n\nエラー詳細: ${error.message}`);
+            alert(`一括JSON出力に失敗しました。データベースにアクセスできない可能性があります。\n\nエラー詳細: ${error.message}`);
         }
     },
     async exportAllSessions() {
-        const confirmed = await uiUtils.showCustomConfirm("全てのセッションを1つのJSONファイルとして一括出力しますか？");
+        const confirmed = await uiUtils.showCustomConfirm("全てのセッションを1つのJSONファイルとして一括JSON出力しますか？");
         if (!confirmed)
             return;
         try {
@@ -20673,53 +20623,7 @@ Object.assign(appLogic, {
                 await uiUtils.showCustomAlert("出力するセッションがありません。");
                 return;
             }
-            const exportableChats = chats.map(chat => ({
-                title: chat.title,
-                lorebookId: lorebookUtils.normalizeStoredLorebookId(chat.lorebookId),
-                messages: chat.messages.map(msg => {
-                    const messageExport = {
-                        role: msg.role,
-                        content: msg.content,
-                        timestamp: msg.timestamp,
-                        generatedByApiProvider: msg.generatedByApiProvider || null,
-                        generatedByModel: msg.generatedByModel || null,
-                        contextWindowTokens: Number(msg.contextWindowTokens) || null,
-                    };
-                    if (msg.isCascaded !== undefined)
-                        messageExport.isCascaded = msg.isCascaded;
-                    if (msg.isSelected !== undefined)
-                        messageExport.isSelected = msg.isSelected;
-                    if (msg.siblingGroupId !== undefined)
-                        messageExport.siblingGroupId = msg.siblingGroupId;
-                    if (msg.groundingMetadata)
-                        messageExport.groundingMetadata = msg.groundingMetadata;
-                    if (msg.usageMetadata)
-                        messageExport.usageMetadata = msg.usageMetadata;
-                    if (msg.lorebookContext)
-                        messageExport.lorebookContext = msg.lorebookContext;
-                    if (msg.finishReason)
-                        messageExport.finishReason = msg.finishReason;
-                    if (msg.finishMessage)
-                        messageExport.finishMessage = msg.finishMessage;
-                    if (msg.safetyRatings)
-                        messageExport.safetyRatings = msg.safetyRatings;
-                    if (msg.promptFeedback)
-                        messageExport.promptFeedback = msg.promptFeedback;
-                    if (msg.thoughtSummary)
-                        messageExport.thoughtSummary = msg.thoughtSummary;
-                    if (msg.deepSeekThoughtSummary)
-                        messageExport.deepSeekThoughtSummary = msg.deepSeekThoughtSummary;
-                    if (msg.thoughtSummaryOpen !== undefined)
-                        messageExport.thoughtSummaryOpen = msg.thoughtSummaryOpen;
-                    if (msg.attachments && msg.attachments.length > 0) {
-                        messageExport.attachments = msg.attachments.map(att => ({ name: att.name, mimeType: att.mimeType, textData: att.textData }));
-                    }
-                    return messageExport;
-                }),
-                createdAt: chat.createdAt,
-                updatedAt: chat.updatedAt,
-                ...(state.settings.persistMessageCollapseState && chat.collapsedStates && { collapsedStates: chat.collapsedStates })
-            }));
+            const exportableChats = chats.map(chat => this.createExportableSession(chat));
             const jsonString = JSON.stringify(exportableChats, null, 2);
             const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8' });
             const url = URL.createObjectURL(blob);
@@ -20731,14 +20635,67 @@ Object.assign(appLogic, {
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            await uiUtils.showCustomAlert(`${chats.length}件のセッションを一括出力しました。`);
+            await uiUtils.showCustomAlert(`${chats.length}件のセッションを一括JSON出力しました。`);
         }
         catch (error) {
-            await uiUtils.showCustomAlert(`セッションの一括出力中にエラーが発生しました: ${error.message || error}`);
+            await uiUtils.showCustomAlert(`セッションの一括JSON出力中にエラーが発生しました: ${error.message || error}`);
         }
     },
+    createImportedSession(chatData, titlePrefix, importTimestamp) {
+        const newChat = {
+            title: `${titlePrefix}${chatData.title}`.substring(0, 100),
+            lorebookId: lorebookUtils.normalizeStoredLorebookId(chatData.lorebookId),
+            messages: (chatData.messages || []).map(msg => ({
+                role: msg.role,
+                content: msg.content || '',
+                timestamp: typeof msg.timestamp === 'number' ? msg.timestamp : importTimestamp,
+                isCascaded: msg.isCascaded === true,
+                isSelected: msg.isSelected === true,
+                siblingGroupId: msg.siblingGroupId || undefined,
+                thoughtSummary: msg.thoughtSummary || undefined,
+                deepSeekThoughtSummary: msg.deepSeekThoughtSummary || undefined,
+                thoughtSummaryOpen: msg.thoughtSummaryOpen || false,
+                generatedByApiProvider: msg.generatedByApiProvider || undefined,
+                generatedByModel: msg.generatedByModel || undefined,
+                contextWindowTokens: Number(msg.contextWindowTokens) || undefined,
+                attachments: (msg.attachments || []).map(att => ({
+                    name: att.name || 'imported_file',
+                    mimeType: att.mimeType || 'application/octet-stream',
+                    base64Data: '',
+                    textData: att.textData || ''
+                })),
+                groundingMetadata: msg.groundingMetadata || undefined,
+                usageMetadata: msg.usageMetadata || undefined,
+                lorebookContext: lorebookUtils.normalizeContextSnapshot(msg.lorebookContext) || undefined,
+                finishReason: msg.finishReason || undefined,
+                finishMessage: msg.finishMessage || undefined,
+                safetyRatings: msg.safetyRatings || undefined,
+                promptFeedback: msg.promptFeedback || undefined,
+                error: msg.error || undefined,
+            })),
+            createdAt: typeof chatData.createdAt === 'number' ? chatData.createdAt : importTimestamp,
+            updatedAt: typeof chatData.updatedAt === 'number' ? chatData.updatedAt : importTimestamp,
+        };
+        if (state.settings.persistMessageCollapseState && chatData.collapsedStates) {
+            newChat.collapsedStates = { ...chatData.collapsedStates };
+        }
+        const groupIds = new Set(newChat.messages.filter(m => m.siblingGroupId).map(m => m.siblingGroupId));
+        groupIds.forEach(gid => {
+            const siblings = newChat.messages.filter(m => m.siblingGroupId === gid);
+            const selectedSiblings = siblings.filter(m => m.isSelected);
+            if (selectedSiblings.length === 0 && siblings.length > 0) {
+                siblings[siblings.length - 1].isSelected = true;
+            }
+            else if (selectedSiblings.length > 1) {
+                for (let i = 0; i < selectedSiblings.length - 1; i++) {
+                    selectedSiblings[i].isSelected = false;
+                }
+            }
+        });
+        return newChat;
+    },
     async handleAllSessionsImport(file) {
-        if (!file || file.type !== 'application/json') {
+        if (!file || !/\.json$/i.test(file.name)) {
             await uiUtils.showCustomAlert("JSONファイル (.json) を選択してください。");
             return;
         }
@@ -20759,7 +20716,7 @@ Object.assign(appLogic, {
                     await uiUtils.showCustomAlert("ファイルに取込対象のセッションデータが含まれていません。");
                     return;
                 }
-                const confirmed = await uiUtils.showCustomConfirm(`${importedData.length}件のセッションを一括取込しますか？\n(既存の履歴とタイトルが重複する場合、別履歴として追加されます)`);
+                const confirmed = await uiUtils.showCustomConfirm(`${importedData.length}件のセッションを一括JSON取込しますか？\n(既存の履歴とタイトルが重複する場合、別履歴として追加されます)`);
                 if (!confirmed)
                     return;
                 let importedCount = 0;
@@ -20771,56 +20728,7 @@ Object.assign(appLogic, {
                         continue;
                     }
                     const titlePrefix = state.settings.addPrefixOnImport ? `${IMPORT_PREFIX}(全) ` : '';
-                    const newChat = {
-                        title: `${titlePrefix}${chatData.title}`.substring(0, 100),
-                        lorebookId: lorebookUtils.normalizeStoredLorebookId(chatData.lorebookId),
-                        messages: (chatData.messages || []).map(msg => ({
-                            role: msg.role,
-                            content: msg.content || '',
-                            timestamp: typeof msg.timestamp === 'number' ? msg.timestamp : importTimestamp,
-                            isCascaded: msg.isCascaded === true,
-                            isSelected: msg.isSelected === true,
-                            siblingGroupId: msg.siblingGroupId || undefined,
-                            thoughtSummary: msg.thoughtSummary || undefined,
-                            deepSeekThoughtSummary: msg.deepSeekThoughtSummary || undefined,
-                            thoughtSummaryOpen: msg.thoughtSummaryOpen || false,
-                            generatedByApiProvider: msg.generatedByApiProvider || undefined,
-                            generatedByModel: msg.generatedByModel || undefined,
-                            contextWindowTokens: Number(msg.contextWindowTokens) || undefined,
-                            attachments: (msg.attachments || []).map(att => ({
-                                name: att.name || 'imported_file',
-                                mimeType: att.mimeType || 'application/octet-stream',
-                                base64Data: '',
-                                textData: att.textData || ''
-                            })),
-                            groundingMetadata: msg.groundingMetadata || undefined,
-                            usageMetadata: msg.usageMetadata || undefined,
-                            lorebookContext: lorebookUtils.normalizeContextSnapshot(msg.lorebookContext) || undefined,
-                            finishReason: msg.finishReason || undefined,
-                            finishMessage: msg.finishMessage || undefined,
-                            safetyRatings: msg.safetyRatings || undefined,
-                            promptFeedback: msg.promptFeedback || undefined,
-                            error: msg.error || undefined,
-                        })),
-                        createdAt: typeof chatData.createdAt === 'number' ? chatData.createdAt : importTimestamp,
-                        updatedAt: typeof chatData.updatedAt === 'number' ? chatData.updatedAt : importTimestamp,
-                    };
-                    if (state.settings.persistMessageCollapseState && chatData.collapsedStates) {
-                        newChat.collapsedStates = { ...chatData.collapsedStates };
-                    }
-                    const groupIds = new Set(newChat.messages.filter(m => m.siblingGroupId).map(m => m.siblingGroupId));
-                    groupIds.forEach(gid => {
-                        const siblings = newChat.messages.filter(m => m.siblingGroupId === gid);
-                        const selectedSiblings = siblings.filter(m => m.isSelected);
-                        if (selectedSiblings.length === 0 && siblings.length > 0) {
-                            siblings[siblings.length - 1].isSelected = true;
-                        }
-                        else if (selectedSiblings.length > 1) {
-                            for (let i = 0; i < selectedSiblings.length - 1; i++) {
-                                selectedSiblings[i].isSelected = false;
-                            }
-                        }
-                    });
+                    const newChat = this.createImportedSession(chatData, titlePrefix, importTimestamp);
                     try {
                         await new Promise((resolve, reject) => {
                             const store = dbUtils._getStore(CHATS_STORE, 'readwrite');
@@ -20849,7 +20757,7 @@ Object.assign(appLogic, {
                 }
             }
             catch (error) {
-                await uiUtils.showCustomAlert(`セッションの一括取込中にエラーが発生しました: ${error.message || error}`);
+                await uiUtils.showCustomAlert(`セッションの一括JSON取込中にエラーが発生しました: ${error.message || error}`);
             }
         };
         reader.onerror = async () => {
