@@ -73,6 +73,13 @@ Object.assign(uiUtils, {
                 elements.headerSubmenu.classList.toggle('hidden', !isOpen);
                 elements.headerMenuBtn.setAttribute('aria-expanded', String(isOpen));
                 if (isOpen) {
+                    elements.headerSubmenu.style.right = '0px';
+                    const bounds = elements.headerSubmenu.getBoundingClientRect();
+                    if (bounds.left < 8) {
+                        elements.headerSubmenu.style.right = `${bounds.left - 8}px`;
+                    } else if (bounds.right > window.innerWidth - 8) {
+                        elements.headerSubmenu.style.right = `${bounds.right - window.innerWidth + 8}px`;
+                    }
                     elements.headerSubmenu.querySelector('[role="menuitem"]')?.focus();
                 }
             },

@@ -1092,7 +1092,11 @@
             right: 0;
             z-index: 100;
             display: grid;
-            min-width: 168px;
+            min-width: min(168px, calc(100vw - 16px));
+            width: min(280px, calc(100vw - 16px));
+            box-sizing: border-box;
+            max-height: calc(100dvh - 80px);
+            overflow-y: auto;
             padding: 6px;
             background: var(--bg-primary);
             border: 1px solid var(--border-primary);
@@ -1111,6 +1115,12 @@
             line-height: 1.3;
             text-align: left;
             white-space: nowrap;
+        }
+
+        .header-submenu #header-menu-lorebook-btn,
+        .header-submenu #header-menu-initial-prompt-btn {
+            white-space: normal;
+            overflow-wrap: anywhere;
         }
 
         .header-submenu button:hover:not(:disabled),
