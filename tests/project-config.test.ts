@@ -452,7 +452,7 @@ describe('project configuration', () => {
     expect(openRouterSettings).toContain('id="select-all-openrouter-providers-btn"');
     expect(openRouterSettings).toContain('id="clear-all-openrouter-providers-btn"');
     expect(openRouterSettings).toContain('id="openrouter-model-search"');
-    expect(openRouterSettings).toContain('id="openrouter-unavailable-model-list"');
+    expect(openRouterSettings).not.toContain('id="openrouter-unavailable-model-list"');
     const appConfig = readFile('src/app-config.ts');
     for (const provider of ['OpenAI', 'Anthropic', 'Google', 'DeepSeek', 'xAI', 'Qwen', 'Z.ai', 'その他']) {
       expect(appConfig).toContain(`text: '${provider}'`);

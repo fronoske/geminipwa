@@ -2,6 +2,7 @@
 // Bundled into the generated index.html from this TypeScript source.
 const openRouterModelCatalog = {
     models: [],
+    latestModelIds: null,
     visibleModelIds: [],
     lastFetchedAt: null,
     initialized: false,
@@ -203,6 +204,7 @@ const openRouterModelCatalog = {
 
     async clearCatalog() {
         this.models = [];
+        this.latestModelIds = null;
         this.visibleModelIds = [];
         this.lastFetchedAt = null;
         await this.persistCatalog();
@@ -236,13 +238,35 @@ const openRouterModelCatalog = {
         if (!Array.isArray(payload?.data)) throw new Error('OpenRouterから不正なモデル一覧が返されました。');
 
         const uniqueModels = new Map();
+        const latestModelIds = new Set();
         payload.data.forEach((rawModel) => {
+            if (typeof rawModel?.id === 'string' && rawModel.id.trim()) {
+                latestModelIds.add(rawModel.id.trim());
+            }
             const model = this.normalizeModel(rawModel);
             if (model) uniqueModels.set(model.id, model);
         });
+        this.latestModelIds = latestModelIds;
         this.models = this.sortModels([...uniqueModels.values()]);
         this.lastFetchedAt = new Date();
         return this.models;
+    },
+
+    async pruneUnavailableSelectedModels() {
+        if (!this.latestModelIds) return 0;
+        const selectedIds = this.getSelectedIds();
+        const remainingIds = selectedIds.filter((modelId) => this.latestModelIds.has(modelId));
+        const removedCount = selectedIds.length - remainingIds.length;
+        if (removedCount === 0) return 0;
+
+        const previousModelName = state.settings.openrouterModelName;
+        this.setSelectedIds(remainingIds);
+        const saves = [dbUtils.saveSetting('openrouterSelectedModels', remainingIds)];
+        if (state.settings.openrouterModelName !== previousModelName) {
+            saves.push(dbUtils.saveSetting('openrouterModelName', state.settings.openrouterModelName));
+        }
+        await Promise.all(saves);
+        return removedCount;
     },
 
     getModel(modelId) {
@@ -280,36 +304,10 @@ const openRouterModelCatalog = {
         )];
         uiUtils.updateOpenRouterUserModelOptions();
         this.updateSelectedCount();
-        this.renderUnavailableModels();
     },
 
     updateSelectedCount() {
         elements.openrouterSelectedModelCount.textContent = String(this.getSelectedIds().length);
-    },
-
-    getUnavailableSelectedIds() {
-        if (!this.lastFetchedAt) return [];
-        const availableIds = new Set(this.models.map((model) => model.id));
-        return this.getSelectedIds().filter((modelId) => !availableIds.has(modelId));
-    },
-
-    renderUnavailableModels() {
-        const unavailableIds = this.getUnavailableSelectedIds();
-        elements.openrouterUnavailableModels.classList.toggle('hidden', unavailableIds.length === 0);
-        elements.openrouterUnavailableModelList.innerHTML = '';
-        unavailableIds.forEach((modelId) => {
-            const label = document.createElement('label');
-            label.className = 'openrouter-model-selection';
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.checked = true;
-            checkbox.setAttribute('aria-label', `${modelId}の選択を解除`);
-            checkbox.addEventListener('change', () => {
-                this.setSelectedIds(this.getSelectedIds().filter((selectedId) => selectedId !== modelId));
-            });
-            label.append(checkbox, document.createTextNode(modelId));
-            elements.openrouterUnavailableModelList.appendChild(label);
-        });
     },
 
     getFilteredModels() {
@@ -376,7 +374,6 @@ const openRouterModelCatalog = {
     renderModelList() {
         const filteredModels = this.getFilteredModels();
         const selectedIds = new Set(this.getSelectedIds());
-        this.renderUnavailableModels();
         this.visibleModelIds = filteredModels.map((model) => model.id);
         elements.openrouterModelCatalogList.innerHTML = '';
         elements.openrouterModelCatalogEmpty.classList.toggle('hidden', filteredModels.length > 0);
@@ -500,8 +497,10 @@ const openRouterModelCatalog = {
             uiUtils.updateOpenRouterUserModelOptions();
             const models = await this.fetchModels(apiKey);
             await this.persistCatalog();
+            const removedCount = await this.pruneUnavailableSelectedModels();
             elements.openrouterModelCatalogControls.classList.remove('hidden');
-            elements.openrouterModelFetchStatus.textContent = `${models.length}件のTextモデルを取得しました（${this.lastFetchedAt.toLocaleString()}）。`;
+            elements.openrouterModelFetchStatus.textContent = `${models.length}件のTextモデルを取得しました（${this.lastFetchedAt.toLocaleString()}）。`
+                + (removedCount ? ` OpenRouterにない選択済みモデルを${removedCount}件削除しました。` : '');
             this.renderModelList();
             uiUtils.updateOpenRouterUserModelOptions();
         } catch (error) {

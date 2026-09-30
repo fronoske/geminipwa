@@ -223,14 +223,12 @@ describe('OpenRouter model catalog', () => {
     expect(new vm.Script("openRouterModelCatalog.getDisplayLabel('manual/model-id')").runInContext(context)).toBe('manual/model-id');
   });
 
-  it('keeps unavailable selected models removable and filters available models by name or ID', () => {
+  it('filters available models by name or ID', () => {
     const searchInput = { value: '' };
     const providerOptions = {
       querySelectorAll: () => [{ value: 'google' }, { value: 'openai' }],
     };
-    const state = { settings: { openrouterSelectedModels: ['google/removed', 'google/alpha'] } };
     const context = createContext({
-      state,
       elements: {
         openrouterModelSearchInput: searchInput,
         openrouterModelProviderOptions: providerOptions,
@@ -241,11 +239,7 @@ describe('OpenRouter model catalog', () => {
         { id: 'google/alpha', name: 'Google: Alpha Model', provider: 'google', created: 2 },
         { id: 'openai/beta', name: 'OpenAI: Beta Model', provider: 'openai', created: 1 }
       ];
-      openRouterModelCatalog.lastFetchedAt = new Date();
     `).runInContext(context);
-
-    const missing = new vm.Script('openRouterModelCatalog.getUnavailableSelectedIds()').runInContext(context);
-    expect(Array.from(missing)).toEqual(['google/removed']);
 
     searchInput.value = 'ALPHA';
     const byName = new vm.Script('openRouterModelCatalog.getFilteredModels().map(model => model.id)').runInContext(context);
@@ -254,43 +248,46 @@ describe('OpenRouter model catalog', () => {
     const byId = new vm.Script('openRouterModelCatalog.getFilteredModels().map(model => model.id)').runInContext(context);
     expect(Array.from(byId)).toEqual(['openai/beta']);
 
-    state.settings.openrouterSelectedModels = ['google/alpha'];
-    expect(Array.from(new vm.Script('openRouterModelCatalog.getUnavailableSelectedIds()').runInContext(context))).toEqual([]);
   });
 
-  it('removes a disappeared model when its checkbox is unchecked', () => {
-    const listeners: Record<string, () => void> = {};
-    const list = { innerHTML: '', children: [] as Array<{ children: unknown[] }>, appendChild(child: { children: unknown[] }) { this.children.push(child); } };
-    const unavailable = { classList: { toggle: vi.fn() } };
+  it('deletes only IDs absent from a successful OpenRouter response and persists the selection', async () => {
+    const saveSetting = vi.fn(async () => undefined);
+    const state = { settings: {
+      openrouterSelectedModels: ['google/removed', 'google/available', 'google/image-only'],
+      openrouterModelName: 'google/removed',
+    } };
     const count = { textContent: '' };
-    const state = { settings: { openrouterSelectedModels: ['google/removed', 'google/available'] } };
-    const makeElement = () => ({
-      children: [] as unknown[],
-      append(...children: unknown[]) { this.children.push(...children); },
-      setAttribute() {},
-      addEventListener(event: string, listener: () => void) { listeners[event] = listener; },
-    });
     const context = createContext({
       state,
-      document: { createElement: makeElement, createTextNode: (value: string) => ({ textContent: value }) },
-      elements: {
-        openrouterUnavailableModels: unavailable,
-        openrouterUnavailableModelList: list,
-        openrouterSelectedModelCount: count,
+      fetch: vi.fn(async () => ({
+        ok: true,
+        json: async () => ({ data: [
+          { id: 'google/available', context_length: 1000000, architecture: { output_modalities: ['text'] } },
+          { id: 'google/image-only', context_length: 1000000, architecture: { output_modalities: ['image'] } },
+        ] }),
+      })),
+      elements: { openrouterSelectedModelCount: count },
+      dbUtils: { saveSetting },
+      uiUtils: {
+        updateOpenRouterUserModelOptions: () => {
+          if (!state.settings.openrouterSelectedModels.includes(state.settings.openrouterModelName)) {
+            state.settings.openrouterModelName = state.settings.openrouterSelectedModels[0] || '';
+          }
+        },
       },
-      uiUtils: { updateOpenRouterUserModelOptions: vi.fn() },
     });
-    new vm.Script(`
-      openRouterModelCatalog.models = [{ id: 'google/available' }];
-      openRouterModelCatalog.lastFetchedAt = new Date();
-      openRouterModelCatalog.renderUnavailableModels();
-    `).runInContext(context);
+    expect(await new vm.Script('openRouterModelCatalog.pruneUnavailableSelectedModels()').runInContext(context)).toBe(0);
+    expect(state.settings.openrouterSelectedModels).toHaveLength(3);
+    expect(saveSetting).not.toHaveBeenCalled();
+    await new vm.Script("openRouterModelCatalog.fetchModels('secret-key')").runInContext(context);
 
-    expect(list.children).toHaveLength(1);
-    listeners.change();
-    expect(state.settings.openrouterSelectedModels).toEqual(['google/available']);
-    expect(count.textContent).toBe('1');
-    expect(unavailable.classList.toggle).toHaveBeenLastCalledWith('hidden', true);
+    const removedCount = await new vm.Script('openRouterModelCatalog.pruneUnavailableSelectedModels()').runInContext(context);
+    expect(removedCount).toBe(1);
+    expect(state.settings.openrouterSelectedModels).toEqual(['google/available', 'google/image-only']);
+    expect(state.settings.openrouterModelName).toBe('google/available');
+    expect(count.textContent).toBe('2');
+    expect(saveSetting).toHaveBeenCalledWith('openrouterSelectedModels', ['google/available', 'google/image-only']);
+    expect(saveSetting).toHaveBeenCalledWith('openrouterModelName', 'google/available');
   });
 
   it('reports missing and unauthorized API keys without exposing the key', async () => {
