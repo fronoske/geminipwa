@@ -92,8 +92,11 @@ describe('OpenRouter model catalog', () => {
     expect(new vm.Script("openRouterModelCatalog.classifyProvider('~~openai/model')").runInContext(context)).toBe('other');
     expect(new vm.Script("openRouterModelCatalog.classifyProvider('new-vendor/model')").runInContext(context)).toBe('other');
     expect(new vm.Script("openRouterModelCatalog.classifyProvider('z-ai/model')").runInContext(context)).toBe('zai');
-    expect(new vm.Script("openRouterModelCatalog.classifyProvider('meta-llama/model')").runInContext(context)).toBe('other');
-    expect(new vm.Script("openRouterModelCatalog.classifyProvider('mistralai/model')").runInContext(context)).toBe('other');
+    expect(new vm.Script("openRouterModelCatalog.classifyProvider('meta/model')").runInContext(context)).toBe('meta');
+    expect(new vm.Script("openRouterModelCatalog.classifyProvider('meta-llama/model')").runInContext(context)).toBe('meta');
+    expect(new vm.Script("openRouterModelCatalog.classifyProvider('mistralai/model')").runInContext(context)).toBe('mistral');
+    expect(new vm.Script("openRouterModelCatalog.classifyProvider('moonshotai/model')").runInContext(context)).toBe('moonshot');
+    expect(new vm.Script("openRouterModelCatalog.classifyProvider('stealth/model')").runInContext(context)).toBe('stealth');
     expect(new vm.Script("openRouterModelCatalog.classifyProvider('x-ai/model')").runInContext(context)).toBe('xai');
   });
 

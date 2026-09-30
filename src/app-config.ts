@@ -37,6 +37,10 @@
             { value: 'xai', text: 'xAI', prefixes: ['x-ai'] },
             { value: 'qwen', text: 'Qwen', prefixes: ['qwen'] },
             { value: 'zai', text: 'Z.ai', prefixes: ['z-ai'] },
+            { value: 'mistral', text: 'Mistral', prefixes: ['mistralai'] },
+            { value: 'moonshot', text: 'Moonshot', prefixes: ['moonshotai'] },
+            { value: 'meta', text: 'Meta', prefixes: ['meta', 'meta-llama'] },
+            { value: 'stealth', text: 'Stealth', prefixes: ['stealth'] },
             { value: 'other', text: 'その他', prefixes: [] },
         ];
         const DEFAULT_XAI_MODEL = 'grok-4-1-fast-non-reasoning';

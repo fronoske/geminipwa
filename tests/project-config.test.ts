@@ -454,10 +454,10 @@ describe('project configuration', () => {
     expect(openRouterSettings).toContain('id="openrouter-model-search"');
     expect(openRouterSettings).not.toContain('id="openrouter-unavailable-model-list"');
     const appConfig = readFile('src/app-config.ts');
-    for (const provider of ['OpenAI', 'Anthropic', 'Google', 'DeepSeek', 'xAI', 'Qwen', 'Z.ai', 'その他']) {
+    for (const provider of ['OpenAI', 'Anthropic', 'Google', 'DeepSeek', 'xAI', 'Qwen', 'Z.ai', 'Mistral', 'Moonshot', 'Meta', 'Stealth', 'その他']) {
       expect(appConfig).toContain(`text: '${provider}'`);
     }
-    expect(appConfig).not.toMatch(/text: '(?:Meta|Mistral)'/);
+    expect(appConfig).not.toMatch(/text: '(?:Mistral AI|Moonshot AI)'/);
     expect(catalog).toContain("querySelectorAll('.openrouter-model-provider-checkbox:checked')");
     expect(catalog).toContain("checkbox.checked = provider.value !== 'other';");
     expect(catalog).toContain("table.className = 'openrouter-model-catalog-table';");
