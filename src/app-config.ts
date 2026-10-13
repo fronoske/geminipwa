@@ -137,7 +137,7 @@ const PASTEL_RAINBOW_THEME_COLOR = '#ffadad';
         const LIGHT_MODE_HEADER_COLOR = '#4a90e2';
         const LIGHT_MODE_PRIMARY_COLOR = '#ffffff';
 
-        const APP_VERSION = "2026.10.13-fronoske";
+        const APP_VERSION = "2026.10.14-fronoske";
         const formatLocalDateStamp = (date = new Date()) => [
             date.getFullYear(),
             String(date.getMonth() + 1).padStart(2, '0'),

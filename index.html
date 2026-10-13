@@ -7891,7 +7891,7 @@ const LIGHT_MODE_MODEL_MESSAGE_COLOR = '#e5e5ea';
 const LIGHT_MODE_SECONDARY_COLOR = '#f0f2f5';
 const LIGHT_MODE_HEADER_COLOR = '#4a90e2';
 const LIGHT_MODE_PRIMARY_COLOR = '#ffffff';
-const APP_VERSION = "2026.10.13-fronoske";
+const APP_VERSION = "2026.10.14-fronoske";
 const formatLocalDateStamp = (date = new Date()) => [
     date.getFullYear(),
     String(date.getMonth() + 1).padStart(2, '0'),
@@ -10132,9 +10132,14 @@ const lorebookUtils = {
             .map((character, sourceIndex) => {
             const aliases = character.aliases.map(alias => this.normalizeSearchText(alias));
             let mostRecentIndex = -1;
+            let matchedMessageCount = 0;
+            let detectionScore = 0;
             messageTexts.forEach((text, index) => {
-                if (aliases.some(alias => text.includes(alias)))
-                    mostRecentIndex = index;
+                if (!aliases.some(alias => text.includes(alias)))
+                    return;
+                mostRecentIndex = index;
+                matchedMessageCount += 1;
+                detectionScore += index + 1;
             });
             const appearsInRoleInstruction = aliases.some(alias => normalizedRoleInstruction.includes(alias));
             if (mostRecentIndex === -1 && !appearsInRoleInstruction)
@@ -10142,12 +10147,16 @@ const lorebookUtils = {
             return {
                 ...character,
                 mostRecentIndex,
+                matchedMessageCount,
+                detectionScore,
                 appearsInRoleInstruction,
                 sourceIndex,
             };
         })
             .filter(Boolean)
             .sort((left, right) => {
+            if (right.detectionScore !== left.detectionScore)
+                return right.detectionScore - left.detectionScore;
             if (right.mostRecentIndex !== left.mostRecentIndex)
                 return right.mostRecentIndex - left.mostRecentIndex;
             if (left.appearsInRoleInstruction !== right.appearsInRoleInstruction) {

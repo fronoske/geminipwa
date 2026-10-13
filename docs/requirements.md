@@ -59,7 +59,10 @@
 
 ## Lorebook の呼称ルール選択
 
-- 話者候補は、直近 `retrieval.scanMessageCount` 件のメッセージとシステムプロンプトで人物の別名を照合し、従来の優先順位で最大 `retrieval.maxCharacterCores` 人を検出する。
+- 話者候補は、直近 `retrieval.scanMessageCount` 件のメッセージとシステムプロンプトで人物の別名を照合し、最大 `retrieval.maxCharacterCores` 人を検出する。メッセージ本文と別名はNFKC正規化と小文字化の後、部分一致で照合する。
+- 同一人物の名前・別名が同じメッセージ内に何度出ても、検出回数は1回とする。直近メッセージを古い順に1〜N点で重み付けし、検出したメッセージの重みの合計を人物の評価値とする。検出したメッセージ数と評価値は各送信時に再計算する。
+- 人物候補は評価値の降順、最後に検出されたメッセージの新しさ、システムプロンプトでの一致の有無、Lorebook内の記載順で順位付けする。システムプロンプトだけの検出も候補に含めるが、メッセージの検出回数・評価値には加算しない。
+- 同一メッセージ内の繰り返しを将来すべて数える方式へ変更する可能性、採用理由と制約は [人物候補の検討記録](lorebook-character-detection.md) に記録する。
 - 個別呼称ルール (`addressing.exactRules`) は従来の関連度順に選び、`retrieval.maxAddressingRules` と `retrieval.maxAddressingCharacters` を適用する。
 - 話者候補が持つ一般呼称ルール (`addressing.fallbackRules`) は全件を `<lorebook-reference>` の呼称ルール欄に含める。個別呼称ルールの件数・文字数上限とは別枠とし、`retrieval.maxDynamicCharacters` にも加算しない。
 - 話者候補に含まれない人物の一般呼称ルールは送信しない。一般ルールの対象説明や場面条件の適用判断はLLMに委ね、個別呼称を優先する既存の適用指示を維持する。

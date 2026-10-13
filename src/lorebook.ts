@@ -78,20 +78,28 @@ const lorebookUtils = {
             .map((character, sourceIndex) => {
                 const aliases = character.aliases.map(alias => this.normalizeSearchText(alias));
                 let mostRecentIndex = -1;
+                let matchedMessageCount = 0;
+                let detectionScore = 0;
                 messageTexts.forEach((text, index) => {
-                    if (aliases.some(alias => text.includes(alias))) mostRecentIndex = index;
+                    if (!aliases.some(alias => text.includes(alias))) return;
+                    mostRecentIndex = index;
+                    matchedMessageCount += 1;
+                    detectionScore += index + 1;
                 });
                 const appearsInRoleInstruction = aliases.some(alias => normalizedRoleInstruction.includes(alias));
                 if (mostRecentIndex === -1 && !appearsInRoleInstruction) return null;
                 return {
                     ...character,
                     mostRecentIndex,
+                    matchedMessageCount,
+                    detectionScore,
                     appearsInRoleInstruction,
                     sourceIndex,
                 };
             })
             .filter(Boolean)
             .sort((left, right) => {
+                if (right.detectionScore !== left.detectionScore) return right.detectionScore - left.detectionScore;
                 if (right.mostRecentIndex !== left.mostRecentIndex) return right.mostRecentIndex - left.mostRecentIndex;
                 if (left.appearsInRoleInstruction !== right.appearsInRoleInstruction) {
                     return Number(right.appearsInRoleInstruction) - Number(left.appearsInRoleInstruction);
