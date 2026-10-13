@@ -141,14 +141,8 @@ const lorebookUtils = {
             candidates.push({ ...rule, kind: 'exact', relevance, sourceIndex });
         });
 
-        addressing.fallbackRules.forEach((rule, sourceIndex) => {
-            if (!activeCharacterIds.has(rule.speakerId)) return;
-            candidates.push({ ...rule, kind: 'fallback', relevance: 200, sourceIndex });
-        });
-
         candidates.sort((left, right) =>
             right.relevance - left.relevance
-            || (left.kind === 'exact' ? 0 : 1) - (right.kind === 'exact' ? 0 : 1)
             || left.sourceIndex - right.sourceIndex
         );
 
@@ -162,6 +156,13 @@ const lorebookUtils = {
             rules.push({ ...rule, rendered });
             usedCharacters += addition;
         }
+
+        // General rules are always included for detected speakers and use no shared budget.
+        addressing.fallbackRules.forEach((rule, sourceIndex) => {
+            if (!activeCharacterIds.has(rule.speakerId)) return;
+            const candidate = { ...rule, kind: 'fallback', relevance: 200, sourceIndex };
+            rules.push({ ...candidate, rendered: this.formatAddressingRule(lorebook, candidate) });
+        });
         return { rules, usedCharacters };
     },
 

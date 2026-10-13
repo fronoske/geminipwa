@@ -53,9 +53,16 @@
 
 - 設定画面の Lorebook 管理ボタンは「新規」「JSON取込」「JSON一括出力」とする。JSON取込は単体・複数件の Lorebook を受け付け、JSON一括出力は登録済みの全件を一つのファイルに出力する。
 - Lorebook の各行は個別出力ボタンを「JSON出力」と表示し、「編集」の後、「削除」の前に配置する。個別出力は従来どおり対象 Lorebook 1件を JSON 形式で保存する。
-- 「新規Lorebookを追加」画面で、呼称ルール・人物コア・条件付き記憶に共通する文字数上限 `retrieval.maxDynamicCharacters` を指定できるようにする。初期値は12,000文字とし、`DEFAULT_LOREBOOK_RETRIEVAL.maxDynamicCharacters` から表示する。
+- 「新規Lorebookを追加」画面で、個別呼称ルール・人物コア・条件付き記憶に共通する文字数上限 `retrieval.maxDynamicCharacters` を指定できるようにする。一般呼称ルールはこの上限の計数対象外とする。初期値は12,000文字とし、`DEFAULT_LOREBOOK_RETRIEVAL.maxDynamicCharacters` から表示する。
 - 1以上の整数だけを受け付け、解析結果の確認を経て保存した Lorebook に入力値を保持する。
 - 既存 Lorebook の編集画面では現在の上限値を表示し、変更して保存できるようにする。既存の保存値はユーザーが変更するまで維持する。
+
+## Lorebook の呼称ルール選択
+
+- 話者候補は、直近 `retrieval.scanMessageCount` 件のメッセージとシステムプロンプトで人物の別名を照合し、従来の優先順位で最大 `retrieval.maxCharacterCores` 人を検出する。
+- 個別呼称ルール (`addressing.exactRules`) は従来の関連度順に選び、`retrieval.maxAddressingRules` と `retrieval.maxAddressingCharacters` を適用する。
+- 話者候補が持つ一般呼称ルール (`addressing.fallbackRules`) は全件を `<lorebook-reference>` の呼称ルール欄に含める。個別呼称ルールの件数・文字数上限とは別枠とし、`retrieval.maxDynamicCharacters` にも加算しない。
+- 話者候補に含まれない人物の一般呼称ルールは送信しない。一般ルールの対象説明や場面条件の適用判断はLLMに委ね、個別呼称を優先する既存の適用指示を維持する。
 
 ## 初回ユーザープロンプト
 

@@ -422,7 +422,7 @@ describe('Lorebook retrieval', () => {
           maxConditionalMemories: number;
         };
       };
-      addressingRules: unknown[];
+      addressingRules: Array<{ kind: string }>;
       characterCores: unknown[];
       memories: unknown[];
       dynamicContentCharacters: number;
@@ -433,7 +433,8 @@ describe('Lorebook retrieval', () => {
       }])`,
     );
 
-    expect(selected.addressingRules.length).toBeLessThanOrEqual(selected.lorebook.retrieval.maxAddressingRules);
+    expect(selected.addressingRules.filter(rule => rule.kind === 'exact').length)
+      .toBeLessThanOrEqual(selected.lorebook.retrieval.maxAddressingRules);
     expect(selected.characterCores.length).toBeLessThanOrEqual(selected.lorebook.retrieval.maxCharacterCores);
     expect(selected.memories.length).toBeLessThanOrEqual(selected.lorebook.retrieval.maxConditionalMemories);
     expect(selected.dynamicContentCharacters).toBeLessThanOrEqual(selected.lorebook.retrieval.maxDynamicCharacters);
