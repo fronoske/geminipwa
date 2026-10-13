@@ -38,12 +38,17 @@ const createContext = (messages: Message[], roleInstruction = '') => {
       { id: 'ken-memory', anyCharacters: ['ken'], content: '健との思い出', priority: 50 },
     ],
   };
-  const context = vm.createContext({ lorebook, messages, roleInstruction, state: { lorebookRecords: [{ lorebook }] } });
+  const context = vm.createContext({
+    lorebook, messages, roleInstruction, state: { lorebookRecords: [{ lorebook }] }, uiUtils: {}, TextEncoder,
+  });
   new vm.Script(fs.readFileSync(path.join(projectRoot, '.build/runtime/lorebook.js'), 'utf8'))
+    .runInContext(context);
+  new vm.Script(fs.readFileSync(path.join(projectRoot, '.build/runtime/ui-message-tools.js'), 'utf8'))
     .runInContext(context);
   const evaluate = <T>(expression: string): T => new vm.Script(expression).runInContext(context) as T;
   return {
     lorebook,
+    evaluate,
     detect: () => evaluate<Candidate[]>('lorebookUtils.detectCharacters(lorebook, messages, roleInstruction)'),
     prompt: () => evaluate<string>("lorebookUtils.buildPrompt(lorebook.id, messages, roleInstruction)"),
   };
@@ -64,7 +69,7 @@ describe('Lorebook character detection frequency', () => {
     expect(detect()[1]).toMatchObject({ matchedMessageCount: 1, detectionScore: 5, mostRecentIndex: 4 });
     const reference = prompt();
     expect(reference).toContain('太郎 → 男子: 発話では「{姓}さん」');
-    expect(reference).toContain('太郎: 会話を続けている人物');
+    expect(reference).toContain('太郎 (10): 会話を続けている人物');
     expect(reference).toContain('太郎との約束');
     expect(reference).not.toContain('健 → 男子:');
     expect(reference).not.toContain('回想された人物');
@@ -114,10 +119,13 @@ describe('Lorebook character detection frequency', () => {
   });
 
   it('detects system-only characters without counting repeated system prompt mentions', () => {
-    const { detect } = createContext([{ role: 'user', content: '太郎' }], '葵'.repeat(100));
+    const { lorebook, detect, prompt } = createContext([{ role: 'user', content: '太郎' }], '葵'.repeat(100));
+    lorebook.retrieval.maxCharacterCores = 2;
 
     expect(detect().map(candidate => candidate.id)).toEqual(['taro', 'aoi']);
     expect(detect()[1]).toMatchObject({ matchedMessageCount: 0, detectionScore: 0, mostRecentIndex: -1 });
+    expect(prompt()).toContain('太郎 (1): 会話を続けている人物');
+    expect(prompt()).toContain('葵 (0): システムプロンプトの人物');
   });
 
   it('recomputes the ranking from the configured recent window without accumulating older matches', () => {
@@ -130,8 +138,30 @@ describe('Lorebook character detection frequency', () => {
 
     const reference = prompt();
     expect(reference).toContain('健 → 男子: 発話では「{姓}くん」');
-    expect(reference).toContain('健: 回想された人物');
+    expect(reference).toContain('健 (2): 回想された人物');
     expect(reference).not.toContain('太郎 → 男子:');
     expect(reference).not.toContain('会話を続けている人物');
+  });
+
+  it('shows the saved send-time score in response details after retrieval settings change', () => {
+    const { lorebook, evaluate, prompt } = createContext([
+      { role: 'user', content: '太郎' },
+      { role: 'model', content: '太郎' },
+      { role: 'user', content: '太郎' },
+      { role: 'model', content: '太郎' },
+      { role: 'user', content: 'ふと健を思い出した' },
+    ]);
+    evaluate(`globalThis.savedSnapshot = lorebookUtils.createContextSnapshot(
+      lorebook.id, lorebookUtils.buildPrompt(lorebook.id, messages, roleInstruction)
+    )`);
+    lorebook.retrieval.scanMessageCount = 1;
+
+    const details = evaluate<{ lorebookReference: string }>(
+      'uiUtils.buildResponseDetailsViewModel({ lorebookContext: savedSnapshot })',
+    );
+
+    expect(details.lorebookReference).toContain('太郎 (10): 会話を続けている人物');
+    expect(details.lorebookReference).not.toContain('健 (1):');
+    expect(prompt()).toContain('健 (1): 回想された人物');
   });
 });

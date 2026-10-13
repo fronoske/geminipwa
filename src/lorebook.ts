@@ -174,6 +174,10 @@ const lorebookUtils = {
         return { rules, usedCharacters };
     },
 
+    formatCharacterCore(character) {
+        return `${character.name} (${character.detectionScore}): ${character.core}`;
+    },
+
     selectContext(lorebookId, messages = [], roleInstruction = '') {
         const lorebook = this.getLorebook(lorebookId);
         if (!lorebook) return null;
@@ -193,7 +197,7 @@ const lorebookUtils = {
         let usedCharacters = addressing.usedCharacters;
         const characterCores = [];
         for (const character of detectedCharacters) {
-            const addition = character.name.length + character.core.length + 8;
+            const addition = this.formatCharacterCore(character).length + 6;
             if (usedCharacters + addition > lorebook.retrieval.maxDynamicCharacters) break;
             characterCores.push(character);
             usedCharacters += addition;
@@ -259,7 +263,7 @@ const lorebookUtils = {
 
         if (selected.characterCores.length > 0) {
             sections.push(`【現在関係する人物コア】\n${selected.characterCores
-                .map(character => `- ${character.name}: ${character.core}`)
+                .map(character => `- ${this.formatCharacterCore(character)}`)
                 .join('\n')}`);
         }
 

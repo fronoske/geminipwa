@@ -583,8 +583,9 @@ describe('project configuration', () => {
     expect(appConfig).toContain('const DB_VERSION = 10');
   });
 
-  it('uses the current release date as the application version', () => {
-    expect(readFile('src/app-config.ts')).toContain('const APP_VERSION = "2026.10.14-fronoske"');
+  it('uses a date and time as the displayed application version', () => {
+    expect(readFile('src/app-config.ts'))
+      .toMatch(/const APP_VERSION = "\d{4}\.\d{2}\.\d{2}-(?:[01]\d|2[0-3]):[0-5]\d";/);
   });
 
   it('uses the device-local calendar date in timestamped export filenames', () => {

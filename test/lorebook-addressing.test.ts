@@ -75,7 +75,7 @@ describe('general Lorebook addressing rules', () => {
 
   it('keeps general rules outside the shared budget without displacing cores or memories', () => {
     const { lorebook, evaluate } = createContext();
-    lorebook.retrieval.maxDynamicCharacters = 30;
+    lorebook.retrieval.maxDynamicCharacters = 35;
     lorebook.retrieval.maxAddressingCharacters = 1;
 
     const prompt = evaluate<string>(
@@ -90,9 +90,9 @@ describe('general Lorebook addressing rules', () => {
     expect(prompt).toContain('春 → 男子グループ14:');
     expect(prompt).not.toContain('空 → 同級生:');
     expect(prompt).not.toContain('春 → 空:');
-    expect(prompt).toContain('春: 絵が好き');
+    expect(prompt).toContain('春 (0): 絵が好き');
     expect(prompt).toContain('校内展で入選');
-    expect(selected.dynamicContentCharacters).toBeLessThanOrEqual(30);
+    expect(selected.dynamicContentCharacters).toBeLessThanOrEqual(35);
   });
 
   it('omits general rules when no speaker candidate is detected', () => {
