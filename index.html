@@ -7668,16 +7668,16 @@ font-size: 1.142em !important;
             <fieldset>
                 <legend>検索対象</legend>
                 <label><input type="radio" id="string-replacement-scope-all"
-                    name="string-replacement-scope" value="all" checked> 全体</label>
+                    name="string-replacement-scope" value="all"> 全体</label>
                 <label><input type="radio" id="string-replacement-scope-editing"
-                    name="string-replacement-scope" value="editing"> 編集中の応答</label>
+                    name="string-replacement-scope" value="editing" checked> 編集中の応答</label>
             </fieldset>
             <fieldset>
                 <legend>置換方法</legend>
                 <label><input type="radio" id="string-replacement-mode-batch"
-                    name="string-replacement-mode" value="batch" checked> 一括置換</label>
+                    name="string-replacement-mode" value="batch"> 一括置換</label>
                 <label><input type="radio" id="string-replacement-mode-sequential"
-                    name="string-replacement-mode" value="sequential"> 逐次置換</label>
+                    name="string-replacement-mode" value="sequential" checked> 逐次置換</label>
             </fieldset>
             <div class="dialog-actions">
                 <button type="button" id="string-replacement-cancel-btn" class="dialog-cancel-btn">Cancel</button>
@@ -7891,7 +7891,7 @@ const LIGHT_MODE_MODEL_MESSAGE_COLOR = '#e5e5ea';
 const LIGHT_MODE_SECONDARY_COLOR = '#f0f2f5';
 const LIGHT_MODE_HEADER_COLOR = '#4a90e2';
 const LIGHT_MODE_PRIMARY_COLOR = '#ffffff';
-const APP_VERSION = "2026.09.30-fronoske";
+const APP_VERSION = "2026.10.13-fronoske";
 const formatLocalDateStamp = (date = new Date()) => [
     date.getFullYear(),
     String(date.getMonth() + 1).padStart(2, '0'),
@@ -22857,9 +22857,10 @@ Object.assign(appLogic, {
             return;
         const editorSnapshot = this.getStringReplacementEditorSnapshot();
         elements.stringReplacementScopeEditing.disabled = !editorSnapshot;
-        if (!editorSnapshot && elements.stringReplacementScopeEditing.checked) {
-            elements.stringReplacementScopeAll.checked = true;
-        }
+        elements.stringReplacementScopeAll.checked = !editorSnapshot;
+        elements.stringReplacementScopeEditing.checked = !!editorSnapshot;
+        elements.stringReplacementModeBatch.checked = false;
+        elements.stringReplacementModeSequential.checked = true;
         elements.stringReplacementDialog.showModal();
         requestAnimationFrame(() => {
             elements.stringReplacementSearch.focus();

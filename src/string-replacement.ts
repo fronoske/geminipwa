@@ -55,9 +55,10 @@ Object.assign(appLogic, {
 
         const editorSnapshot = this.getStringReplacementEditorSnapshot();
         elements.stringReplacementScopeEditing.disabled = !editorSnapshot;
-        if (!editorSnapshot && elements.stringReplacementScopeEditing.checked) {
-            elements.stringReplacementScopeAll.checked = true;
-        }
+        elements.stringReplacementScopeAll.checked = !editorSnapshot;
+        elements.stringReplacementScopeEditing.checked = !!editorSnapshot;
+        elements.stringReplacementModeBatch.checked = false;
+        elements.stringReplacementModeSequential.checked = true;
         elements.stringReplacementDialog.showModal();
         requestAnimationFrame(() => {
             elements.stringReplacementSearch.focus();
