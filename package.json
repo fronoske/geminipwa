@@ -1,11 +1,13 @@
 {
   "name": "geminipwa",
-  "version": "0.2.3",
+  "version": "0.4.0",
   "private": true,
   "type": "module",
   "scripts": {
     "baseline": "node scripts/check-baseline.mjs",
     "lorebook:json": "node scripts/lorebook-json-cli.mjs",
+    "build:cli": "tsc -p tsconfig.cli.json",
+    "session:markdown": "npm run build:cli --silent && node dist/session-markdown-cli.js",
     "dev": "npm run build:pages -- --include-local-lorebook && vite",
     "build:pages": "node scripts/prepare-build.mjs && tsc -p tsconfig.runtime.json --outDir .build/runtime && node scripts/normalize-generated-scripts.mjs .build/runtime && node scripts/check-generated-scripts.mjs && node scripts/build-pages.mjs",
     "build": "npm run build:pages",

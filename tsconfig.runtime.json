@@ -6,5 +6,6 @@
     "rootDir": "src",
     "noEmit": false
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/session-markdown-cli.ts", "src/session-markdown-ai.ts"]
 }
