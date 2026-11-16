@@ -43,8 +43,17 @@ const initialPromptUtils = {
     },
 
     async loadRecords() {
-        state.initialPromptRecords = (await dbUtils.getAllInitialPrompts())
-            .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+        const records = (await dbUtils.getAllInitialPrompts()).sort((a, b) => {
+            if (Number.isFinite(a.order) && Number.isFinite(b.order)) return a.order - b.order;
+            if (Number.isFinite(a.order)) return -1;
+            if (Number.isFinite(b.order)) return 1;
+            return (a.createdAt || 0) - (b.createdAt || 0);
+        });
+        if (records.some(record => !Number.isFinite(record.order))) {
+            records.forEach((record, order) => { record.order = order; });
+            await dbUtils.putInitialPrompts(records);
+        }
+        state.initialPromptRecords = records;
         this.renderList();
     },
 
@@ -75,7 +84,7 @@ const initialPromptUtils = {
     renderList() {
         const list = elements.initialPromptManagementList;
         list.replaceChildren();
-        for (const record of state.initialPromptRecords) {
+        state.initialPromptRecords.forEach((record, index, records) => {
             const row = document.createElement('div');
             row.className = 'lorebook-management-item';
             const title = document.createElement('strong');
@@ -89,7 +98,20 @@ const initialPromptUtils = {
             edit.addEventListener('click', () => this.openEditor(record.id));
             const actions = document.createElement('div');
             actions.className = 'lorebook-management-actions';
+            const addButton = (label, titleText, handler, disabled = false, className = '') => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.textContent = label;
+                button.title = titleText;
+                button.disabled = disabled;
+                if (className) button.className = className;
+                button.addEventListener('click', handler);
+                actions.appendChild(button);
+            };
+            addButton('↑', '上へ移動', () => this.moveRecord(record.id, -1), index === 0);
+            addButton('↓', '下へ移動', () => this.moveRecord(record.id, 1), index === records.length - 1);
             actions.appendChild(edit);
+            addButton('コピー', 'この初回プロンプトをコピー', () => this.copyRecord(record.id));
             const exportButton = document.createElement('button');
             exportButton.type = 'button';
             exportButton.textContent = 'JSON出力';
@@ -104,8 +126,46 @@ const initialPromptUtils = {
             actions.appendChild(remove);
             row.append(details, actions);
             list.appendChild(row);
-        }
+        });
         elements.noInitialPromptsMessage.classList.toggle('hidden', state.initialPromptRecords.length > 0);
+    },
+
+    async moveRecord(id, delta) {
+        const index = state.initialPromptRecords.findIndex(record => record.id === id);
+        const nextIndex = index + delta;
+        if (index < 0 || nextIndex < 0 || nextIndex >= state.initialPromptRecords.length) return;
+        const records = [...state.initialPromptRecords];
+        [records[index], records[nextIndex]] = [records[nextIndex], records[index]];
+        const reordered = records.map((record, order) => ({ ...record, order }));
+        try {
+            await dbUtils.putInitialPrompts(reordered);
+            state.initialPromptRecords = reordered;
+            this.renderList();
+        } catch (error) {
+            await uiUtils.showCustomAlert(`並び替えに失敗しました: ${error}`);
+        }
+    },
+
+    async copyRecord(id) {
+        const source = this.getRecord(id);
+        if (!source) return;
+        const now = Date.now();
+        const existingIds = new Set(state.initialPromptRecords.map(record => record.id));
+        let newId = crypto.randomUUID ? crypto.randomUUID() : `prompt-${now}-${Math.random().toString(36).slice(2)}`;
+        while (existingIds.has(newId)) newId = `prompt-${now}-${Math.random().toString(36).slice(2)}`;
+        const copy = { ...source, id: newId, title: `${source.title} (コピー)`, createdAt: now, updatedAt: now };
+        const index = state.initialPromptRecords.findIndex(record => record.id === id);
+        const records = [...state.initialPromptRecords];
+        records.splice(index + 1, 0, copy);
+        const reordered = records.map((record, order) => ({ ...record, order }));
+        try {
+            await dbUtils.putInitialPrompts(reordered);
+            state.initialPromptRecords = reordered;
+            this.renderList();
+            uiUtils.updateInitialPromptMenuItem();
+        } catch (error) {
+            await uiUtils.showCustomAlert(`コピーに失敗しました: ${error}`);
+        }
     },
 
     async deleteRecord(id) {
@@ -154,6 +214,7 @@ const initialPromptUtils = {
             text,
             createdAt: previous?.createdAt || now,
             updatedAt: now,
+            order: previous?.order ?? state.initialPromptRecords.reduce((max, item) => Math.max(max, Number.isFinite(item.order) ? item.order : -1), -1) + 1,
         };
         try {
             await dbUtils.putInitialPrompt(record);
@@ -218,10 +279,13 @@ const initialPromptUtils = {
             const existingIds = new Set(state.initialPromptRecords.map(item => item.id));
             const count = records.filter(item => existingIds.has(item.id)).length;
             if (count && !(await uiUtils.showCustomConfirm(`同じIDの初回プロンプトが${count}件あります。上書きしますか？`))) return;
-            await dbUtils.putInitialPrompts(records);
-            const importedIds = new Set(records.map(item => item.id));
-            state.initialPromptRecords = [...state.initialPromptRecords.filter(item => !importedIds.has(item.id)), ...records]
-                .sort((a, b) => a.createdAt - b.createdAt);
+            const imported = new Map(records.map(record => [record.id, record]));
+            const merged = state.initialPromptRecords.map(item => imported.has(item.id)
+                ? { ...imported.get(item.id), order: item.order } : item);
+            merged.push(...records.filter(item => !existingIds.has(item.id)));
+            const ordered = merged.map((record, order) => ({ ...record, order }));
+            await dbUtils.putInitialPrompts(ordered);
+            state.initialPromptRecords = ordered;
             this.renderList();
             uiUtils.updateInitialPromptMenuItem();
             await uiUtils.showCustomAlert(`${records.length}件の初回プロンプトを取り込みました。`);

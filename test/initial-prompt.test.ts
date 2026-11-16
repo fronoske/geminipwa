@@ -12,6 +12,7 @@ const createContext = () => {
   const saved: any[][] = [];
   const alerts: string[] = [];
   const dbUtils = {
+    getAllInitialPrompts: vi.fn(async () => [] as any[]),
     putInitialPrompts: vi.fn(async (records: any[]) => { saved.push(records); }),
     putInitialPrompt: vi.fn(async () => undefined),
     deleteInitialPrompt: vi.fn(async (_id: string) => undefined),
@@ -125,14 +126,16 @@ describe('初回ユーザープロンプト', () => {
     expect(history.back).toHaveBeenCalledOnce();
   });
 
-  it('places JSON export between Edit and Delete and removes a confirmed selected prompt', async () => {
+  it('shows Lorebook-style reorder buttons and Copy, then removes a confirmed selected prompt', async () => {
     const { utils, state, dbUtils, uiUtils, elements } = createContext();
     state.initialPromptRecords.push({ id: 'a', title: '削除対象', text: '本文', createdAt: 1, updatedAt: 1 });
     state.currentInitialPromptId = 'a';
     utils.renderList();
     const row = (elements.initialPromptManagementList.appendChild as any).mock.calls[0][0];
-    expect(row.children[1].children.map((button: any) => button.textContent)).toEqual(['編集', 'JSON出力', '削除']);
-    expect(row.children[1].children[2].classList.add).toHaveBeenCalledWith('danger');
+    expect(row.children[1].children.map((button: any) => button.textContent)).toEqual(['↑', '↓', '編集', 'コピー', 'JSON出力', '削除']);
+    expect(row.children[1].children[0].disabled).toBe(true);
+    expect(row.children[1].children[1].disabled).toBe(true);
+    expect(row.children[1].children[5].classList.add).toHaveBeenCalledWith('danger');
 
     uiUtils.showCustomConfirm.mockResolvedValueOnce(false);
     await utils.deleteRecord('a');
@@ -145,6 +148,72 @@ describe('初回ユーザープロンプト', () => {
     expect(state.currentInitialPromptId).toBeNull();
     expect(uiUtils.renderChatMessages).toHaveBeenCalledWith(true);
     expect(uiUtils.updateInitialPromptMenuItem).toHaveBeenCalledOnce();
+  });
+
+  it('migrates legacy records and persists manual order across reloads', async () => {
+    const { utils, state, dbUtils, saved, elements } = createContext();
+    const older = { id: 'older', title: '古い', text: '本文A', createdAt: 1, updatedAt: 1 };
+    const newer = { id: 'newer', title: '新しい', text: '本文B', createdAt: 2, updatedAt: 2 };
+    dbUtils.getAllInitialPrompts.mockResolvedValueOnce([newer, older]);
+
+    await utils.loadRecords();
+    expect(state.initialPromptRecords.map(record => record.id)).toEqual(['older', 'newer']);
+    expect(saved[0].map(record => record.order)).toEqual([0, 1]);
+    const firstRow = (elements.initialPromptManagementList.appendChild as any).mock.calls[0][0];
+    expect(firstRow.children[1].children[0].disabled).toBe(true);
+    expect(firstRow.children[1].children[1].disabled).toBe(false);
+
+    await utils.moveRecord('newer', -1);
+    expect(state.initialPromptRecords.map(record => record.id)).toEqual(['newer', 'older']);
+    expect(saved[1].map(record => record.order)).toEqual([0, 1]);
+    dbUtils.getAllInitialPrompts.mockResolvedValueOnce([...saved[1]].reverse());
+    await utils.loadRecords();
+    expect(state.initialPromptRecords.map(record => record.id)).toEqual(['newer', 'older']);
+  });
+
+  it('copies content to a new ID directly after the source without changing the selection', async () => {
+    const { utils, state, saved, dbUtils } = createContext();
+    state.initialPromptRecords.push(
+      { id: 'a', title: '相談', text: '本文', createdAt: 1, updatedAt: 1, order: 0 },
+      { id: 'b', title: '次', text: '別本文', createdAt: 2, updatedAt: 2, order: 1 },
+    );
+    state.currentInitialPromptId = 'a';
+
+    await utils.copyRecord('a');
+    expect(state.initialPromptRecords.map(record => record.id)).toEqual(['a', 'generated-id', 'b']);
+    expect(state.initialPromptRecords[1]).toEqual(expect.objectContaining({
+      title: '相談 (コピー)', text: '本文', order: 1,
+    }));
+    expect(state.initialPromptRecords[1].createdAt).not.toBe(1);
+    expect(state.initialPromptRecords[0].title).toBe('相談');
+    expect(state.currentInitialPromptId).toBe('a');
+    expect(saved[0].map(record => record.order)).toEqual([0, 1, 2]);
+
+    dbUtils.putInitialPrompts.mockRejectedValueOnce(new Error('保存失敗'));
+    await utils.copyRecord('b');
+    expect(state.initialPromptRecords.map(record => record.id)).toEqual(['a', 'generated-id', 'b']);
+
+    await utils.copyRecord('b');
+    expect(new Set(state.initialPromptRecords.map(record => record.id)).size).toBe(4);
+    expect(state.initialPromptRecords[3].id).not.toBe('generated-id');
+  });
+
+  it('keeps existing positions and appends imported prompts in JSON order', async () => {
+    const { utils, state, saved } = createContext();
+    state.initialPromptRecords.push(
+      { id: 'b', title: '既存B', text: '本文B', createdAt: 2, updatedAt: 2, order: 0 },
+      { id: 'a', title: '既存A', text: '本文A', createdAt: 1, updatedAt: 1, order: 1 },
+    );
+    const incoming = [
+      { id: 'c', title: '追加C', text: '本文C', createdAt: 3, updatedAt: 3 },
+      { id: 'a', title: '更新A', text: '新本文A', createdAt: 1, updatedAt: 4 },
+      { id: 'd', title: '追加D', text: '本文D', createdAt: 4, updatedAt: 4 },
+    ];
+    await utils.importAll({ text: async () => JSON.stringify(utils.createExportData(incoming)) });
+
+    expect(state.initialPromptRecords.map(record => record.id)).toEqual(['b', 'a', 'c', 'd']);
+    expect(state.initialPromptRecords[1].title).toBe('更新A');
+    expect(saved[0].map(record => record.order)).toEqual([0, 1, 2, 3]);
   });
 
   it('exports one prompt in the same JSON envelope accepted by bulk import', async () => {
@@ -161,7 +230,7 @@ describe('初回ユーザープロンプト', () => {
     const data = JSON.parse(JSON.stringify(utils.createExportData(utils.downloadJson.mock.calls[0][0])));
     const imported = createContext();
     await imported.utils.importAll({ text: async () => JSON.stringify(data) });
-    expect(imported.saved[0]).toEqual([record]);
+    expect(imported.saved[0]).toEqual([{ ...record, order: 0 }]);
   });
 
   it('keeps applied chat snapshots and leaves state unchanged if deletion fails', async () => {
