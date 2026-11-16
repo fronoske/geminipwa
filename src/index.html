@@ -532,6 +532,11 @@
                                 <div id="openrouter-model-catalog-controls" class="hidden">
                                     <label for="openrouter-model-search">モデルを検索:</label>
                                     <input type="search" id="openrouter-model-search" placeholder="名前またはモデルID" autocomplete="off">
+                                    <label class="openrouter-model-routing-option">
+                                        <input type="checkbox" id="openrouter-model-floor-toggle">
+                                        最安優先（:floor）の候補を表示
+                                    </label>
+                                    <p class="openrouter-model-routing-note">:floor は価格順に提供先を選びます。表示する入力・出力の最低掲載価格はそれぞれ別の提供先の場合があり、実際の請求額とは限りません。</p>
                                     <fieldset class="openrouter-model-provider-filter">
                                         <legend>提供元:</legend>
                                         <div id="openrouter-model-provider-options" class="openrouter-model-provider-options"></div>

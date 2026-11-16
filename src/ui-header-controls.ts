@@ -257,6 +257,26 @@ Object.assign(uiUtils, {
                 const selectedModels = Array.isArray(state.settings.openrouterSelectedModels)
                     ? [...new Set(state.settings.openrouterSelectedModels.filter(Boolean))]
                     : [];
+                const modelName = (modelId) => {
+                    const model = typeof openRouterModelCatalog !== 'undefined'
+                        ? openRouterModelCatalog.getModel(modelId)
+                        : null;
+                    return model
+                        ? openRouterModelCatalog.getCleanDisplayName(model)
+                        : modelId.replace(/:floor$/, '');
+                };
+                selectedModels.sort((leftId, rightId) => {
+                    const nameOrder = modelName(leftId).localeCompare(modelName(rightId), 'ja', {
+                        numeric: true,
+                        sensitivity: 'base',
+                    });
+                    if (nameOrder !== 0) return nameOrder;
+                    const leftCatalogId = leftId.replace(/:floor$/, '');
+                    const rightCatalogId = rightId.replace(/:floor$/, '');
+                    const idOrder = leftCatalogId.localeCompare(rightCatalogId, 'ja', { numeric: true });
+                    if (idOrder !== 0) return idOrder;
+                    return Number(leftId.endsWith(':floor')) - Number(rightId.endsWith(':floor'));
+                });
 
                 selectedModels.forEach(modelId => {
                     const option = document.createElement('option');

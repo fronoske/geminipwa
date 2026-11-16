@@ -2623,6 +2623,20 @@
             margin-bottom: 10px;
         }
 
+        .openrouter-model-routing-option {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            width: auto;
+            margin: 0 0 4px;
+        }
+
+        .openrouter-model-routing-note {
+            margin: 0 0 10px;
+            color: var(--text-secondary);
+            font-size: 0.8em;
+        }
+
         .openrouter-model-provider-filter {
             margin: 0 0 10px;
             padding: 8px;

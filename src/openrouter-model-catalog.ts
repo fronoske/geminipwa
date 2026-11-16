@@ -8,6 +8,13 @@ const openRouterModelCatalog = {
     initialized: false,
     sortMode: 'model',
     sortReversed: false,
+    floorPriceCache: new Map(),
+    floorPriceQueue: [],
+    activeFloorPriceRequests: 0,
+    floorPriceGeneration: 0,
+    floorPriceRenderId: 0,
+    floorPriceObserver: null,
+    floorPriceKeyDebounceTimer: null,
 
     classifyProvider(modelId) {
         const author = String(modelId || '').split('/')[0].toLowerCase().replace(/^~/, '');
@@ -29,6 +36,14 @@ const openRouterModelCatalog = {
 
     isBatchModelId(modelId) {
         return /:batch$/i.test(String(modelId || '').trim());
+    },
+
+    getCatalogModelId(modelId) {
+        return String(modelId || '').replace(/:floor$/i, '');
+    },
+
+    getVisibleModelId(modelId) {
+        return elements.openrouterModelFloorToggle?.checked ? `${modelId}:floor` : modelId;
     },
 
     normalizeModel(rawModel) {
@@ -145,6 +160,10 @@ const openRouterModelCatalog = {
     },
 
     getOutputCostSortValue(model) {
+        if (typeof elements !== 'undefined' && elements.openrouterModelFloorToggle?.checked) {
+            const floorPrice = this.floorPriceCache.get(model.id)?.value?.completion;
+            return Number.isFinite(floorPrice) ? floorPrice : Number.POSITIVE_INFINITY;
+        }
         const rawCost = model.pricing?.completion;
         if (rawCost === null || rawCost === undefined || rawCost === '') return Number.POSITIVE_INFINITY;
         const cost = Number(rawCost);
@@ -209,6 +228,8 @@ const openRouterModelCatalog = {
     },
 
     async clearCatalog() {
+        if (this.floorPriceKeyDebounceTimer) clearTimeout(this.floorPriceKeyDebounceTimer);
+        this.clearFloorPrices();
         this.models = [];
         this.latestModelIds = null;
         this.visibleModelIds = [];
@@ -261,7 +282,7 @@ const openRouterModelCatalog = {
     async pruneUnavailableSelectedModels() {
         if (!this.latestModelIds) return 0;
         const selectedIds = this.getSelectedIds();
-        const remainingIds = selectedIds.filter((modelId) => this.latestModelIds.has(modelId));
+        const remainingIds = selectedIds.filter((modelId) => this.latestModelIds.has(this.getCatalogModelId(modelId)));
         const removedCount = selectedIds.length - remainingIds.length;
         if (removedCount === 0) return 0;
 
@@ -276,7 +297,8 @@ const openRouterModelCatalog = {
     },
 
     getModel(modelId) {
-        return this.models.find((model) => model.id === modelId) || null;
+        const catalogModelId = this.getCatalogModelId(modelId);
+        return this.models.find((model) => model.id === catalogModelId) || null;
     },
 
     getProviderLabel(providerValue) {
@@ -292,6 +314,15 @@ const openRouterModelCatalog = {
         const model = this.getModel(modelId);
         if (!model) return modelId;
         const displayName = this.getCleanDisplayName(model);
+        if (modelId.endsWith(':floor')) {
+            const floorEntry = this.floorPriceCache.get(model.id);
+            const completionPrice = floorEntry?.value?.completion;
+            let labelPrice = '料金取得中';
+            if (Number.isFinite(completionPrice)) labelPrice = this.formatFloorPrice(completionPrice);
+            else if (!elements.openrouterApiKeyInput?.value?.trim()) labelPrice = 'APIキー未入力';
+            else if (floorEntry?.loaded) labelPrice = floorEntry.value ? '料金不明' : '料金取得失敗';
+            return `${displayName}(:floor) — ${labelPrice}`;
+        }
         if (model.isFree) return `${displayName} — free`;
         const completionPrice = this.formatPerMillionPrice(model.pricing?.completion);
         return `${displayName} — ${completionPrice === null ? '料金不明' : `$${completionPrice}/M`}`;
@@ -310,6 +341,15 @@ const openRouterModelCatalog = {
         )];
         uiUtils.updateOpenRouterUserModelOptions();
         this.updateSelectedCount();
+        this.loadSelectedFloorPrices();
+    },
+
+    loadSelectedFloorPrices() {
+        this.getSelectedIds().forEach((modelId) => {
+            if (!modelId.endsWith(':floor')) return;
+            const model = this.getModel(modelId);
+            if (model) this.requestFloorPrices(model.id);
+        });
     },
 
     updateSelectedCount() {
@@ -324,7 +364,7 @@ const openRouterModelCatalog = {
         );
         const filteredModels = this.models.filter((model) => {
             if (!selectedProviders.has(model.provider)) return false;
-            if (searchText && ![model.id, model.name, this.getCleanDisplayName(model)]
+            if (searchText && ![this.getVisibleModelId(model.id), model.name, this.getCleanDisplayName(model)]
                 .some((value) => String(value || '').toLocaleLowerCase().includes(searchText))) return false;
             return true;
         });
@@ -377,10 +417,136 @@ const openRouterModelCatalog = {
         return price === null ? '不明' : `$${price}/M`;
     },
 
+    clearFloorPrices() {
+        this.floorPriceGeneration += 1;
+        this.floorPriceObserver?.disconnect();
+        this.floorPriceObserver = null;
+        this.floorPriceCache.clear();
+        this.floorPriceQueue.splice(0).forEach(({ resolve }) => resolve(null));
+    },
+
+    async fetchFloorPrices(modelId, apiKey, fetchImplementation = fetch) {
+        const [author, ...slugParts] = modelId.split('/');
+        if (!author || slugParts.length === 0) throw new Error('モデルIDが不正です。');
+        const modelPath = [author, ...slugParts].map(encodeURIComponent).join('/');
+        const response = await fetchImplementation(`https://openrouter.ai/api/v1/models/${modelPath}/endpoints`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Accept': 'application/json',
+            },
+        });
+        if (!response.ok) throw new Error(`提供先の料金を取得できませんでした（HTTP ${response.status}）。`);
+        const payload = await response.json();
+        if (!Array.isArray(payload?.data?.endpoints)) throw new Error('提供先の料金データが不正です。');
+
+        const eligible = payload.data.endpoints.filter((endpoint) =>
+            endpoint && [null, undefined, 'default', 'standard', 'flex'].includes(endpoint.service_tier)
+        );
+        const minPrice = (priceType) => {
+            const prices = eligible
+                .map((endpoint) => endpoint.pricing?.[priceType])
+                .filter((price) => price !== null && price !== undefined && price !== '')
+                .map(Number)
+                .filter((price) => Number.isFinite(price) && price >= 0);
+            return prices.length ? Math.min(...prices) : null;
+        };
+        return { prompt: minPrice('prompt'), completion: minPrice('completion') };
+    },
+
+    processFloorPriceQueue() {
+        while (this.activeFloorPriceRequests < 4 && this.floorPriceQueue.length) {
+            const { modelId, apiKey, resolve } = this.floorPriceQueue.shift();
+            this.activeFloorPriceRequests += 1;
+            this.fetchFloorPrices(modelId, apiKey)
+                .then((value) => resolve(value), () => resolve(null))
+                .finally(() => {
+                    this.activeFloorPriceRequests -= 1;
+                    this.processFloorPriceQueue();
+                });
+        }
+    },
+
+    requestFloorPrices(modelId) {
+        const cached = this.floorPriceCache.get(modelId);
+        if (cached) return cached.promise;
+        const apiKey = String(elements.openrouterApiKeyInput?.value || '').trim();
+        if (!apiKey) return Promise.resolve(null);
+        const entry = { value: null, loaded: false, promise: null };
+        entry.promise = new Promise((resolve) => {
+            this.floorPriceQueue.push({ modelId, apiKey, resolve });
+        }).then((value) => {
+            entry.value = value;
+            entry.loaded = true;
+            if (this.floorPriceCache.get(modelId) === entry
+                && this.getSelectedIds().includes(`${modelId}:floor`)) {
+                uiUtils.updateOpenRouterUserModelOptions();
+            }
+            return value;
+        });
+        this.floorPriceCache.set(modelId, entry);
+        this.processFloorPriceQueue();
+        return entry.promise;
+    },
+
+    formatFloorPrice(price) {
+        if (price === null || price === undefined || !Number.isFinite(price)) return '不明';
+        const perMillion = price * 1_000_000;
+        const formatted = new Intl.NumberFormat('en-US', {
+            minimumFractionDigits: perMillion === 0 ? 0 : 2,
+            maximumFractionDigits: 6,
+        }).format(perMillion);
+        return `$${formatted}/M`;
+    },
+
+    showFloorPrices(modelId, inputCost, outputCost, observer) {
+        const cached = this.floorPriceCache.get(modelId);
+        if (cached && cached.value) {
+            inputCost.textContent = `入力 ${this.formatFloorPrice(cached.value.prompt)}`;
+            outputCost.textContent = `出力 ${this.formatFloorPrice(cached.value.completion)}`;
+            return;
+        }
+        if (cached?.loaded) {
+            inputCost.textContent = '料金を取得できませんでした';
+            outputCost.textContent = '';
+            return;
+        }
+        if (!elements.openrouterApiKeyInput?.value?.trim()) {
+            inputCost.textContent = 'APIキーを入力すると取得します';
+            outputCost.textContent = '';
+            return;
+        }
+        inputCost.textContent = '料金を取得中…';
+        outputCost.textContent = '';
+        const generation = this.floorPriceGeneration;
+        const renderId = this.floorPriceRenderId;
+        this.requestFloorPrices(modelId).then((price) => {
+            if (generation !== this.floorPriceGeneration || renderId !== this.floorPriceRenderId
+                || this.floorPriceObserver !== observer) return;
+            inputCost.textContent = price ? `入力 ${this.formatFloorPrice(price.prompt)}` : '料金を取得できませんでした';
+            outputCost.textContent = price ? `出力 ${this.formatFloorPrice(price.completion)}` : '';
+            if (this.sortMode === 'cost') this.sortRenderedFloorRows();
+        });
+    },
+
+    sortRenderedFloorRows() {
+        const tableBody = elements.openrouterModelCatalogList.querySelector('tbody');
+        if (!tableBody) return;
+        const rank = new Map(this.getFilteredModels().map((model, index) => [model.id, index]));
+        const rows = [...tableBody.rows];
+        rows.sort((left, right) => (rank.get(left.dataset.modelId) ?? Infinity) - (rank.get(right.dataset.modelId) ?? Infinity));
+        tableBody.append(...rows);
+    },
+
     renderModelList() {
+        this.floorPriceRenderId += 1;
+        this.floorPriceObserver?.disconnect();
+        this.floorPriceObserver = null;
         const filteredModels = this.getFilteredModels();
+        const showFloor = Boolean(elements.openrouterModelFloorToggle?.checked);
+        const floorPriceRows = [];
         const selectedIds = new Set(this.getSelectedIds());
-        this.visibleModelIds = filteredModels.map((model) => model.id);
+        this.visibleModelIds = filteredModels.map((model) => this.getVisibleModelId(model.id));
         elements.openrouterModelCatalogList.innerHTML = '';
         elements.openrouterModelCatalogEmpty.classList.toggle('hidden', filteredModels.length > 0);
 
@@ -418,7 +584,9 @@ const openRouterModelCatalog = {
 
         const tableBody = document.createElement('tbody');
         filteredModels.forEach((model) => {
+            const visibleModelId = this.getVisibleModelId(model.id);
             const row = document.createElement('tr');
+            row.dataset.modelId = model.id;
 
             const modelCell = document.createElement('td');
             const label = document.createElement('label');
@@ -426,12 +594,12 @@ const openRouterModelCatalog = {
 
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
-            checkbox.checked = selectedIds.has(model.id);
-            checkbox.setAttribute('aria-label', `${this.getCleanDisplayName(model)}を選択`);
+            checkbox.checked = selectedIds.has(visibleModelId);
+            checkbox.setAttribute('aria-label', `${this.getCleanDisplayName(model)}${visibleModelId.endsWith(':floor') ? ' 最安優先版' : ' 通常版'}を選択`);
             checkbox.addEventListener('change', () => {
                 const nextSelectedIds = new Set(this.getSelectedIds());
-                if (checkbox.checked) nextSelectedIds.add(model.id);
-                else nextSelectedIds.delete(model.id);
+                if (checkbox.checked) nextSelectedIds.add(visibleModelId);
+                else nextSelectedIds.delete(visibleModelId);
                 this.setSelectedIds([...nextSelectedIds]);
             });
             const modelIdentity = document.createElement('span');
@@ -447,9 +615,14 @@ const openRouterModelCatalog = {
             const costCell = document.createElement('td');
             costCell.className = 'openrouter-model-cost-cell';
             const inputCost = document.createElement('span');
-            inputCost.textContent = `入力 ${this.formatModelPrice(model, 'prompt')}`;
             const outputCost = document.createElement('span');
-            outputCost.textContent = `出力 ${this.formatModelPrice(model, 'completion')}`;
+            if (showFloor) {
+                inputCost.textContent = '表示時に料金を取得';
+                floorPriceRows.push({ row, modelId: model.id, inputCost, outputCost });
+            } else {
+                inputCost.textContent = `入力 ${this.formatModelPrice(model, 'prompt')}`;
+                outputCost.textContent = `出力 ${this.formatModelPrice(model, 'completion')}`;
+            }
             costCell.append(inputCost, outputCost);
             const contextCell = document.createElement('td');
             contextCell.className = 'openrouter-model-context-cell';
@@ -476,6 +649,24 @@ const openRouterModelCatalog = {
         });
         table.append(tableHead, tableBody);
         elements.openrouterModelCatalogList.appendChild(table);
+        if (!showFloor) return;
+        if (typeof IntersectionObserver === 'undefined') {
+            floorPriceRows.forEach(({ modelId, inputCost, outputCost }) =>
+                this.showFloorPrices(modelId, inputCost, outputCost, null)
+            );
+            return;
+        }
+        const floorPriceByRow = new Map(floorPriceRows.map((entry) => [entry.row, entry]));
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (!entry.isIntersecting) return;
+                observer.unobserve(entry.target);
+                const priceRow = floorPriceByRow.get(entry.target);
+                if (priceRow) this.showFloorPrices(priceRow.modelId, priceRow.inputCost, priceRow.outputCost, observer);
+            });
+        }, { root: elements.openrouterModelCatalogList });
+        this.floorPriceObserver = observer;
+        floorPriceRows.forEach(({ row }) => observer.observe(row));
     },
 
     setVisibleSelection(selected) {
@@ -509,6 +700,7 @@ const openRouterModelCatalog = {
                 + (removedCount ? ` 一覧の対象外となった選択済みモデルを${removedCount}件削除しました。` : '');
             this.renderModelList();
             uiUtils.updateOpenRouterUserModelOptions();
+            this.loadSelectedFloorPrices();
         } catch (error) {
             elements.openrouterModelFetchStatus.textContent = `取得失敗: ${error.message}`;
         } finally {
@@ -529,8 +721,19 @@ const openRouterModelCatalog = {
             this.renderModelList();
             uiUtils.updateOpenRouterUserModelOptions();
         }
+        this.loadSelectedFloorPrices();
         elements.fetchOpenrouterModelsBtn.addEventListener('click', () => this.handleFetchButtonClick());
         elements.openrouterModelSearchInput.addEventListener('input', () => this.renderModelList());
+        elements.openrouterModelFloorToggle.addEventListener('change', () => this.renderModelList());
+        elements.openrouterApiKeyInput.addEventListener('input', () => {
+            this.clearFloorPrices();
+            uiUtils.updateOpenRouterUserModelOptions();
+            clearTimeout(this.floorPriceKeyDebounceTimer);
+            this.floorPriceKeyDebounceTimer = setTimeout(() => {
+                if (elements.openrouterModelFloorToggle.checked) this.renderModelList();
+                this.loadSelectedFloorPrices();
+            }, 400);
+        });
         elements.selectAllOpenrouterProvidersBtn.addEventListener('click', () => this.setAllProvidersSelected(true));
         elements.clearAllOpenrouterProvidersBtn.addEventListener('click', () => this.setAllProvidersSelected(false));
         elements.selectVisibleOpenrouterModelsBtn.addEventListener('click', () => this.setVisibleSelection(true));
